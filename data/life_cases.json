@@ -1,0 +1,156 @@
+{
+  "$schema": "https://example.invalid/tehilim/life_cases.schema.json",
+  "version": "1.1.0",
+  "validation": "Validation rabbinique reçue par le porteur projet (2026-05-08).",
+  "categories": [
+    {
+      "id": "find_partner",
+      "section": "Cycle de vie",
+      "title": "Trouver son mazal",
+      "symbol": "person.2.fill",
+      "note": "Tradition. On a coutume de réciter ces Tehilim pour trouver son zivug (âme sœur).",
+      "psalms": [32, 38, 70, 71, 72, 121, 124]
+    },
+    {
+      "id": "wedding_day",
+      "section": "Cycle de vie",
+      "title": "Jour du mariage",
+      "symbol": "heart.fill",
+      "note": "Tradition. Tehilim récités à l'occasion d'un mariage, pour la bénédiction du couple.",
+      "psalms": [19, 20, 33, 47, 121, 145]
+    },
+    {
+      "id": "children",
+      "section": "Cycle de vie",
+      "title": "Pour avoir des enfants",
+      "symbol": "figure.2.and.child.holdinghands",
+      "note": "Tradition. Tehilim récités pour la bénédiction d'avoir des enfants. Ne remplace pas un suivi médical.",
+      "psalms": [20, 102, 113, 121, 128]
+    },
+    {
+      "id": "pregnancy",
+      "section": "Cycle de vie",
+      "title": "Femme enceinte",
+      "symbol": "figure.and.child.holdinghands",
+      "note": "Tradition. Tehilim associés à la grossesse et à un bon accouchement.",
+      "psalms": [1, 2, 3, 4, 5, 20, 121]
+    },
+    {
+      "id": "brit_mila",
+      "section": "Cycle de vie",
+      "title": "Brith Mila",
+      "symbol": "8.circle.fill",
+      "note": "Tradition. Tehilim récités à l'occasion d'une circoncision (le Tehilim 12 commence par « Lamenatzeach al hashminit » — pour le huitième jour).",
+      "psalms": [12, 100, 121, 128]
+    },
+    {
+      "id": "healing",
+      "section": "Santé et épreuves",
+      "title": "Guérison",
+      "symbol": "heart.text.square",
+      "note": "Tradition. On a coutume de réciter ces Tehilim pour la guérison d'un proche. Ne remplace pas un avis médical.",
+      "psalms": [6, 13, 20, 30, 41, 88, 103, 121, 130, 142]
+    },
+    {
+      "id": "anxiety",
+      "section": "Santé et épreuves",
+      "title": "Inquiétude",
+      "symbol": "wind",
+      "note": "Tradition. Ne remplace pas un avis psychologique ou médical.",
+      "psalms": [13, 22, 27, 42, 121, 130]
+    },
+    {
+      "id": "protection",
+      "section": "Santé et épreuves",
+      "title": "Protection",
+      "symbol": "shield.fill",
+      "note": "Tradition. Tehilim associés à la protection.",
+      "psalms": [3, 27, 91, 121, 124]
+    },
+    {
+      "id": "travel",
+      "section": "Santé et épreuves",
+      "title": "Voyage",
+      "symbol": "airplane",
+      "note": "Tradition. À distinguer de la Tefilat haDerekh, qui n'est pas un Tehilim.",
+      "psalms": [121, 122, 124, 134]
+    },
+    {
+      "id": "before_trial",
+      "section": "Santé et épreuves",
+      "title": "Avant un procès",
+      "symbol": "scalemass",
+      "note": "Tradition. Ne remplace pas un avis juridique.",
+      "psalms": [7, 17, 26, 35, 109]
+    },
+    {
+      "id": "parnassa",
+      "section": "Santé et épreuves",
+      "title": "Parnassa (subsistance)",
+      "symbol": "briefcase.fill",
+      "note": "Tradition. Tehilim associés à la subsistance.",
+      "psalms": [23, 34, 67, 121, 145]
+    },
+    {
+      "id": "mourning",
+      "section": "Santé et épreuves",
+      "title": "Deuil",
+      "symbol": "leaf",
+      "note": "Tradition. Tehilim récités en mémoire d'un proche disparu.",
+      "psalms": [16, 17, 33, 72, 91, 104, 130]
+    },
+    {
+      "id": "tikkoun_haklali",
+      "section": "Spiritualité",
+      "title": "Tikkoun HaKlali",
+      "symbol": "sparkles",
+      "note": "Selon la tradition de Rabbi Nachman de Breslev — 10 Tehilim formant un tiqqoun général. À réciter dans l'ordre indiqué.",
+      "psalms": [16, 32, 41, 42, 59, 77, 90, 105, 137, 150]
+    },
+    {
+      "id": "teshuva",
+      "section": "Spiritualité",
+      "title": "Repentance (techouva)",
+      "symbol": "arrow.uturn.backward.circle",
+      "note": "Tehilim associés à la techouva.",
+      "psalms": [6, 25, 32, 38, 51, 102, 130, 143]
+    },
+    {
+      "id": "gratitude",
+      "section": "Spiritualité",
+      "title": "Remerciement",
+      "symbol": "sun.max.fill",
+      "note": "Tehilim de gratitude.",
+      "psalms": [9, 30, 100, 103, 145, 150]
+    },
+    {
+      "id": "rosh_chodesh",
+      "section": "Communauté et calendrier",
+      "title": "Roch Hodech",
+      "symbol": "moon.stars.fill",
+      "note": "Tradition. Le Tehilim 104 (« Borkhi Nafchi ») est associé à Roch Hodech ; les Tehilim 113 à 118 forment le Hallel récité ce jour.",
+      "psalms": [104, 113, 114, 115, 116, 117, 118]
+    },
+    {
+      "id": "peace",
+      "section": "Communauté et calendrier",
+      "title": "Pour la paix",
+      "symbol": "leaf.fill",
+      "note": "Tradition. Tehilim associés à la paix, en particulier ceux mentionnant explicitement le shalom (29, 122, 125, 133).",
+      "psalms": [29, 34, 122, 125, 128, 133]
+    },
+    {
+      "id": "israel",
+      "section": "Communauté et calendrier",
+      "title": "Pour l'État d'Israël",
+      "symbol": "flag.fill",
+      "note": "Tradition. Tehilim récités pour le bien-être de la Terre d'Israël et de ses habitants.",
+      "psalms": [20, 83, 121, 122, 130, 137]
+    }
+  ],
+  "_notes": [
+    "Les listes sont validées rabbiniquement (cf. content_validation_notes.md).",
+    "Les sections suivent un ordre logique : cycle de vie → épreuves → spiritualité → communauté.",
+    "Aucune note ne contient de promesse médicale, juridique, financière ou psychologique."
+  ]
+}

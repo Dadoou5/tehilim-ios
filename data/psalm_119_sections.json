@@ -1,0 +1,29 @@
+{
+  "$schema": "https://example.invalid/tehilim/psalm_119_sections.schema.json",
+  "version": "0.1.0",
+  "psalmId": 119,
+  "sections": [
+    { "index": 1,  "id": "alef",   "letter": "א", "name": "Aleph",  "verseStart": 1,   "verseEnd": 8   },
+    { "index": 2,  "id": "bet",    "letter": "ב", "name": "Bet",    "verseStart": 9,   "verseEnd": 16  },
+    { "index": 3,  "id": "gimel",  "letter": "ג", "name": "Gimel",  "verseStart": 17,  "verseEnd": 24  },
+    { "index": 4,  "id": "dalet",  "letter": "ד", "name": "Dalet",  "verseStart": 25,  "verseEnd": 32  },
+    { "index": 5,  "id": "he",     "letter": "ה", "name": "He",     "verseStart": 33,  "verseEnd": 40  },
+    { "index": 6,  "id": "vav",    "letter": "ו", "name": "Vav",    "verseStart": 41,  "verseEnd": 48  },
+    { "index": 7,  "id": "zayin",  "letter": "ז", "name": "Zayin",  "verseStart": 49,  "verseEnd": 56  },
+    { "index": 8,  "id": "het",    "letter": "ח", "name": "Het",    "verseStart": 57,  "verseEnd": 64  },
+    { "index": 9,  "id": "tet",    "letter": "ט", "name": "Tet",    "verseStart": 65,  "verseEnd": 72  },
+    { "index": 10, "id": "yod",    "letter": "י", "name": "Yod",    "verseStart": 73,  "verseEnd": 80  },
+    { "index": 11, "id": "kaf",    "letter": "כ", "name": "Kaf",    "verseStart": 81,  "verseEnd": 88  },
+    { "index": 12, "id": "lamed",  "letter": "ל", "name": "Lamed",  "verseStart": 89,  "verseEnd": 96  },
+    { "index": 13, "id": "mem",    "letter": "מ", "name": "Mem",    "verseStart": 97,  "verseEnd": 104 },
+    { "index": 14, "id": "nun",    "letter": "נ", "name": "Nun",    "verseStart": 105, "verseEnd": 112 },
+    { "index": 15, "id": "samech", "letter": "ס", "name": "Samech", "verseStart": 113, "verseEnd": 120 },
+    { "index": 16, "id": "ayin",   "letter": "ע", "name": "Ayin",   "verseStart": 121, "verseEnd": 128 },
+    { "index": 17, "id": "pe",     "letter": "פ", "name": "Pe",     "verseStart": 129, "verseEnd": 136 },
+    { "index": 18, "id": "tsade",  "letter": "צ", "name": "Tsade",  "verseStart": 137, "verseEnd": 144 },
+    { "index": 19, "id": "qof",    "letter": "ק", "name": "Qof",    "verseStart": 145, "verseEnd": 152 },
+    { "index": 20, "id": "resh",   "letter": "ר", "name": "Resh",   "verseStart": 153, "verseEnd": 160 },
+    { "index": 21, "id": "shin",   "letter": "ש", "name": "Shin",   "verseStart": 161, "verseEnd": 168 },
+    { "index": 22, "id": "tav",    "letter": "ת", "name": "Tav",    "verseStart": 169, "verseEnd": 176 }
+  ]
+}

@@ -1,0 +1,48 @@
+# macOS
+.DS_Store
+
+# Outils locaux / IDE
+.claude/
+.vscode/
+.idea/
+
+# Xcode
+build/
+DerivedData/
+*.xcuserdatad/
+*.xcuserstate
+*.xcuserdata
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+xcuserdata/
+
+# XcodeGen — le .xcodeproj est généré à partir de project.yml
+Tehilim.xcodeproj/
+
+# Swift Package Manager
+.build/
+Packages/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+.swiftpm/
+
+# Outils locaux téléchargés
+.tools/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Logs
+*.log
+
+# Backups locaux
+*.bak
+data/psalms.before-*.json

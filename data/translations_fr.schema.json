@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TehilimFRTranslations",
+  "description": "Schéma d'une traduction française verset par verset, livrée séparément du corpus hébreu pour des raisons de licence.",
+  "type": "object",
+  "required": ["version", "license", "translator", "verses"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Version sémantique de la traduction"
+    },
+    "license": {
+      "type": "string",
+      "description": "Texte exact de la licence (ex. 'Domaine public', 'CC-BY-4.0', 'Propriétaire — Editeur X — usage app')"
+    },
+    "licenseUrl": { "type": "string", "format": "uri" },
+    "translator": {
+      "type": "string",
+      "description": "Nom du traducteur ou de la version (ex. 'Rabbinat 1899')"
+    },
+    "year": { "type": "integer" },
+    "language": { "type": "string", "const": "fr" },
+    "verses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "text"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^\\d{1,3}:\\d{1,3}$",
+            "description": "Identifiant verset, format 'psalmId:verseNumber' (ex. '23:1')"
+          },
+          "text": {
+            "type": "string",
+            "description": "Texte de la traduction. Aucun balisage HTML."
+          },
+          "footnote": {
+            "type": "string",
+            "description": "Note du traducteur (optionnelle)"
+          }
+        }
+      }
+    }
+  },
+  "_humanValidation": [
+    "Toute traduction intégrée à l'app DOIT venir avec licence explicite vérifiée par un humain.",
+    "L'app ne doit JAMAIS embarquer une traduction sans champ 'license' rempli.",
+    "Le code refuse de charger un fichier de traduction sans license."
+  ]
+}

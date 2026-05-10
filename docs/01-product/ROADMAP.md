@@ -53,6 +53,13 @@
 - ✅ Reload automatique du widget quand l'utilisateur change de mode dans Réglages ou Aujourd'hui.
 - ⚠ Déploiement device : nécessite Apple Developer Program (99 €/an) pour l'enregistrement de l'App Group.
 
+## V1.7 — Multilingue (anglais)
+
+- ✅ Traduction JPS 1917 ajoutée (Sefaria, domaine public). 2527 versets.
+- ✅ Picker langue de traduction FR/EN dans Réglages.
+- ✅ Localisation UI partielle (tab bar, sections, boutons, onboarding) via Localizable.strings en.lproj.
+- ⚠ V1.7.1 : finir la localisation (cas de la vie, pages Privacy/Sources/Accessibilité), sélecteur manuel de langue UI.
+
 ## V2.0 — Expansion (T0 + 4 mois)
 
 - iPad universel

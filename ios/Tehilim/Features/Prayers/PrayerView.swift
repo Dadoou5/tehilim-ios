@@ -22,7 +22,8 @@ struct PrayerView: View {
                             textMode: prefs.textMode,
                             textSizeHebrew: prefs.textSizeHebrew,
                             textSizeFR: prefs.textSizeFR,
-                            numberStyle: prefs.verseNumberStyle
+                            numberStyle: prefs.verseNumberStyle,
+                            translationLang: prefs.translationLang
                         )
                         .padding(.horizontal, 16)
                         Divider().padding(.horizontal, 16).opacity(0.3)

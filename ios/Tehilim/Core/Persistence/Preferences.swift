@@ -76,6 +76,7 @@ final class Preferences: ObservableObject {
     init(_ defaults: UserDefaults = .standard) { self.defaults = defaults }
 
     @AppStorage("pref.translation.fr")     var translationFR: Bool = false
+    @AppStorage("pref.translation.lang")   var translationLang: TranslationLanguage = .fr
     @AppStorage("pref.theme")              var theme: AppTheme = .system
     @AppStorage("pref.textSize.hebrew")    var textSizeHebrew: TextSize = .l
     @AppStorage("pref.textSize.fr")        var textSizeFR: TextSize = .m

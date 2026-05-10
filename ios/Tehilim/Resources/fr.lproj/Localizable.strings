@@ -1,0 +1,69 @@
+/* ============================================================
+   Chaînes UI française — V1.7
+   Les clés correspondent aux strings utilisées dans le code SwiftUI
+   (ex. Text("Accueil")). En français, la clé = la valeur.
+   ============================================================ */
+
+/* Tabs */
+"Accueil" = "Accueil";
+"Tehilim" = "Tehilim";
+"Aujourd'hui" = "Aujourd'hui";
+"Cas de la vie" = "Cas de la vie";
+"Réglages" = "Réglages";
+
+/* Sections / titres */
+"Reprendre la lecture" = "Reprendre la lecture";
+"Mes favoris" = "Mes favoris";
+"Tehilim du jour" = "Tehilim du jour";
+"Explorer" = "Explorer";
+"Prières" = "Prières";
+"Tous les Tehilim" = "Tous les Tehilim";
+"Au programme" = "Au programme";
+
+/* Cards */
+"5 livres" = "5 livres";
+"Tous (1–150)" = "Tous (1–150)";
+"Tehilim 119" = "Tehilim 119";
+"Prière avant" = "Prière avant";
+"Prière après" = "Prière après";
+"Prière avant la lecture" = "Prière avant la lecture";
+"Prière après la lecture" = "Prière après la lecture";
+
+/* Settings */
+"Texte du psaume" = "Texte du psaume";
+"Mode du texte" = "Mode du texte";
+"Hébreu" = "Hébreu";
+"Phonétique" = "Phonétique";
+"Affichage" = "Affichage";
+"Thème" = "Thème";
+"Traduction" = "Traduction";
+"Langue de la traduction" = "Langue de la traduction";
+"Lecture quotidienne" = "Lecture quotidienne";
+"Mode" = "Mode";
+"Cycle mensuel" = "Cycle mensuel";
+"Jour de la semaine" = "Jour de la semaine";
+"Rappel quotidien" = "Rappel quotidien";
+"Accessibilité" = "Accessibilité";
+"À propos" = "À propos";
+"Sources du contenu" = "Sources du contenu";
+"Confidentialité" = "Confidentialité";
+
+/* Buttons */
+"Annuler" = "Annuler";
+"Fermer" = "Fermer";
+"OK" = "OK";
+"Suivant" = "Suivant";
+"Commencer" = "Commencer";
+"Passer" = "Passer";
+"Rechercher" = "Rechercher";
+"Copier" = "Copier";
+"Partager" = "Partager";
+
+/* Verses */
+"Traduction non disponible." = "Traduction non disponible.";
+"Tehilim introuvable" = "Tehilim introuvable";
+"Aucun favori" = "Aucun favori";
+
+/* Notifications */
+"Tehilim du jour" = "Tehilim du jour";
+"C'est le moment de lire tes Tehilim du jour." = "C'est le moment de lire tes Tehilim du jour.";

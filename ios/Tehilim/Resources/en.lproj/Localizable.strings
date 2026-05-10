@@ -1,0 +1,128 @@
+/* ============================================================
+   English UI strings — V1.7
+   Keys are the French source strings (used by Text("Accueil") etc.).
+   Coverage: tab bar, main navigation, settings sections, common buttons.
+   Other strings remain in French as fallback.
+   ============================================================ */
+
+/* Tabs */
+"Accueil" = "Home";
+"Tehilim" = "Tehilim";
+"Aujourd'hui" = "Today";
+"Cas de la vie" = "Life cases";
+"Réglages" = "Settings";
+
+/* Sections / titres */
+"Reprendre la lecture" = "Resume reading";
+"Mes favoris" = "My favorites";
+"Tehilim du jour" = "Today's Tehilim";
+"Explorer" = "Explore";
+"Prières" = "Prayers";
+"Tous les Tehilim" = "All Tehilim";
+"Au programme" = "On the schedule";
+
+/* Cards */
+"5 livres" = "5 books";
+"Tous (1–150)" = "All (1–150)";
+"Tehilim 119" = "Tehilim 119";
+"Prière avant" = "Opening prayer";
+"Prière après" = "Closing prayer";
+"Prière avant la lecture" = "Prayer before reading";
+"Prière après la lecture" = "Prayer after reading";
+
+/* Settings sections */
+"Texte du psaume" = "Psalm text";
+"Mode du texte" = "Text mode";
+"Hébreu" = "Hebrew";
+"Phonétique" = "Phonetic";
+"Taille hébreu / phonétique" = "Hebrew / phonetic size";
+"Taille français" = "French size";
+"Très petit" = "Very small";
+"Petit" = "Small";
+"Moyen" = "Medium";
+"Grand" = "Large";
+"Très grand" = "Very large";
+"Affichage" = "Display";
+"Thème" = "Theme";
+"Système" = "System";
+"Clair" = "Light";
+"Sombre" = "Dark";
+"Traduction" = "Translation";
+"Langue de la traduction" = "Translation language";
+"Afficher la traduction par défaut" = "Show translation by default";
+"Numérotation des versets" = "Verse numbering";
+"Arabe" = "Arabic";
+"Lecture quotidienne" = "Daily reading";
+"Mode" = "Mode";
+"Cycle mensuel" = "Monthly cycle";
+"Jour de la semaine" = "Day of week";
+"Rappel quotidien" = "Daily reminder";
+"Me notifier chaque jour" = "Remind me every day";
+"Heure du rappel" = "Reminder time";
+"Mode de lecture" = "Reading mode";
+"Accessibilité" = "Accessibility";
+"Déclaration d'accessibilité" = "Accessibility statement";
+"À propos" = "About";
+"Sources du contenu" = "Content sources";
+"Confidentialité" = "Privacy";
+"Version" = "Version";
+
+/* Buttons */
+"Annuler" = "Cancel";
+"Fermer" = "Close";
+"OK" = "OK";
+"Suivant" = "Next";
+"Commencer" = "Start";
+"Passer" = "Skip";
+"Enregistrer" = "Save";
+"Changer" = "Change";
+"Précédent" = "Previous";
+"Rechercher" = "Search";
+"Plus d'actions" = "More actions";
+"Ajouter aux favoris" = "Add to favorites";
+"Retirer des favoris" = "Remove from favorites";
+"Afficher la traduction française" = "Show translation";
+"Masquer la traduction française" = "Hide translation";
+"Copier" = "Copy";
+"Partager" = "Share";
+"Partager le texte" = "Share text";
+
+/* Search */
+"Rechercher un Tehilim" = "Search a Tehilim";
+"23, כג, tehilim 23" = "23, כג, tehilim 23";
+"Aucun Tehilim trouvé" = "No Tehilim found";
+"Essaie un numéro entre 1 et 150, ou les lettres hébraïques (ex. כג)." = "Try a number between 1 and 150, or Hebrew letters (e.g. כג).";
+"Résultat" = "Result";
+"Suggestions" = "Suggestions";
+"Récents" = "Recent";
+
+/* Onboarding */
+"Bienvenue" = "Welcome";
+"Au quotidien" = "Daily";
+"À ton rythme" = "At your own pace";
+"L'intégralité des 150 Tehilim, en hébreu vocalisé et en français.\n\nTraduction : Beth Loubavitch.\nTexte hébreu : Sefaria — Miqra according to the Masorah." = "All 150 Tehilim in vocalized Hebrew, French and English.\n\nFrench: Beth Loubavitch.\nEnglish: JPS 1917.\nHebrew: Sefaria — Miqra according to the Masorah.";
+"Retrouve les Tehilim du jour, ceux associés à un moment de vie (santé, mariage, deuil, voyage…), et 17 cas de la vie organisés en 4 sections." = "Find today's Tehilim, those associated with a life moment (health, marriage, mourning, travel…), and 17 life cases organized into 4 sections.";
+"Choisis la taille du texte, le mode hébreu ou phonétique, l'affichage de la traduction, l'heure du rappel quotidien — tout est configurable dans Réglages." = "Choose the text size, Hebrew or phonetic mode, translation display, daily reminder time — everything is configurable in Settings.";
+
+/* Verses */
+"Traduction non disponible." = "Translation not available.";
+"Tehilim introuvable" = "Tehilim not found";
+"Ce psaume n'existe pas dans le corpus chargé." = "This psalm does not exist in the loaded corpus.";
+"Aucun favori" = "No favorites";
+"Tape sur le cœur dans un Tehilim pour l'ajouter ici." = "Tap the heart on a Tehilim to add it here.";
+"Catégories en cours de validation" = "Categories pending validation";
+
+/* Daily */
+"Aucun Tehilim défini pour ce jour." = "No Tehilim set for today.";
+"Aucun Tehilim défini pour ce mode." = "No Tehilim set for this mode.";
+
+/* Notifications */
+"Notifications désactivées dans iOS" = "Notifications disabled in iOS";
+"Active-les dans Réglages iOS → Tehilim → Notifications pour recevoir le rappel." = "Enable them in iOS Settings → Tehilim → Notifications to receive the reminder.";
+"Ouvrir Réglages iOS" = "Open iOS Settings";
+"Tu recevras un rappel chaque jour à cette heure pour les Tehilim du jour." = "You will receive a reminder every day at this time for today's Tehilim.";
+"Tehilim du jour" = "Today's Tehilim";
+"C'est le moment de lire tes Tehilim du jour." = "It's time to read today's Tehilim.";
+
+/* Accessibility */
+"Verset %d." = "Verse %d.";

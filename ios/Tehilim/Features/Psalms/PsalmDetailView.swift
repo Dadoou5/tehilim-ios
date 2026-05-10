@@ -55,6 +55,7 @@ struct PsalmDetailView: View {
                         textSizeHebrew: prefs.textSizeHebrew,
                         textSizeFR: prefs.textSizeFR,
                         numberStyle: prefs.verseNumberStyle,
+                        translationLang: prefs.translationLang,
                         parentPsalm: psalm
                     )
                     .padding(.horizontal, 16)

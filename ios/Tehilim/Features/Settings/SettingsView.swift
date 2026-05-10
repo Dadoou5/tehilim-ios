@@ -31,11 +31,22 @@ struct SettingsView: View {
                     }
                 }
 
+                Section {
+                    Picker("Langue de la traduction", selection: $prefs.translationLang) {
+                        ForEach(TranslationLanguage.allCases) { Text($0.label).tag($0) }
+                    }
+                    Toggle("Afficher la traduction par défaut", isOn: $prefs.translationFR)
+                } header: {
+                    Text("Traduction")
+                } footer: {
+                    Text("Source : \(prefs.translationLang.sourceCredit)")
+                        .font(.caption)
+                }
+
                 Section("Affichage") {
                     Picker("Thème", selection: $prefs.theme) {
                         ForEach(AppTheme.allCases) { Text($0.label).tag($0) }
                     }
-                    Toggle("Traduction française par défaut", isOn: $prefs.translationFR)
                     Picker("Numérotation des versets", selection: $prefs.verseNumberStyle) {
                         ForEach(VerseNumberStyle.allCases) { Text($0.label).tag($0) }
                     }
@@ -221,7 +232,7 @@ private struct FrenchPreviewRow: View {
     let size: TextSize
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Aperçu français").font(.caption2).foregroundStyle(.secondary)
+            Text("Aperçu traduction").font(.caption2).foregroundStyle(.secondary)
             Text("Cantique des degrés. Je lève mes yeux vers les montagnes…")
                 .font(.frBody(size))
                 .foregroundStyle(.secondary)
@@ -241,12 +252,20 @@ private struct AboutContentView: View {
                 }
                 Group {
                     Text("Traduction française").font(.headline).accessibilityAddTraits(.isHeader)
-                    Text("Traduction française : Beth Loubavitch — le-tehilim.online")
+                    Text("Beth Loubavitch — le-tehilim.online")
                         .font(.subheadline.weight(.medium))
                     Text("8 rue Lamartine, 75009 Paris\nchabad@loubavitch.fr")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text("Utilisée avec l'autorisation expresse de l'éditeur.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                Group {
+                    Text("English translation").font(.headline).accessibilityAddTraits(.isHeader)
+                    Text("Sefaria — JPS 1917 (The Holy Scriptures: A New Translation)")
+                        .font(.subheadline.weight(.medium))
+                    Text("Domaine public — publié à l'origine par la Jewish Publication Society of America en 1917.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }

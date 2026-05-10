@@ -8,6 +8,8 @@ struct VerseRowView: View {
     let textSizeHebrew: TextSize
     let textSizeFR: TextSize
     let numberStyle: VerseNumberStyle
+    /// Langue de la traduction à afficher.
+    var translationLang: TranslationLanguage = .fr
     /// Référence facultative au psaume parent — nécessaire pour le partage stylisé.
     /// Si nil, le menu de partage propose seulement le texte brut.
     var parentPsalm: Psalm? = nil
@@ -78,8 +80,8 @@ struct VerseRowView: View {
 
     @ViewBuilder
     private var translationRow: some View {
-        if let fr = verse.translationFR, !fr.isEmpty {
-            Text(fr)
+        if let text = verse.translation(for: translationLang), !text.isEmpty {
+            Text(text)
                 .font(.frBody(textSizeFR))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.leading)
@@ -108,8 +110,10 @@ struct VerseRowView: View {
         var parts: [String] = []
         parts.append("Tehilim — verset \(verse.number)")
         parts.append(verse.hebrew)
-        if let fr = verse.translationFR { parts.append(fr) }
-        parts.append("Traduction : Beth Loubavitch — le-tehilim.online")
+        if let translation = verse.translation(for: translationLang) {
+            parts.append(translation)
+        }
+        parts.append("Source : \(translationLang.sourceCredit)")
         return parts.joined(separator: "\n")
     }
 
@@ -127,8 +131,8 @@ struct VerseRowView: View {
         case .hebrew:   parts.append(verse.hebrew)
         case .phonetic: parts.append(phoneticText)
         }
-        if showTranslation, let fr = verse.translationFR, !fr.isEmpty {
-            parts.append(fr)
+        if showTranslation, let text = verse.translation(for: translationLang), !text.isEmpty {
+            parts.append(text)
         }
         return parts.joined(separator: " ")
     }

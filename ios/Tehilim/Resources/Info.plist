@@ -47,6 +47,7 @@
     <key>CFBundleLocalizations</key>
     <array>
         <string>fr</string>
+        <string>en</string>
         <string>he</string>
     </array>
 </dict>

@@ -48,8 +48,12 @@
 "Clair" = "Light";
 "Sombre" = "Dark";
 "Traduction" = "Translation";
+"Langue" = "Language";
+"Système" = "System";
 "Langue de la traduction" = "Translation language";
 "Afficher la traduction par défaut" = "Show translation by default";
+"Redémarrage requis" = "Restart required";
+"La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la." = "The Tehilim translation switched immediately. To also change the interface, close the app and reopen it.";
 "Numérotation des versets" = "Verse numbering";
 "Arabe" = "Arabic";
 "Lecture quotidienne" = "Daily reading";

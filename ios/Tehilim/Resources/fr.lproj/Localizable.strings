@@ -37,7 +37,11 @@
 "Affichage" = "Affichage";
 "Thème" = "Thème";
 "Traduction" = "Traduction";
+"Langue" = "Langue";
+"Système" = "Système";
 "Langue de la traduction" = "Langue de la traduction";
+"Redémarrage requis" = "Redémarrage requis";
+"La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la." = "La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la.";
 "Lecture quotidienne" = "Lecture quotidienne";
 "Mode" = "Mode";
 "Cycle mensuel" = "Cycle mensuel";

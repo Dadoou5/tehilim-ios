@@ -76,7 +76,8 @@ final class Preferences: ObservableObject {
     init(_ defaults: UserDefaults = .standard) { self.defaults = defaults }
 
     @AppStorage("pref.translation.fr")     var translationFR: Bool = false
-    @AppStorage("pref.translation.lang")   var translationLang: TranslationLanguage = .fr
+    /// Langue de l'app : pilote l'UI (au prochain démarrage) et la traduction des Tehilim (instantané).
+    @AppStorage("pref.app.language")       var appLanguage: AppLanguage = .system
     @AppStorage("pref.theme")              var theme: AppTheme = .system
     @AppStorage("pref.textSize.hebrew")    var textSizeHebrew: TextSize = .l
     @AppStorage("pref.textSize.fr")        var textSizeFR: TextSize = .m

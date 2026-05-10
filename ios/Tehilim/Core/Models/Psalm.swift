@@ -24,6 +24,11 @@ struct Verse: Codable, Identifiable, Hashable {
         case .en: return translationEN
         }
     }
+
+    /// Renvoie la traduction selon la préférence d'app (résout .system).
+    func translation(for app: AppLanguage) -> String? {
+        translation(for: app.translation)
+    }
 }
 
 extension Psalm {
@@ -41,31 +46,45 @@ extension Psalm {
     }
 }
 
-/// Langue de la traduction du texte des Tehilim (séparée de la langue UI).
-enum TranslationLanguage: String, Codable, CaseIterable, Identifiable {
+/// Langue effective utilisée pour la traduction des Tehilim (résultat concret : FR ou EN).
+enum TranslationLanguage: String, Codable, Hashable {
     case fr = "fr"
     case en = "en"
-
-    var id: String { rawValue }
-
-    var label: String {
-        switch self {
-        case .fr: return "Français"
-        case .en: return "English"
-        }
-    }
-
-    var nativeLabel: String {
-        switch self {
-        case .fr: return "Français"
-        case .en: return "English"
-        }
-    }
 
     var sourceCredit: String {
         switch self {
         case .fr: return "Beth Loubavitch — le-tehilim.online"
         case .en: return "Sefaria — JPS 1917 (domaine public)"
         }
+    }
+}
+
+/// Choix utilisateur — pilote à la fois l'UI (via AppleLanguages) et la traduction des Tehilim.
+enum AppLanguage: String, Codable, CaseIterable, Identifiable {
+    case system
+    case fr
+    case en
+
+    var id: String { rawValue }
+
+    /// Code BCP-47 actif (résout `.system` à la langue iOS courante, fallback "fr").
+    var activeCode: String {
+        switch self {
+        case .system:
+            let pref = Locale.preferredLanguages.first ?? "fr"
+            return String(pref.split(separator: "-").first ?? "fr")
+        case .fr: return "fr"
+        case .en: return "en"
+        }
+    }
+
+    /// Langue effective pour le texte de traduction des Tehilim.
+    var translation: TranslationLanguage {
+        activeCode == "en" ? .en : .fr
+    }
+
+    /// Code à inscrire dans `AppleLanguages`. `nil` pour `.system` (laisse iOS choisir).
+    var appleLanguagesCode: String? {
+        self == .system ? nil : activeCode
     }
 }

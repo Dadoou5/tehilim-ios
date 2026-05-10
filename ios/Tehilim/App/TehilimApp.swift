@@ -10,12 +10,11 @@ struct TehilimApp: App {
     @State private var showSplash = true
 
     init() {
-        // Force l'init du gestionnaire de notifications au plus tôt :
-        // installe le delegate et permet le tap-to-route depuis cold launch.
+        // Doit s'exécuter en premier — modifie AppleLanguages avant que SwiftUI lise le Bundle.
+        Self.applyLanguagePreference()
         _ = NotificationManager.shared
-        // Migration une fois : si l'utilisateur avait un dailyMode dans .standard
-        // (V<=1.5), le copier dans le conteneur App Group partagé.
         Self.migrateSharedPreferences()
+        Self.migrateLanguagePreference()
     }
 
     var body: some Scene {
@@ -46,6 +45,24 @@ struct TehilimApp: App {
         }
     }
 
+    // MARK: - Language
+
+    /// Lit la préférence `pref.app.language` et configure `AppleLanguages`.
+    /// - `.system` → retire l'override (laisse iOS choisir selon la langue système).
+    /// - `.fr`/`.en` → écrit le code dans `AppleLanguages`, iOS l'utilise au prochain Bundle access.
+    static func applyLanguagePreference() {
+        let standard = UserDefaults.standard
+        let stored = standard.string(forKey: "pref.app.language") ?? AppLanguage.system.rawValue
+        guard let lang = AppLanguage(rawValue: stored) else { return }
+        if let code = lang.appleLanguagesCode {
+            standard.set([code], forKey: "AppleLanguages")
+        } else {
+            standard.removeObject(forKey: "AppleLanguages")
+        }
+    }
+
+    // MARK: - Migrations
+
     private static func migrateSharedPreferences() {
         let group = AppGroup.userDefaults
         let standard = UserDefaults.standard
@@ -53,6 +70,18 @@ struct TehilimApp: App {
         if group.object(forKey: key) == nil,
            let oldValue = standard.string(forKey: key) {
             group.set(oldValue, forKey: key)
+        }
+    }
+
+    /// Migre l'ancien `pref.translation.lang` (V1.7.0) vers `pref.app.language` (V1.7.2).
+    private static func migrateLanguagePreference() {
+        let standard = UserDefaults.standard
+        if standard.object(forKey: "pref.app.language") == nil,
+           let old = standard.string(forKey: "pref.translation.lang") {
+            // Si c'était "en" → on respecte ce choix.
+            // Si c'était "fr" (défaut historique) → on bascule sur .system, plus naturel.
+            let mapped: String = (old == "en") ? "en" : "system"
+            standard.set(mapped, forKey: "pref.app.language")
         }
     }
 }

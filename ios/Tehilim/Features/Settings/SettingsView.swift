@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Binding var path: NavigationPath
     @StateObject private var prefs = Preferences()
     @ObservedObject private var notifications = NotificationManager.shared
+    @State private var showRestartAlert = false
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -32,14 +33,21 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Picker("Langue de la traduction", selection: $prefs.translationLang) {
-                        ForEach(TranslationLanguage.allCases) { Text($0.label).tag($0) }
+                    Picker("Langue", selection: $prefs.appLanguage) {
+                        Text("Système").tag(AppLanguage.system)
+                        Text("Français").tag(AppLanguage.fr)
+                        Text("English").tag(AppLanguage.en)
+                    }
+                    .onChange(of: prefs.appLanguage) { _, _ in
+                        // Écrit AppleLanguages tout de suite ; effet UI au prochain démarrage.
+                        TehilimApp.applyLanguagePreference()
+                        showRestartAlert = true
                     }
                     Toggle("Afficher la traduction par défaut", isOn: $prefs.translationFR)
                 } header: {
-                    Text("Traduction")
+                    Text("Langue")
                 } footer: {
-                    Text("Source : \(prefs.translationLang.sourceCredit)")
+                    Text("Source : \(prefs.appLanguage.translation.sourceCredit)")
                         .font(.caption)
                 }
 
@@ -84,6 +92,11 @@ struct SettingsView: View {
             }
             .appBackground()
             .navigationTitle("Réglages")
+            .alert("Redémarrage requis", isPresented: $showRestartAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la.")
+            }
         }
     }
 }

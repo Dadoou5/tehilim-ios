@@ -124,5 +124,63 @@
 "Tehilim du jour" = "Today's Tehilim";
 "C'est le moment de lire tes Tehilim du jour." = "It's time to read today's Tehilim.";
 
-/* Accessibility */
+/* Accessibility VoiceOver labels */
 "Verset %d." = "Verse %d.";
+
+/* About — Sources */
+"Texte hébreu" = "Hebrew text";
+"Source : Sefaria — édition « Miqra according to the Masorah ». Texte massorétique avec nikud, sans téamim. Domaine public." = "Source: Sefaria — edition «Miqra according to the Masorah». Masoretic text with nikud, without te'amim. Public domain.";
+"Traduction française" = "French translation";
+"Beth Loubavitch — le-tehilim.online" = "Beth Loubavitch — le-tehilim.online";
+"8 rue Lamartine, 75009 Paris\nchabad@loubavitch.fr" = "8 rue Lamartine, 75009 Paris\nchabad@loubavitch.fr";
+"Utilisée avec l'autorisation expresse de l'éditeur." = "Used with the express permission of the publisher.";
+"English translation" = "English translation";
+"Sefaria — JPS 1917 (The Holy Scriptures: A New Translation)" = "Sefaria — JPS 1917 (The Holy Scriptures: A New Translation)";
+"Domaine public — publié à l'origine par la Jewish Publication Society of America en 1917." = "Public domain — originally published by the Jewish Publication Society of America in 1917.";
+"Aucune donnée personnelle n'est collectée par cette application." = "No personal data is collected by this application.";
+
+/* About — Privacy */
+"Cette application ne collecte aucune donnée personnelle." = "This application does not collect any personal data.";
+"Toutes les préférences sont stockées localement sur l'appareil." = "All preferences are stored locally on the device.";
+"Aucune connexion réseau n'est nécessaire au fonctionnement principal." = "No network connection is required for the main functionality.";
+"Sources" = "Sources";
+
+/* Accessibility declaration */
+"Engagement" = "Commitment";
+"L'application Tehilim s'engage à rendre son contenu accessible conformément au Référentiel Général d'Amélioration de l'Accessibilité (RGAA 4.1.2) et au standard WCAG 2.1 niveau AA, applicables aux applications mobiles." = "The Tehilim application is committed to making its content accessible in accordance with WCAG 2.1 level AA, applicable to mobile applications.";
+"État de conformité" = "Compliance status";
+"Statut : conformité partielle (auto-déclaration)." = "Status: partial compliance (self-declaration).";
+"Cette déclaration est établie sur la base d'un auto-audit. Un audit externe est prévu avant la mise en production." = "This declaration is based on a self-audit. An external audit is planned before production release.";
+"Caractéristiques d'accessibilité prises en charge" = "Supported accessibility features";
+"Compatibilité complète avec VoiceOver." = "Full VoiceOver compatibility.";
+"Respect de la taille de texte système (Dynamic Type) jusqu'à AX5." = "Support for system text size (Dynamic Type) up to AX5.";
+"Modes clair, sombre, et automatique." = "Light, dark, and automatic modes.";
+"Contrastes de texte conformes au niveau AA (≥ 4.5:1)." = "Text contrasts compliant with AA level (≥ 4.5:1).";
+"Cibles tactiles supérieures ou égales à 44 × 44 points." = "Touch targets greater than or equal to 44 × 44 points.";
+"Aucune information transmise uniquement par la couleur." = "No information conveyed by color alone.";
+"Respect du paramètre « Réduire les animations »." = "Respect for the «Reduce Motion» setting.";
+"Lecture VoiceOver de l'hébreu en sens RTL et de la traduction en LTR, dans cet ordre." = "VoiceOver reading of Hebrew in RTL direction and translation in LTR, in this order.";
+"Limites connues" = "Known limitations";
+"Le texte hébreu est lu phonétiquement par VoiceOver selon les capacités de la voix sélectionnée par l'utilisateur·rice." = "Hebrew text is read phonetically by VoiceOver according to the capabilities of the voice selected by the user.";
+"La grille des 22 lettres du Tehilim 119 peut nécessiter un défilement avec une très grande taille de texte." = "The 22-letter grid of Tehilim 119 may require scrolling with very large text size.";
+"Voies de recours" = "Remedies";
+"Pour signaler un problème d'accessibilité : contact à définir avant publication App Store." = "To report an accessibility issue: contact to be defined before App Store publication.";
+"Référentiel et version" = "Reference and version";
+
+/* Tradition disclaimer */
+"Tradition. Ne remplace pas un avis professionnel." = "Tradition. Does not replace professional advice.";
+
+/* Settings preview */
+"Aperçu" = "Preview";
+
+/* Errors */
+"Section introuvable" = "Section not found";
+"Catégorie introuvable" = "Category not found";
+"Aucune dédicace personnelle. La dédicace par défaut s'affiche en tête de chaque psaume." = "No personal dedication. The default dedication is displayed at the top of each psalm.";
+
+/* Disclaimer in life cases */
+"Tradition" = "Tradition";
+
+/* Settings labels not yet covered */
+"Catégories en cours de validation" = "Categories pending validation";
+"Le contenu sera disponible après validation éditoriale." = "The content will be available after editorial validation.";

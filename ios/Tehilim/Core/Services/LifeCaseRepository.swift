@@ -2,9 +2,14 @@ import Foundation
 
 final class LifeCaseRepository {
     struct Group: Identifiable {
-        let title: String
+        let title: String      // titre français (clé canonique)
+        let titleEN: String    // titre anglais
         let cases: [LifeCase]
         var id: String { title }
+
+        var localizedTitle: String {
+            LifeCase.preferEnglish ? titleEN : title
+        }
     }
 
     let cases: [LifeCase]
@@ -13,23 +18,22 @@ final class LifeCaseRepository {
     func find(id: String) -> LifeCase? { cases.first { $0.id == id } }
 
     /// Cas regroupés par section, dans l'ordre canonique.
-    /// Si un cas n'a pas de section déclarée, il finit dans "Autres".
     var grouped: [Group] {
-        let order = [
-            "Cycle de vie",
-            "Santé et épreuves",
-            "Spiritualité",
-            "Communauté et calendrier",
-            "Autres",
+        let order: [(fr: String, en: String)] = [
+            ("Cycle de vie", "Life cycle"),
+            ("Santé et épreuves", "Health and trials"),
+            ("Spiritualité", "Spirituality"),
+            ("Communauté et calendrier", "Community and calendar"),
+            ("Autres", "Other"),
         ]
         var byName: [String: [LifeCase]] = [:]
         for c in cases {
             let name = c.section ?? "Autres"
             byName[name, default: []].append(c)
         }
-        return order.compactMap { name in
-            guard let list = byName[name], !list.isEmpty else { return nil }
-            return Group(title: name, cases: list)
+        return order.compactMap { pair in
+            guard let list = byName[pair.fr], !list.isEmpty else { return nil }
+            return Group(title: pair.fr, titleEN: pair.en, cases: list)
         }
     }
 }

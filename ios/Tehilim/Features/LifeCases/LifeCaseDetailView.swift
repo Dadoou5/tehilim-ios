@@ -11,7 +11,7 @@ struct LifeCaseDetailView: View {
             if let c = container.lifeCaseRepository.find(id: caseId) {
                 List {
                     Section {
-                        Text(c.note)
+                        Text(c.localizedNote)
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .padding(.vertical, 4)
@@ -50,7 +50,7 @@ struct LifeCaseDetailView: View {
                 }
                 .listStyle(.insetGrouped)
                 .appBackground()
-                .navigationTitle(c.title)
+                .navigationTitle(c.localizedTitle)
                 .sheet(item: $presentedPrayer) { kind in
                     PrayerView(prayer: Prayer.of(kind))
                 }

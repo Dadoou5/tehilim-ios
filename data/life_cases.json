@@ -1,6 +1,6 @@
 {
   "$schema": "https://example.invalid/tehilim/life_cases.schema.json",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "validation": "Validation rabbinique reçue par le porteur projet (2026-05-08).",
   "categories": [
     {
@@ -9,7 +9,18 @@
       "title": "Trouver son mazal",
       "symbol": "person.2.fill",
       "note": "Tradition. On a coutume de réciter ces Tehilim pour trouver son zivug (âme sœur).",
-      "psalms": [32, 38, 70, 71, 72, 121, 124]
+      "psalms": [
+        32,
+        38,
+        70,
+        71,
+        72,
+        121,
+        124
+      ],
+      "sectionEN": "Life cycle",
+      "titleEN": "Finding one's match",
+      "noteEN": "Tradition. It is customary to recite these Tehilim to find one's zivug (soulmate)."
     },
     {
       "id": "wedding_day",
@@ -17,7 +28,17 @@
       "title": "Jour du mariage",
       "symbol": "heart.fill",
       "note": "Tradition. Tehilim récités à l'occasion d'un mariage, pour la bénédiction du couple.",
-      "psalms": [19, 20, 33, 47, 121, 145]
+      "psalms": [
+        19,
+        20,
+        33,
+        47,
+        121,
+        145
+      ],
+      "sectionEN": "Life cycle",
+      "titleEN": "Wedding day",
+      "noteEN": "Tradition. Tehilim recited on the occasion of a wedding, for the blessing of the couple."
     },
     {
       "id": "children",
@@ -25,7 +46,16 @@
       "title": "Pour avoir des enfants",
       "symbol": "figure.2.and.child.holdinghands",
       "note": "Tradition. Tehilim récités pour la bénédiction d'avoir des enfants. Ne remplace pas un suivi médical.",
-      "psalms": [20, 102, 113, 121, 128]
+      "psalms": [
+        20,
+        102,
+        113,
+        121,
+        128
+      ],
+      "sectionEN": "Life cycle",
+      "titleEN": "For children",
+      "noteEN": "Tradition. Tehilim recited for the blessing of having children. Does not replace medical follow-up."
     },
     {
       "id": "pregnancy",
@@ -33,7 +63,18 @@
       "title": "Femme enceinte",
       "symbol": "figure.and.child.holdinghands",
       "note": "Tradition. Tehilim associés à la grossesse et à un bon accouchement.",
-      "psalms": [1, 2, 3, 4, 5, 20, 121]
+      "psalms": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        20,
+        121
+      ],
+      "sectionEN": "Life cycle",
+      "titleEN": "Pregnancy",
+      "noteEN": "Tradition. Tehilim associated with pregnancy and a successful childbirth."
     },
     {
       "id": "brit_mila",
@@ -41,7 +82,15 @@
       "title": "Brith Mila",
       "symbol": "8.circle.fill",
       "note": "Tradition. Tehilim récités à l'occasion d'une circoncision (le Tehilim 12 commence par « Lamenatzeach al hashminit » — pour le huitième jour).",
-      "psalms": [12, 100, 121, 128]
+      "psalms": [
+        12,
+        100,
+        121,
+        128
+      ],
+      "sectionEN": "Life cycle",
+      "titleEN": "Brit Mila",
+      "noteEN": "Tradition. Tehilim recited on the occasion of a circumcision (Tehilim 12 begins with «Lamenatzeach al hashminit» — for the eighth day)."
     },
     {
       "id": "healing",
@@ -49,7 +98,21 @@
       "title": "Guérison",
       "symbol": "heart.text.square",
       "note": "Tradition. On a coutume de réciter ces Tehilim pour la guérison d'un proche. Ne remplace pas un avis médical.",
-      "psalms": [6, 13, 20, 30, 41, 88, 103, 121, 130, 142]
+      "psalms": [
+        6,
+        13,
+        20,
+        30,
+        41,
+        88,
+        103,
+        121,
+        130,
+        142
+      ],
+      "sectionEN": "Health and trials",
+      "titleEN": "Healing",
+      "noteEN": "Tradition. It is customary to recite these Tehilim for the healing of a loved one. Does not replace medical advice."
     },
     {
       "id": "anxiety",
@@ -57,7 +120,17 @@
       "title": "Inquiétude",
       "symbol": "wind",
       "note": "Tradition. Ne remplace pas un avis psychologique ou médical.",
-      "psalms": [13, 22, 27, 42, 121, 130]
+      "psalms": [
+        13,
+        22,
+        27,
+        42,
+        121,
+        130
+      ],
+      "sectionEN": "Health and trials",
+      "titleEN": "Anxiety",
+      "noteEN": "Tradition. Does not replace psychological or medical advice."
     },
     {
       "id": "protection",
@@ -65,7 +138,16 @@
       "title": "Protection",
       "symbol": "shield.fill",
       "note": "Tradition. Tehilim associés à la protection.",
-      "psalms": [3, 27, 91, 121, 124]
+      "psalms": [
+        3,
+        27,
+        91,
+        121,
+        124
+      ],
+      "sectionEN": "Health and trials",
+      "titleEN": "Protection",
+      "noteEN": "Tradition. Tehilim associated with protection."
     },
     {
       "id": "travel",
@@ -73,7 +155,15 @@
       "title": "Voyage",
       "symbol": "airplane",
       "note": "Tradition. À distinguer de la Tefilat haDerekh, qui n'est pas un Tehilim.",
-      "psalms": [121, 122, 124, 134]
+      "psalms": [
+        121,
+        122,
+        124,
+        134
+      ],
+      "sectionEN": "Health and trials",
+      "titleEN": "Travel",
+      "noteEN": "Tradition. To distinguish from Tefilat haDerekh, which is not a Tehilim."
     },
     {
       "id": "before_trial",
@@ -81,7 +171,16 @@
       "title": "Avant un procès",
       "symbol": "scalemass",
       "note": "Tradition. Ne remplace pas un avis juridique.",
-      "psalms": [7, 17, 26, 35, 109]
+      "psalms": [
+        7,
+        17,
+        26,
+        35,
+        109
+      ],
+      "sectionEN": "Health and trials",
+      "titleEN": "Before a trial",
+      "noteEN": "Tradition. Does not replace legal advice."
     },
     {
       "id": "parnassa",
@@ -89,7 +188,16 @@
       "title": "Parnassa (subsistance)",
       "symbol": "briefcase.fill",
       "note": "Tradition. Tehilim associés à la subsistance.",
-      "psalms": [23, 34, 67, 121, 145]
+      "psalms": [
+        23,
+        34,
+        67,
+        121,
+        145
+      ],
+      "sectionEN": "Health and trials",
+      "titleEN": "Parnassa (livelihood)",
+      "noteEN": "Tradition. Tehilim associated with livelihood."
     },
     {
       "id": "mourning",
@@ -97,7 +205,18 @@
       "title": "Deuil",
       "symbol": "leaf",
       "note": "Tradition. Tehilim récités en mémoire d'un proche disparu.",
-      "psalms": [16, 17, 33, 72, 91, 104, 130]
+      "psalms": [
+        16,
+        17,
+        33,
+        72,
+        91,
+        104,
+        130
+      ],
+      "sectionEN": "Health and trials",
+      "titleEN": "Mourning",
+      "noteEN": "Tradition. Tehilim recited in memory of a departed loved one."
     },
     {
       "id": "tikkoun_haklali",
@@ -105,7 +224,21 @@
       "title": "Tikkoun HaKlali",
       "symbol": "sparkles",
       "note": "Selon la tradition de Rabbi Nachman de Breslev — 10 Tehilim formant un tiqqoun général. À réciter dans l'ordre indiqué.",
-      "psalms": [16, 32, 41, 42, 59, 77, 90, 105, 137, 150]
+      "psalms": [
+        16,
+        32,
+        41,
+        42,
+        59,
+        77,
+        90,
+        105,
+        137,
+        150
+      ],
+      "sectionEN": "Spirituality",
+      "titleEN": "Tikkoun HaKlali",
+      "noteEN": "According to the tradition of Rabbi Nachman of Breslev — 10 Tehilim forming a general tikkoun. To be recited in the indicated order."
     },
     {
       "id": "teshuva",
@@ -113,7 +246,19 @@
       "title": "Repentance (techouva)",
       "symbol": "arrow.uturn.backward.circle",
       "note": "Tehilim associés à la techouva.",
-      "psalms": [6, 25, 32, 38, 51, 102, 130, 143]
+      "psalms": [
+        6,
+        25,
+        32,
+        38,
+        51,
+        102,
+        130,
+        143
+      ],
+      "sectionEN": "Spirituality",
+      "titleEN": "Repentance (teshuva)",
+      "noteEN": "Tehilim associated with teshuva."
     },
     {
       "id": "gratitude",
@@ -121,7 +266,17 @@
       "title": "Remerciement",
       "symbol": "sun.max.fill",
       "note": "Tehilim de gratitude.",
-      "psalms": [9, 30, 100, 103, 145, 150]
+      "psalms": [
+        9,
+        30,
+        100,
+        103,
+        145,
+        150
+      ],
+      "sectionEN": "Spirituality",
+      "titleEN": "Thanksgiving",
+      "noteEN": "Tehilim of gratitude."
     },
     {
       "id": "rosh_chodesh",
@@ -129,7 +284,18 @@
       "title": "Roch Hodech",
       "symbol": "moon.stars.fill",
       "note": "Tradition. Le Tehilim 104 (« Borkhi Nafchi ») est associé à Roch Hodech ; les Tehilim 113 à 118 forment le Hallel récité ce jour.",
-      "psalms": [104, 113, 114, 115, 116, 117, 118]
+      "psalms": [
+        104,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118
+      ],
+      "sectionEN": "Community and calendar",
+      "titleEN": "Rosh Chodesh",
+      "noteEN": "Tradition. Tehilim 104 («Borkhi Nafchi») is associated with Rosh Chodesh; Tehilim 113 to 118 form the Hallel recited on this day."
     },
     {
       "id": "peace",
@@ -137,7 +303,17 @@
       "title": "Pour la paix",
       "symbol": "leaf.fill",
       "note": "Tradition. Tehilim associés à la paix, en particulier ceux mentionnant explicitement le shalom (29, 122, 125, 133).",
-      "psalms": [29, 34, 122, 125, 128, 133]
+      "psalms": [
+        29,
+        34,
+        122,
+        125,
+        128,
+        133
+      ],
+      "sectionEN": "Community and calendar",
+      "titleEN": "For peace",
+      "noteEN": "Tradition. Tehilim associated with peace, particularly those explicitly mentioning shalom (29, 122, 125, 133)."
     },
     {
       "id": "israel",
@@ -145,7 +321,17 @@
       "title": "Pour l'État d'Israël",
       "symbol": "flag.fill",
       "note": "Tradition. Tehilim récités pour le bien-être de la Terre d'Israël et de ses habitants.",
-      "psalms": [20, 83, 121, 122, 130, 137]
+      "psalms": [
+        20,
+        83,
+        121,
+        122,
+        130,
+        137
+      ],
+      "sectionEN": "Community and calendar",
+      "titleEN": "For the State of Israel",
+      "noteEN": "Tradition. Tehilim recited for the well-being of the Land of Israel and its inhabitants."
     }
   ],
   "_notes": [

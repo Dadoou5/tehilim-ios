@@ -15,7 +15,7 @@ struct LifeCasesListView: View {
             } else {
                 List {
                     ForEach(container.lifeCaseRepository.grouped) { group in
-                        Section(group.title) {
+                        Section(group.localizedTitle) {
                             ForEach(group.cases) { c in
                                 NavigationLink(destination: LifeCaseDetailView(caseId: c.id)) {
                                     HStack(spacing: 12) {
@@ -23,7 +23,7 @@ struct LifeCasesListView: View {
                                             .foregroundStyle(Color.accentMain)
                                             .frame(width: 28)
                                         VStack(alignment: .leading) {
-                                            Text(c.title).font(.headline)
+                                            Text(c.localizedTitle).font(.headline)
                                             Text("\(c.psalms.count) Tehilim").font(.caption).foregroundStyle(.secondary)
                                         }
                                     }

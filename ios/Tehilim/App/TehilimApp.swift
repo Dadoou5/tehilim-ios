@@ -7,6 +7,8 @@ struct TehilimApp: App {
     @AppStorage("pref.theme") private var theme: AppTheme = .system
     @AppStorage("pref.onboarding.done") private var onboardingCompleted: Bool = false
 
+    @State private var showSplash = true
+
     init() {
         // Force l'init du gestionnaire de notifications au plus tôt :
         // installe le delegate et permet le tap-to-route depuis cold launch.
@@ -16,6 +18,34 @@ struct TehilimApp: App {
         Self.migrateSharedPreferences()
     }
 
+    var body: some Scene {
+        WindowGroup {
+            ZStack {
+                if showSplash {
+                    SplashView()
+                        .transition(.opacity)
+                } else {
+                    RootTabView()
+                        .environmentObject(container)
+                        .preferredColorScheme(theme.colorScheme)
+                        .fullScreenCover(isPresented: Binding(
+                            get: { !onboardingCompleted },
+                            set: { onboardingCompleted = !$0 }
+                        )) {
+                            OnboardingView { onboardingCompleted = true }
+                        }
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.45), value: showSplash)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                    showSplash = false
+                }
+            }
+        }
+    }
+
     private static func migrateSharedPreferences() {
         let group = AppGroup.userDefaults
         let standard = UserDefaults.standard
@@ -23,20 +53,6 @@ struct TehilimApp: App {
         if group.object(forKey: key) == nil,
            let oldValue = standard.string(forKey: key) {
             group.set(oldValue, forKey: key)
-        }
-    }
-
-    var body: some Scene {
-        WindowGroup {
-            RootTabView()
-                .environmentObject(container)
-                .preferredColorScheme(theme.colorScheme)
-                .fullScreenCover(isPresented: Binding(
-                    get: { !onboardingCompleted },
-                    set: { onboardingCompleted = !$0 }
-                )) {
-                    OnboardingView { onboardingCompleted = true }
-                }
         }
     }
 }

@@ -38,7 +38,9 @@
         </dict>
     </array>
     <key>NSHumanReadableCopyright</key>
-    <string>© 2026 Tehilim App</string>
+    <string>© 2026 David Bouganim</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
     <key>CFBundleLocalizations</key>
     <array>
         <string>fr</string>

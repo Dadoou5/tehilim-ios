@@ -180,6 +180,33 @@
 /* Errors */
 "Section introuvable" = "Section not found";
 "Catégorie introuvable" = "Category not found";
+
+/* DailyMode labels (runtime) */
+"Personnalisé" = "Custom";
+
+/* Theme labels */
+"Clair" = "Light";
+"Sombre" = "Dark";
+
+/* Verse number style */
+"Arabe" = "Arabic";
+
+/* Resume card fallback */
+"Reprendre" = "Resume";
+
+/* Favorites shortcut */
+"Aucun favori" = "No favorites";
+"1 Tehilim sauvegardé" = "1 saved Tehilim";
+"%lld Tehilim sauvegardés" = "%lld saved Tehilim";
+"Tape ♡ sur un Tehilim pour l'ajouter ici" = "Tap ♡ on a Tehilim to add it here";
+"Voir la liste" = "View the list";
+
+/* Prayer subtitles */
+"Tehilim 95, versets 1 à 3" = "Tehilim 95, verses 1 to 3";
+"Tehilim 14:7 et 37, versets 39 à 40" = "Tehilim 14:7 and 37, verses 39 to 40";
+
+/* Verse range header in Tehilim 119 */
+"%@ — %@ · v. %d–%d" = "%@ — %@ · v. %d–%d";
 "Aucune dédicace personnelle. La dédicace par défaut s'affiche en tête de chaque psaume." = "No personal dedication. The default dedication is displayed at the top of each psalm.";
 
 /* Disclaimer in life cases */

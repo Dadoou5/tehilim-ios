@@ -16,15 +16,15 @@ struct Prayer: Identifiable, Hashable {
 
         var titleFR: String {
             switch self {
-            case .before: return "Prière avant la lecture"
-            case .after:  return "Prière après la lecture"
+            case .before: return String(localized: "Prière avant la lecture")
+            case .after:  return String(localized: "Prière après la lecture")
             }
         }
 
         var subtitleFR: String {
             switch self {
-            case .before: return "Tehilim 95, versets 1 à 3"
-            case .after:  return "Tehilim 14:7 et 37, versets 39 à 40"
+            case .before: return String(localized: "Tehilim 95, versets 1 à 3")
+            case .after:  return String(localized: "Tehilim 14:7 et 37, versets 39 à 40")
             }
         }
 

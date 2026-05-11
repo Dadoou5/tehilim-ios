@@ -120,14 +120,17 @@ private struct HebrewDateBanner: View {
 }
 
 private struct SectionHeader: View {
-    let title: String
+    let title: LocalizedStringKey
+    /// Sous-titre déjà localisé (souvent une valeur dynamique comme "Cycle mensuel").
     var subtitle: String? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title)
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
-            if let subtitle { Text(subtitle).font(.caption).foregroundStyle(.secondary) }
+            if let subtitle {
+                Text(subtitle).font(.caption).foregroundStyle(.secondary)
+            }
         }
     }
 }
@@ -140,8 +143,13 @@ private struct ResumeCard: View {
                 Text("Tehilim \(psalm.id) · \(psalm.hebrewNumber)")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text(psalm.hebrewTitle ?? "Reprendre")
-                    .font(.title3.weight(.semibold))
+                if let hebrewTitle = psalm.hebrewTitle {
+                    Text(hebrewTitle)
+                        .font(.title3.weight(.semibold))
+                } else {
+                    Text("Reprendre")
+                        .font(.title3.weight(.semibold))
+                }
             }
             Spacer()
             Image(systemName: "arrow.right").foregroundStyle(.secondary)
@@ -160,8 +168,8 @@ private struct FavoritesShortcutCard: View {
                 .foregroundStyle(Color.accentMain)
                 .frame(width: 32)
             VStack(alignment: .leading, spacing: 2) {
-                Text(primaryText).font(.headline)
-                Text(secondaryText).font(.caption).foregroundStyle(.secondary)
+                primary.font(.headline)
+                secondary.font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
             Image(systemName: "chevron.right").foregroundStyle(.tertiary)
@@ -176,15 +184,22 @@ private struct FavoritesShortcutCard: View {
         .accessibilityAddTraits(.isButton)
     }
 
-    private var primaryText: String {
+    @ViewBuilder
+    private var primary: some View {
         switch count {
-        case 0:  return "Aucun favori"
-        case 1:  return "1 Tehilim sauvegardé"
-        default: return "\(count) Tehilim sauvegardés"
+        case 0:  Text("Aucun favori")
+        case 1:  Text("1 Tehilim sauvegardé")
+        default: Text("\(count) Tehilim sauvegardés")
         }
     }
-    private var secondaryText: String {
-        count == 0 ? "Tape ♡ sur un Tehilim pour l'ajouter ici" : "Voir la liste"
+
+    @ViewBuilder
+    private var secondary: some View {
+        if count == 0 {
+            Text("Tape ♡ sur un Tehilim pour l'ajouter ici")
+        } else {
+            Text("Voir la liste")
+        }
     }
 }
 
@@ -208,7 +223,7 @@ private struct DailySummaryCard: View {
 
 private struct ExploreCard: View {
     let symbol: String
-    let title: String
+    let title: LocalizedStringKey
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Image(systemName: symbol)

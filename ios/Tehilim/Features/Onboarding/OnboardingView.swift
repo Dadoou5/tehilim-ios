@@ -76,8 +76,8 @@ struct OnboardingView: View {
 
 private struct OnboardingPage {
     let symbol: String
-    let title: String
-    let body: String
+    let title: LocalizedStringKey
+    let body: LocalizedStringKey
 }
 
 private struct OnboardingPageView: View {

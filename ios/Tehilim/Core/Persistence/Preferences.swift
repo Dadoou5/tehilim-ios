@@ -7,9 +7,9 @@ enum AppTheme: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .system: return "Système"
-        case .light:  return "Clair"
-        case .dark:   return "Sombre"
+        case .system: return String(localized: "Système")
+        case .light:  return String(localized: "Clair")
+        case .dark:   return String(localized: "Sombre")
         }
     }
 
@@ -39,11 +39,11 @@ enum TextSize: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .xs: return "Très petit"
-        case .s:  return "Petit"
-        case .m:  return "Moyen"
-        case .l:  return "Grand"
-        case .xl: return "Très grand"
+        case .xs: return String(localized: "Très petit")
+        case .s:  return String(localized: "Petit")
+        case .m:  return String(localized: "Moyen")
+        case .l:  return String(localized: "Grand")
+        case .xl: return String(localized: "Très grand")
         }
     }
 }
@@ -51,7 +51,9 @@ enum TextSize: String, Codable, CaseIterable, Identifiable {
 enum VerseNumberStyle: String, Codable, CaseIterable, Identifiable {
     case hebrew, arabic
     var id: String { rawValue }
-    var label: String { self == .hebrew ? "Hébreu" : "Arabe" }
+    var label: String {
+        self == .hebrew ? String(localized: "Hébreu") : String(localized: "Arabe")
+    }
 }
 
 /// Mode d'affichage du texte principal du psaume.
@@ -64,8 +66,8 @@ enum TextMode: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .hebrew:   return "Hébreu"
-        case .phonetic: return "Phonétique"
+        case .hebrew:   return String(localized: "Hébreu")
+        case .phonetic: return String(localized: "Phonétique")
         }
     }
 }

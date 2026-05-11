@@ -6,9 +6,9 @@ enum DailyMode: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .monthly: return "Cycle mensuel"
-        case .weekly:  return "Jour de la semaine"
-        case .custom:  return "Personnalisé"
+        case .monthly: return String(localized: "Cycle mensuel")
+        case .weekly:  return String(localized: "Jour de la semaine")
+        case .custom:  return String(localized: "Personnalisé")
         }
     }
 }

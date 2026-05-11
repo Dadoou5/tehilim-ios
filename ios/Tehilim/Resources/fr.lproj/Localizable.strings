@@ -68,6 +68,30 @@
 "Tehilim introuvable" = "Tehilim introuvable";
 "Aucun favori" = "Aucun favori";
 
+/* Theme labels */
+"Clair" = "Clair";
+"Sombre" = "Sombre";
+"Personnalisé" = "Personnalisé";
+"Arabe" = "Arabe";
+"Reprendre" = "Reprendre";
+
+/* Favorites */
+"1 Tehilim sauvegardé" = "1 Tehilim sauvegardé";
+"%lld Tehilim sauvegardés" = "%lld Tehilim sauvegardés";
+"Tape ♡ sur un Tehilim pour l'ajouter ici" = "Tape ♡ sur un Tehilim pour l'ajouter ici";
+"Voir la liste" = "Voir la liste";
+
+/* Prayers */
+"Tehilim 95, versets 1 à 3" = "Tehilim 95, versets 1 à 3";
+"Tehilim 14:7 et 37, versets 39 à 40" = "Tehilim 14:7 et 37, versets 39 à 40";
+
+/* Très petit/grand etc */
+"Très petit" = "Très petit";
+"Petit" = "Petit";
+"Moyen" = "Moyen";
+"Grand" = "Grand";
+"Très grand" = "Très grand";
+
 /* Notifications */
 "Tehilim du jour" = "Tehilim du jour";
 "C'est le moment de lire tes Tehilim du jour." = "C'est le moment de lire tes Tehilim du jour.";

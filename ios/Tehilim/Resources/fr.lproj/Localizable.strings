@@ -92,6 +92,23 @@
 "Grand" = "Grand";
 "Très grand" = "Très grand";
 
+/* Settings labels */
+"Taille de la traduction" = "Taille de la traduction";
+"Numérique" = "Numérique";
+
+/* Tehilim tab segments */
+"Livres" = "Livres";
+"Tous" = "Tous";
+"Favoris" = "Favoris";
+
+/* Book list */
+"Livre %lld" = "Livre %lld";
+"%lld Tehilim" = "%lld Tehilim";
+
+/* Verse counts */
+"%lld versets" = "%lld versets";
+"1 verset" = "1 verset";
+
 /* Notifications */
 "Tehilim du jour" = "Tehilim du jour";
 "C'est le moment de lire tes Tehilim du jour." = "C'est le moment de lire tes Tehilim du jour.";

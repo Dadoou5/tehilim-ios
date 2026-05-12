@@ -52,5 +52,9 @@
         <string>en</string>
         <string>he</string>
     </array>
+    <key>UIAppFonts</key>
+    <array>
+        <string>FrankRuhlLibre.ttf</string>
+    </array>
 </dict>
 </plist>

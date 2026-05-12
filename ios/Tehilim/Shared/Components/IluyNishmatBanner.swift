@@ -5,7 +5,7 @@ import SwiftUI
 struct IluyNishmatBanner: View {
     var body: some View {
         VStack(spacing: 4) {
-            Text("לעילוי נשמת יוחנן מאיר בן שרה בוגנים")
+            Text("לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים")
                 .font(.caption)
                 .multilineTextAlignment(.center)
                 .environment(\.layoutDirection, .rightToLeft)
@@ -29,6 +29,6 @@ struct IluyNishmatBanner: View {
         .padding(.horizontal, 16)
         .padding(.top, 4)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim")
+        .accessibilityLabel(LocalizedStringKey("Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim"))
     }
 }

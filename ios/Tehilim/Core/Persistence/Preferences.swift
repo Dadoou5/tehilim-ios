@@ -52,7 +52,7 @@ enum VerseNumberStyle: String, Codable, CaseIterable, Identifiable {
     case hebrew, arabic
     var id: String { rawValue }
     var label: String {
-        self == .hebrew ? String(localized: "Hébreu") : String(localized: "Arabe")
+        self == .hebrew ? String(localized: "Hébreu") : String(localized: "Numérique")
     }
 }
 

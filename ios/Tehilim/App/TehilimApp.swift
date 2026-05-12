@@ -38,7 +38,7 @@ struct TehilimApp: App {
             }
             .animation(.easeInOut(duration: 0.45), value: showSplash)
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) {
                     showSplash = false
                 }
             }

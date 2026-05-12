@@ -49,11 +49,11 @@ struct PsalmListView: View {
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .frame(width: 36, alignment: .leading)
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Tehilim \(psalm.id)").font(.headline)
-                if let title = psalm.hebrewTitle {
-                    Text(title).font(.caption).foregroundStyle(.secondary)
-                }
+                versesCountText(psalm)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
             Spacer()
             if favorites.contains(psalm.id) {
@@ -61,6 +61,15 @@ struct PsalmListView: View {
                     .foregroundStyle(Color.accentMain)
                     .accessibilityLabel("Favori")
             }
+        }
+    }
+
+    @ViewBuilder
+    private func versesCountText(_ psalm: Psalm) -> some View {
+        if psalm.verses.count == 1 {
+            Text("1 verset")
+        } else {
+            Text("\(psalm.verses.count) versets")
         }
     }
 }

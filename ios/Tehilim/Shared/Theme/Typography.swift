@@ -1,20 +1,19 @@
 import SwiftUI
 
 extension Font {
-    /// Hébreu : sans-serif (design `.default`) — meilleure lisibilité avec le nikud
-    /// que la version sérif. Base 22 pt à l'échelle `m`.
+    /// Hébreu : Frank Ruhl Libre (Google Fonts OFL, embarquée).
+    /// Police hébraïque traditionnelle (sérif), lisible avec nikud.
     static func hebrewBody(_ size: TextSize) -> Font {
         let base: CGFloat = 22
-        return .system(size: base * size.scale, weight: .regular, design: .default)
+        return .custom("FrankRuhlLibre-Regular", size: base * size.scale)
     }
 
     static func hebrewTitle(_ size: TextSize = .l) -> Font {
         let base: CGFloat = 28
-        return .system(size: base * size.scale, weight: .semibold, design: .default)
+        return .custom("FrankRuhlLibre-Regular", size: base * size.scale).weight(.semibold)
     }
 
-    /// Français : sérif (New York via `.serif`) — confort de lecture longue.
-    /// Base 17 pt à l'échelle `m`.
+    /// Français / anglais : sérif (New York via `.serif`) — confort de lecture longue.
     static func frBody(_ size: TextSize) -> Font {
         let base: CGFloat = 17
         return .system(size: base * size.scale, weight: .regular, design: .serif)

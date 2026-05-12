@@ -17,7 +17,7 @@ struct SettingsView: View {
                     Picker("Taille hébreu / phonétique", selection: $prefs.textSizeHebrew) {
                         ForEach(TextSize.allCases) { Text($0.label).tag($0) }
                     }
-                    Picker("Taille français", selection: $prefs.textSizeFR) {
+                    Picker("Taille de la traduction", selection: $prefs.textSizeFR) {
                         ForEach(TextSize.allCases) { Text($0.label).tag($0) }
                     }
 

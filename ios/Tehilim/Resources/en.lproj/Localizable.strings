@@ -36,7 +36,9 @@
 "Hébreu" = "Hebrew";
 "Phonétique" = "Phonetic";
 "Taille hébreu / phonétique" = "Hebrew / phonetic size";
-"Taille français" = "French size";
+"Taille français" = "Translation size";
+"Taille de la traduction" = "Translation size";
+"Numérique" = "Numeric";
 "Très petit" = "Very small";
 "Petit" = "Small";
 "Moyen" = "Medium";
@@ -207,6 +209,28 @@
 
 /* Verse range header in Tehilim 119 */
 "%@ — %@ · v. %d–%d" = "%@ — %@ · v. %d–%d";
+
+/* Tehilim tab segments */
+"Livres" = "Books";
+"Tous" = "All";
+"Favoris" = "Favorites";
+
+/* Book list */
+"Livre %lld" = "Book %lld";
+"%lld Tehilim" = "%lld Tehilim";
+
+/* Psalm list — verse count */
+"%lld versets" = "%lld verses";
+"1 verset" = "1 verse";
+
+/* Tehilim list common */
+"Tehilim %lld · %@" = "Tehilim %lld · %@";
+
+/* Onboarding additions */
+"Bienvenue dans Tehilim" = "Welcome to Tehilim";
+
+/* IluyNishmat in splash */
+"À la mémoire de" = "In memory of";
 "Aucune dédicace personnelle. La dédicace par défaut s'affiche en tête de chaque psaume." = "No personal dedication. The default dedication is displayed at the top of each psalm.";
 
 /* Disclaimer in life cases */

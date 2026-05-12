@@ -41,9 +41,10 @@ struct PsalmDetailView: View {
                 if let title = psalm.hebrewTitle {
                     Text(title)
                         .font(.hebrewTitle())
+                        .multilineTextAlignment(.center)
+                        .environment(\.layoutDirection, .rightToLeft)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .environment(\.layoutDirection, .rightToLeft)
                         .accessibilityAddTraits(.isHeader)
                 }
                 Divider().padding(.horizontal, 16)

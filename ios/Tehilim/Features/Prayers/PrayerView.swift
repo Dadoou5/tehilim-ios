@@ -12,7 +12,7 @@ struct PrayerView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(alignment: .trailing, spacing: 0) {
+                LazyVStack(alignment: .leading, spacing: 0) {
                     header
                     Divider().padding(.horizontal, 16)
                     ForEach(verses) { v in

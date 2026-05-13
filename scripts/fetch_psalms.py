@@ -24,6 +24,7 @@ except ImportError:
 
 
 SEFARIA_BASE = "https://www.sefaria.org/api/v3/texts"
+# Note V1.7.4 : on conserve les téamim (cantillation) cette fois.
 HEBREW_VERSION = "Miqra according to the Masorah"
 
 BOLLS_BASE = "https://bolls.life/get-text/FRLSG"
@@ -79,7 +80,8 @@ def fetch_hebrew(num: int) -> list[str]:
             break
     if text and isinstance(text[0], list):
         text = [item for sub in text for item in sub]
-    return [strip_teamim(strip_html(t)) for t in text]
+    # V1.7.4 : on conserve les téamim (cantillation) — Ezra SIL SR les rend correctement.
+    return [strip_html(t) for t in text]
 
 # --- Bolls (LSG) ---
 

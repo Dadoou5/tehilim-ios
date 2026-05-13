@@ -50,7 +50,7 @@ struct HomeView: View {
                             ExploreCard(symbol: "heart.text.square", title: "Cas de la vie")
                         }
                         NavigationLink(destination: Psalm119HomeView()) {
-                            ExploreCard(symbol: "textformat", title: "Tehilim 119")
+                            ExploreCard(symbol: "textformat", title: "119 - AlphaBeta")
                         }
                         Button { router.go(.psalms, psalmsSegment: 1, resetPath: true) } label: {
                             ExploreCard(symbol: "list.bullet", title: "Tous (1–150)")

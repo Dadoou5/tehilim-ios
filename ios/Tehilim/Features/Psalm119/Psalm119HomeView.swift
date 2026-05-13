@@ -18,6 +18,6 @@ struct Psalm119HomeView: View {
             .padding(16)
         }
         .background(Color.bgPrimary)
-        .navigationTitle("Tehilim 119")
+        .navigationTitle("119 - AlphaBeta")
     }
 }

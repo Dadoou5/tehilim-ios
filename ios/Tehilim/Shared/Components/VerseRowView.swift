@@ -15,7 +15,7 @@ struct VerseRowView: View {
     var parentPsalm: Psalm? = nil
 
     var body: some View {
-        VStack(alignment: textMode == .hebrew ? .trailing : .leading, spacing: 8) {
+        VStack(alignment: textMode == .hebrew ? .leading : .leading, spacing: 8) {
             primaryRow
             if showTranslation { translationRow }
         }
@@ -57,9 +57,9 @@ struct VerseRowView: View {
                     .accessibilityHidden(true)
                 Text(verse.hebrew)
                     .font(.hebrewBody(textSizeHebrew))
-                    .multilineTextAlignment(.trailing)
+                    .multilineTextAlignment(.leading)
                     .environment(\.layoutDirection, .rightToLeft)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .lineSpacing(8)
             }
         } else {

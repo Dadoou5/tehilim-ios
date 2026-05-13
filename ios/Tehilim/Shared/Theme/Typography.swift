@@ -1,16 +1,16 @@
 import SwiftUI
 
 extension Font {
-    /// Hébreu : Frank Ruhl Libre (Google Fonts OFL, embarquée).
-    /// Police hébraïque traditionnelle (sérif), lisible avec nikud.
+    /// Hébreu : Ezra SIL SR (SIL OFL, embarquée).
+    /// Police hébraïque biblique avec support complet des téamim (cantillation) et nikud.
     static func hebrewBody(_ size: TextSize) -> Font {
         let base: CGFloat = 22
-        return .custom("FrankRuhlLibre-Regular", size: base * size.scale)
+        return .custom("EzraSILSR", size: base * size.scale)
     }
 
     static func hebrewTitle(_ size: TextSize = .l) -> Font {
         let base: CGFloat = 28
-        return .custom("FrankRuhlLibre-Regular", size: base * size.scale).weight(.semibold)
+        return .custom("EzraSILSR", size: base * size.scale).weight(.semibold)
     }
 
     /// Français / anglais : sérif (New York via `.serif`) — confort de lecture longue.

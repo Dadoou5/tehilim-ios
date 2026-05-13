@@ -36,7 +36,7 @@ struct PsalmDetailView: View {
         let n = computeNeighbors(for: psalm.id)
 
         ScrollView {
-            LazyVStack(alignment: .trailing, spacing: 0) {
+            LazyVStack(alignment: .leading, spacing: 0) {
                 IluyNishmatBanner()
                 if let title = psalm.hebrewTitle {
                     Text(title)

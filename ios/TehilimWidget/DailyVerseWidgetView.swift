@@ -43,13 +43,13 @@ struct DailyVerseWidgetView: View {
             }
             Spacer(minLength: 4)
 
-            // Liste compacte des numéros
+            // Liste compacte des numéros — max 6 sur le widget carré
             if entry.todayPsalms.isEmpty {
                 Text("—")
                     .font(.title2.weight(.bold))
                     .foregroundStyle(.secondary)
             } else {
-                let visible = Array(entry.todayPsalms.prefix(8))
+                let visible = Array(entry.todayPsalms.prefix(6))
                 LazyVGrid(columns: [.init(.flexible()), .init(.flexible())], spacing: 4) {
                     ForEach(visible, id: \.id) { p in
                         psalmChip(p, compact: true)

@@ -13,7 +13,7 @@ struct Psalm119SectionView: View {
                let psalm = container.psalmRepository.psalm(id: 119) {
                 let verses = psalm.verses.filter { section.versesRange.contains($0.number) }
                 ScrollView {
-                    LazyVStack(alignment: .trailing) {
+                    LazyVStack(alignment: .leading) {
                         IluyNishmatBanner()
                         Text("\(section.letter) — \(section.name) · v. \(section.verseStart)–\(section.verseEnd)")
                             .font(.headline)

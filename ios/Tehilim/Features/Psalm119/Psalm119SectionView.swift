@@ -6,6 +6,9 @@ struct Psalm119SectionView: View {
 
     let index: Int
     @State private var presentedPrayer: Prayer.Kind? = nil
+    @State private var localShowFR: Bool? = nil
+
+    private var showFR: Bool { localShowFR ?? prefs.translationFR }
 
     var body: some View {
         Group {
@@ -22,7 +25,7 @@ struct Psalm119SectionView: View {
                         ForEach(verses) { v in
                             VerseRowView(
                                 verse: v,
-                                showTranslation: prefs.translationFR,
+                                showTranslation: showFR,
                                 textMode: prefs.textMode,
                                 textSizeHebrew: prefs.textSizeHebrew,
                                 textSizeFR: prefs.textSizeFR,
@@ -37,8 +40,18 @@ struct Psalm119SectionView: View {
                             .padding(.vertical, 24)
                     }
                 }
+                .background(Color.bgPrimary)
                 .navigationTitle(section.letter)
                 .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            let current = showFR
+                            localShowFR = !current
+                        } label: {
+                            Image(systemName: showFR ? "character.bubble.fill" : "character.bubble")
+                        }
+                        .accessibilityLabel(showFR ? "Masquer la traduction" : "Afficher la traduction")
+                    }
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
                             Button {

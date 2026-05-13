@@ -13,8 +13,12 @@ struct HebrewLetterTile: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, minHeight: 88) // > 44 pt cible tactile
-        .background(.thinMaterial)
+        .background(Color.bgSurface)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.dividerToken.opacity(0.4), lineWidth: 0.5)
+        )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Section \(index), lettre \(letter)")
         .accessibilityHint("Affiche la section correspondante du Tehilim 119")

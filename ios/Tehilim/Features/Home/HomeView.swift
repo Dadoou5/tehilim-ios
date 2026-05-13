@@ -6,9 +6,17 @@ struct HomeView: View {
     @EnvironmentObject private var router: TabRouter
     @EnvironmentObject private var favorites: FavoritesStore
     @StateObject private var viewModel = HomeViewModel()
+    @Environment(\.horizontalSizeClass) private var hSize
 
     @State private var searchPresented = false
     @State private var presentedPrayer: Prayer.Kind? = nil
+
+    private var exploreColumns: [GridItem] {
+        Array(
+            repeating: GridItem(.flexible(), spacing: 12),
+            count: AdaptiveLayout.exploreColumnCount(for: hSize)
+        )
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -42,7 +50,7 @@ struct HomeView: View {
                     .buttonStyle(.plain)
 
                     SectionHeader(title: "Explorer")
-                    LazyVGrid(columns: [.init(.flexible()), .init(.flexible())], spacing: 12) {
+                    LazyVGrid(columns: exploreColumns, spacing: 12) {
                         Button { router.go(.psalms, psalmsSegment: 0, resetPath: true) } label: {
                             ExploreCard(symbol: "books.vertical", title: "5 livres")
                         }
@@ -64,7 +72,9 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(16)
+                .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
+                .padding(.vertical, 16)
+                .readingWidth()
             }
             .background(Color.bgPrimary)
             .navigationTitle("Tehilim")

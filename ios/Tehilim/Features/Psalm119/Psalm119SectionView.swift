@@ -39,6 +39,7 @@ struct Psalm119SectionView: View {
                         navigationFooter()
                             .padding(.vertical, 24)
                     }
+                    .readingWidth()
                 }
                 .background(Color.bgPrimary)
                 .navigationTitle(section.letter)

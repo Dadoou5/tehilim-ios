@@ -1,5 +1,24 @@
 # Notes de version Tehilim
 
+## V1.8.0 — 14 mai 2026 (build 9) — Tehilim sur iPad
+
+### Universal binary
+- **Support iPad complet** : iPhone + iPad sur la même app, même corpus, même expérience.
+- **Toutes les orientations** sur iPad : portrait, paysage gauche, paysage droite, portrait inversé.
+- **Multitâche iPad** activé (`UIRequiresFullScreen` = NO) — l'app fonctionne en Split View et Slide Over.
+
+### Adaptation visuelle
+- **Grille « Explorer »** : passe de 2 colonnes (iPhone) à **3 colonnes** sur iPad — les 6 cartes se rangent en 2 lignes équilibrées.
+- **Grille des 22 lettres (119 - AlphaBeta)** : passe de 4 colonnes (iPhone) à **8 colonnes** sur iPad — les 22 lettres tiennent en 3 lignes.
+- **Longueur de ligne lisible** : sur les écrans de lecture (Tehilim, Tehilim 119 section, Prières), la colonne de texte est **plafonnée à 700 pt** et centrée. La lecture reste confortable même sur un iPad Pro 13".
+- **Padding latéral** plus généreux sur iPad (24 pt vs 16 pt sur iPhone).
+
+### Architecture
+- Nouveau helper **`AdaptiveLayout`** centralisant les règles de layout responsive (colonnes, padding, max width).
+- Modifier `.readingWidth()` réutilisable pour toutes les vues de lecture.
+
+---
+
 ## V1.7.5 — 13 mai 2026 (build 8)
 
 ### Lecture

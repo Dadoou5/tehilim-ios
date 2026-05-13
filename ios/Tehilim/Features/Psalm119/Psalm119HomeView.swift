@@ -2,8 +2,14 @@ import SwiftUI
 
 struct Psalm119HomeView: View {
     @EnvironmentObject private var container: AppContainer
+    @Environment(\.horizontalSizeClass) private var hSize
 
-    private let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: 12), count: 4)
+    private var columns: [GridItem] {
+        Array(
+            repeating: GridItem(.flexible(), spacing: 12),
+            count: AdaptiveLayout.psalm119ColumnCount(for: hSize)
+        )
+    }
 
     var body: some View {
         ScrollView {
@@ -15,7 +21,9 @@ struct Psalm119HomeView: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(16)
+            .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
+            .padding(.vertical, 16)
+            .readingWidth()
         }
         .background(Color.bgPrimary)
         .navigationTitle("119 - AlphaBeta")

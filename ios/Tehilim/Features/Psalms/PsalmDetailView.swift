@@ -65,6 +65,7 @@ struct PsalmDetailView: View {
                 navigation(prev: n.prev, next: n.next)
                     .padding(.vertical, 24)
             }
+            .readingWidth()
         }
         .background(Color.bgPrimary)
         .navigationTitle("Tehilim \(psalm.id) · \(psalm.hebrewNumber)")

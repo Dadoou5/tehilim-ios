@@ -30,6 +30,7 @@ struct PrayerView: View {
                     }
                 }
                 .padding(.bottom, 24)
+                .readingWidth()
             }
             .background(Color.bgPrimary)
             .navigationBarTitleDisplayMode(.inline)

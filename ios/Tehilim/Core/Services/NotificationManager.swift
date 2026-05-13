@@ -8,11 +8,11 @@ import os.log
 final class NotificationManager: NSObject, ObservableObject {
     static let shared = NotificationManager()
 
-    static let dailyReminderId = "tehilim.daily.reminder"
-    static let routeKey = "route"
-    static let routeDailyValue = "daily"
+    nonisolated static let dailyReminderId = "tehilim.daily.reminder"
+    nonisolated static let routeKey = "route"
+    nonisolated static let routeDailyValue = "daily"
 
-    private static let log = Logger(subsystem: "com.david.tehilim", category: "Notifications")
+    nonisolated private static let log = Logger(subsystem: "com.david.tehilim", category: "Notifications")
 
     @Published private(set) var permission: UNAuthorizationStatus = .notDetermined
     /// Mis à jour quand l'utilisateur tape une notification. Observé par RootTabView.

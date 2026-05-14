@@ -15,13 +15,14 @@ import UIKit
 /// automatiquement en fin de séquence.
 struct PersonalizedReadingFormView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var savedPrayers: SavedPrayerStore
 
     @State private var relativeFirstName: String = ""
     @State private var relationType: RelationType = .ben
     @State private var motherFirstName: String = ""
 
     @State private var navigateToList = false
-    @State private var generatedSequence: [ReadingLetterItem] = []
+    @State private var generatedIntent: SavedPrayerIntent? = nil
 
     /// Type figé pour cette feature — toutes les lectures personnalisées sont
     /// des Lelouy Nichmat depuis V1.10.2 (la partie « Malade » a été retirée).
@@ -115,34 +116,16 @@ struct PersonalizedReadingFormView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Générer") {
-                        generatedSequence = LetterSequenceGenerator.generate(
-                            relativeName: relativeFirstName,
-                            relation: relationType,
-                            motherName: motherFirstName,
-                            prayerType: prayerType
-                        )
-                        navigateToList = true
+                        generateAndSave()
                     }
                     .disabled(!isFormValid)
                 }
             }
             .navigationDestination(isPresented: $navigateToList) {
-                PersonalizedReadingListView(
-                    intent: SavedPrayerIntent(
-                        title: LetterSequenceGenerator.makeTitle(
-                            prayerType: prayerType,
-                            relativeName: relativeFirstName,
-                            relation: relationType,
-                            motherName: motherFirstName
-                        ),
-                        prayerType: prayerType,
-                        relativeFirstName: relativeFirstName,
-                        relationType: relationType,
-                        motherFirstName: motherFirstName,
-                        generatedLetters: generatedSequence
-                    ),
-                    isSaved: false
-                )
+                if let intent = generatedIntent {
+                    // V1.10.5 : isSaved=true → l'intent est déjà persisté (sync iCloud).
+                    PersonalizedReadingListView(intent: intent, isSaved: true)
+                }
             }
         }
     }
@@ -150,6 +133,35 @@ struct PersonalizedReadingFormView: View {
     /// Affichage hébraïque compact en live : « יוסף בן שרה · נשמה ».
     private var previewHebrew: String {
         "\(relativeFirstName) \(relationType.hebrew) \(motherFirstName) · נשמה"
+    }
+
+    /// V1.10.5 — Génère la séquence ET sauvegarde automatiquement.
+    /// Dédup : si un Lelouy Nichmat avec exactement les mêmes paramètres existe
+    /// déjà, on le réutilise au lieu de créer un doublon (utile si l'utilisateur
+    /// re-tape « Générer » sur le même formulaire).
+    private func generateAndSave() {
+        let sequence = LetterSequenceGenerator.generate(
+            relativeName: relativeFirstName,
+            relation: relationType,
+            motherName: motherFirstName,
+            prayerType: prayerType
+        )
+        let candidate = SavedPrayerIntent(
+            title: LetterSequenceGenerator.makeTitle(
+                prayerType: prayerType,
+                relativeName: relativeFirstName,
+                relation: relationType,
+                motherName: motherFirstName
+            ),
+            prayerType: prayerType,
+            relativeFirstName: relativeFirstName,
+            relationType: relationType,
+            motherFirstName: motherFirstName,
+            generatedLetters: sequence
+        )
+        // Add ou retourne l'existant (dédup) — déclenche aussi la sync iCloud.
+        generatedIntent = savedPrayers.addOrFindExisting(candidate)
+        navigateToList = true
     }
 
     // MARK: - Bannière Lelouy Nichmat

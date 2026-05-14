@@ -1,5 +1,40 @@
 # Notes de version Tehilim
 
+## V1.10.5 — 14 mai 2026 (build 22) — Auto-save + sync iCloud
+
+### Sauvegarde automatique des Lelouy Nichmat
+- Le bouton « Sauvegarder » a été retiré : **tap sur Générer = save automatique**.
+- Dédup intégré : si un Lelouy Nichmat avec exactement les mêmes paramètres
+  (prénom + lien + mère) existe déjà, on réutilise l'entrée existante au lieu
+  de créer un doublon.
+- Plus jamais d'oubli de sauvegarde.
+
+### Synchronisation iCloud
+- Les favoris et les Lelouy Nichmat sauvegardés se synchronisent désormais
+  via **iCloud Key-Value Store** entre les appareils du même Apple ID.
+- iPhone et iPad partagent la même liste, en temps quasi-réel.
+- Migration auto au premier lancement V1.10.5 : les données stockées en local
+  (V1.0–V1.10.4) sont rapatriées dans iCloud sans perte.
+- Fonctionne hors-ligne (cache local maintenu en miroir).
+- Si l'utilisateur n'est pas connecté à iCloud, l'app tourne en local sans
+  erreur.
+
+### Architecture
+- Nouveau service `iCloudKVS` — façade autour de `NSUbiquitousKeyValueStore`
+  qui gère sync, fallback `UserDefaults`, migration legacy, et observation
+  de `NSUbiquitousKeyValueStore.didChangeExternallyNotification`.
+- `FavoritesStore` et `SavedPrayerStore` refondus pour lire/écrire via
+  `iCloudKVS` tout en maintenant un cache local pour l'offline.
+- Entitlement ajouté : `com.apple.developer.ubiquity-kvstore-identifier`.
+
+### ⚠️ Action côté Apple Developer Portal requise
+La capability **iCloud** doit être activée sur le bundle ID `com.david.tehilim`
+dans Apple Developer Portal (Identifiers → Edit → cocher iCloud) avant la
+première archive Release. Sinon Xcode renvoie une erreur :
+`Provisioning profile doesn't include the iCloud capability`.
+
+---
+
 ## V1.10.4 — 14 mai 2026 (build 21) — Fix critique mémoire (OOM)
 
 ### Le bug

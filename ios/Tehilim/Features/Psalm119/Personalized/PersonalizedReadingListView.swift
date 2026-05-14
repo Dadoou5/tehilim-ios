@@ -9,13 +9,11 @@ struct PersonalizedReadingListView: View {
     @EnvironmentObject private var savedPrayers: SavedPrayerStore
     @Environment(\.dismiss) private var dismiss
 
-    /// L'intent — soit fraîchement généré (non sauvegardé), soit chargé depuis le store.
+    /// L'intent — toujours persisté en V1.10.5+ (auto-save iCloud).
+    /// Le paramètre `isSaved` est conservé pour la rétrocompat du call site
+    /// mais devrait toujours valoir `true` désormais.
     let intent: SavedPrayerIntent
-    /// `true` si l'intent est déjà persisté (vue depuis Saved list).
-    /// `false` si on vient du formulaire (le bouton « Sauvegarder » est alors visible).
     let isSaved: Bool
-
-    @State private var hasJustSaved: Bool = false
 
     var body: some View {
         List {
@@ -73,39 +71,9 @@ struct PersonalizedReadingListView: View {
         .appBackground()
         .navigationTitle(intent.title)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if !isSaved {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        savedPrayers.add(intent)
-                        hasJustSaved = true
-                    } label: {
-                        Label(
-                            "Sauvegarder en tant que \(intent.prayerType.saveActionTitle)",
-                            systemImage: "tray.and.arrow.down"
-                        )
-                    }
-                    .disabled(hasJustSaved)
-                    .help("Sauvegarder en tant que \(intent.prayerType.saveActionTitle)")
-                }
-            }
-        }
-        .overlay(alignment: .bottom) {
-            if hasJustSaved {
-                Text("Sauvegardé en tant que \(intent.prayerType.saveActionTitle)")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.accentMain, in: Capsule())
-                    .padding(.bottom, 24)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .task {
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                        withAnimation { hasJustSaved = false }
-                    }
-            }
-        }
+        // V1.10.5 : le bouton « Sauvegarder » a été retiré — la sauvegarde
+        // est désormais automatique au tap sur « Générer » dans le formulaire,
+        // et synchronisée via iCloud entre les appareils.
     }
 
     // MARK: - Composants

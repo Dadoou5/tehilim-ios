@@ -1,0 +1,26 @@
+# Build
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+captures/
+
+# Kotlin
+.kotlin/
+
+# Native
+.cxx/
+
+# Generated
+src/main/assets/data/
+src/main/res/font/EzraSILSR.ttf
+
+# Keystore / secrets
+*.jks
+*.keystore
+keystore.properties
+
+# OS
+.DS_Store
+Thumbs.db

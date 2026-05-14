@@ -46,3 +46,23 @@ venv/
 # Backups locaux
 *.bak
 data/psalms.before-*.json
+
+# ─────────────────────────────────────────────────────────────
+# Android — build artifacts + caches
+# ─────────────────────────────────────────────────────────────
+android/build/
+android/app/build/
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/*.iml
+android/captures/
+android/.cxx/
+# Assets copiés au build depuis ../data — pas commités
+android/app/src/main/assets/data/
+# Polices copiées au build depuis ios/ — pas commitées
+android/app/src/main/res/font/ezra_sil_sr.ttf
+# Gradle wrapper jar — généré par Android Studio
+android/gradle/wrapper/gradle-wrapper.jar
+android/gradlew
+android/gradlew.bat

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme parent utilisé par le splash screen (avant Compose) -->
+    <style name="Theme.Tehilim.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/bg_primary_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Tehilim</item>
+    </style>
+
+    <style name="Theme.Tehilim" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

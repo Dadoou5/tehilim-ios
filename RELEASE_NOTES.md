@@ -1,5 +1,44 @@
 # Notes de version Tehilim
 
+## V1.9.5 — 14 mai 2026 (build 16) — Refonte UX iPad Tehilim (multi-agents)
+
+### Le problème
+Les 4 itérations précédentes (V1.9.1 → V1.9.4) tentaient de patcher la
+navigation iPad existante (push BookListView → PsalmListView → tap → detail
+column). Aucune ne fonctionnait de façon fiable : tap d'un Tehilim depuis
+« 5 livres → Livre N » ne propageait pas la sélection vers la detail column
+après le push dans la sidebar du NavigationSplitView.
+
+### La refonte (Product / UX / UI / Dev / A11y / QA)
+**Décision produit** : éliminer la double-navigation iPad. Pattern Apple
+Mail/Notes — un seul niveau de liste hiérarchique dans la sidebar.
+
+**Nouveau composant `IPadPsalmsSidebar`** :
+- 150 Tehilim affichés directement dans la sidebar, **groupés par livre**
+  en sections (Livre 1 · 41 Tehilim · 1–41, etc.) en mode « Livres »
+- Liste plate des 150 en mode « Tous »
+- Liste favoris + boutons prière en mode « Favoris »
+- **`List(selection:)` à la racine** → SwiftUI route nativement la
+  sélection vers la detail column, sans push, sans gesture custom
+- Search global dans tous les modes
+- Highlight bleu système au tap
+
+**Detail column** :
+- PsalmDetailView du Tehilim sélectionné, ou welcome view si rien
+
+**iPhone (compact)** : aucun changement. BookListView → PsalmListView →
+PsalmDetailView avec push classique. Régressions évitées.
+
+### Bénéfices
+- ✓ Tap → detail mise à jour **instantanément** (fix bug racine)
+- ✓ Plus de drill-down : tous les Tehilim accessibles en 1 clic
+- ✓ Aligné Apple HIG iPad (Mail, Notes, Files)
+- ✓ Moins de code (suppression des bindings `selection:` Optional<Binding>)
+- ✓ A11y native VoiceOver/sélection
+- ✓ Search global au lieu de search-par-livre
+
+---
+
 ## V1.9.4 — 14 mai 2026 (build 15) — Fix navigation iPad 5 livres → Tehilim
 
 ### Le bug

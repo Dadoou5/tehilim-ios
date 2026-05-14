@@ -1,16 +1,19 @@
 import SwiftUI
 
-/// Onglet « Tehilim » — picker (Livres/Tous/Favoris) + liste filtrée.
+/// Onglet « Tehilim » — V1.9.5 architecture refondue iPad.
 ///
-/// V1.9.0 : sur iPad (regular size class) on bascule en **NavigationSplitView**
-/// avec la liste à gauche et le Tehilim sélectionné à droite. Sur iPhone et
-/// iPad portrait, on garde la NavigationStack classique (push standard).
+/// - **iPhone (compact)** : NavigationStack avec BookListView → PsalmListView push
+///   classique, picker en haut. Inchangé depuis V1.0.
+/// - **iPad (regular)** : NavigationSplitView 2 colonnes.
+///   - Sidebar : `IPadPsalmsSidebar` qui affiche les 150 Tehilim directement
+///     (groupés par livre / liste plate / favoris selon le segment).
+///     Une seule `List(selection:)` à la racine — pas de push, pas de drill-down.
+///   - Detail : PsalmDetailView du Tehilim sélectionné, ou welcome view.
 struct PsalmsTabView: View {
     @Binding var path: NavigationPath
     @EnvironmentObject private var router: TabRouter
     @Environment(\.horizontalSizeClass) private var hSize
 
-    /// Sélection persistée — pilote la detail column en mode SplitView.
     @State private var selectedPsalmId: Int? = nil
 
     var body: some View {
@@ -23,21 +26,37 @@ struct PsalmsTabView: View {
         }
     }
 
-    // MARK: - iPhone & iPad portrait : NavigationStack classique
+    // MARK: - iPhone & iPad compact (NavigationStack)
 
     private var stackLayout: some View {
         NavigationStack(path: $path) {
-            sidebarContent(selection: nil)
+            VStack(spacing: 0) {
+                Picker("", selection: $router.psalmsSegment) {
+                    Text("Livres").tag(0)
+                    Text("Tous").tag(1)
+                    Text("Favoris").tag(2)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+
+                Group {
+                    switch router.psalmsSegment {
+                    case 0: BookListView()
+                    case 1: PsalmListView(book: nil)
+                    default: FavoritesListView()
+                    }
+                }
+            }
+            .navigationTitle("Tehilim")
         }
     }
 
-    // MARK: - iPad regular : NavigationSplitView
+    // MARK: - iPad regular (NavigationSplitView 2 colonnes)
 
     private var splitLayout: some View {
         NavigationSplitView {
-            NavigationStack(path: $path) {
-                sidebarContent(selection: $selectedPsalmId)
-            }
+            IPadPsalmsSidebar(selectedPsalmId: $selectedPsalmId)
         } detail: {
             NavigationStack {
                 if let id = selectedPsalmId {
@@ -49,29 +68,6 @@ struct PsalmsTabView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-    }
-
-    @ViewBuilder
-    private func sidebarContent(selection: Binding<Int?>?) -> some View {
-        VStack(spacing: 0) {
-            Picker("", selection: $router.psalmsSegment) {
-                Text("Livres").tag(0)
-                Text("Tous").tag(1)
-                Text("Favoris").tag(2)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-
-            Group {
-                switch router.psalmsSegment {
-                case 0: BookListView(selection: selection)
-                case 1: PsalmListView(book: nil, selection: selection)
-                default: FavoritesListView(selection: selection)
-                }
-            }
-        }
-        .navigationTitle("Tehilim")
     }
 
     @ViewBuilder

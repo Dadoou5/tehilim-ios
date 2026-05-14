@@ -1,5 +1,7 @@
 import SwiftUI
 
+/// Liste plate des Tehilim — V1.9.5 : utilisée uniquement sur iPhone.
+/// (Sur iPad, `IPadPsalmsSidebar` affiche directement la liste avec sélection native.)
 struct PsalmListView: View {
     @EnvironmentObject private var container: AppContainer
     @EnvironmentObject private var favorites: FavoritesStore
@@ -7,34 +9,15 @@ struct PsalmListView: View {
     /// Si nil → liste complète.
     let book: Int?
 
-    /// Optionnel : binding de sélection pour le mode NavigationSplitView (iPad).
-    /// - nil : comportement standard (NavigationLink push, iPhone et iPad portrait)
-    /// - non-nil : tap met à jour la sélection → la detail column affiche le Tehilim
-    var selection: Binding<Int?>? = nil
-
     @State private var query: String = ""
 
     var body: some View {
-        Group {
-            if let selection {
-                // V1.9.4 : pattern Apple natif List(items, selection:)
-                // Sur iPad NavigationSplitView, le tap d'une ligne met à jour
-                // automatiquement le binding → la detail column se met à jour.
-                List(filteredPsalms, selection: selection) { psalm in
-                    psalmRow(psalm, isSelected: selection.wrappedValue == psalm.id)
-                        .tag(psalm.id)
-                }
-                .listStyle(.plain)
-            } else {
-                // iPhone / iPad compact : NavigationLink push standard
-                List(filteredPsalms) { psalm in
-                    NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
-                        psalmRow(psalm, isSelected: false)
-                    }
-                }
-                .listStyle(.plain)
+        List(filteredPsalms) { psalm in
+            NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
+                psalmRow(psalm)
             }
         }
+        .listStyle(.plain)
         .appBackground()
         .navigationTitle(book.map { "Livre \($0)" } ?? "Tous les Tehilim")
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always),
@@ -59,11 +42,10 @@ struct PsalmListView: View {
     }
 
     @ViewBuilder
-    private func psalmRow(_ psalm: Psalm, isSelected: Bool) -> some View {
+    private func psalmRow(_ psalm: Psalm) -> some View {
         HStack(spacing: 12) {
             Text("\(psalm.id)")
                 .font(.callout.weight(.semibold))
-                .foregroundStyle(isSelected ? Color.accentMain : .primary)
                 .frame(width: 36, alignment: .leading)
             Text(psalm.hebrewNumber)
                 .font(.callout)
@@ -82,12 +64,6 @@ struct PsalmListView: View {
                     .accessibilityLabel("Favori")
             }
         }
-        .padding(.vertical, 4)
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Tehilim \(psalm.id), \(psalm.verses.count) versets\(favorites.contains(psalm.id) ? ", favori" : "")")
-        .accessibilityHint("Ouvre le Tehilim")
-        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder

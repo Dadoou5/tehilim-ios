@@ -1,13 +1,12 @@
 import SwiftUI
 
+/// Liste des 5 livres — V1.9.5 : utilisé uniquement sur iPhone.
+/// (Sur iPad, `IPadPsalmsSidebar` affiche directement les Tehilim groupés par livre.)
 struct BookListView: View {
-    /// Forwardé à PsalmListView pour activer la sélection en mode NavigationSplitView.
-    var selection: Binding<Int?>? = nil
-
     var body: some View {
         List {
             ForEach(1...5, id: \.self) { book in
-                NavigationLink(destination: PsalmListView(book: book, selection: selection)) {
+                NavigationLink(destination: PsalmListView(book: book)) {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Livre \(book)").font(.headline)

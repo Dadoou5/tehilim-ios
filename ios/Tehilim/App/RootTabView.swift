@@ -37,6 +37,7 @@ struct RootTabView: View {
         .tint(.accentMain)
         .environmentObject(router)
         .environmentObject(container.favorites)
+        .environmentObject(container.savedPrayers)
         .onAppear { applyPendingRoute() }
         .onChange(of: notifications.pendingRoute) { _, _ in applyPendingRoute() }
         .onChange(of: router.pendingPathReset) { _, target in applyPathReset(target) }

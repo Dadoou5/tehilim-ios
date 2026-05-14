@@ -1,5 +1,62 @@
 # Notes de version Tehilim
 
+## V1.10.0 — 14 mai 2026 (build 17) — Lecture personnalisée AlphaBeta
+
+### Nouvelle feature
+**Génère une séquence de lecture du Tehilim 119 personnalisée** à partir
+d'un prénom hébreu, du lien (בן / בת), du prénom de la mère et du type
+(Malade / Défunt).
+
+### Règle métier non-négociable
+**« נשמה »** est ajouté automatiquement en fin de séquence **uniquement
+pour Défunt** (Lelouy Nichmat). Jamais l'utilisateur ne tape « נשמה » —
+c'est l'app qui le fait.
+
+### Génération de la séquence
+Ordre exact :
+1. Lettres du prénom du proche
+2. Lettres de בן ou בת
+3. Lettres du prénom de la mère
+4. Lettres de נשמה (Défunt uniquement)
+
+**Mapping des lettres finales → base** (pour retrouver la bonne section
+du Tehilim 119) : ך→כ, ם→מ, ן→נ, ף→פ, ץ→צ.
+
+### Écrans
+- **Formulaire** : 4 champs validés en hébreu live (filtre auto les
+  caractères non-hébreu), prévisualisation hébraïque RTL.
+- **Liste de séquence** : numéros 1..N, chaque ligne montre la lettre,
+  la source (proche / lien / mère / נשמה) et un chevron. Tap → ouvre la
+  section correspondante du Tehilim 119.
+- **Lecture dans 119** : prev / suivant **dans la séquence personnalisée**
+  (pas l'alphabet complet), header de progression « Lettre X sur N »,
+  prev/next désactivés aux bornes. Raccourcis clavier ⌘[ / ⌘].
+- **Mes prières sauvegardées** : 2 sections (Refoua Cheléma / Lelouy
+  Nichmat), swipe pour supprimer, tap pour rouvrir, bouton « Reprendre la
+  lecture » à la position mémorisée (`lastReadIndex`).
+
+### Sauvegarde
+- Bouton « Sauvegarder en tant que Refoua Cheléma / Lelouy Nichmat »
+  (selon le type) en haut à droite de la liste de séquence.
+- Titre auto-généré : `Refoua Cheléma — יוסף בן שרה`.
+- Persistance JSON dans le dossier Documents (comme `FavoritesStore`).
+
+### Architecture
+- Models : `PrayerType`, `RelationType`, `LetterSource`,
+  `ReadingLetterItem`, `SavedPrayerIntent` (tous `Codable`).
+- Services : `HebrewLetterMapper`, `LetterSequenceGenerator`,
+  `SavedPrayerStore`.
+- 18 tests unitaires (mapper + generator) — 50/50 verts.
+
+### Intégration
+- Nouvelle section « Lecture personnalisée » sur l'écran AlphaBeta avec
+  2 cartes : « Nouvelle lecture » et « Mes prières (N sauvegardées) ».
+- `Psalm119SectionView` accepte désormais un `sequenceContext?` optionnel
+  qui pilote prev/next en mode séquence. Comportement classique (1..22)
+  préservé quand `sequenceContext == nil`.
+
+---
+
 ## V1.9.5 — 14 mai 2026 (build 16) — Refonte UX iPad Tehilim (multi-agents)
 
 ### Le problème

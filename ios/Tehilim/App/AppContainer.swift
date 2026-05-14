@@ -12,6 +12,7 @@ final class AppContainer: ObservableObject {
     let dailyEngine: DailyEngine
     let searchInterpreter: SearchInterpreter
     let favorites: FavoritesStore
+    let savedPrayers: SavedPrayerStore
     let preferences: Preferences
 
     init(
@@ -20,6 +21,7 @@ final class AppContainer: ObservableObject {
         self.contentLoader = contentLoader
         self.preferences = Preferences()
         self.favorites = FavoritesStore()
+        self.savedPrayers = SavedPrayerStore()
 
         do {
             let psalms = try contentLoader.loadPsalms()

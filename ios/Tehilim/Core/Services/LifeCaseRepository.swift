@@ -46,4 +46,10 @@ final class Psalm119Repository {
     func section(at index: Int) -> Psalm119Section? {
         sections.first { $0.index == index }
     }
+    /// Retrouve la section correspondant à une lettre (forme de base, ex. « א », « ב »).
+    /// Utilisé par la lecture personnalisée pour mapper chaque lettre de la séquence
+    /// à sa section du Tehilim 119.
+    func section(forLetter letter: String) -> Psalm119Section? {
+        sections.first { $0.letter == letter }
+    }
 }

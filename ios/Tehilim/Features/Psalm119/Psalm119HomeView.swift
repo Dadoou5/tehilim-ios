@@ -2,7 +2,10 @@ import SwiftUI
 
 struct Psalm119HomeView: View {
     @EnvironmentObject private var container: AppContainer
+    @EnvironmentObject private var savedPrayers: SavedPrayerStore
     @Environment(\.horizontalSizeClass) private var hSize
+
+    @State private var showingForm: Bool = false
 
     private var isRegular: Bool { hSize == .regular }
 
@@ -15,12 +18,15 @@ struct Psalm119HomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: isRegular ? 20 : 12) {
+            VStack(alignment: .leading, spacing: isRegular ? 20 : 16) {
                 if isRegular {
-                    // Header iPad : contexte de la page
                     headerCard
                 }
 
+                // V1.10.0 — Entry points lecture personnalisée
+                personalizedSection
+
+                // Grille alphabet classique
                 LazyVGrid(columns: columns, spacing: isRegular ? 16 : 12) {
                     ForEach(container.psalm119Repository.sections) { section in
                         NavigationLink(destination: Psalm119SectionView(index: section.index)) {
@@ -38,11 +44,15 @@ struct Psalm119HomeView: View {
             }
             .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
             .padding(.vertical, isRegular ? 24 : 16)
-            // Pas de readingWidth() ici : on veut utiliser toute la largeur iPad.
         }
         .background(Color.bgPrimary)
         .navigationTitle("119 - AlphaBeta")
+        .sheet(isPresented: $showingForm) {
+            PersonalizedReadingFormView()
+        }
     }
+
+    // MARK: - Header iPad
 
     @ViewBuilder
     private var headerCard: some View {
@@ -64,5 +74,89 @@ struct Psalm119HomeView: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isHeader)
+    }
+
+    // MARK: - Section lecture personnalisée
+
+    @ViewBuilder
+    private var personalizedSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Lecture personnalisée")
+                .font(.headline)
+                .accessibilityAddTraits(.isHeader)
+
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: 12),
+                    count: isRegular ? 2 : 1
+                ),
+                spacing: 12
+            ) {
+                // Carte : nouvelle lecture
+                Button { showingForm = true } label: {
+                    actionCard(
+                        symbol: "person.text.rectangle",
+                        title: "Nouvelle lecture",
+                        subtitle: "Refoua Cheléma ou Lelouy Nichmat",
+                        accent: true
+                    )
+                }
+                .buttonStyle(.plain)
+
+                // Carte : prières sauvegardées
+                NavigationLink(destination: SavedPrayersListView()) {
+                    actionCard(
+                        symbol: "tray.full",
+                        title: "Mes prières",
+                        subtitle: savedCountLabel,
+                        accent: false
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var savedCountLabel: String {
+        let count = savedPrayers.intents.count
+        switch count {
+        case 0: return "Aucune sauvegardée"
+        case 1: return "1 prière sauvegardée"
+        default: return "\(count) prières sauvegardées"
+        }
+    }
+
+    @ViewBuilder
+    private func actionCard(symbol: String, title: LocalizedStringKey, subtitle: String, accent: Bool) -> some View {
+        HStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.accentMain.opacity(accent ? 0.18 : 0.10))
+                    .frame(width: 44, height: 44)
+                Image(systemName: symbol)
+                    .font(.title3.weight(.medium))
+                    .foregroundStyle(Color.accentMain)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.bgSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(Color.dividerToken.opacity(0.4), lineWidth: 0.5)
+        )
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 struct Psalm119SectionView: View {
     @EnvironmentObject private var container: AppContainer
     @StateObject private var prefs = Preferences()
+    @Environment(\.horizontalSizeClass) private var hSize
 
     let index: Int
     @State private var presentedPrayer: Prayer.Kind? = nil
@@ -18,6 +19,13 @@ struct Psalm119SectionView: View {
                 ScrollView {
                     LazyVStack(alignment: .leading) {
                         IluyNishmatBanner()
+
+                        // iPad : barre d'action inline pour rendre le toggle traduction
+                        // immédiatement visible (toolbar parfois tronqué en NavigationSplitView).
+                        if hSize == .regular {
+                            inlineTranslationToggle
+                        }
+
                         Text("\(section.letter) — \(section.name) · v. \(section.verseStart)–\(section.verseEnd)")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
@@ -49,8 +57,12 @@ struct Psalm119SectionView: View {
                             let current = showFR
                             localShowFR = !current
                         } label: {
-                            Image(systemName: showFR ? "character.bubble.fill" : "character.bubble")
+                            Label(
+                                showFR ? "Masquer la traduction" : "Afficher la traduction",
+                                systemImage: showFR ? "character.bubble.fill" : "character.bubble"
+                            )
                         }
+                        .help(showFR ? "Masquer la traduction" : "Afficher la traduction")
                         .accessibilityLabel(showFR ? "Masquer la traduction" : "Afficher la traduction")
                     }
                     ToolbarItem(placement: .topBarTrailing) {
@@ -78,6 +90,28 @@ struct Psalm119SectionView: View {
                 EmptyStateView(symbol: "exclamationmark.triangle", title: "Section introuvable", message: nil)
             }
         }
+    }
+
+    @ViewBuilder
+    private var inlineTranslationToggle: some View {
+        HStack(spacing: 12) {
+            Spacer()
+            Button {
+                let current = showFR
+                localShowFR = !current
+            } label: {
+                Label(
+                    showFR ? "Masquer la traduction" : "Afficher la traduction",
+                    systemImage: showFR ? "character.bubble.fill" : "character.bubble"
+                )
+                .font(.subheadline.weight(.medium))
+            }
+            .buttonStyle(.bordered)
+            .tint(Color.accentMain)
+            .accessibilityLabel(showFR ? "Masquer la traduction" : "Afficher la traduction")
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 
     @ViewBuilder

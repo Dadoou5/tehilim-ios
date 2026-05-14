@@ -1,5 +1,21 @@
 # Notes de version Tehilim
 
+## V1.9.1 — 14 mai 2026 (build 12) — Hotfix : toggle traduction iPad
+
+### Fix
+- Sur iPad (NavigationSplitView), le bouton « Afficher la traduction » de la
+  toolbar n'était pas suffisamment visible (icône bulle seule, parfois tronquée
+  par SwiftUI dans la detail column).
+- Maintenant :
+  - **Bouton toolbar enrichi** : `Label` avec titre + icône (au lieu d'icône seule)
+    → SwiftUI peut afficher le texte sur iPad regular.
+  - **Barre d'action inline** ajoutée en haut de chaque écran de lecture
+    (PsalmDetailView, Psalm119SectionView) **uniquement sur iPad**, garantissant
+    que le toggle est toujours visible.
+- Toolbar tooltip `.help(...)` ajouté pour Magic Keyboard.
+
+---
+
 ## V1.9.0 — 14 mai 2026 (build 11) — Lecture parallèle + Sidebar iPad
 
 ### NavigationSplitView pour l'onglet Tehilim (iPad)

@@ -50,6 +50,13 @@ struct PsalmDetailView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 IluyNishmatBanner()
+
+                // iPad : barre d'action inline pour rendre le toggle traduction
+                // immédiatement visible (la toolbar SwiftUI peut le masquer en NavigationSplitView).
+                if hSize == .regular {
+                    inlineTranslationToggle
+                }
+
                 if let title = psalm.hebrewTitle {
                     Text(title)
                         .font(.hebrewTitle())
@@ -102,6 +109,31 @@ struct PsalmDetailView: View {
         }
     }
 
+    /// Barre d'action inline visible sur iPad — duplique le toggle du toolbar
+    /// pour garantir sa découvrabilité, surtout dans le contexte NavigationSplitView
+    /// où SwiftUI peut masquer ou tronquer les items du toolbar.
+    @ViewBuilder
+    private var inlineTranslationToggle: some View {
+        HStack(spacing: 12) {
+            Spacer()
+            Button {
+                let current = showFR
+                localShowFR = !current
+            } label: {
+                Label(
+                    showFR ? "Masquer la traduction" : "Afficher la traduction",
+                    systemImage: showFR ? "character.bubble.fill" : "character.bubble"
+                )
+                .font(.subheadline.weight(.medium))
+            }
+            .buttonStyle(.bordered)
+            .tint(Color.accentMain)
+            .accessibilityLabel(showFR ? "Masquer la traduction" : "Afficher la traduction")
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+    }
+
     @ToolbarContentBuilder
     private func toolbarContent(psalm: Psalm) -> some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
@@ -117,9 +149,13 @@ struct PsalmDetailView: View {
                 let current = showFR
                 localShowFR = !current
             } label: {
-                Image(systemName: showFR ? "character.bubble.fill" : "character.bubble")
+                Label(
+                    showFR ? "Masquer la traduction" : "Afficher la traduction",
+                    systemImage: showFR ? "character.bubble.fill" : "character.bubble"
+                )
             }
-            .accessibilityLabel(showFR ? "Masquer la traduction française" : "Afficher la traduction française")
+            .help(showFR ? "Masquer la traduction" : "Afficher la traduction")
+            .accessibilityLabel(showFR ? "Masquer la traduction" : "Afficher la traduction")
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {

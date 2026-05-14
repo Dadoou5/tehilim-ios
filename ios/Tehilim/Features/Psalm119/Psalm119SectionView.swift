@@ -8,8 +8,19 @@ struct Psalm119SectionView: View {
     let index: Int
     @State private var presentedPrayer: Prayer.Kind? = nil
     @State private var localShowFR: Bool? = nil
+    @State private var containerWidth: CGFloat = 0
 
     private var showFR: Bool { localShowFR ?? prefs.translationFR }
+
+    private var sideBySide: Bool {
+        AdaptiveLayout.shouldUseSideBySide(containerWidth: containerWidth, sizeClass: hSize)
+            && showFR
+            && prefs.textMode == .hebrew
+    }
+
+    private var maxContentWidth: CGFloat {
+        sideBySide ? AdaptiveLayout.sideBySideMaxWidth : AdaptiveLayout.readingMaxWidth
+    }
 
     var body: some View {
         Group {
@@ -39,7 +50,8 @@ struct Psalm119SectionView: View {
                                 textSizeFR: prefs.textSizeFR,
                                 numberStyle: prefs.verseNumberStyle,
                                 translationLang: prefs.appLanguage.translation,
-                                parentPsalm: psalm
+                                parentPsalm: psalm,
+                                sideBySideTranslation: sideBySide
                             )
                             .padding(.horizontal, 16)
                             Divider().padding(.horizontal, 16).opacity(0.3)
@@ -47,9 +59,16 @@ struct Psalm119SectionView: View {
                         navigationFooter()
                             .padding(.vertical, 24)
                     }
-                    .readingWidth()
+                    .readingWidth(maxWidth: maxContentWidth)
                 }
                 .background(Color.bgPrimary)
+                .background(
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear { containerWidth = proxy.size.width }
+                            .onChange(of: proxy.size.width) { _, new in containerWidth = new }
+                    }
+                )
                 .navigationTitle(section.letter)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {

@@ -1,5 +1,27 @@
 # Notes de version Tehilim
 
+## V1.9.3 — 14 mai 2026 (build 14) — Hotfixes iPad
+
+### Fix 1 : lecture parallèle dans 119 - AlphaBeta
+- Le mode hébreu ‖ traduction côte-à-côte (introduit en V1.9.0 pour
+  `PsalmDetailView`) ne s'activait pas dans **`Psalm119SectionView`** : la
+  traduction restait empilée sous l'hébreu.
+- Maintenant : même comportement auto-détecté (iPad paysage + traduction
+  activée + mode hébreu) que pour les Tehilim 1–150.
+
+### Fix 2 : accès aux Tehilim depuis « 5 livres » sur iPad
+- Sur iPad NavigationSplitView, le `Button` dans `List` avait une zone de tap
+  parfois trop étroite et **aucun indicateur visuel** (pas de chevron) → l'utilisateur
+  ne voyait pas comment ouvrir un Tehilim après avoir choisi un livre.
+- Refonte :
+  - **`onTapGesture` + `contentShape(Rectangle())`** au lieu de Button →
+    la zone de tap couvre toute la ligne, plus de tap raté.
+  - **Chevron `›`** ajouté à droite quand on est en mode sélection iPad.
+  - Accessibility traits enrichis (`isButton`, label + hint).
+- Même fix appliqué à `FavoritesListView`.
+
+---
+
 ## V1.9.2 — 14 mai 2026 (build 13) — AlphaBeta repensé pour iPad
 
 ### Refonte de la grille des 22 lettres

@@ -17,20 +17,23 @@ struct PsalmListView: View {
     var body: some View {
         List(filteredPsalms) { psalm in
             if let selection {
-                Button {
-                    selection.wrappedValue = psalm.id
-                } label: {
-                    psalmRow(psalm, isSelected: selection.wrappedValue == psalm.id)
-                }
-                .buttonStyle(.plain)
-                .listRowBackground(
-                    selection.wrappedValue == psalm.id
-                    ? Color.accentMain.opacity(0.12)
-                    : Color.clear
-                )
+                // iPad NavigationSplitView : tap → met à jour la detail column
+                // V1.9.3 : utilise onTapGesture + contentShape pour assurer la
+                // détection du tap dans toute la zone de la ligne (Button dans
+                // List a une zone de tap parfois étroite).
+                psalmRow(psalm, isSelected: selection.wrappedValue == psalm.id, showChevron: true)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selection.wrappedValue = psalm.id
+                    }
+                    .listRowBackground(
+                        selection.wrappedValue == psalm.id
+                        ? Color.accentMain.opacity(0.12)
+                        : Color.clear
+                    )
             } else {
                 NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
-                    psalmRow(psalm, isSelected: false)
+                    psalmRow(psalm, isSelected: false, showChevron: false)
                 }
             }
         }
@@ -59,7 +62,7 @@ struct PsalmListView: View {
     }
 
     @ViewBuilder
-    private func psalmRow(_ psalm: Psalm, isSelected: Bool) -> some View {
+    private func psalmRow(_ psalm: Psalm, isSelected: Bool, showChevron: Bool) -> some View {
         HStack(spacing: 12) {
             Text("\(psalm.id)")
                 .font(.callout.weight(.semibold))
@@ -81,7 +84,18 @@ struct PsalmListView: View {
                     .foregroundStyle(Color.accentMain)
                     .accessibilityLabel("Favori")
             }
+            if showChevron {
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
         }
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Tehilim \(psalm.id), \(psalm.verses.count) versets\(favorites.contains(psalm.id) ? ", favori" : "")")
+        .accessibilityHint("Ouvre le Tehilim")
+        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder

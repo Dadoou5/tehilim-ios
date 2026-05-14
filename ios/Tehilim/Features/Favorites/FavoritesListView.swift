@@ -54,27 +54,27 @@ struct FavoritesListView: View {
     private func favoriteRow(id: Int) -> some View {
         if let p = container.psalmRepository.psalm(id: id) {
             if let selection {
-                Button {
-                    selection.wrappedValue = id
-                } label: {
-                    favoriteLabel(p, isSelected: selection.wrappedValue == id)
-                }
-                .buttonStyle(.plain)
-                .listRowBackground(
-                    selection.wrappedValue == id
-                    ? Color.accentMain.opacity(0.12)
-                    : nil
-                )
+                // iPad NavigationSplitView : onTapGesture + contentShape pour fiabilité
+                favoriteLabel(p, isSelected: selection.wrappedValue == id, showChevron: true)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selection.wrappedValue = id
+                    }
+                    .listRowBackground(
+                        selection.wrappedValue == id
+                        ? Color.accentMain.opacity(0.12)
+                        : nil
+                    )
             } else {
                 NavigationLink(destination: PsalmDetailView(psalmId: id, siblings: favorites.sortedIds)) {
-                    favoriteLabel(p, isSelected: false)
+                    favoriteLabel(p, isSelected: false, showChevron: false)
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func favoriteLabel(_ p: Psalm, isSelected: Bool) -> some View {
+    private func favoriteLabel(_ p: Psalm, isSelected: Bool, showChevron: Bool) -> some View {
         HStack {
             Text("Tehilim \(p.id) · \(p.hebrewNumber)")
                 .foregroundStyle(isSelected ? Color.accentMain : .primary)
@@ -84,6 +84,17 @@ struct FavoritesListView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(Color.accentMain)
             }
+            if showChevron && !isSelected {
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            }
         }
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Tehilim \(p.id)")
+        .accessibilityHint("Ouvre le Tehilim")
+        .accessibilityAddTraits(.isButton)
     }
 }

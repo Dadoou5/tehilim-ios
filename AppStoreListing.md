@@ -84,7 +84,7 @@ Tehilim est une application gratuite, sans achat intégré, sans publicité. Ell
 
 Sources :
 • Texte hébreu et traduction anglaise : Sefaria (CC-BY)
-• Traduction française : Beth Loubavitch — le-tehilim.online (avec autorisation)
+• Traduction française : Beth Loubavitch — le-tehilim.online
 • Police : Ezra SIL SR par SIL International (SIL OFL)
 ```
 
@@ -191,7 +191,7 @@ Tehilim is free, with no in-app purchases and no advertising. It is dedicated ל
 
 Sources:
 • Hebrew text and English translation: Sefaria (CC-BY)
-• French translation: Beth Loubavitch — le-tehilim.online (with permission)
+• French translation: Beth Loubavitch — le-tehilim.online
 • Font: Ezra SIL SR by SIL International (SIL OFL)
 ```
 
@@ -217,27 +217,130 @@ Lifestyle
 
 ---
 
-## 📋 What's New (release notes V1.7.5 — 4 000 car. max)
+## 📋 What's New / Nouveautés — V1.10.4 (build 21)
+
+> Première version publique. Texte « What's New » à coller dans App Store Connect
+> → onglet **Version 1.10.4** → champ **« Nouveautés / Promotional Text »**.
+> Limite Apple : 4 000 caractères par locale.
+
+### 🇫🇷 — App Store (grand public)
+```
+Bienvenue dans Tehilim — l'application complète pour lire les 150 Tehilim du roi David sur iPhone et iPad.
+
+Cette première version inclut :
+
+• Les 150 Tehilim avec hébreu vocalisé et téamim (cantillation)
+• Traduction française (Beth Loubavitch) et anglaise (JPS 1917)
+• Phonétique sépharade pour les lecteurs débutants
+• Cycle de lecture quotidien (mensuel ou hebdomadaire)
+• 18 parcours thématiques « Cas de la vie » + Tikkoun HaKlali
+• Tehilim 119 (AlphaBeta) avec navigation lettre par lettre
+• Lecture personnalisée Lelouy Nichmat pour l'élévation de l'âme
+• Prières avant et après la lecture
+• Widget « Tehilim du jour » pour l'écran d'accueil
+• Mode iPad optimisé : sidebar, lecture parallèle hébreu/français en paysage
+• Police Ezra SIL SR optimisée pour l'affichage des téamim
+• Fonctionne entièrement hors-ligne, aucune donnée collectée
+
+Que cette lecture soit une élévation pour ג׳והאן מאיר בן שרה בוגנים, et un mérite pour tous les vivants comme pour les âmes des défunts.
+```
+
+### 🇬🇧 — App Store (general public)
+```
+Welcome to Tehilim — the complete app for reading the 150 Psalms of King David on iPhone and iPad.
+
+This first release includes:
+
+• All 150 Tehilim with pointed Hebrew and cantillation marks (te'amim)
+• French (Beth Loubavitch) and English (JPS 1917) translations
+• Sephardic transliteration for beginners
+• Daily reading cycle (monthly or weekly)
+• 18 thematic "Life Situations" + Tikkun HaKlali
+• Tehilim 119 (AlphaBeta) with letter-by-letter navigation
+• Personalized Lelouy Nichmat reading for the elevation of a soul
+• Prayers before and after reading
+• "Today's Tehilim" home-screen widget
+• Optimized iPad mode: sidebar, side-by-side Hebrew/English reading in landscape
+• Ezra SIL SR font optimized for cantillation marks display
+• Works fully offline, no data collected
+
+May this reading be an elevation for ג׳והאן מאיר בן שרה בוגנים, and a merit for the living and for the souls of the departed.
+```
+
+---
+
+## 🧪 TestFlight Tester Notes (interne uniquement)
+
+> À coller dans **TestFlight → Tester Notes** (non visible sur l'App Store).
+> Aide les testeurs à savoir quoi tester en priorité.
 
 ### 🇫🇷
 ```
-V1.7.5 — Confort de lecture
+Première version TestFlight — V1.10.4 (build 21)
 
-• Texte hébreu justifié à droite, dans la disposition traditionnelle d'un Tehilim imprimé : numéro du verset sur le bord droit, puis texte s'écoulant naturellement de droite à gauche.
-• Section « 119 - AlphaBeta » harmonisée avec le reste de l'app (fond, pavés des 22 lettres) et possibilité d'afficher/masquer la traduction directement depuis chaque section.
+Merci d'aider à valider l'app avant la soumission App Store.
 
-Merci pour vos retours ! N'hésitez pas à nous écrire pour la suite.
+À tester en priorité :
+1. Lecture d'un Tehilim (n'importe lequel) — vérifier l'affichage des téamim
+2. Bascule de la traduction (icône bulle dans la toolbar)
+3. Cycle « Tehilim du jour » dans l'onglet Aujourd'hui
+4. Navigation Tehilim 119 par lettre (grille AlphaBeta)
+5. Nouvelle lecture personnalisée Lelouy Nichmat (Accueil → 119 - AlphaBeta → Nouvelle lecture)
+6. Widget « Tehilim du jour » : ajouter sur l'écran d'accueil
+7. Notifications quotidiennes : activer dans Réglages → Lecture quotidienne
+8. (iPad) Mode paysage avec lecture parallèle hébreu/français
+9. (iPad) Sidebar Tehilim — tap d'un Tehilim → ouverture dans la colonne de droite
+
+Tests de stabilité :
+- Ouvrir 10 Tehilim de suite (mémoire)
+- Scroller dans Tehilim 119 (176 versets)
+- Partager un verset en image (long-press sur un verset)
+
+Bug à signaler ? Capture d'écran + description par mail à david.bouganim@gmail.com
 ```
 
 ### 🇬🇧
 ```
-V1.7.5 — Reading polish
+First TestFlight build — V1.10.4 (build 21)
 
-• Hebrew text right-justified, matching the traditional layout of a printed Tehilim: verse number on the right edge, then text flowing naturally right-to-left.
-• "119 - AlphaBeta" section now matches the rest of the app (background, letter tiles) and you can show/hide the translation directly from each section.
+Thank you for helping validate the app before App Store submission.
 
-Thanks for your feedback — keep it coming!
+Priority test scenarios:
+1. Read any Tehilim — verify cantillation marks display
+2. Toggle translation (bubble icon in toolbar)
+3. "Today's Tehilim" cycle (Today tab)
+4. Tehilim 119 letter-by-letter navigation (AlphaBeta grid)
+5. New Personalized Lelouy Nichmat reading (Home → 119 - AlphaBeta → New reading)
+6. "Today's Tehilim" widget: add to home screen
+7. Daily notifications: enable in Settings → Daily reading
+8. (iPad) Landscape mode with parallel Hebrew/English reading
+9. (iPad) Tehilim sidebar — tap a Tehilim → opens in right column
+
+Stability tests:
+- Open 10 Tehilim in a row (memory)
+- Scroll through Tehilim 119 (176 verses)
+- Share a verse as image (long-press on a verse)
+
+Found a bug? Screenshot + description to david.bouganim@gmail.com
 ```
+
+---
+
+## 📝 Mini-changelog interne (pour ta mémoire — pas pour l'App Store)
+
+Versions itérées en TestFlight interne avant la soumission V1.10.4 :
+
+- V1.10.4 : fix critique mémoire (Transferable lazy au lieu d'eager UIImage)
+- V1.10.3 : fix SF Symbol candle.fill → flame.fill
+- V1.10.2 : feature Lelouy Nichmat — Malade retiré, simplification UX
+- V1.10.1 : clavier hébreu automatique sur le formulaire
+- V1.10.0 : feature « Lecture personnalisée AlphaBeta »
+- V1.9.5  : refonte UX iPad sidebar — pattern Apple natif Mail/Notes
+- V1.9.0–1.9.4 : NavigationSplitView iPad + lecture parallèle + hotfixes
+- V1.8.0–1.8.1 : Universal binary iPhone + iPad + Cas de la vie repensé
+- V1.7.x : multilingue, polices, Cas de la vie, Ezra SIL SR
+- V1.6.x : App Group widget
+- V1.0–1.5 : MVP 150 Tehilim, prières, favoris, widget
 
 ---
 

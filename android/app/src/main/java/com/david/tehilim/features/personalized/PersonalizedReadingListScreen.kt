@@ -70,7 +70,7 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                 )
             }
             items(intent.generatedLetters) { item ->
-                val section = container.psalm119Repository.section(forLetter = item.psalmLetterKey)
+                val section = container.psalm119Repository.sectionByLetter(item.psalmLetterKey)
                 AppCard(
                     onClick = {
                         if (section != null) {

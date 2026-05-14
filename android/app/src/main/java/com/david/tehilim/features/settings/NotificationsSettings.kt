@@ -12,6 +12,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -28,9 +29,9 @@ import com.david.tehilim.core.service.NotificationScheduler
 @Composable
 fun NotificationsSettingsSection() {
     val context = LocalContext.current
-    var enabled by rememberSaveable { mutableStateOf(false) }
-    var hour by rememberSaveable { mutableIntStateOf(9) }
-    var minute by rememberSaveable { mutableIntStateOf(0) }
+    var enabled by remember { mutableStateOf(false) }
+    var hour by remember { mutableIntStateOf(9) }
+    var minute by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),

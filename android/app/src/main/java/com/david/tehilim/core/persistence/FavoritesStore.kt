@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private val Context.favoritesDataStore by preferencesDataStore(name = "tehilim_favorites")
@@ -55,7 +56,8 @@ class FavoritesStore(private val context: Context) {
     }
 
     private suspend fun persist(values: Set<Int>) {
-        val json = Json.encodeToString<List<Int>>(values.sorted())
+        val sorted: List<Int> = values.sorted()
+        val json = Json.encodeToString(sorted)
         context.favoritesDataStore.edit { it[key] = json }
     }
 }

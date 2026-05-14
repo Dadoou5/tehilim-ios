@@ -29,7 +29,7 @@ import com.david.tehilim.ui.components.VerseRow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Psalm119SectionScreen(container: AppContainer, index: Int, navController: NavController) {
-    val section = container.psalm119Repository.section(at = index) ?: return
+    val section = container.psalm119Repository.sectionAt(index) ?: return
     val psalm = container.psalmRepository.psalm(119) ?: return
     val verses = psalm.verses.filter { it.number in section.versesRange }
 

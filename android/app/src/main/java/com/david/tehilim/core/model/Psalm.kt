@@ -26,7 +26,7 @@ data class Psalm(
             5 to 107..150
         )
 
-        fun book(forId id: Int): Int? =
+        fun bookOf(id: Int): Int? =
             bookRanges.entries.firstOrNull { it.value.contains(id) }?.key
     }
 }

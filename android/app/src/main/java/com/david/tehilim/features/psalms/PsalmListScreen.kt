@@ -40,7 +40,7 @@ fun PsalmListScreen(
     val favorites by container.favorites.ids.collectAsState()
     val psalms = when {
         favoritesOnly -> favorites.sorted().mapNotNull { container.psalmRepository.psalm(it) }
-        book != null -> container.psalmRepository.psalms(inBook = book)
+        book != null -> container.psalmRepository.psalmsInBook(book)
         else -> container.psalmRepository.allPsalms
     }
     val title = when {

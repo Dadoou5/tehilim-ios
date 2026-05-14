@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 private val Context.savedPrayersDataStore by preferencesDataStore(name = "tehilim_saved_prayers")
@@ -77,7 +78,7 @@ class SavedPrayerStore(private val context: Context) {
         scope.launch { persist() }
     }
 
-    fun filtered(by type: PrayerType): List<SavedPrayerIntent> =
+    fun filtered(type: PrayerType): List<SavedPrayerIntent> =
         _intents.value.filter { it.prayerType == type }
 
     // MARK: - I/O
@@ -89,7 +90,8 @@ class SavedPrayerStore(private val context: Context) {
     }
 
     private suspend fun persist() {
-        val payload = json.encodeToString(_intents.value)
+        val list: List<SavedPrayerIntent> = _intents.value
+        val payload = json.encodeToString(list)
         context.savedPrayersDataStore.edit { it[key] = payload }
     }
 }

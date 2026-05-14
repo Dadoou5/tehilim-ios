@@ -83,6 +83,7 @@ struct HomeView: View {
                     Button { searchPresented = true } label: {
                         Image(systemName: "magnifyingglass")
                     }
+                    .keyboardShortcut("f", modifiers: .command)
                     .accessibilityLabel("Rechercher")
                 }
             }

@@ -128,6 +128,7 @@ struct PsalmDetailView: View {
                     Label("Tehilim \(prev)", systemImage: "chevron.left")
                 }
                 .buttonStyle(.bordered)
+                .keyboardShortcut("[", modifiers: .command)
                 .accessibilityLabel("Tehilim précédent, numéro \(prev)")
             } else {
                 Spacer()
@@ -140,6 +141,7 @@ struct PsalmDetailView: View {
                         .environment(\.layoutDirection, .leftToRight)
                 }
                 .buttonStyle(.bordered)
+                .keyboardShortcut("]", modifiers: .command)
                 .accessibilityLabel("Tehilim suivant, numéro \(next)")
             } else {
                 Spacer()

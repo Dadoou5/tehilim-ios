@@ -51,9 +51,14 @@ struct RootTabView: View {
 
     private func handleDeepLink(_ url: URL) {
         guard url.scheme == "tehilim" else { return }
-        // tehilim://daily → onglet Aujourd'hui, pile vide
-        if url.host == "daily" {
-            router.go(.daily, resetPath: true)
+        // tehilim://<host> → onglet correspondant, pile vide
+        switch url.host {
+        case "daily":     router.go(.daily, resetPath: true)
+        case "lifecases": router.go(.lifeCases, resetPath: true)
+        case "psalms":    router.go(.psalms, resetPath: true)
+        case "settings":  router.go(.settings, resetPath: true)
+        case "home":      router.go(.home, resetPath: true)
+        default: break
         }
     }
 

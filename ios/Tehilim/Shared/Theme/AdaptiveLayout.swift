@@ -30,6 +30,13 @@ enum AdaptiveLayout {
     static func psalm119ColumnCount(for sizeClass: UserInterfaceSizeClass?) -> Int {
         sizeClass == .regular ? 8 : 4
     }
+
+    /// Nombre de colonnes pour la grille des « Cas de la vie ».
+    /// 18 cas répartis en 5 sections → 2 colonnes (iPhone) / 3 colonnes (iPad).
+    /// On évite la 4ᵉ colonne pour garder des cartes assez larges pour le texte.
+    static func lifeCaseColumnCount(for sizeClass: UserInterfaceSizeClass?) -> Int {
+        sizeClass == .regular ? 3 : 2
+    }
 }
 
 /// View modifier : limite la largeur d'une vue de lecture et la centre.

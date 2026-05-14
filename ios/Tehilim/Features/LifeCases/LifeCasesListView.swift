@@ -1,8 +1,18 @@
 import SwiftUI
 
 /// Contenu de la liste — utilisable comme destination dans n'importe quelle pile.
+/// Refondu en V1.8.1 : grille adaptive de cartes au lieu d'une List, pour mieux
+/// exploiter la largeur de l'iPad tout en restant lisible sur iPhone.
 struct LifeCasesListView: View {
     @EnvironmentObject private var container: AppContainer
+    @Environment(\.horizontalSizeClass) private var hSize
+
+    private var columns: [GridItem] {
+        Array(
+            repeating: GridItem(.flexible(), spacing: 12),
+            count: AdaptiveLayout.lifeCaseColumnCount(for: hSize)
+        )
+    }
 
     var body: some View {
         Group {
@@ -13,30 +23,40 @@ struct LifeCasesListView: View {
                     message: "Le contenu sera disponible après validation éditoriale."
                 )
             } else {
-                List {
-                    ForEach(container.lifeCaseRepository.grouped) { group in
-                        Section(group.localizedTitle) {
-                            ForEach(group.cases) { c in
-                                NavigationLink(destination: LifeCaseDetailView(caseId: c.id)) {
-                                    HStack(spacing: 12) {
-                                        Image(systemName: c.symbol)
-                                            .foregroundStyle(Color.accentMain)
-                                            .frame(width: 28)
-                                        VStack(alignment: .leading) {
-                                            Text(c.localizedTitle).font(.headline)
-                                            Text("\(c.psalms.count) Tehilim").font(.caption).foregroundStyle(.secondary)
-                                        }
-                                    }
-                                }
-                            }
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 20, pinnedViews: []) {
+                        ForEach(container.lifeCaseRepository.grouped) { group in
+                            sectionView(for: group)
                         }
                     }
+                    .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
+                    .padding(.vertical, 16)
+                    .readingWidth()
                 }
-                .listStyle(.insetGrouped)
-                .appBackground()
+                .background(Color.bgPrimary)
             }
         }
         .navigationTitle("Cas de la vie")
+    }
+
+    @ViewBuilder
+    private func sectionView(for group: LifeCaseRepository.Group) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(group.localizedTitle)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.primary)
+                .accessibilityAddTraits(.isHeader)
+                .padding(.horizontal, 2)
+
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(group.cases) { c in
+                    NavigationLink(destination: LifeCaseDetailView(caseId: c.id)) {
+                        LifeCaseCard(lifeCase: c)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
     }
 }
 

@@ -1,5 +1,37 @@
 # Notes de version Tehilim
 
+## V1.8.1 — 14 mai 2026 (build 10) — Cas de la vie repensés pour iPad
+
+### Refonte « Cas de la vie »
+- **Grille adaptive de cartes** à la place d'une simple liste. Chaque catégorie affiche
+  son icône colorée, son titre, un extrait du conseil et le nombre de Tehilim à lire.
+- **3 colonnes sur iPad**, 2 colonnes sur iPhone — exploite enfin la largeur du grand
+  écran sans étirer la lecture.
+- **Sections visuellement distinctes** (Cycle de vie, Santé et épreuves, Spiritualité,
+  Communauté et calendrier, Autres) avec leur propre header au-dessus de chaque grille.
+
+### Détail d'une catégorie
+- Header carte avec icône colorée + extrait du conseil + compteur de Tehilim
+- Boutons « Prière avant » / « Prière après » repensés en cartes claires
+- **Grille de Tehilim** : 3 colonnes sur iPad, liste verticale sur iPhone
+- Reading width cap appliqué pour la lisibilité
+
+### Raccourcis clavier (Magic Keyboard iPad)
+- **⌘F** — ouvrir la recherche depuis l'accueil
+- **⌘[** — Tehilim précédent (depuis la lecture)
+- **⌘]** — Tehilim suivant (depuis la lecture)
+
+### Deep-linking étendu
+- `tehilim://home` → onglet Accueil
+- `tehilim://psalms` → onglet Tehilim
+- `tehilim://daily` → onglet Aujourd'hui (déjà présent)
+- `tehilim://lifecases` → onglet Cas de la vie
+- `tehilim://settings` → onglet Réglages
+
+Utile pour les futures intégrations avec Raccourcis Apple, widgets et automations.
+
+---
+
 ## V1.8.0 — 14 mai 2026 (build 9) — Tehilim sur iPad
 
 ### Universal binary

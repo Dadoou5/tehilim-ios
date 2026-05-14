@@ -1,5 +1,23 @@
 # Notes de version Tehilim
 
+## V1.9.2 — 14 mai 2026 (build 13) — AlphaBeta repensé pour iPad
+
+### Refonte de la grille des 22 lettres
+- **Pavés enrichis sur iPad** : la lettre (64pt au lieu de 44), son nom phonétique
+  (אלף, בית, גימל...), le numéro de section et le range de versets (v. 1–8, v. 9–16, etc.)
+- **6 colonnes au lieu de 8** sur iPad → meilleur ratio des pavés, plus d'air entre eux
+- **Pleine largeur** : la grille utilise désormais toute la largeur de l'écran iPad
+  (suppression du cap 700pt) pour exploiter pleinement la place disponible
+- **Header de contexte** sur iPad : carte d'introduction expliquant le principe
+  des 22 sections alphabétiques
+- iPhone (compact) : aucun changement, pavés compacts comme avant
+
+### Architecture
+- `HebrewLetterTile` adaptatif via `@Environment(\.horizontalSizeClass)`
+- `AdaptiveLayout.psalm119ColumnCount(...)` : 8 → 6 sur regular
+
+---
+
 ## V1.9.1 — 14 mai 2026 (build 12) — Hotfix : toggle traduction iPad
 
 ### Fix

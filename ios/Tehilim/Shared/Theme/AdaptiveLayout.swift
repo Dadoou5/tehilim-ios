@@ -26,9 +26,11 @@ enum AdaptiveLayout {
     }
 
     /// Nombre de colonnes pour la grille des 22 lettres hébraïques (Tehilim 119).
-    /// 22 lettres → 4 colonnes (6 lignes) sur iPhone, 8 colonnes (3 lignes) sur iPad.
+    /// 22 lettres → 4 colonnes (6 lignes) sur iPhone, 6 colonnes (4 lignes) sur iPad.
+    /// Choix de 6 plutôt que 8 : pavés plus grands, plus aérés, meilleur pour l'œil
+    /// et pour la nouvelle info enrichie (nom de lettre + range de versets).
     static func psalm119ColumnCount(for sizeClass: UserInterfaceSizeClass?) -> Int {
-        sizeClass == .regular ? 8 : 4
+        sizeClass == .regular ? 6 : 4
     }
 
     /// Nombre de colonnes pour la grille des « Cas de la vie ».

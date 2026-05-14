@@ -98,6 +98,13 @@ dependencies {
     // Splash screen
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // WorkManager — notifications quotidiennes
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Glance — widget Compose-like
+    implementation("androidx.glance:glance-appwidget:1.1.0")
+    implementation("androidx.glance:glance-material3:1.1.0")
+
     // Tests
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")

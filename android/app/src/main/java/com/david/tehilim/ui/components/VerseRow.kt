@@ -1,5 +1,7 @@
 package com.david.tehilim.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import com.david.tehilim.core.model.TextSize
 import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.core.model.Verse
 import com.david.tehilim.core.model.VerseNumberStyle
+import com.david.tehilim.core.service.HebrewTransliterator
 import com.david.tehilim.ui.theme.frenchBodyStyle
 import com.david.tehilim.ui.theme.hebrewBodyStyle
 import com.david.tehilim.ui.theme.verseNumberStyle
@@ -27,10 +30,13 @@ import com.david.tehilim.ui.theme.verseNumberStyle
  * Une ligne de verset — équivalent du VerseRowView iOS.
  *
  * Layout :
- * - Mode hébreu : texte hébreu aligné à droite (RTL) + numéro de verset à droite
- * - Mode phonétique : texte latin aligné à gauche + numéro à gauche
+ * - Mode hébreu : texte hébreu aligné à droite (RTL) + numéro à droite
+ * - Mode phonétique : texte translittéré à gauche + numéro à gauche
  * - Traduction en dessous si showTranslation
+ *
+ * **Long-press** : déclenche `onLongClick` (= partage du verset en image stylisée 1080×1080).
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VerseRow(
     verse: Verse,
@@ -40,12 +46,18 @@ fun VerseRow(
     textSizeFR: TextSize,
     numberStyle: VerseNumberStyle,
     translationLang: TranslationLanguage,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null
 ) {
+    val baseModifier = modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp)
+    val interactiveModifier = if (onLongClick != null) {
+        baseModifier.combinedClickable(onLongClick = onLongClick, onClick = {})
+    } else baseModifier
+
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = interactiveModifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (textMode == TextMode.HEBREW) {
@@ -82,10 +94,9 @@ fun VerseRow(
                     style = verseNumberStyle(textSizeHebrew.scale),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                // V1 : pas encore de translitérateur Android, on affiche l'hébreu en LTR
-                // (TODO : porter HebrewTransliterator.swift en Kotlin)
+                // V1.1 : translittération sépharade via HebrewTransliterator
                 Text(
-                    text = verse.hebrew,
+                    text = HebrewTransliterator.transliterate(verse.hebrew),
                     style = hebrewBodyStyle(textSizeHebrew.scale),
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)

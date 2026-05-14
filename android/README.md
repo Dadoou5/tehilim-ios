@@ -93,26 +93,36 @@ Mirror exact des tests iOS :
 
 Exécuter : `./gradlew test`
 
-## 📱 Status fonctionnel V1.0 Android
+## 📱 Status fonctionnel V1.1 Android (parité iOS V1.10.5)
 
 | Feature | Status |
 |---|---|
-| Affichage des 150 Tehilim (hébreu + FR + EN) | ✅ |
-| 5 onglets (Accueil, Tehilim, Aujourd'hui, Cas de la vie, Réglages) | ✅ |
+| 150 Tehilim avec hébreu + FR + EN | ✅ |
+| 5 onglets + recherche globale | ✅ |
 | Lecture détaillée avec téamim (Ezra SIL SR) | ✅ |
+| **Calendrier hébraïque complet** (ICU HebrewCalendar) | ✅ |
+| **Translittération phonétique sépharade** (port HebrewTransliterator) | ✅ |
+| **HebrewDateBanner** (jour + translittération + RTL hébreu) | ✅ |
 | Picker Livres / Tous / Favoris | ✅ |
-| Tehilim 119 — grille 22 lettres + sections | ✅ |
+| Tehilim 119 — grille 22 lettres enrichies (lettre + nom + range) | ✅ |
 | Cas de la vie + détail | ✅ |
-| Lelouy Nichmat — formulaire + génération + auto-save + liste | ✅ |
-| Réglages (thème, langue, taille texte, mode, etc.) | ✅ |
-| Persistence DataStore (Preferences, Favoris, Prières) | ✅ |
-| Tests unitaires (mapper + generator) | ✅ |
-| Calendrier hébraïque complet | 🟡 Placeholder (port `HebrewDateFormatter.swift` à faire) |
-| Translittération phonétique | 🟡 Placeholder (port `HebrewTransliterator.swift` à faire) |
-| Notifications quotidiennes | 🔴 V1.1 (WorkManager) |
-| Widget « Tehilim du jour » | 🔴 V1.1 (Glance) |
-| Partage stylisé d'un verset | 🔴 V1.1 |
-| Sync cloud (équivalent iCloud KVS) | 🟡 Backup Android Auto Backup actif |
+| **Prière avant / après** — ModalBottomSheet | ✅ |
+| **Recherche** par numéro / hébreu / mot-clé | ✅ |
+| Lelouy Nichmat — formulaire + auto-save + liste | ✅ |
+| Sequence context Tehilim 119 (prev/next dans Lelouy) | ✅ |
+| Réglages (thème, langue, taille texte, mode) | ✅ |
+| **Notifications quotidiennes** (WorkManager) | ✅ |
+| **Widget « Tehilim du jour »** (Glance) | ✅ |
+| **Partage stylisé** d'un verset en image 1080×1080 (long-press) | ✅ |
+| **Onboarding** 3 pages | ✅ |
+| **About pages** (Sources, Confidentialité) | ✅ |
+| **AdaptiveLayout** tablette (>600dp) + reading width cap | ✅ |
+| DataStore (Preferences, Favoris, Prières) | ✅ |
+| Tests JUnit (mapper, generator, transliterator) | ✅ |
+| Auto-Backup Android (sync Drive auto) | ✅ |
+| NavigationSplitView 2-col tablette | 🟡 V1.2 |
+| Mode lecture parallèle (paysage tablette) | 🟡 V1.2 |
+| TimePicker dialog pour heure notif | 🟡 V1.2 |
 
 ## 🌐 Différences UX vs iOS
 

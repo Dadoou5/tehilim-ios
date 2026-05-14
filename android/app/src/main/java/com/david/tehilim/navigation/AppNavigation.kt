@@ -36,6 +36,9 @@ import com.david.tehilim.features.psalm119.Psalm119SectionScreen
 import com.david.tehilim.features.psalms.PsalmDetailScreen
 import com.david.tehilim.features.psalms.PsalmListScreen
 import com.david.tehilim.features.psalms.PsalmsScreen
+import com.david.tehilim.features.search.SearchScreen
+import com.david.tehilim.features.settings.AboutContentScreen
+import com.david.tehilim.features.settings.AboutPrivacyScreen
 import com.david.tehilim.features.settings.SettingsScreen
 
 @Composable
@@ -88,6 +91,19 @@ fun AppNavigation(container: AppContainer) {
             }
             composable(TopLevelDestination.Settings.route) {
                 SettingsScreen(container = container)
+            }
+
+            // Recherche
+            composable("search") {
+                SearchScreen(container = container, navController = navController)
+            }
+
+            // About
+            composable("about/content") {
+                AboutContentScreen(navController = navController)
+            }
+            composable("about/privacy") {
+                AboutPrivacyScreen(navController = navController)
             }
 
             // Détail Tehilim

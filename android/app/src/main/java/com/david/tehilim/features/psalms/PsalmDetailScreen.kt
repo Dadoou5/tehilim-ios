@@ -38,10 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
 import com.david.tehilim.core.model.TextMode
+import com.david.tehilim.features.sharing.VerseShareRenderer
 import com.david.tehilim.ui.components.IluyNishmatBanner
 import com.david.tehilim.ui.components.VerseRow
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 import com.david.tehilim.ui.theme.hebrewTitleStyle
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +57,7 @@ fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavC
     }
 
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val favorites by container.favorites.ids.collectAsState()
     val isFav = favorites.contains(psalmId)
 
@@ -139,7 +143,17 @@ fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavC
                     textSizeHebrew = textSizeHebrew,
                     textSizeFR = textSizeFR,
                     numberStyle = numberStyle,
-                    translationLang = appLanguage.translation
+                    translationLang = appLanguage.translation,
+                    onLongClick = {
+                        scope.launch(Dispatchers.IO) {
+                            VerseShareRenderer.renderAndShare(
+                                context = context,
+                                psalm = psalm,
+                                verse = verse,
+                                translationLang = appLanguage.translation
+                            )
+                        }
+                    }
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             }

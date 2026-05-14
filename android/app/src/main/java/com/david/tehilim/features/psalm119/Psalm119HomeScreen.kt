@@ -1,5 +1,6 @@
 package com.david.tehilim.features.psalm119
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -88,28 +89,18 @@ fun Psalm119HomeScreen(container: AppContainer, navController: NavController) {
                 contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp)
             ) {
                 items(sections) { section ->
-                    AppCard(
-                        onClick = { navController.navigate(Routes.psalm119Section(section.index)) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                section.letter,
-                                fontSize = androidx.compose.ui.unit.TextUnit(40f, androidx.compose.ui.unit.TextUnitType.Sp),
-                                style = androidx.compose.ui.text.TextStyle(fontFamily = EzraSilFontFamily),
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                "${section.index}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    androidx.compose.foundation.layout.Box(
+                        modifier = Modifier.fillMaxWidth().clickable {
+                            navController.navigate(Routes.psalm119Section(section.index))
                         }
+                    ) {
+                        com.david.tehilim.ui.components.HebrewLetterTile(
+                            letter = section.letter,
+                            index = section.index,
+                            name = section.name,
+                            verseStart = section.verseStart,
+                            verseEnd = section.verseEnd
+                        )
                     }
                 }
             }

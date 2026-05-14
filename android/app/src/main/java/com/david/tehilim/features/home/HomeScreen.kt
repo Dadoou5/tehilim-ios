@@ -5,42 +5,47 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.AutoStories
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.TextFields
-import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.core.model.Prayer
+import com.david.tehilim.features.prayers.PrayerSheet
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.navigation.TopLevelDestination
 import com.david.tehilim.ui.components.AppCard
+import com.david.tehilim.ui.components.HebrewDateBanner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,9 +55,19 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
     val dailyMode by container.preferences.dailyMode.collectAsState(initial = com.david.tehilim.core.model.DailyMode.MONTHLY)
 
     val todayPsalms = container.dailyEngine.psalmsForToday(dailyMode)
+    var presentedPrayer by remember { mutableStateOf<Prayer.Kind?>(null) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Tehilim") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text("Tehilim") },
+                actions = {
+                    IconButton(onClick = { navController.navigate("search") }) {
+                        Icon(Icons.Outlined.Search, "Rechercher")
+                    }
+                }
+            )
+        }
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -62,22 +77,8 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Date hébraïque — placeholder V1, mettre HebrewDateFormatter Kotlin port plus tard
-            item {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = java.time.LocalDate.now()
-                            .format(java.time.format.DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", java.util.Locale.FRENCH)),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "Calendrier hébraïque (V1)",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            // Date hébraïque
+            item { HebrewDateBanner() }
 
             // Reprendre la lecture
             if (lastReadId != null) {
@@ -85,14 +86,12 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
                     SectionHeader("Reprendre la lecture")
                     AppCard(onClick = { navController.navigate(Routes.psalmDetail(lastReadId!!)) }) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("Tehilim $lastReadId", style = MaterialTheme.typography.titleMedium)
-                            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null)
+                            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
                         }
                     }
                 }
@@ -103,13 +102,11 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
                 SectionHeader("Mes favoris")
                 AppCard(onClick = { navController.navigate(Routes.PSALM_LIST_FAVORITES) }) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Outlined.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Outlined.Favorite, null, tint = MaterialTheme.colorScheme.primary)
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = when (favorites.size) {
@@ -127,7 +124,7 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
                     }
                 }
             }
@@ -136,20 +133,17 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
             item {
                 SectionHeader("Tehilim du jour", subtitle = dailyMode.label)
                 AppCard(onClick = { navController.navigate(TopLevelDestination.Daily.route) }) {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                         if (todayPsalms.isEmpty()) {
                             Text("Aucun Tehilim défini pour ce mode.", style = MaterialTheme.typography.bodyMedium)
                         } else {
                             Text(
-                                text = todayPsalms.take(8).joinToString(" · "),
+                                todayPsalms.take(8).joinToString(" · "),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             if (todayPsalms.size > 8) {
-                                Spacer(Modifier.size(4.dp))
                                 Text(
-                                    text = "+${todayPsalms.size - 8}",
+                                    "+${todayPsalms.size - 8}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -170,11 +164,22 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
                     contentPadding = PaddingValues(0.dp),
                     userScrollEnabled = false
                 ) {
-                    items(exploreCards(navController)) { card ->
+                    items(exploreCards(navController) {
+                        presentedPrayer = it
+                    }) { card ->
                         ExploreCard(symbol = card.icon, title = card.title, onClick = card.onClick)
                     }
                 }
             }
+        }
+
+        // Sheets prières
+        presentedPrayer?.let { kind ->
+            PrayerSheet(
+                kind = kind,
+                container = container,
+                onDismiss = { presentedPrayer = null }
+            )
         }
     }
 }
@@ -184,7 +189,8 @@ private fun SectionHeader(title: String, subtitle: String? = null) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(title, style = MaterialTheme.typography.titleMedium)
         if (subtitle != null) {
-            Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(subtitle, style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -192,11 +198,9 @@ private fun SectionHeader(title: String, subtitle: String? = null) {
 @Composable
 private fun ExploreCard(symbol: ImageVector, title: String, onClick: () -> Unit) {
     AppCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Icon(symbol, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Icon(symbol, null, tint = MaterialTheme.colorScheme.primary)
             Text(title, style = MaterialTheme.typography.titleSmall)
         }
     }
@@ -204,11 +208,14 @@ private fun ExploreCard(symbol: ImageVector, title: String, onClick: () -> Unit)
 
 private data class ExploreCardSpec(val icon: ImageVector, val title: String, val onClick: () -> Unit)
 
-private fun exploreCards(nav: NavController): List<ExploreCardSpec> = listOf(
+private fun exploreCards(
+    nav: NavController,
+    onPrayer: (Prayer.Kind) -> Unit
+): List<ExploreCardSpec> = listOf(
     ExploreCardSpec(Icons.Outlined.MenuBook, "5 livres") { nav.navigate(TopLevelDestination.Psalms.route) },
     ExploreCardSpec(Icons.Outlined.Favorite, "Cas de la vie") { nav.navigate(TopLevelDestination.LifeCases.route) },
     ExploreCardSpec(Icons.Outlined.TextFields, "119 - AlphaBeta") { nav.navigate(Routes.PSALM_119_HOME) },
     ExploreCardSpec(Icons.Outlined.AutoStories, "Tous (1–150)") { nav.navigate(Routes.PSALM_LIST_ALL) },
-    ExploreCardSpec(Icons.Outlined.PlayCircle, "Prière avant") { /* TODO: prayer sheet */ },
-    ExploreCardSpec(Icons.Outlined.CheckCircle, "Prière après") { /* TODO: prayer sheet */ }
+    ExploreCardSpec(Icons.Outlined.PlayCircle, "Prière avant") { onPrayer(Prayer.Kind.BEFORE) },
+    ExploreCardSpec(Icons.Outlined.CheckCircle, "Prière après") { onPrayer(Prayer.Kind.AFTER) }
 )

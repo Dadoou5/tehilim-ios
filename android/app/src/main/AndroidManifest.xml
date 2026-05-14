@@ -17,6 +17,30 @@
         android:theme="@style/Theme.Tehilim.Starting"
         tools:targetApi="35">
 
+        <!-- Widget « Tehilim du jour » (Glance / Compose) -->
+        <receiver
+            android:name=".widget.DailyVerseWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_description">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/daily_verse_widget_info" />
+        </receiver>
+
+        <!-- FileProvider pour le partage d'images de versets (V1.1) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

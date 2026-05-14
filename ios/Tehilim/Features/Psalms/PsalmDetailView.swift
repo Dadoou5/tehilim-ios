@@ -6,6 +6,7 @@ struct PsalmDetailView: View {
     @StateObject private var prefs = Preferences()
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.horizontalSizeClass) private var hSize
 
     let psalmId: Int
     /// Liste de psaumes dans laquelle naviguer (prev/next).
@@ -15,6 +16,17 @@ struct PsalmDetailView: View {
 
     @State private var localShowFR: Bool? = nil
     @State private var presentedPrayer: Prayer.Kind? = nil
+    @State private var containerWidth: CGFloat = 0
+
+    private var sideBySide: Bool {
+        AdaptiveLayout.shouldUseSideBySide(containerWidth: containerWidth, sizeClass: hSize)
+            && showFR
+            && prefs.textMode == .hebrew
+    }
+
+    private var maxContentWidth: CGFloat {
+        sideBySide ? AdaptiveLayout.sideBySideMaxWidth : AdaptiveLayout.readingMaxWidth
+    }
 
     var body: some View {
         Group {
@@ -57,7 +69,8 @@ struct PsalmDetailView: View {
                         textSizeFR: prefs.textSizeFR,
                         numberStyle: prefs.verseNumberStyle,
                         translationLang: prefs.appLanguage.translation,
-                        parentPsalm: psalm
+                        parentPsalm: psalm,
+                        sideBySideTranslation: sideBySide
                     )
                     .padding(.horizontal, 16)
                     Divider().padding(.horizontal, 16).opacity(0.3)
@@ -65,9 +78,16 @@ struct PsalmDetailView: View {
                 navigation(prev: n.prev, next: n.next)
                     .padding(.vertical, 24)
             }
-            .readingWidth()
+            .readingWidth(maxWidth: maxContentWidth)
         }
         .background(Color.bgPrimary)
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear { containerWidth = proxy.size.width }
+                    .onChange(of: proxy.size.width) { _, new in containerWidth = new }
+            }
+        )
         .navigationTitle("Tehilim \(psalm.id) · \(psalm.hebrewNumber)")
         .toolbar { toolbarContent(psalm: psalm) }
         .sheet(item: $presentedPrayer) { kind in

@@ -37,23 +37,45 @@ enum AdaptiveLayout {
     static func lifeCaseColumnCount(for sizeClass: UserInterfaceSizeClass?) -> Int {
         sizeClass == .regular ? 3 : 2
     }
+
+    /// Largeur minimale d'un container pour activer le mode lecture parallèle
+    /// (hébreu et traduction côte-à-côte).
+    /// 900pt → confortable pour 2 colonnes de ~430pt chacune.
+    static let sideBySideMinWidth: CGFloat = 900
+
+    /// En mode lecture parallèle on dépasse la limite habituelle de 700pt
+    /// pour pouvoir afficher 2 colonnes de texte côte-à-côte.
+    static let sideBySideMaxWidth: CGFloat = 1200
+
+    /// Détermine si le mode parallèle doit s'activer pour un container donné.
+    static func shouldUseSideBySide(
+        containerWidth: CGFloat,
+        sizeClass: UserInterfaceSizeClass?
+    ) -> Bool {
+        sizeClass == .regular && containerWidth >= sideBySideMinWidth
+    }
 }
 
 /// View modifier : limite la largeur d'une vue de lecture et la centre.
 /// Aucun effet sur iPhone (la vue prend déjà toute la largeur).
-/// Sur iPad, cap à `AdaptiveLayout.readingMaxWidth` pour garder des lignes lisibles.
+/// Sur iPad, cap à `maxWidth` pour garder des lignes lisibles.
 struct ReadingWidthModifier: ViewModifier {
+    let maxWidth: CGFloat
+
     func body(content: Content) -> some View {
         content
-            .frame(maxWidth: AdaptiveLayout.readingMaxWidth)
+            .frame(maxWidth: maxWidth)
             .frame(maxWidth: .infinity)
     }
 }
 
 extension View {
-    /// Limite la largeur du contenu de lecture (700pt max, centré).
+    /// Limite la largeur du contenu de lecture (700pt max par défaut, centré).
     /// À appliquer sur le `VStack` racine à l'intérieur d'un `ScrollView`.
-    func readingWidth() -> some View {
-        modifier(ReadingWidthModifier())
+    /// - Parameter maxWidth: Largeur maximale du contenu. Par défaut 700pt
+    ///   (lecture standard). Passer `AdaptiveLayout.sideBySideMaxWidth` (1200pt)
+    ///   pour le mode lecture parallèle iPad paysage.
+    func readingWidth(maxWidth: CGFloat = AdaptiveLayout.readingMaxWidth) -> some View {
+        modifier(ReadingWidthModifier(maxWidth: maxWidth))
     }
 }

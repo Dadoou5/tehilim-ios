@@ -1,5 +1,36 @@
 # Notes de version Tehilim
 
+## V1.9.0 — 14 mai 2026 (build 11) — Lecture parallèle + Sidebar iPad
+
+### NavigationSplitView pour l'onglet Tehilim (iPad)
+- Sur iPad (regular size class), l'onglet **Tehilim** bascule en **2 colonnes** :
+  sidebar à gauche (picker + liste), Tehilim lu à droite. Plus besoin de revenir
+  en arrière pour changer de psaume.
+- Welcome view élégante quand aucun Tehilim n'est sélectionné.
+- Highlight de la ligne sélectionnée (accent color + checkmark côté favoris).
+- Sur iPhone et iPad portrait, navigation classique préservée (NavigationStack).
+
+### Mode lecture parallèle (hébreu ‖ traduction)
+- Sur **iPad paysage** + traduction activée + mode hébreu, le texte hébreu et sa
+  traduction s'affichent désormais **côte-à-côte** au lieu d'empilés.
+- Auto-détecté à partir d'une largeur de container ≥ 900pt — pas de réglage à
+  toucher, ça s'active naturellement quand l'écran est assez large.
+- Cap de largeur étendu à 1200pt en mode parallèle (au lieu de 700pt par défaut).
+
+### Fix régression V1.7
+- **Carte de partage de verset** : la langue de la traduction et l'attribution
+  de source suivent désormais la préférence active (FR/EN) au lieu d'afficher
+  toujours « Traduction : Beth Loubavitch » en français.
+
+### Architecture
+- `AdaptiveLayout` enrichi : `shouldUseSideBySide(containerWidth:sizeClass:)`,
+  `sideBySideMinWidth`, `sideBySideMaxWidth`.
+- `ReadingWidthModifier` paramétrable (max width custom).
+- Listes (PsalmList, BookList, FavoritesList) acceptent un `selection: Binding<Int?>?`
+  optionnel — nil = comportement push classique, non-nil = pilote la detail column.
+
+---
+
 ## V1.8.1 — 14 mai 2026 (build 10) — Cas de la vie repensés pour iPad
 
 ### Refonte « Cas de la vie »

@@ -1,10 +1,13 @@
 import SwiftUI
 
 struct BookListView: View {
+    /// Forwardé à PsalmListView pour activer la sélection en mode NavigationSplitView.
+    var selection: Binding<Int?>? = nil
+
     var body: some View {
         List {
             ForEach(1...5, id: \.self) { book in
-                NavigationLink(destination: PsalmListView(book: book)) {
+                NavigationLink(destination: PsalmListView(book: book, selection: selection)) {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Livre \(book)").font(.headline)

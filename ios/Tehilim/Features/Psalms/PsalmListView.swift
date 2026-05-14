@@ -7,12 +7,31 @@ struct PsalmListView: View {
     /// Si nil → liste complète.
     let book: Int?
 
+    /// Optionnel : binding de sélection pour le mode NavigationSplitView (iPad).
+    /// - nil : comportement standard (NavigationLink push, iPhone et iPad portrait)
+    /// - non-nil : tap met à jour la sélection → la detail column affiche le Tehilim
+    var selection: Binding<Int?>? = nil
+
     @State private var query: String = ""
 
     var body: some View {
         List(filteredPsalms) { psalm in
-            NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
-                psalmRow(psalm)
+            if let selection {
+                Button {
+                    selection.wrappedValue = psalm.id
+                } label: {
+                    psalmRow(psalm, isSelected: selection.wrappedValue == psalm.id)
+                }
+                .buttonStyle(.plain)
+                .listRowBackground(
+                    selection.wrappedValue == psalm.id
+                    ? Color.accentMain.opacity(0.12)
+                    : Color.clear
+                )
+            } else {
+                NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
+                    psalmRow(psalm, isSelected: false)
+                }
             }
         }
         .listStyle(.plain)
@@ -40,10 +59,11 @@ struct PsalmListView: View {
     }
 
     @ViewBuilder
-    private func psalmRow(_ psalm: Psalm) -> some View {
+    private func psalmRow(_ psalm: Psalm, isSelected: Bool) -> some View {
         HStack(spacing: 12) {
             Text("\(psalm.id)")
                 .font(.callout.weight(.semibold))
+                .foregroundStyle(isSelected ? Color.accentMain : .primary)
                 .frame(width: 36, alignment: .leading)
             Text(psalm.hebrewNumber)
                 .font(.callout)

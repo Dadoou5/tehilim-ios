@@ -5,7 +5,7 @@ Port Android du projet iOS Tehilim — même corpus, même design, **fonctionnal
 ## 🏗️ Stack technique
 
 - **Kotlin 2.0** + **Jetpack Compose** (Material 3)
-- **min SDK 26** (Android 8.0) · **target SDK 35** (Android 15)
+- **min SDK 26** (Android 8.0) · **target SDK 36** (Android 16, recommandé Play Store 2026)
 - **DataStore Preferences** (UserDefaults équivalent)
 - **kotlinx.serialization** pour les JSON (Codable équivalent)
 - **Navigation Compose** (5 tabs)

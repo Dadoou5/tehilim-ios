@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.david.tehilim"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.david.tehilim"
         minSdk = 26              // Android 8.0 — 95%+ devices, RTL natif solide
-        targetSdk = 35
+        targetSdk = 36           // Android 16 (Baklava) — recommandé Play Store 2026
         versionCode = 1
         versionName = "1.0.0"
 

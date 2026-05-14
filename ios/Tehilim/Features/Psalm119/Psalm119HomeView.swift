@@ -95,7 +95,7 @@ struct Psalm119HomeView: View {
                 // Carte : nouvelle lecture
                 Button { showingForm = true } label: {
                     actionCard(
-                        symbol: "candle.fill",
+                        symbol: "flame.fill",
                         title: "Nouvelle lecture",
                         subtitle: "Élévation de l'âme — prénom + mère",
                         accent: true

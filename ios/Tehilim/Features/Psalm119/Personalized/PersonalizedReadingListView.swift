@@ -114,7 +114,7 @@ struct PersonalizedReadingListView: View {
     private var headerCard: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 8) {
-                Label("Lelouy Nichmat", systemImage: "candle.fill")
+                Label("Lelouy Nichmat", systemImage: "flame.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 10)

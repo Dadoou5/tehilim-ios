@@ -157,7 +157,7 @@ struct PersonalizedReadingFormView: View {
     @ViewBuilder
     private var lelouyBanner: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "candle.fill")
+            Image(systemName: "flame.fill")
                 .font(.title3)
                 .foregroundStyle(Color.accentMain)
                 .accessibilityHidden(true)

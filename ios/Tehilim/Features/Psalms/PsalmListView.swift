@@ -15,29 +15,26 @@ struct PsalmListView: View {
     @State private var query: String = ""
 
     var body: some View {
-        List(filteredPsalms) { psalm in
+        Group {
             if let selection {
-                // iPad NavigationSplitView : tap → met à jour la detail column
-                // V1.9.3 : utilise onTapGesture + contentShape pour assurer la
-                // détection du tap dans toute la zone de la ligne (Button dans
-                // List a une zone de tap parfois étroite).
-                psalmRow(psalm, isSelected: selection.wrappedValue == psalm.id, showChevron: true)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selection.wrappedValue = psalm.id
-                    }
-                    .listRowBackground(
-                        selection.wrappedValue == psalm.id
-                        ? Color.accentMain.opacity(0.12)
-                        : Color.clear
-                    )
-            } else {
-                NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
-                    psalmRow(psalm, isSelected: false, showChevron: false)
+                // V1.9.4 : pattern Apple natif List(items, selection:)
+                // Sur iPad NavigationSplitView, le tap d'une ligne met à jour
+                // automatiquement le binding → la detail column se met à jour.
+                List(filteredPsalms, selection: selection) { psalm in
+                    psalmRow(psalm, isSelected: selection.wrappedValue == psalm.id)
+                        .tag(psalm.id)
                 }
+                .listStyle(.plain)
+            } else {
+                // iPhone / iPad compact : NavigationLink push standard
+                List(filteredPsalms) { psalm in
+                    NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
+                        psalmRow(psalm, isSelected: false)
+                    }
+                }
+                .listStyle(.plain)
             }
         }
-        .listStyle(.plain)
         .appBackground()
         .navigationTitle(book.map { "Livre \($0)" } ?? "Tous les Tehilim")
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always),
@@ -62,7 +59,7 @@ struct PsalmListView: View {
     }
 
     @ViewBuilder
-    private func psalmRow(_ psalm: Psalm, isSelected: Bool, showChevron: Bool) -> some View {
+    private func psalmRow(_ psalm: Psalm, isSelected: Bool) -> some View {
         HStack(spacing: 12) {
             Text("\(psalm.id)")
                 .font(.callout.weight(.semibold))
@@ -84,14 +81,9 @@ struct PsalmListView: View {
                     .foregroundStyle(Color.accentMain)
                     .accessibilityLabel("Favori")
             }
-            if showChevron {
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-                    .accessibilityHidden(true)
-            }
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Tehilim \(psalm.id), \(psalm.verses.count) versets\(favorites.contains(psalm.id) ? ", favori" : "")")
         .accessibilityHint("Ouvre le Tehilim")

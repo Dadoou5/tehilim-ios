@@ -1,5 +1,26 @@
 # Notes de version Tehilim
 
+## V1.9.4 — 14 mai 2026 (build 15) — Fix navigation iPad 5 livres → Tehilim
+
+### Le bug
+Depuis V1.9.0 (NavigationSplitView iPad), tap d'un Tehilim depuis « 5 livres
+→ Livre N » dans la sidebar **ne s'ouvrait pas** dans la detail column.
+Cause : `Button` + `onTapGesture` à l'intérieur d'une `List` ne sont pas
+captés de manière fiable par SwiftUI dans certaines configurations.
+
+### Le fix
+Migration vers le **pattern Apple natif** `List(items, selection:)` :
+- Sur iPad SplitView, la List utilise désormais sa propriété `selection`
+  intrinsèque (au lieu d'un Button avec onTapGesture).
+- SwiftUI gère lui-même le tap d'une ligne → met à jour le binding →
+  re-render automatique de la detail column.
+- Highlight visuel système au passage (sélection bleue native).
+- Sur iPhone : NavigationLink push standard, inchangé.
+
+Appliqué à `PsalmListView` et `FavoritesListView`.
+
+---
+
 ## V1.9.3 — 14 mai 2026 (build 14) — Hotfixes iPad
 
 ### Fix 1 : lecture parallèle dans 119 - AlphaBeta

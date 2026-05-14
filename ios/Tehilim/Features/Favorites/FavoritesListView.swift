@@ -17,64 +17,91 @@ struct FavoritesListView: View {
                     title: "Aucun favori",
                     message: "Tape sur le cœur dans un Tehilim pour l'ajouter ici."
                 )
+            } else if let selection {
+                // V1.9.4 : iPad SplitView avec List native selection
+                listWithSelection(selection: selection)
             } else {
-                List {
-                    Section {
-                        Button {
-                            presentedPrayer = .before
-                        } label: {
-                            Label(Prayer.Kind.before.titleFR, systemImage: Prayer.Kind.before.symbol)
-                        }
-                    }
-
-                    Section("Tehilim favoris") {
-                        ForEach(favorites.sortedIds, id: \.self) { id in
-                            favoriteRow(id: id)
-                        }
-                    }
-
-                    Section {
-                        Button {
-                            presentedPrayer = .after
-                        } label: {
-                            Label(Prayer.Kind.after.titleFR, systemImage: Prayer.Kind.after.symbol)
-                        }
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .appBackground()
-                .sheet(item: $presentedPrayer) { kind in
-                    PrayerView(prayer: Prayer.of(kind))
-                }
+                // iPhone : NavigationLink push standard
+                listWithPush
             }
         }
     }
 
+    // MARK: - iPad NavigationSplitView (List(items, selection:))
+
     @ViewBuilder
-    private func favoriteRow(id: Int) -> some View {
-        if let p = container.psalmRepository.psalm(id: id) {
-            if let selection {
-                // iPad NavigationSplitView : onTapGesture + contentShape pour fiabilité
-                favoriteLabel(p, isSelected: selection.wrappedValue == id, showChevron: true)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selection.wrappedValue = id
+    private func listWithSelection(selection: Binding<Int?>) -> some View {
+        List(selection: selection) {
+            Section {
+                Button {
+                    presentedPrayer = .before
+                } label: {
+                    Label(Prayer.Kind.before.titleFR, systemImage: Prayer.Kind.before.symbol)
+                }
+            }
+            Section("Tehilim favoris") {
+                ForEach(favorites.sortedIds, id: \.self) { id in
+                    if let p = container.psalmRepository.psalm(id: id) {
+                        favoriteLabel(p, isSelected: selection.wrappedValue == id)
+                            .tag(id)
                     }
-                    .listRowBackground(
-                        selection.wrappedValue == id
-                        ? Color.accentMain.opacity(0.12)
-                        : nil
-                    )
-            } else {
-                NavigationLink(destination: PsalmDetailView(psalmId: id, siblings: favorites.sortedIds)) {
-                    favoriteLabel(p, isSelected: false, showChevron: false)
+                }
+            }
+            Section {
+                Button {
+                    presentedPrayer = .after
+                } label: {
+                    Label(Prayer.Kind.after.titleFR, systemImage: Prayer.Kind.after.symbol)
                 }
             }
         }
+        .listStyle(.insetGrouped)
+        .appBackground()
+        .sheet(item: $presentedPrayer) { kind in
+            PrayerView(prayer: Prayer.of(kind))
+        }
     }
 
+    // MARK: - iPhone (NavigationLink push)
+
     @ViewBuilder
-    private func favoriteLabel(_ p: Psalm, isSelected: Bool, showChevron: Bool) -> some View {
+    private var listWithPush: some View {
+        List {
+            Section {
+                Button {
+                    presentedPrayer = .before
+                } label: {
+                    Label(Prayer.Kind.before.titleFR, systemImage: Prayer.Kind.before.symbol)
+                }
+            }
+            Section("Tehilim favoris") {
+                ForEach(favorites.sortedIds, id: \.self) { id in
+                    if let p = container.psalmRepository.psalm(id: id) {
+                        NavigationLink(destination: PsalmDetailView(psalmId: id, siblings: favorites.sortedIds)) {
+                            favoriteLabel(p, isSelected: false)
+                        }
+                    }
+                }
+            }
+            Section {
+                Button {
+                    presentedPrayer = .after
+                } label: {
+                    Label(Prayer.Kind.after.titleFR, systemImage: Prayer.Kind.after.symbol)
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+        .appBackground()
+        .sheet(item: $presentedPrayer) { kind in
+            PrayerView(prayer: Prayer.of(kind))
+        }
+    }
+
+    // MARK: - Row
+
+    @ViewBuilder
+    private func favoriteLabel(_ p: Psalm, isSelected: Bool) -> some View {
         HStack {
             Text("Tehilim \(p.id) · \(p.hebrewNumber)")
                 .foregroundStyle(isSelected ? Color.accentMain : .primary)
@@ -84,14 +111,8 @@ struct FavoritesListView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(Color.accentMain)
             }
-            if showChevron && !isSelected {
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-                    .accessibilityHidden(true)
-            }
         }
-        .padding(.vertical, 4)
+        .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Tehilim \(p.id)")
         .accessibilityHint("Ouvre le Tehilim")

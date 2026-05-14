@@ -1,30 +1,31 @@
 import SwiftUI
 import UIKit
 
-/// Formulaire de génération d'une lecture personnalisée du Tehilim 119.
+/// Formulaire de génération d'une lecture personnalisée du Tehilim 119 — V1.10.2.
 ///
-/// **Champs requis** :
-/// - Prénom du proche (hébreu uniquement, validé en live)
+/// **Lecture exclusivement de type Lelouy Nichmat** (élévation de l'âme d'un défunt).
+/// La séquence intègre automatiquement « נשמה » à la fin (règle métier).
+///
+/// Champs requis :
+/// - Prénom du défunt (hébreu uniquement, validé en live)
 /// - Lien : בן (fils) ou בת (fille)
 /// - Prénom de la mère (hébreu uniquement)
-/// - Type : Malade ou Défunt — pilote l'ajout automatique de « נשמה »
 ///
 /// L'utilisateur **ne tape jamais « נשמה »** lui-même. C'est l'app qui l'ajoute
-/// automatiquement en fin de séquence quand le type est « Défunt » (règle métier).
-///
-/// V1.10.1 : les `TextField` demandent à iOS le clavier hébreu via
-/// `HebrewKeyboardTextField`. Si l'utilisateur n'a pas activé ce clavier dans ses
-/// Réglages iOS, un encart d'aide s'affiche en tête du formulaire.
+/// automatiquement en fin de séquence.
 struct PersonalizedReadingFormView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var relativeFirstName: String = ""
     @State private var relationType: RelationType = .ben
     @State private var motherFirstName: String = ""
-    @State private var prayerType: PrayerType = .malade
 
     @State private var navigateToList = false
     @State private var generatedSequence: [ReadingLetterItem] = []
+
+    /// Type figé pour cette feature — toutes les lectures personnalisées sont
+    /// des Lelouy Nichmat depuis V1.10.2 (la partie « Malade » a été retirée).
+    private let prayerType: PrayerType = .defunt
 
     /// Validation : les 2 prénoms doivent contenir au moins 1 lettre hébraïque.
     private var isFormValid: Bool {
@@ -42,23 +43,14 @@ struct PersonalizedReadingFormView: View {
                     }
                 }
 
-                // MARK: - Type de prière
+                // MARK: - Bannière contextuelle Lelouy Nichmat
                 Section {
-                    Picker("Type", selection: $prayerType) {
-                        ForEach(PrayerType.allCases) { type in
-                            Text(type.labelFR).tag(type)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                } footer: {
-                    if prayerType == .defunt {
-                        Text("« נשמה » sera ajouté automatiquement en fin de séquence.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                    lelouyBanner
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowBackground(Color.clear)
                 }
 
-                // MARK: - Proche
+                // MARK: - Défunt
                 Section {
                     LabeledRow(label: "Prénom") {
                         HebrewKeyboardTextField(
@@ -75,7 +67,7 @@ struct PersonalizedReadingFormView: View {
                     }
                     .pickerStyle(.segmented)
                 } header: {
-                    Text("Le proche concerné")
+                    Text("Le défunt")
                 } footer: {
                     Text("Prénom en hébreu uniquement.")
                         .font(.caption)
@@ -108,10 +100,14 @@ struct PersonalizedReadingFormView: View {
                             .padding(.vertical, 4)
                     } header: {
                         Text("Aperçu hébraïque")
+                    } footer: {
+                        Text("« נשמה » sera ajouté automatiquement à la fin de la séquence.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
-            .navigationTitle("Lecture personnalisée")
+            .navigationTitle("Lelouy Nichmat")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -151,13 +147,30 @@ struct PersonalizedReadingFormView: View {
         }
     }
 
-    /// Affichage hébraïque compact en live : « יוסף בן שרה » (+ « · נשמה » si défunt).
+    /// Affichage hébraïque compact en live : « יוסף בן שרה · נשמה ».
     private var previewHebrew: String {
-        var s = "\(relativeFirstName) \(relationType.hebrew) \(motherFirstName)"
-        if prayerType == .defunt {
-            s += " · נשמה"
+        "\(relativeFirstName) \(relationType.hebrew) \(motherFirstName) · נשמה"
+    }
+
+    // MARK: - Bannière Lelouy Nichmat
+
+    @ViewBuilder
+    private var lelouyBanner: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "candle.fill")
+                .font(.title3)
+                .foregroundStyle(Color.accentMain)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Lecture pour l'élévation de l'âme")
+                    .font(.subheadline.weight(.semibold))
+                Text("La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
-        return s
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: - Banner clavier hébreu non installé
@@ -191,9 +204,6 @@ struct PersonalizedReadingFormView: View {
 
 // MARK: - LabeledRow
 
-/// Ligne de Form avec label à gauche et `UITextField` (notre wrapper) à droite.
-/// Le wrapper SwiftUI ne supporte pas bien `.fixedSize` côté UIKit, donc on
-/// gère la mise en page manuellement.
 private struct LabeledRow<Content: View>: View {
     let label: String
     @ViewBuilder var content: Content

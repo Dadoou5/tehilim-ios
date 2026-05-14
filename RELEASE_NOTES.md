@@ -1,5 +1,31 @@
 # Notes de version Tehilim
 
+## V1.10.2 — 14 mai 2026 (build 19) — Lecture personnalisée : Lelouy Nichmat uniquement
+
+### Simplification UX
+- Retrait du sélecteur Malade / Défunt sur le formulaire de lecture
+  personnalisée. La feature est désormais **exclusivement dédiée au
+  Lelouy Nichmat** (élévation de l'âme du défunt).
+- Le formulaire s'appelle désormais « Lelouy Nichmat » dans la barre de
+  navigation et affiche une bannière contextuelle avec icône 🕯️ pour
+  rappeler la nature de la lecture.
+- « נשמה » est toujours ajouté en fin de séquence (la règle métier était
+  déjà respectée — c'est maintenant le seul mode).
+
+### Sauvegarde et liste
+- `SavedPrayersListView` n'a plus de section split Refoua/Lelouy : tout
+  est groupé sous « Lelouy Nichmat » pour une vue plus claire.
+- Le bouton d'entrée sur l'écran AlphaBeta s'appelle « Lelouy Nichmat »
+  (au lieu de « Lecture personnalisée ») avec une icône 🕯️.
+
+### Compatibilité
+- Les anciennes prières sauvegardées (V1.10.0/1) éventuellement de type
+  `.malade` restent **décodables et lisibles** : le case `PrayerType.malade`
+  est conservé dans le modèle pour ne casser aucune donnée. Seule l'UI
+  ne propose plus le choix.
+
+---
+
 ## V1.10.1 — 14 mai 2026 (build 18) — Clavier hébreu auto sur le formulaire
 
 ### Confort de saisie

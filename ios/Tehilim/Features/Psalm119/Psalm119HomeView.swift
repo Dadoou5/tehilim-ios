@@ -81,7 +81,7 @@ struct Psalm119HomeView: View {
     @ViewBuilder
     private var personalizedSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Lecture personnalisée")
+            Text("Lelouy Nichmat")
                 .font(.headline)
                 .accessibilityAddTraits(.isHeader)
 
@@ -95,9 +95,9 @@ struct Psalm119HomeView: View {
                 // Carte : nouvelle lecture
                 Button { showingForm = true } label: {
                     actionCard(
-                        symbol: "person.text.rectangle",
+                        symbol: "candle.fill",
                         title: "Nouvelle lecture",
-                        subtitle: "Refoua Cheléma ou Lelouy Nichmat",
+                        subtitle: "Élévation de l'âme — prénom + mère",
                         accent: true
                     )
                 }
@@ -120,9 +120,9 @@ struct Psalm119HomeView: View {
     private var savedCountLabel: String {
         let count = savedPrayers.intents.count
         switch count {
-        case 0: return "Aucune sauvegardée"
-        case 1: return "1 prière sauvegardée"
-        default: return "\(count) prières sauvegardées"
+        case 0: return "Aucun sauvegardé"
+        case 1: return "1 sauvegardé"
+        default: return "\(count) sauvegardés"
         }
     }
 

@@ -42,11 +42,9 @@ struct PersonalizedReadingListView: View {
                         .foregroundStyle(.secondary)
                 }
             } footer: {
-                if intent.prayerType == .defunt {
-                    Text("« נשמה » a été ajouté automatiquement à la fin de la séquence (Lelouy Nichmat).")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text("« נשמה » a été ajouté automatiquement à la fin de la séquence.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             // Bouton « Reprendre la lecture » si saved + lastReadIndex
@@ -116,7 +114,7 @@ struct PersonalizedReadingListView: View {
     private var headerCard: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 8) {
-                Text(intent.prayerType.saveActionTitle)
+                Label("Lelouy Nichmat", systemImage: "candle.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 10)
@@ -128,12 +126,10 @@ struct PersonalizedReadingListView: View {
                 .font(.title2.weight(.semibold))
                 .environment(\.layoutDirection, .rightToLeft)
                 .frame(maxWidth: .infinity, alignment: .trailing)
-            if intent.prayerType == .defunt {
-                Text("נשמה")
-                    .font(.title3)
-                    .foregroundStyle(Color.accentMain)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-            }
+            Text("נשמה")
+                .font(.title3)
+                .foregroundStyle(Color.accentMain)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -1,6 +1,9 @@
 import SwiftUI
 
-/// Liste des prières sauvegardées — séparées en 2 sections : Refoua Cheléma / Lelouy Nichmat.
+/// Liste des Lelouy Nichmat sauvegardés — V1.10.2 (section unique).
+///
+/// Note compatibilité : les anciennes entrées de type `.malade` (V1.10.0/1) sont
+/// affichées si elles existent, sans rupture. Le store n'efface jamais les données.
 struct SavedPrayersListView: View {
     @EnvironmentObject private var savedPrayers: SavedPrayerStore
 
@@ -9,13 +12,25 @@ struct SavedPrayersListView: View {
             if savedPrayers.intents.isEmpty {
                 EmptyStateView(
                     symbol: "tray",
-                    title: "Aucune prière sauvegardée",
+                    title: "Aucun Lelouy Nichmat sauvegardé",
                     message: "Génère une lecture personnalisée et sauvegarde-la pour la retrouver ici."
                 )
             } else {
                 List {
-                    section(title: "Refoua Cheléma", type: .malade)
-                    section(title: "Lelouy Nichmat", type: .defunt)
+                    Section {
+                        ForEach(savedPrayers.intents) { intent in
+                            NavigationLink(destination: PersonalizedReadingListView(intent: intent, isSaved: true)) {
+                                row(intent)
+                            }
+                        }
+                        .onDelete(perform: delete)
+                    } header: {
+                        Text("Lelouy Nichmat")
+                    } footer: {
+                        Text("\(savedPrayers.intents.count) sauvegardé\(savedPrayers.intents.count > 1 ? "s" : "")")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
                 }
                 .listStyle(.insetGrouped)
                 .appBackground()
@@ -23,23 +38,6 @@ struct SavedPrayersListView: View {
         }
         .navigationTitle("Mes prières")
         .navigationBarTitleDisplayMode(.large)
-    }
-
-    @ViewBuilder
-    private func section(title: String, type: PrayerType) -> some View {
-        let filtered = savedPrayers.filtered(by: type)
-        if !filtered.isEmpty {
-            Section(title) {
-                ForEach(filtered) { intent in
-                    NavigationLink(destination: PersonalizedReadingListView(intent: intent, isSaved: true)) {
-                        row(intent)
-                    }
-                }
-                .onDelete { offsets in
-                    delete(filtered: filtered, at: offsets)
-                }
-            }
-        }
     }
 
     @ViewBuilder
@@ -66,10 +64,7 @@ struct SavedPrayersListView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func delete(filtered: [SavedPrayerIntent], at offsets: IndexSet) {
-        for index in offsets {
-            let intent = filtered[index]
-            savedPrayers.delete(intent)
-        }
+    private func delete(at offsets: IndexSet) {
+        savedPrayers.delete(at: offsets)
     }
 }

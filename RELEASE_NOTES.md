@@ -1,5 +1,25 @@
 # Notes de version Tehilim
 
+## V1.10.1 — 14 mai 2026 (build 18) — Clavier hébreu auto sur le formulaire
+
+### Confort de saisie
+- Les `TextField` du formulaire « Lecture personnalisée » demandent
+  désormais à iOS de proposer **automatiquement le clavier hébreu**
+  quand on entre dans le champ.
+- Mécanisme : sous-classe d'`UITextField` qui override `textInputMode`
+  pour retourner le 1ᵉʳ input mode dont `primaryLanguage` commence par `he`.
+- Le filtre live (anti caractère non-hébreu) reste actif comme garde-fou.
+
+### Si le clavier hébreu n'est pas installé
+- Un encart d'aide s'affiche en haut du formulaire avec un bouton
+  **« Ouvrir Réglages »** qui amène directement dans les Réglages iOS pour
+  ajouter le clavier hébreu (Général → Clavier → Claviers → Ajouter un
+  clavier → Hébreu).
+- L'app continue de fonctionner sans (l'utilisateur peut coller du texte
+  hébreu copié depuis ailleurs, le filtre fera le tri).
+
+---
+
 ## V1.10.0 — 14 mai 2026 (build 17) — Lecture personnalisée AlphaBeta
 
 ### Nouvelle feature

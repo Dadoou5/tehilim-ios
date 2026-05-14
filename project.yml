@@ -34,8 +34,8 @@ targets:
         CODE_SIGN_ENTITLEMENTS: ios/Tehilim/Tehilim.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.david.tehilim
         PRODUCT_NAME: Tehilim
-        CURRENT_PROJECT_VERSION: "17"
-        MARKETING_VERSION: "1.10.0"
+        CURRENT_PROJECT_VERSION: "18"
+        MARKETING_VERSION: "1.10.1"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -67,8 +67,8 @@ targets:
         CODE_SIGN_ENTITLEMENTS: ios/TehilimWidget/TehilimWidget.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.david.tehilim.widget
         PRODUCT_NAME: TehilimWidget
-        CURRENT_PROJECT_VERSION: "17"
-        MARKETING_VERSION: "1.10.0"
+        CURRENT_PROJECT_VERSION: "18"
+        MARKETING_VERSION: "1.10.1"
         TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: NFQ2Q87CV9

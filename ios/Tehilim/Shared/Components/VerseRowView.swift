@@ -41,14 +41,24 @@ struct VerseRowView: View {
                 Label("Copier", systemImage: "doc.on.doc")
             }
             if let psalm = parentPsalm {
+                // V1.10.4 : Transferable lazy — l'image 1080×1080 n'est rendue
+                // qu'au moment où l'utilisateur tape effectivement sur Partager.
+                // Avant : 2 × 18 MB matérialisés par verset visible → OOM.
                 ShareLink(
-                    item: shareImage(psalm: psalm),
+                    item: VerseShareTransferable(
+                        psalm: psalm,
+                        verse: verse,
+                        translationLang: translationLang
+                    ),
                     preview: SharePreview(
                         "Tehilim \(psalm.id) · verset \(verse.number)",
-                        image: shareImage(psalm: psalm)
+                        image: Image(systemName: "doc.richtext")
                     )
                 ) {
                     Label("Partager", systemImage: "square.and.arrow.up")
+                }
+                ShareLink(item: textForCopy) {
+                    Label("Partager le texte", systemImage: "doc.plaintext")
                 }
             } else {
                 ShareLink(item: textForCopy) {
@@ -157,18 +167,6 @@ struct VerseRowView: View {
         }
         parts.append("Source : \(translationLang.sourceCredit)")
         return parts.joined(separator: "\n")
-    }
-
-    @MainActor
-    private func shareImage(psalm: Psalm) -> Image {
-        if let ui = VerseShareImageRenderer.render(
-            psalm: psalm,
-            verse: verse,
-            translationLang: translationLang
-        ) {
-            return Image(uiImage: ui)
-        }
-        return Image(systemName: "square.and.arrow.up")
     }
 
     private var accessibilityLabel: String {

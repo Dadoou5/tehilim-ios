@@ -1,5 +1,55 @@
 # Notes de version Tehilim
 
+## V1.10.4 — 14 mai 2026 (build 21) — Fix critique mémoire (OOM)
+
+### Le bug
+L'app était killée par iOS au bout de ~80 secondes d'utilisation sur
+device (`Terminated due to memory issue`, code 9). Sur Tehilim 119
+(176 versets) c'était particulièrement violent.
+
+### La cause racine
+Dans `VerseRowView.contextMenu`, le `ShareLink` était initialisé avec
+le résultat de `shareImage(psalm:)` directement — un appel qui rendait
+**immédiatement** une UIImage 1080×1080 @2x ≈ 18 MB par appel. La
+`contextMenu` étant construite eagerly par SwiftUI à chaque apparition
+d'un `VerseRowView` dans la LazyVStack, **chaque verset visible matérialisait
+2 UIImage** (item + preview), soit ~36 MB par ligne. Sur Tehilim 119 (176
+versets) la LazyVStack matérialise plusieurs dizaines de lignes au scroll
+→ centaines de MB qui s'empilent → OOM kill.
+
+### Le fix
+Nouveau type `VerseShareTransferable: Transferable` qui ne capture que
+les paramètres légers (Psalm + Verse + TranslationLanguage, tous des
+structs). L'UIImage 1080×1080 n'est rendue qu'au moment où iOS demande
+effectivement les données via `DataRepresentation(exportedContentType: .png)`
+— c'est-à-dire seulement quand l'utilisateur tape « Partager » et choisit
+une cible de partage.
+
+`SharePreview.image` utilise désormais une icône légère
+`Image(systemName: "doc.richtext")` au lieu de l'image 1080×1080.
+
+Bonus : ajout d'un menu « Partager le texte » distinct pour ceux qui ne
+veulent que le texte brut.
+
+### Impact
+- Lecture Tehilim 119 (176 versets) : RAM stabilisée
+- Plus aucune image préchargée — le coût mémoire n'apparaît qu'au moment
+  de l'action effective de l'utilisateur
+- Aucun changement UX côté utilisateur
+
+---
+
+## V1.10.3 — 14 mai 2026 (build 20) — Fix SF Symbol candle.fill
+
+`candle.fill` n'existe pas dans SF Symbols. Remplacé par `flame.fill`
+(disponible iOS 13+) à 3 emplacements : `Psalm119HomeView`,
+`PersonalizedReadingFormView`, `PersonalizedReadingListView`.
+
+Élimine les warnings console `No symbol named 'candle.fill' found in
+system symbol set`.
+
+---
+
 ## V1.10.2 — 14 mai 2026 (build 19) — Lecture personnalisée : Lelouy Nichmat uniquement
 
 ### Simplification UX

@@ -25,6 +25,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import com.david.tehilim.AppContainer
 import com.david.tehilim.features.daily.DailyScreen
+import com.david.tehilim.features.favorites.FavoritesScreen
 import com.david.tehilim.features.home.HomeScreen
 import com.david.tehilim.features.lifecases.LifeCaseDetailScreen
 import com.david.tehilim.features.lifecases.LifeCasesScreen
@@ -126,7 +127,7 @@ fun AppNavigation(container: AppContainer) {
                 PsalmListScreen(container = container, book = null, navController = navController)
             }
             composable(Routes.PSALM_LIST_FAVORITES) {
-                PsalmListScreen(container = container, book = null, favoritesOnly = true, navController = navController)
+                FavoritesScreen(container = container, navController = navController)
             }
 
             // Tehilim 119

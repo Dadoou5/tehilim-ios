@@ -37,6 +37,7 @@ class Preferences(private val context: Context) {
         val DAILY_MODE = stringPreferencesKey("pref.dailyMode")
         val LAST_READ_PSALM_ID = intPreferencesKey("pref.lastReadPsalmId")
         val ONBOARDING_DONE = booleanPreferencesKey("pref.onboarding.done")
+        val SEARCH_RECENTS = stringPreferencesKey("pref.search.recents")
     }
 
     val appLanguage: Flow<AppLanguage> = context.dataStore.data.map { prefs ->
@@ -80,6 +81,13 @@ class Preferences(private val context: Context) {
 
     val onboardingDone: Flow<Boolean> = context.dataStore.data.map { it[Keys.ONBOARDING_DONE] ?: false }
 
+    /** Liste des IDs Tehilim récemment consultés via recherche (max 10, plus récent en tête). */
+    val searchRecents: Flow<List<Int>> = context.dataStore.data.map { prefs ->
+        prefs[Keys.SEARCH_RECENTS].orEmpty()
+            .split(",")
+            .mapNotNull { it.trim().toIntOrNull() }
+    }
+
     // MARK: - Setters
 
     suspend fun setAppLanguage(lang: AppLanguage) =
@@ -111,4 +119,12 @@ class Preferences(private val context: Context) {
 
     suspend fun setOnboardingDone(value: Boolean) =
         context.dataStore.edit { it[Keys.ONBOARDING_DONE] = value }
+
+    /** Ajoute [id] en tête de la liste des récents (déduplique, plafonne à 10). */
+    suspend fun rememberSearchRecent(id: Int) = context.dataStore.edit { prefs ->
+        val current = prefs[Keys.SEARCH_RECENTS].orEmpty()
+            .split(",").mapNotNull { it.trim().toIntOrNull() }
+        val updated = (listOf(id) + current.filter { it != id }).take(10)
+        prefs[Keys.SEARCH_RECENTS] = updated.joinToString(",")
+    }
 }

@@ -9,6 +9,7 @@ import com.david.tehilim.core.service.DailyEngine
 import com.david.tehilim.core.service.LifeCaseRepository
 import com.david.tehilim.core.service.Psalm119Repository
 import com.david.tehilim.core.service.PsalmRepository
+import com.david.tehilim.core.service.SearchInterpreter
 
 /**
  * Conteneur DI simple — équivalent direct de l'AppContainer iOS.
@@ -30,6 +31,7 @@ class AppContainer(context: Context) {
     val lifeCaseRepository: LifeCaseRepository
     val psalm119Repository: Psalm119Repository
     val dailyEngine: DailyEngine
+    val searchInterpreter: SearchInterpreter
 
     init {
         val psalms = runCatching { contentLoader.loadPsalms() }.getOrElse {
@@ -50,5 +52,6 @@ class AppContainer(context: Context) {
         lifeCaseRepository = LifeCaseRepository(cases)
         psalm119Repository = Psalm119Repository(sections)
         dailyEngine = DailyEngine(rules)
+        searchInterpreter = SearchInterpreter(psalmRepository)
     }
 }

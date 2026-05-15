@@ -55,6 +55,9 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
     val todayPsalms = container.dailyEngine.psalmsForToday(dailyMode)
     var presentedPrayer by remember { mutableStateOf<Prayer.Kind?>(null) }
 
+    val isTablet = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp >= 600
+    val explorerCols = if (isTablet) 3 else 2
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -157,7 +160,7 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
             item {
                 val cards = exploreCards(navController) { presentedPrayer = it }
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    cards.chunked(2).forEach { rowCards ->
+                    cards.chunked(explorerCols).forEach { rowCards ->
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             rowCards.forEach { card ->
                                 Box(modifier = Modifier.weight(1f)) {
@@ -168,8 +171,8 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
                                     )
                                 }
                             }
-                            // Si dernière ligne avec 1 seul élément, padding pour équilibrer
-                            if (rowCards.size == 1) {
+                            // Pad pour équilibrer si dernière ligne incomplète
+                            repeat(explorerCols - rowCards.size) {
                                 Box(modifier = Modifier.weight(1f))
                             }
                         }

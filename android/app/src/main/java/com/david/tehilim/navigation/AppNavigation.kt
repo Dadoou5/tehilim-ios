@@ -135,11 +135,27 @@ fun AppNavigation(container: AppContainer) {
                 Psalm119HomeScreen(container = container, navController = navController)
             }
             composable(
-                Routes.PSALM_119_SECTION,
-                arguments = listOf(navArgument("index") { type = NavType.IntType })
+                "${Routes.PSALM_119_SECTION}?intentId={intentId}&pos={pos}",
+                arguments = listOf(
+                    navArgument("index") { type = NavType.IntType },
+                    navArgument("intentId") {
+                        type = NavType.StringType; nullable = true; defaultValue = null
+                    },
+                    navArgument("pos") {
+                        type = NavType.IntType; defaultValue = -1
+                    }
+                )
             ) {
                 val index = it.arguments?.getInt("index") ?: 1
-                Psalm119SectionScreen(container = container, index = index, navController = navController)
+                val intentId = it.arguments?.getString("intentId")
+                val pos = it.arguments?.getInt("pos") ?: -1
+                Psalm119SectionScreen(
+                    container = container,
+                    index = index,
+                    navController = navController,
+                    savedIntentId = intentId,
+                    sequencePosition = if (pos >= 0) pos else null
+                )
             }
 
             // Cas de la vie

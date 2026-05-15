@@ -1,14 +1,17 @@
 package com.david.tehilim.features.personalized
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -24,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
@@ -41,12 +45,6 @@ import com.david.tehilim.core.service.LetterSequenceGenerator
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 
-/**
- * Formulaire de génération Lelouy Nichmat — mirror du PersonalizedReadingFormView iOS.
- *
- * Au tap « Générer » : auto-save dans le store + navigation vers la liste.
- * Dédup via `addOrFindExisting` — pas de doublon possible.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavController) {
@@ -63,7 +61,7 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 title = { Text("Lelouy Nichmat") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
                     }
                 }
             )
@@ -76,28 +74,58 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                "Pour l'élévation de l'âme. La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            // Bannière Lelouy Nichmat — mirror V1.10.2 iOS
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .padding(14.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Icon(
+                    Icons.Outlined.LocalFireDepartment,
+                    null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Column {
+                    Text(
+                        "Lecture pour l'élévation de l'âme",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        "La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה.",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
 
-            // Prénom du défunt — TextField avec filtre Hebrew live
+            // Section : le défunt
+            Text(
+                "Le défunt",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
             OutlinedTextField(
                 value = relativeName,
                 onValueChange = { relativeName = HebrewLetterMapper.filterHebrew(it) },
-                label = { Text("Prénom du défunt (hébreu)") },
-                placeholder = { Text("ex. יוסף", textAlign = TextAlign.End) },
+                label = { Text("Prénom (hébreu)") },
+                placeholder = { Text("ex. יוסף") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(fontFamily = EzraSilFontFamily, textAlign = TextAlign.End),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
 
-            // Lien
-            androidx.compose.foundation.layout.Row(
+            // Lien (Ben / Bat)
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Lien :", style = MaterialTheme.typography.bodyMedium)
                 FilterChip(
@@ -120,20 +148,30 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 )
             }
 
-            // Prénom de la mère
+            // Section : sa mère
+            Text(
+                "Sa mère",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
             OutlinedTextField(
                 value = motherName,
                 onValueChange = { motherName = HebrewLetterMapper.filterHebrew(it) },
                 label = { Text("Prénom de la mère (hébreu)") },
-                placeholder = { Text("ex. שרה", textAlign = TextAlign.End) },
+                placeholder = { Text("ex. שרה") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(fontFamily = EzraSilFontFamily, textAlign = TextAlign.End),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
 
-            // Preview
+            // Aperçu hébraïque
             if (isValid) {
+                Text(
+                    "Aperçu",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
                 Text(
                     "$relativeName ${relation.hebrew} $motherName · נשמה",
                     style = TextStyle(fontFamily = EzraSilFontFamily, textAlign = TextAlign.End),
@@ -141,7 +179,7 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 )
             }
 
-            // Bouton Générer = auto-save + navigation
+            // Bouton Générer + footer
             Button(
                 onClick = {
                     val sequence = LetterSequenceGenerator.generate(
@@ -165,7 +203,9 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                         generatedLetters = sequence
                     )
                     val saved = container.savedPrayers.addOrFindExisting(intent)
-                    navController.navigate(Routes.personalizedList(saved.id))
+                    navController.navigate(Routes.personalizedList(saved.id)) {
+                        popUpTo(Routes.PERSONALIZED_FORM) { inclusive = true }
+                    }
                 },
                 enabled = isValid,
                 modifier = Modifier.fillMaxWidth()

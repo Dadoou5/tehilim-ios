@@ -26,15 +26,22 @@ import com.david.tehilim.ui.theme.frenchBodyStyle
 import com.david.tehilim.ui.theme.hebrewBodyStyle
 import com.david.tehilim.ui.theme.verseNumberStyle
 
+private fun displayedNumber(verse: Verse, style: VerseNumberStyle): String = when (style) {
+    VerseNumberStyle.HEBREW -> verse.hebrewNumber
+    VerseNumberStyle.ARABIC -> verse.number.toString()
+}
+
 /**
- * Une ligne de verset — équivalent du VerseRowView iOS.
+ * Une ligne de verset — équivalent du VerseRowView iOS V1.9.0.
  *
  * Layout :
  * - Mode hébreu : texte hébreu aligné à droite (RTL) + numéro à droite
  * - Mode phonétique : texte translittéré à gauche + numéro à gauche
  * - Traduction en dessous si showTranslation
+ * - **Side-by-side** (iPad paysage tablette) : hébreu+numéro à droite,
+ *   traduction à gauche, côte à côte dans une Row
  *
- * **Long-press** : déclenche `onLongClick` (= partage du verset en image stylisée 1080×1080).
+ * **Long-press** : déclenche `onLongClick` (= partage du verset en image 1080×1080).
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -47,14 +54,56 @@ fun VerseRow(
     numberStyle: VerseNumberStyle,
     translationLang: TranslationLanguage,
     modifier: Modifier = Modifier,
-    onLongClick: (() -> Unit)? = null
+    onLongClick: (() -> Unit)? = null,
+    sideBySideTranslation: Boolean = false
 ) {
+    val useSideBySide = sideBySideTranslation && showTranslation && textMode == TextMode.HEBREW
     val baseModifier = modifier
         .fillMaxWidth()
         .padding(vertical = 8.dp)
     val interactiveModifier = if (onLongClick != null) {
         baseModifier.combinedClickable(onLongClick = onLongClick, onClick = {})
     } else baseModifier
+
+    // V1.2 — Side-by-side (paysage tablette) : 2 colonnes au lieu de stacked
+    if (useSideBySide) {
+        Row(
+            modifier = interactiveModifier,
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            // Colonne gauche : traduction (LTR)
+            val translation = verse.translation(translationLang)
+            Text(
+                text = translation ?: "Traduction non disponible.",
+                style = frenchBodyStyle(textSizeFR.scale),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f)
+            )
+            // Colonne droite : hébreu + numéro (RTL)
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                    Text(
+                        text = verse.hebrew,
+                        style = hebrewBodyStyle(textSizeHebrew.scale),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Text(
+                    text = displayedNumber(verse, numberStyle),
+                    style = verseNumberStyle(textSizeHebrew.scale),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        return
+    }
 
     Column(
         modifier = interactiveModifier,
@@ -123,8 +172,3 @@ fun VerseRow(
     }
 }
 
-private fun displayedNumber(verse: Verse, style: VerseNumberStyle): String =
-    when (style) {
-        VerseNumberStyle.HEBREW -> verse.hebrewNumber
-        VerseNumberStyle.ARABIC -> verse.number.toString()
-    }

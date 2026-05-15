@@ -43,6 +43,10 @@ import com.david.tehilim.ui.components.IluyNishmatBanner
 import com.david.tehilim.ui.components.VerseRow
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 import com.david.tehilim.ui.theme.hebrewTitleStyle
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material.icons.outlined.RecordVoiceOver
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,6 +62,8 @@ fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavC
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val isTablet = LocalConfiguration.current.screenWidthDp >= 600
+    val isLandscape = LocalConfiguration.current.screenWidthDp > LocalConfiguration.current.screenHeightDp
     val favorites by container.favorites.ids.collectAsState()
     val isFav = favorites.contains(psalmId)
 
@@ -115,6 +121,26 @@ fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavC
         ) {
             item { IluyNishmatBanner() }
 
+            // Inline translation toggle button (visible sur tablette, mirror V1.10.1 iOS)
+            if (isTablet) {
+                item {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        contentAlignment = androidx.compose.ui.Alignment.CenterEnd) {
+                        OutlinedButton(onClick = { localShowFR = !showFR }) {
+                            Icon(Icons.Outlined.RecordVoiceOver, null,
+                                tint = if (showFR) MaterialTheme.colorScheme.primary
+                                       else MaterialTheme.colorScheme.onSurface)
+                            Text(
+                                if (showFR) "  Masquer la traduction" else "  Afficher la traduction",
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
+            }
+
             // Titre hébreu du psaume
             if (!psalm.hebrewTitle.isNullOrBlank()) {
                 item {
@@ -144,6 +170,7 @@ fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavC
                     textSizeFR = textSizeFR,
                     numberStyle = numberStyle,
                     translationLang = appLanguage.translation,
+                    sideBySideTranslation = isTablet && isLandscape && showFR,
                     onLongClick = {
                         scope.launch(Dispatchers.IO) {
                             VerseShareRenderer.renderAndShare(

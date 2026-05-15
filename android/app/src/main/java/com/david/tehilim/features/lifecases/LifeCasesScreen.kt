@@ -1,8 +1,9 @@
 package com.david.tehilim.features.lifecases
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,17 +16,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.core.model.LifeCase
 import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.navigation.Routes
-import com.david.tehilim.ui.components.AppCard
 
+/**
+ * Cas de la vie — grille adaptive 2 cols (compact) / 3 cols (tablette).
+ * Mirror du LifeCasesListView SwiftUI V1.8.1.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LifeCasesScreen(container: AppContainer, navController: NavController) {
     val groups = container.lifeCaseRepository.grouped(TranslationLanguage.FR)
+    val columnsCount = if (LocalConfiguration.current.screenWidthDp >= 600) 3 else 2
 
     Scaffold(topBar = { TopAppBar(title = { Text("Cas de la vie") }) }) { padding ->
         LazyColumn(
@@ -37,27 +44,29 @@ fun LifeCasesScreen(container: AppContainer, navController: NavController) {
         ) {
             groups.forEach { group ->
                 item {
-                    Text(group.title, style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        group.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
-                items(group.cases) { c ->
-                    AppCard(
-                        onClick = { navController.navigate(Routes.lifeCaseDetail(c.id)) },
-                        modifier = Modifier.fillMaxWidth()
+                // Chunked rows pour la grille adaptive — pas de LazyVerticalGrid imbriqué
+                items(group.cases.chunked(columnsCount)) { rowCases ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(c.title, style = MaterialTheme.typography.titleSmall)
-                            Text(
-                                "${c.psalms.size} Tehilim",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                c.note,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 2,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
+                        rowCases.forEach { c ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                LifeCaseCard(
+                                    lifeCase = c,
+                                    onClick = { navController.navigate(Routes.lifeCaseDetail(c.id)) }
+                                )
+                            }
+                        }
+                        // Pad pour aligner si dernière ligne incomplète
+                        repeat(columnsCount - rowCases.size) {
+                            Box(modifier = Modifier.weight(1f))
                         }
                     }
                 }
@@ -65,3 +74,4 @@ fun LifeCasesScreen(container: AppContainer, navController: NavController) {
         }
     }
 }
+

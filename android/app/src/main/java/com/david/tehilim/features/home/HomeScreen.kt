@@ -226,7 +226,11 @@ private fun exploreCards(
     ExploreCardSpec(Icons.AutoMirrored.Outlined.MenuBook, "5 livres") { nav.switchTopLevel(TopLevelDestination.Psalms.route) },
     ExploreCardSpec(Icons.Outlined.Favorite, "Cas de la vie") { nav.switchTopLevel(TopLevelDestination.LifeCases.route) },
     ExploreCardSpec(Icons.Outlined.TextFields, "119 - AlphaBeta") { nav.navigate(Routes.PSALM_119_HOME) },
-    ExploreCardSpec(Icons.Outlined.AutoStories, "Tous (1–150)") { nav.navigate(Routes.PSALM_LIST_ALL) },
+    // V1.2.12 — « Tous » de l'accueil ouvre l'onglet Tehilim directement sur
+    // son segment "Tous" (segment=1) — plus de doublon avec PsalmListScreen.
+    ExploreCardSpec(Icons.Outlined.AutoStories, "Tous (1–150)") {
+        nav.switchTopLevelTo(TopLevelDestination.Psalms.route, segment = 1)
+    },
     ExploreCardSpec(Icons.Outlined.PlayCircle, "Prière avant") { onPrayer(Prayer.Kind.BEFORE) },
     ExploreCardSpec(Icons.Outlined.CheckCircle, "Prière après") { onPrayer(Prayer.Kind.AFTER) }
 )
@@ -246,5 +250,23 @@ private fun NavController.switchTopLevel(route: String) {
         }
         launchSingleTop = true
         restoreState = true
+    }
+}
+
+/**
+ * Variante avec segment forcé — utilisée pour ouvrir directement
+ * l'onglet Tehilim sur son segment "Tous" depuis l'accueil.
+ *
+ * On désactive restoreState pour que le segment passé prenne le pas sur
+ * l'état mémorisé (sinon restoreState ramène à l'ancien segment).
+ */
+private fun NavController.switchTopLevelTo(route: String, segment: Int) {
+    navigate("$route?segment=$segment") {
+        popUpTo(TopLevelDestination.Home.route) {
+            saveState = true
+            inclusive = false
+        }
+        launchSingleTop = true
+        // restoreState volontairement omis : on veut imposer le segment.
     }
 }

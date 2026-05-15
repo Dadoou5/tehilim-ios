@@ -29,7 +29,9 @@ object Routes {
     const val PSALM_LIST_BOOK = "book/{book}"
     fun psalmListBook(book: Int) = "book/$book"
 
-    const val PSALM_LIST_ALL = "psalms/all"
+    /** Ouvre l'onglet Tehilim directement sur un segment précis (0=Livres, 1=Tous, 2=Favoris). */
+    fun psalmsWithSegment(segment: Int): String = "psalms?segment=$segment"
+
     const val PSALM_LIST_FAVORITES = "psalms/favorites"
 
     const val PSALM_119_HOME = "psalm119"

@@ -56,7 +56,11 @@ fun AppNavigation(container: AppContainer) {
             NavigationBar {
                 TopLevelDestination.all.forEach { dest ->
                     NavigationBarItem(
-                        selected = backStackEntry?.destination?.hierarchy?.any { it.route == dest.route } == true,
+                        // V1.2.12 — strip query string avant de comparer, sinon une
+                        // route comme "psalms?segment={segment}" ne matcherait pas
+                        // "psalms" en littéral.
+                        selected = backStackEntry?.destination?.hierarchy
+                            ?.any { (it.route?.substringBefore('?') ?: "") == dest.route } == true,
                         onClick = {
                             // V1.2.11 — popUpTo par route nommée plutôt que par
                             // startDestination().id. Compose Navigation peut perdre
@@ -95,10 +99,20 @@ fun AppNavigation(container: AppContainer) {
                 HomeScreen(container = container, navController = navController)
             }
             composable(
-                TopLevelDestination.Psalms.route,
+                "${TopLevelDestination.Psalms.route}?segment={segment}",
+                arguments = listOf(
+                    navArgument("segment") {
+                        type = NavType.IntType; defaultValue = 0
+                    }
+                ),
                 deepLinks = listOf(navDeepLink { uriPattern = "tehilim://psalms" })
             ) {
-                PsalmsScreen(container = container, navController = navController)
+                val initialSegment = it.arguments?.getInt("segment") ?: 0
+                PsalmsScreen(
+                    container = container,
+                    navController = navController,
+                    initialSegment = initialSegment
+                )
             }
             composable(
                 TopLevelDestination.Daily.route,
@@ -166,9 +180,6 @@ fun AppNavigation(container: AppContainer) {
             ) {
                 val book = it.arguments?.getInt("book") ?: 1
                 PsalmListScreen(container = container, book = book, navController = navController)
-            }
-            composable(Routes.PSALM_LIST_ALL) {
-                PsalmListScreen(container = container, book = null, navController = navController)
             }
             composable(Routes.PSALM_LIST_FAVORITES) {
                 FavoritesScreen(container = container, navController = navController)

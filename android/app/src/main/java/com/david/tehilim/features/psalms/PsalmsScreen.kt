@@ -13,10 +13,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -26,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,8 +50,12 @@ import com.david.tehilim.navigation.Routes
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PsalmsScreen(container: AppContainer, navController: NavController) {
-    var segment by rememberSaveable { mutableIntStateOf(0) }
+fun PsalmsScreen(
+    container: AppContainer,
+    navController: NavController,
+    initialSegment: Int = 0
+) {
+    var segment by rememberSaveable(initialSegment) { mutableIntStateOf(initialSegment) }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Tehilim") }) }
@@ -123,17 +132,80 @@ private fun BookRow(book: Int, rangeLabel: String, count: Int, onClick: () -> Un
 
 @Composable
 private fun AllPsalmsContent(container: AppContainer, navController: NavController) {
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        items(container.psalmRepository.allPsalms) { psalm ->
-            androidx.compose.foundation.layout.Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate(com.david.tehilim.navigation.Routes.psalmDetail(psalm.id))
+    var query by rememberSaveable { mutableStateOf("") }
+    val all = container.psalmRepository.allPsalms
+
+    // Filtre live : matche le numéro arabe (id), la gematria hébraïque, ou
+    // un mot du titre hébreu. Vide → liste complète.
+    val filtered = remember(query, all) {
+        if (query.isBlank()) all
+        else {
+            val raw = query.trim()
+            val lower = raw.lowercase()
+            // Strip prefix "tehilim/psaume/..."
+            val cleaned = listOf("tehilim", "tehillim", "psaume", "psaumes", "psalm")
+                .fold(lower) { acc, w -> acc.replace(w, "") }
+                .trim()
+            val arabicNum = cleaned.filter { it.isDigit() }.toIntOrNull()
+            val hebrewNum = com.david.tehilim.core.service.HebrewNumerals.toInt(raw)
+            all.filter { p ->
+                (arabicNum != null && p.id == arabicNum) ||
+                (hebrewNum != null && p.id == hebrewNum) ||
+                p.hebrewNumber.contains(raw) ||
+                (p.hebrewTitle?.contains(raw) == true) ||
+                p.id.toString().startsWith(cleaned.takeIf { it.isNotEmpty() } ?: " ")
+            }
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = { query = it },
+            label = { Text("Rechercher (23, כג, mot du titre…)") },
+            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+            trailingIcon = if (query.isNotEmpty()) {
+                {
+                    IconButton(onClick = { query = "" }) {
+                        Icon(Icons.Outlined.Close, contentDescription = "Effacer")
                     }
+                }
+            } else null,
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
+        if (filtered.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(top = 32.dp),
+                contentAlignment = Alignment.TopCenter
             ) {
+                Text(
+                    "Aucun Tehilim ne correspond à « $query ».",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            return@Column
+        }
+
+        val visibleIds = remember(filtered) { filtered.map { it.id } }
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            items(filtered) { psalm ->
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            // Siblings = liste filtrée visible (prev/next dans le sous-set)
+                            navController.navigate(
+                                com.david.tehilim.navigation.Routes.psalmDetail(psalm.id, visibleIds)
+                            )
+                        }
+                ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -166,6 +238,7 @@ private fun AllPsalmsContent(container: AppContainer, navController: NavControll
                 }
             }
             HorizontalDivider()
+        }
         }
     }
 }

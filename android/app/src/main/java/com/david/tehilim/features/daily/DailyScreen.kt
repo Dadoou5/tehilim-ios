@@ -65,16 +65,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                 )
             }
 
-            // Section : Prière avant la lecture (mirror iOS)
-            item {
-                PrayerRow(
-                    title = "Prière avant la lecture",
-                    icon = Icons.Outlined.PlayCircle,
-                    onClick = { presentedPrayer = Prayer.Kind.BEFORE }
-                )
-            }
-
-            // Section : Au programme
+            // Section : Au programme — vient en premier (V1.2.15)
             item {
                 Text(
                     text = "Au programme",
@@ -113,7 +104,16 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                 }
             }
 
-            // Section : Prière après la lecture (mirror iOS)
+            // Prières avant + après — affichées sous la liste « Au programme »
+            // (V1.2.15 : sur demande utilisateur, les deux prières sont
+            // regroupées après les Tehilim du jour).
+            item {
+                PrayerRow(
+                    title = "Prière avant la lecture",
+                    icon = Icons.Outlined.PlayCircle,
+                    onClick = { presentedPrayer = Prayer.Kind.BEFORE }
+                )
+            }
             item {
                 PrayerRow(
                     title = "Prière après la lecture",

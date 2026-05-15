@@ -53,7 +53,7 @@ object HebrewDateFormatter {
     fun compact(date: Date = Date()): String {
         val cal = HebrewCalendar()
         cal.time = date
-        val fmt = SimpleDateFormat("d MMMM", Locale("en"))
+        val fmt = SimpleDateFormat("d MMMM", Locale.ENGLISH)
         fmt.calendar = cal
         return fmt.format(date)
     }

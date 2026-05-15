@@ -4,20 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.AutoStories
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.TextFields
@@ -153,21 +151,28 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
                 }
             }
 
-            // Explorer
+            // Explorer — grille 2 colonnes construite manuellement (pas de LazyVerticalGrid
+            // dans un LazyColumn : ça casse les contraintes verticales).
             item { SectionHeader("Explorer") }
             item {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(0.dp),
-                    userScrollEnabled = false
-                ) {
-                    items(exploreCards(navController) {
-                        presentedPrayer = it
-                    }) { card ->
-                        ExploreCard(symbol = card.icon, title = card.title, onClick = card.onClick)
+                val cards = exploreCards(navController) { presentedPrayer = it }
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    cards.chunked(2).forEach { rowCards ->
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            rowCards.forEach { card ->
+                                Box(modifier = Modifier.weight(1f)) {
+                                    ExploreCard(
+                                        symbol = card.icon,
+                                        title = card.title,
+                                        onClick = card.onClick
+                                    )
+                                }
+                            }
+                            // Si dernière ligne avec 1 seul élément, padding pour équilibrer
+                            if (rowCards.size == 1) {
+                                Box(modifier = Modifier.weight(1f))
+                            }
+                        }
                     }
                 }
             }
@@ -212,7 +217,7 @@ private fun exploreCards(
     nav: NavController,
     onPrayer: (Prayer.Kind) -> Unit
 ): List<ExploreCardSpec> = listOf(
-    ExploreCardSpec(Icons.Outlined.MenuBook, "5 livres") { nav.navigate(TopLevelDestination.Psalms.route) },
+    ExploreCardSpec(Icons.AutoMirrored.Outlined.MenuBook, "5 livres") { nav.navigate(TopLevelDestination.Psalms.route) },
     ExploreCardSpec(Icons.Outlined.Favorite, "Cas de la vie") { nav.navigate(TopLevelDestination.LifeCases.route) },
     ExploreCardSpec(Icons.Outlined.TextFields, "119 - AlphaBeta") { nav.navigate(Routes.PSALM_119_HOME) },
     ExploreCardSpec(Icons.Outlined.AutoStories, "Tous (1–150)") { nav.navigate(Routes.PSALM_LIST_ALL) },

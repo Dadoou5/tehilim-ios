@@ -13,8 +13,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.AutoStories
-import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -47,7 +47,7 @@ fun OnboardingScreen(container: AppContainer, onFinished: () -> Unit) {
 
     val pages = listOf(
         OnboardingPage(
-            icon = Icons.Outlined.MenuBook,
+            icon = Icons.AutoMirrored.Outlined.MenuBook,
             title = "Bienvenue",
             subtitle = "L'intégralité des 150 Tehilim, en hébreu vocalisé avec téamim, et en traduction française."
         ),

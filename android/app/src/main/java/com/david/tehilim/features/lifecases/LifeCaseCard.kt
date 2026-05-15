@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.TextSnippet
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,7 +42,7 @@ fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = M
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    Icons.Outlined.TextSnippet,
+                    imageVector = LifeCaseSymbolMap.iconFor(lifeCase.symbol),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )

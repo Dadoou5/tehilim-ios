@@ -1,5 +1,6 @@
 package com.david.tehilim.features.psalms
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -123,29 +124,41 @@ private fun AllPsalmsContent(container: AppContainer, navController: NavControll
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
         items(container.psalmRepository.allPsalms) { psalm ->
-            Row(
+            androidx.compose.foundation.layout.Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .clickable {
+                        navController.navigate(com.david.tehilim.navigation.Routes.psalmDetail(psalm.id))
+                    }
             ) {
-                Text(
-                    "${psalm.id}",
-                    style = MaterialTheme.typography.titleSmall,
+                Row(
                     modifier = Modifier
-                )
-                Text(
-                    psalm.hebrewNumber,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Tehilim ${psalm.id}", style = MaterialTheme.typography.bodyLarge)
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        "${psalm.verses.size} versets",
-                        style = MaterialTheme.typography.labelSmall,
+                        "${psalm.id}",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        psalm.hebrewNumber,
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Tehilim ${psalm.id}", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "${psalm.verses.size} versets",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -175,14 +188,28 @@ private fun FavoritesContent(container: AppContainer, navController: NavControll
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
         items(favorites.sorted()) { id ->
             val psalm = container.psalmRepository.psalm(id) ?: return@items
-            Row(
+            androidx.compose.foundation.layout.Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .clickable {
+                        navController.navigate(com.david.tehilim.navigation.Routes.psalmDetail(psalm.id))
+                    }
             ) {
-                Text("Tehilim ${psalm.id} · ${psalm.hebrewNumber}", style = MaterialTheme.typography.bodyLarge)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Tehilim ${psalm.id} · ${psalm.hebrewNumber}",
+                        style = MaterialTheme.typography.bodyLarge)
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
             HorizontalDivider()
         }

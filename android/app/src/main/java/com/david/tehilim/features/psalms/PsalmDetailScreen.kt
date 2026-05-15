@@ -70,7 +70,7 @@ fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavC
     val textMode by container.preferences.textMode.collectAsState(initial = TextMode.HEBREW)
     val textSizeHebrew by container.preferences.textSizeHebrew.collectAsState(initial = com.david.tehilim.core.model.TextSize.MEDIUM)
     val textSizeFR by container.preferences.textSizeFR.collectAsState(initial = com.david.tehilim.core.model.TextSize.MEDIUM)
-    val translationFR by container.preferences.translationFR.collectAsState(initial = true)
+    val translationFR by container.preferences.translationFR.collectAsState(initial = false)
     val numberStyle by container.preferences.verseNumberStyle.collectAsState(initial = com.david.tehilim.core.model.VerseNumberStyle.HEBREW)
     val appLanguage by container.preferences.appLanguage.collectAsState(initial = com.david.tehilim.core.model.AppLanguage.SYSTEM)
 

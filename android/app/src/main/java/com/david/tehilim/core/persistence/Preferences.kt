@@ -63,7 +63,7 @@ class Preferences(private val context: Context) {
         runCatching { TextSize.valueOf(prefs[Keys.TEXT_SIZE_FR] ?: "MEDIUM") }.getOrElse { TextSize.MEDIUM }
     }
 
-    val translationFR: Flow<Boolean> = context.dataStore.data.map { it[Keys.TRANSLATION_FR] ?: true }
+    val translationFR: Flow<Boolean> = context.dataStore.data.map { it[Keys.TRANSLATION_FR] ?: false }
 
     val verseNumberStyle: Flow<VerseNumberStyle> = context.dataStore.data.map { prefs ->
         runCatching { VerseNumberStyle.valueOf(prefs[Keys.VERSE_NUMBER_STYLE] ?: "HEBREW") }

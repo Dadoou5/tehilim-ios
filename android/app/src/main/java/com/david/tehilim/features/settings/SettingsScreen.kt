@@ -43,7 +43,7 @@ fun SettingsScreen(container: AppContainer) {
     val textMode by prefs.textMode.collectAsState(initial = TextMode.HEBREW)
     val textSizeHebrew by prefs.textSizeHebrew.collectAsState(initial = TextSize.MEDIUM)
     val textSizeFR by prefs.textSizeFR.collectAsState(initial = TextSize.MEDIUM)
-    val translationFR by prefs.translationFR.collectAsState(initial = true)
+    val translationFR by prefs.translationFR.collectAsState(initial = false)
     val verseNumStyle by prefs.verseNumberStyle.collectAsState(initial = VerseNumberStyle.HEBREW)
     val dailyMode by prefs.dailyMode.collectAsState(initial = DailyMode.MONTHLY)
 

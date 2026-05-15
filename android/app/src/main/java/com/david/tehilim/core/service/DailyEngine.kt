@@ -9,9 +9,7 @@ import kotlinx.datetime.toLocalDateTime
 
 /**
  * Calcule les Tehilim du jour selon le mode (mensuel ou hebdomadaire).
- *
- * Mirror du DailyEngine iOS. Les règles viennent de `daily_reading_rules.json`,
- * partagé avec iOS.
+ * Mirror du DailyEngine iOS.
  */
 class DailyEngine(private val rules: DailyRules) {
 
@@ -20,16 +18,13 @@ class DailyEngine(private val rules: DailyRules) {
         return when (mode) {
             DailyMode.MONTHLY -> {
                 val day = today.dayOfMonth
-                rules.monthly[day.toString()] ?: emptyList()
+                // Combine jour 30 sur 29 pour les mois de 29 jours (mirror règle JSON).
+                rules.monthly(day).ifEmpty { rules.monthly(day - 1) }
             }
-            DailyMode.WEEKLY -> {
-                val key = today.dayOfWeek.toEnglishKey()
-                rules.weekly[key] ?: emptyList()
-            }
+            DailyMode.WEEKLY -> rules.weekly(today.dayOfWeek.toEnglishKey())
         }
     }
 
-    /** Mapping DayOfWeek vers la clé canonique utilisée dans daily_reading_rules.json. */
     private fun DayOfWeek.toEnglishKey(): String = when (this) {
         DayOfWeek.SUNDAY    -> "sunday"
         DayOfWeek.MONDAY    -> "monday"

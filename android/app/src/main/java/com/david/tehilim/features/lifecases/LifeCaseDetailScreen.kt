@@ -179,8 +179,8 @@ private fun LifeCaseHeaderCard(c: LifeCase) {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    Icons.Outlined.TextSnippet,
-                    null,
+                    imageVector = LifeCaseSymbolMap.iconFor(c.symbol),
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

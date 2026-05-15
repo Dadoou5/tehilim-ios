@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.david.tehilim.AppContainer
 import com.david.tehilim.core.model.Prayer
 import com.david.tehilim.features.prayers.PrayerSheet
@@ -133,7 +134,7 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
             // Tehilim du jour
             item {
                 SectionHeader("Tehilim du jour", subtitle = dailyMode.label)
-                AppCard(onClick = { navController.navigate(TopLevelDestination.Daily.route) }) {
+                AppCard(onClick = { navController.switchTopLevel(TopLevelDestination.Daily.route) }) {
                     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                         if (todayPsalms.isEmpty()) {
                             Text("Aucun Tehilim défini pour ce mode.", style = MaterialTheme.typography.bodyMedium)
@@ -220,10 +221,28 @@ private fun exploreCards(
     nav: NavController,
     onPrayer: (Prayer.Kind) -> Unit
 ): List<ExploreCardSpec> = listOf(
-    ExploreCardSpec(Icons.AutoMirrored.Outlined.MenuBook, "5 livres") { nav.navigate(TopLevelDestination.Psalms.route) },
-    ExploreCardSpec(Icons.Outlined.Favorite, "Cas de la vie") { nav.navigate(TopLevelDestination.LifeCases.route) },
+    // V1.2.1 : pour les top-level destinations, on utilise switchTopLevel pour
+    // que la navigation passe par le pattern tab proprement (et ne push pas
+    // Psalms par-dessus Home, ce qui causait que tapping Accueil affiche Psalms).
+    ExploreCardSpec(Icons.AutoMirrored.Outlined.MenuBook, "5 livres") { nav.switchTopLevel(TopLevelDestination.Psalms.route) },
+    ExploreCardSpec(Icons.Outlined.Favorite, "Cas de la vie") { nav.switchTopLevel(TopLevelDestination.LifeCases.route) },
     ExploreCardSpec(Icons.Outlined.TextFields, "119 - AlphaBeta") { nav.navigate(Routes.PSALM_119_HOME) },
     ExploreCardSpec(Icons.Outlined.AutoStories, "Tous (1–150)") { nav.navigate(Routes.PSALM_LIST_ALL) },
     ExploreCardSpec(Icons.Outlined.PlayCircle, "Prière avant") { onPrayer(Prayer.Kind.BEFORE) },
     ExploreCardSpec(Icons.Outlined.CheckCircle, "Prière après") { onPrayer(Prayer.Kind.AFTER) }
 )
+
+/**
+ * Helper pour passer d'un onglet à l'autre proprement (sans empiler).
+ * Mirror du `router.go(.psalms)` iOS.
+ */
+private fun NavController.switchTopLevel(route: String) {
+    navigate(route) {
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+            inclusive = false
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}

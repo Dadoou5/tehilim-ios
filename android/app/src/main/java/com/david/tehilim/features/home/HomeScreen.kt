@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.david.tehilim.AppContainer
 import com.david.tehilim.core.model.Prayer
 import com.david.tehilim.features.prayers.PrayerSheet
@@ -235,10 +234,13 @@ private fun exploreCards(
 /**
  * Helper pour passer d'un onglet à l'autre proprement (sans empiler).
  * Mirror du `router.go(.psalms)` iOS.
+ *
+ * V1.2.11 : popUpTo par route nommée plutôt que par startDestination().id —
+ * plus robuste quand la back stack contient des routes avec query params.
  */
 private fun NavController.switchTopLevel(route: String) {
     navigate(route) {
-        popUpTo(graph.findStartDestination().id) {
+        popUpTo(TopLevelDestination.Home.route) {
             saveState = true
             inclusive = false
         }

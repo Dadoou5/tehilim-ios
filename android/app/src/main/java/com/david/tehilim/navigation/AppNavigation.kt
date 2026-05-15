@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -59,14 +58,24 @@ fun AppNavigation(container: AppContainer) {
                     NavigationBarItem(
                         selected = backStackEntry?.destination?.hierarchy?.any { it.route == dest.route } == true,
                         onClick = {
+                            // V1.2.11 — popUpTo par route nommée plutôt que par
+                            // startDestination().id. Compose Navigation peut perdre
+                            // le lien vers la start destination quand la back stack
+                            // contient des routes avec query params (cas réel : Psalm
+                            // 119 section dont la route est
+                            // "psalm119/section/{index}?intentId={intentId}&pos={pos}").
+                            // Avec popUpTo(Home.route) ça marche dans tous les cas.
                             navController.navigate(dest.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                popUpTo(TopLevelDestination.Home.route) {
+                                    inclusive = false
+                                    saveState = true
+                                }
                                 launchSingleTop = true
                                 restoreState = true
                             }
                         },
-                        // V1.2.10 — icône seule, sans label. Le contentDescription
-                        // garde l'accessibilité TalkBack via le nom de l'onglet.
+                        // Icône seule, sans label. Le contentDescription garde
+                        // l'accessibilité TalkBack via le nom de l'onglet.
                         icon = { Icon(iconFor(dest), contentDescription = dest.labelFR) }
                     )
                 }

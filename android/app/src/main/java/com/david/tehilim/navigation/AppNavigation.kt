@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.NavType
 import com.david.tehilim.AppContainer
 import com.david.tehilim.features.daily.DailyScreen
@@ -78,19 +79,34 @@ fun AppNavigation(container: AppContainer) {
             modifier = Modifier.padding(padding)
         ) {
             // Top-level
-            composable(TopLevelDestination.Home.route) {
+            composable(
+                TopLevelDestination.Home.route,
+                deepLinks = listOf(navDeepLink { uriPattern = "tehilim://home" })
+            ) {
                 HomeScreen(container = container, navController = navController)
             }
-            composable(TopLevelDestination.Psalms.route) {
+            composable(
+                TopLevelDestination.Psalms.route,
+                deepLinks = listOf(navDeepLink { uriPattern = "tehilim://psalms" })
+            ) {
                 PsalmsScreen(container = container, navController = navController)
             }
-            composable(TopLevelDestination.Daily.route) {
+            composable(
+                TopLevelDestination.Daily.route,
+                deepLinks = listOf(navDeepLink { uriPattern = "tehilim://daily" })
+            ) {
                 DailyScreen(container = container, navController = navController)
             }
-            composable(TopLevelDestination.LifeCases.route) {
+            composable(
+                TopLevelDestination.LifeCases.route,
+                deepLinks = listOf(navDeepLink { uriPattern = "tehilim://lifecases" })
+            ) {
                 LifeCasesScreen(container = container, navController = navController)
             }
-            composable(TopLevelDestination.Settings.route) {
+            composable(
+                TopLevelDestination.Settings.route,
+                deepLinks = listOf(navDeepLink { uriPattern = "tehilim://settings" })
+            ) {
                 SettingsScreen(container = container, navController = navController)
             }
 

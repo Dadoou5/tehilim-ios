@@ -1,12 +1,15 @@
 package com.david.tehilim.widget
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.LocalContext
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -48,12 +51,20 @@ class DailyVerseWidget : GlanceAppWidget() {
 
     @Composable
     private fun WidgetContent(psalmIds: List<Int>, hebrewDate: String) {
+        // Deep link tehilim://daily — ouvre l'app directement sur l'onglet
+        // « Aujourd'hui ». Mirror du widget iOS V1.10.5.
+        val openDailyIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("tehilim://daily")
+        ).setClass(LocalContext.current, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(Color(0xFFF4F8FB))
                 .padding(12.dp)
-                .clickable(actionStartActivity<MainActivity>()),
+                .clickable(actionStartActivity(openDailyIntent)),
             verticalAlignment = Alignment.Top,
             horizontalAlignment = Alignment.Start
         ) {

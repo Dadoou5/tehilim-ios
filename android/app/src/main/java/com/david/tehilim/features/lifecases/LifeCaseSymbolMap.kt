@@ -1,7 +1,6 @@
 package com.david.tehilim.features.lifecases
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Air
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Balance
@@ -10,9 +9,10 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Flight
 import androidx.compose.material.icons.outlined.HealthAndSafety
-import androidx.compose.material.icons.outlined.Looks
+import androidx.compose.material.icons.outlined.Looks8
 import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material.icons.outlined.People
+import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Spa
 import androidx.compose.material.icons.outlined.WbSunny
@@ -41,8 +41,8 @@ object LifeCaseSymbolMap {
         "briefcase.fill"                   -> Icons.Outlined.Work
         "flag.fill"                        -> Icons.Outlined.Flag
         "scalemass"                        -> Icons.Outlined.Balance
-        "8.circle.fill"                    -> Icons.Outlined.Looks
-        "arrow.uturn.backward.circle"      -> Icons.Outlined.AccessTime
+        "8.circle.fill"                    -> Icons.Outlined.Looks8
+        "arrow.uturn.backward.circle"      -> Icons.Outlined.Restore
         else                               -> Icons.Outlined.Favorite
     }
 }

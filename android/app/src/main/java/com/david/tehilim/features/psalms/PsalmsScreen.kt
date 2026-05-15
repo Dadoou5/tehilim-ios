@@ -135,28 +135,8 @@ private fun AllPsalmsContent(container: AppContainer, navController: NavControll
     var query by rememberSaveable { mutableStateOf("") }
     val all = container.psalmRepository.allPsalms
 
-    // Filtre live : matche le numéro arabe (id), la gematria hébraïque, ou
-    // un mot du titre hébreu. Vide → liste complète.
-    val filtered = remember(query, all) {
-        if (query.isBlank()) all
-        else {
-            val raw = query.trim()
-            val lower = raw.lowercase()
-            // Strip prefix "tehilim/psaume/..."
-            val cleaned = listOf("tehilim", "tehillim", "psaume", "psaumes", "psalm")
-                .fold(lower) { acc, w -> acc.replace(w, "") }
-                .trim()
-            val arabicNum = cleaned.filter { it.isDigit() }.toIntOrNull()
-            val hebrewNum = com.david.tehilim.core.service.HebrewNumerals.toInt(raw)
-            all.filter { p ->
-                (arabicNum != null && p.id == arabicNum) ||
-                (hebrewNum != null && p.id == hebrewNum) ||
-                p.hebrewNumber.contains(raw) ||
-                (p.hebrewTitle?.contains(raw) == true) ||
-                p.id.toString().startsWith(cleaned.takeIf { it.isNotEmpty() } ?: " ")
-            }
-        }
-    }
+    // Filtre live partagé avec PsalmListScreen (livres 1..5)
+    val filtered = remember(query, all) { filterPsalms(all, query) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(

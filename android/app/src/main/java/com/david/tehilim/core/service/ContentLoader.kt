@@ -27,25 +27,27 @@ class ContentLoader(private val context: Context) {
 
     fun loadPsalms(): List<Psalm> {
         val payload = readAsset("data/psalms.json")
-        // Le JSON top-level a la forme { "psalms": [...] } comme iOS
+        // Structure réelle : { "version": ..., "source": ..., "language": ..., "psalms": [...] }
         val wrapper = json.decodeFromString<PsalmsWrapper>(payload)
         return wrapper.psalms
     }
 
     fun loadLifeCases(): List<LifeCase> {
         val payload = readAsset("data/life_cases.json")
+        // Structure réelle : { "$schema": ..., "version": ..., "categories": [...] }
         val wrapper = json.decodeFromString<LifeCasesWrapper>(payload)
-        return wrapper.cases
+        return wrapper.categories
     }
 
     fun loadPsalm119Sections(): List<Psalm119Section> {
-        val payload = readAsset("data/psalm119.json")
         return runCatching {
+            // Le fichier s'appelle psalm_119_sections.json côté repo.
+            // Structure : { "$schema": ..., "version": ..., "psalmId": 119, "sections": [...] }
+            val payload = readAsset("data/psalm_119_sections.json")
             val wrapper = json.decodeFromString<Psalm119Wrapper>(payload)
             wrapper.sections
         }.getOrElse {
-            // Fallback : si le JSON 119 n'est pas exporté séparément,
-            // on génère les 22 sections de manière déterministe (8 versets chacune).
+            // Fallback : 22 sections déterministes si le JSON est absent ou cassé.
             generateDefault119Sections()
         }
     }
@@ -68,11 +70,16 @@ class ContentLoader(private val context: Context) {
     @kotlinx.serialization.Serializable
     private data class PsalmsWrapper(val psalms: List<Psalm>)
 
+    /// Le fichier life_cases.json utilise « categories » comme clé top-level
+    /// (pas « cases »). On garde la dénomination JSON canonique du repo.
     @kotlinx.serialization.Serializable
-    private data class LifeCasesWrapper(val cases: List<LifeCase>)
+    private data class LifeCasesWrapper(val categories: List<LifeCase>)
 
     @kotlinx.serialization.Serializable
-    private data class Psalm119Wrapper(val sections: List<Psalm119Section>)
+    private data class Psalm119Wrapper(
+        val psalmId: Int = 119,
+        val sections: List<Psalm119Section>
+    )
 
     private fun generateDefault119Sections(): List<Psalm119Section> {
         val letters = listOf(

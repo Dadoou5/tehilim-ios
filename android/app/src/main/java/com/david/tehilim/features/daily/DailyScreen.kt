@@ -85,7 +85,9 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
             }
             items(ids) { id ->
                 val p = container.psalmRepository.psalm(id) ?: return@items
-                AppCard(onClick = { navController.navigate(Routes.psalmDetail(id)) },
+                AppCard(
+                    // Siblings = liste des Tehilim du jour → prev/next dans le set.
+                    onClick = { navController.navigate(Routes.psalmDetail(id, ids)) },
                     modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),

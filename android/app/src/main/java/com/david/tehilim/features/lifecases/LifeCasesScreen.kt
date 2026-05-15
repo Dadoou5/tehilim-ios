@@ -47,7 +47,9 @@ fun LifeCasesScreen(container: AppContainer, navController: NavController) {
                     Text(
                         group.title,
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 // Chunked rows pour la grille adaptive — pas de LazyVerticalGrid imbriqué

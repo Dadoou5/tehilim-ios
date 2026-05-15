@@ -126,13 +126,28 @@ fun AppNavigation(container: AppContainer) {
                 AccessibilityScreen(navController = navController)
             }
 
-            // Détail Tehilim
+            // Détail Tehilim — siblings optionnels pour prev/next contextuel
+            // (life case, favoris, journalier, liste filtrée par livre, etc.)
             composable(
                 Routes.PSALM_DETAIL,
-                arguments = listOf(navArgument("psalmId") { type = NavType.IntType })
+                arguments = listOf(
+                    navArgument("psalmId") { type = NavType.IntType },
+                    navArgument("siblings") {
+                        type = NavType.StringType; nullable = true; defaultValue = null
+                    }
+                )
             ) {
                 val psalmId = it.arguments?.getInt("psalmId") ?: 1
-                PsalmDetailScreen(container = container, psalmId = psalmId, navController = navController)
+                val siblings = it.arguments?.getString("siblings")
+                    ?.split(",")
+                    ?.mapNotNull { s -> s.trim().toIntOrNull() }
+                    ?.takeIf { list -> list.isNotEmpty() }
+                PsalmDetailScreen(
+                    container = container,
+                    psalmId = psalmId,
+                    navController = navController,
+                    siblings = siblings
+                )
             }
 
             // Listes Tehilim

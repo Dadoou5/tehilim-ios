@@ -29,7 +29,8 @@ fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = M
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 160.dp)
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.Start
         ) {
             // Icône carrée avec bg accent doux
             Box(
@@ -53,7 +54,10 @@ fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = M
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
-                modifier = Modifier.padding(top = 12.dp)
+                textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
             )
 
             Text(
@@ -61,14 +65,20 @@ fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = M
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
-                modifier = Modifier.padding(top = 4.dp)
+                textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
             )
 
             Text(
                 text = "${lifeCase.psalms.size} Tehilim",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp)
+                textAlign = androidx.compose.ui.text.style.TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             )
         }
     }

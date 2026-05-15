@@ -61,6 +61,9 @@ fun PsalmListScreen(
             )
         }
     ) { padding ->
+        // Liste des IDs visibles → passée comme siblings pour activer prev/next
+        // contextuel sur PsalmDetailScreen (mirror PsalmsTabView iOS).
+        val visibleIds = psalms.map { it.id }
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,7 +104,7 @@ fun PsalmListScreen(
                         )
                     }
                     androidx.compose.material3.TextButton(onClick = {
-                        navController.navigate(Routes.psalmDetail(psalm.id))
+                        navController.navigate(Routes.psalmDetail(psalm.id, visibleIds))
                     }) {
                         Text("Lire")
                     }

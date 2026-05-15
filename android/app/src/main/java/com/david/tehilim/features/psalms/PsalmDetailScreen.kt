@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.RecordVoiceOver
@@ -36,24 +38,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import com.david.tehilim.AppContainer
 import com.david.tehilim.core.model.TextMode
 import com.david.tehilim.features.sharing.VerseShareRenderer
+import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.IluyNishmatBanner
 import com.david.tehilim.ui.components.VerseRow
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 import com.david.tehilim.ui.theme.hebrewTitleStyle
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material.icons.outlined.RecordVoiceOver
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavController) {
+fun PsalmDetailScreen(
+    container: AppContainer,
+    psalmId: Int,
+    navController: NavController,
+    siblings: List<Int>? = null
+) {
     val psalm = container.psalmRepository.psalm(psalmId)
     if (psalm == null) {
         Text("Tehilim introuvable.")
@@ -184,6 +190,66 @@ fun PsalmDetailScreen(container: AppContainer, psalmId: Int, navController: NavC
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             }
+
+            // Footer prev/next — mirror PsalmDetailView.navigation(prev:next:) iOS.
+            // Si on a une liste de siblings (cas de vie, favoris, journée…), on
+            // navigue dans cette liste. Sinon, dans le corpus complet 1..150.
+            item {
+                val (prev, next) = computeNeighbors(psalmId, siblings)
+                PrevNextFooter(
+                    prevId = prev,
+                    nextId = next,
+                    onClick = { targetId ->
+                        // Pop l'entrée courante puis push la nouvelle pour éviter
+                        // l'accumulation infinie dans la back stack.
+                        navController.navigate(Routes.psalmDetail(targetId, siblings)) {
+                            popUpTo(Routes.PSALM_DETAIL) { inclusive = true }
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+private fun computeNeighbors(id: Int, siblings: List<Int>?): Pair<Int?, Int?> {
+    if (siblings != null) {
+        val idx = siblings.indexOf(id)
+        if (idx >= 0) {
+            val prev = if (idx > 0) siblings[idx - 1] else null
+            val next = if (idx < siblings.size - 1) siblings[idx + 1] else null
+            return prev to next
+        }
+    }
+    val prev = if (id > 1) id - 1 else null
+    val next = if (id < 150) id + 1 else null
+    return prev to next
+}
+
+@Composable
+private fun PrevNextFooter(prevId: Int?, nextId: Int?, onClick: (Int) -> Unit) {
+    androidx.compose.foundation.layout.Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (prevId != null) {
+            OutlinedButton(onClick = { onClick(prevId) }) {
+                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null)
+                Text(" Tehilim $prevId")
+            }
+        } else {
+            androidx.compose.foundation.layout.Spacer(Modifier.padding(1.dp))
+        }
+        if (nextId != null) {
+            OutlinedButton(onClick = { onClick(nextId) }) {
+                Text("Tehilim $nextId ")
+                Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
+            }
+        } else {
+            androidx.compose.foundation.layout.Spacer(Modifier.padding(1.dp))
         }
     }
 }

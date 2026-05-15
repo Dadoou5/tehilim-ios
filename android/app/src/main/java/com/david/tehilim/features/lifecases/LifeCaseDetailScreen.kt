@@ -99,7 +99,9 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
             items(c.psalms) { id ->
                 val p = container.psalmRepository.psalm(id) ?: return@items
                 AppCard(
-                    onClick = { navController.navigate(Routes.psalmDetail(id)) },
+                    // Passe la liste de psaumes du cas de la vie comme siblings —
+                    // ça active prev/next contextuel sur PsalmDetailScreen.
+                    onClick = { navController.navigate(Routes.psalmDetail(id, c.psalms)) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -109,15 +111,20 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.Start
+                        ) {
                             Text(
                                 "Tehilim ${p.id}",
-                                style = MaterialTheme.typography.titleSmall
+                                style = MaterialTheme.typography.titleSmall,
+                                textAlign = TextAlign.Start
                             )
                             Text(
                                 p.hebrewNumber,
                                 style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Start
                             )
                         }
                         Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null,

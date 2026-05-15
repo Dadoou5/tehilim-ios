@@ -19,8 +19,12 @@ sealed class TopLevelDestination(val route: String, val labelFR: String) {
 
 /** Routes secondaires accessibles par push depuis n'importe quel onglet. */
 object Routes {
-    const val PSALM_DETAIL = "psalm/{psalmId}"
-    fun psalmDetail(id: Int) = "psalm/$id"
+    const val PSALM_DETAIL = "psalm/{psalmId}?siblings={siblings}"
+    fun psalmDetail(id: Int, siblings: List<Int>? = null): String {
+        val base = "psalm/$id"
+        return if (siblings.isNullOrEmpty()) base
+               else "$base?siblings=${siblings.joinToString(",")}"
+    }
 
     const val PSALM_LIST_BOOK = "book/{book}"
     fun psalmListBook(book: Int) = "book/$book"

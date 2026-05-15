@@ -100,7 +100,9 @@ fun FavoritesScreen(container: AppContainer, navController: NavController) {
                 items(sortedIds) { id ->
                     val p = container.psalmRepository.psalm(id) ?: return@items
                     AppCard(
-                        onClick = { navController.navigate(Routes.psalmDetail(id)) },
+                        // Siblings = toute la liste de favoris (triés) →
+                        // prev/next dans PsalmDetail navigue entre favoris.
+                        onClick = { navController.navigate(Routes.psalmDetail(id, sortedIds)) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(

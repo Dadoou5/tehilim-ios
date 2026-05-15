@@ -65,7 +65,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                 )
             }
 
-            // Section : Au programme — vient en premier (V1.2.15)
+            // Au programme (header)
             item {
                 Text(
                     text = "Au programme",
@@ -74,6 +74,17 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+
+            // Prière avant — entre le header et la liste (V1.2.16)
+            item {
+                PrayerRow(
+                    title = "Prière avant la lecture",
+                    icon = Icons.Outlined.PlayCircle,
+                    onClick = { presentedPrayer = Prayer.Kind.BEFORE }
+                )
+            }
+
+            // Liste des Tehilim du jour
             items(ids) { id ->
                 val p = container.psalmRepository.psalm(id) ?: return@items
                 AppCard(
@@ -104,16 +115,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                 }
             }
 
-            // Prières avant + après — affichées sous la liste « Au programme »
-            // (V1.2.15 : sur demande utilisateur, les deux prières sont
-            // regroupées après les Tehilim du jour).
-            item {
-                PrayerRow(
-                    title = "Prière avant la lecture",
-                    icon = Icons.Outlined.PlayCircle,
-                    onClick = { presentedPrayer = Prayer.Kind.BEFORE }
-                )
-            }
+            // Prière après — en fin de liste
             item {
                 PrayerRow(
                     title = "Prière après la lecture",

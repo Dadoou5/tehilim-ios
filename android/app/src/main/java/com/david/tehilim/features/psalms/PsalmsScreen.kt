@@ -13,7 +13,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -228,6 +230,9 @@ private fun AllPsalmsContent(container: AppContainer, navController: NavControll
 @Composable
 private fun FavoritesContent(container: AppContainer, navController: NavController) {
     val favorites by container.favorites.ids.collectAsState()
+    val sortedIds = remember(favorites) { favorites.sorted() }
+    var presentedPrayer by remember { mutableStateOf<com.david.tehilim.core.model.Prayer.Kind?>(null) }
+
     if (favorites.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -241,14 +246,35 @@ private fun FavoritesContent(container: AppContainer, navController: NavControll
         }
         return
     }
+
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
-        items(favorites.sorted()) { id ->
+        // Prière avant la lecture (mirror FavoritesScreen dédié)
+        item {
+            PrayerRow(
+                title = "Prière avant la lecture",
+                icon = Icons.Outlined.PlayCircle,
+                onClick = { presentedPrayer = com.david.tehilim.core.model.Prayer.Kind.BEFORE }
+            )
+        }
+        item {
+            Text(
+                "Tehilim favoris",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+            )
+        }
+
+        items(sortedIds) { id ->
             val psalm = container.psalmRepository.psalm(id) ?: return@items
             androidx.compose.foundation.layout.Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        navController.navigate(com.david.tehilim.navigation.Routes.psalmDetail(psalm.id))
+                        // Siblings = favoris triés → prev/next dans la liste.
+                        navController.navigate(
+                            com.david.tehilim.navigation.Routes.psalmDetail(psalm.id, sortedIds)
+                        )
                     }
             ) {
                 Row(
@@ -268,6 +294,56 @@ private fun FavoritesContent(container: AppContainer, navController: NavControll
                 }
             }
             HorizontalDivider()
+        }
+
+        // Prière après la lecture
+        item {
+            androidx.compose.foundation.layout.Spacer(Modifier.padding(top = 12.dp))
+            PrayerRow(
+                title = "Prière après la lecture",
+                icon = Icons.Outlined.CheckCircle,
+                onClick = { presentedPrayer = com.david.tehilim.core.model.Prayer.Kind.AFTER }
+            )
+        }
+    }
+
+    presentedPrayer?.let { kind ->
+        com.david.tehilim.features.prayers.PrayerSheet(
+            kind = kind,
+            container = container,
+            onDismiss = { presentedPrayer = null }
+        )
+    }
+}
+
+@Composable
+private fun PrayerRow(
+    title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit
+) {
+    com.david.tehilim.ui.components.AppCard(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(icon, null, tint = MaterialTheme.colorScheme.primary)
+            Text(
+                title,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

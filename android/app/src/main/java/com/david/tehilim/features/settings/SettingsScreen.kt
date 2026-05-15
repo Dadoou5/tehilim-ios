@@ -30,11 +30,13 @@ import com.david.tehilim.core.model.DailyMode
 import com.david.tehilim.core.model.TextMode
 import com.david.tehilim.core.model.TextSize
 import com.david.tehilim.core.model.VerseNumberStyle
+import com.david.tehilim.ui.theme.frenchBodyStyle
+import com.david.tehilim.ui.theme.hebrewBodyStyle
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(container: AppContainer) {
+fun SettingsScreen(container: AppContainer, navController: androidx.navigation.NavController? = null) {
     val scope = rememberCoroutineScope()
     val prefs = container.preferences
 
@@ -47,6 +49,25 @@ fun SettingsScreen(container: AppContainer) {
     val verseNumStyle by prefs.verseNumberStyle.collectAsState(initial = VerseNumberStyle.HEBREW)
     val dailyMode by prefs.dailyMode.collectAsState(initial = DailyMode.MONTHLY)
 
+    var showRestartAlert by remember { mutableStateOf(false) }
+
+    if (showRestartAlert) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showRestartAlert = false },
+            title = { Text("Redémarrage requis") },
+            text = {
+                Text(
+                    "La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la."
+                )
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { showRestartAlert = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     Scaffold(topBar = { TopAppBar(title = { Text("Réglages") }) }) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -58,7 +79,10 @@ fun SettingsScreen(container: AppContainer) {
             item { SectionHeader("Langue") }
             item {
                 EnumSettingRow("Langue de l'app", appLanguage, AppLanguage.entries) {
-                    scope.launch { prefs.setAppLanguage(it) }
+                    scope.launch {
+                        prefs.setAppLanguage(it)
+                        showRestartAlert = true
+                    }
                 }
             }
             item {
@@ -95,6 +119,14 @@ fun SettingsScreen(container: AppContainer) {
                 }
             }
 
+            // Aperçus texte (mirror PrimaryPreviewRow / FrenchPreviewRow iOS)
+            item {
+                HebrewPreviewRow(mode = textMode, size = textSizeHebrew)
+            }
+            item {
+                FrenchPreviewRow(size = textSizeFR)
+            }
+
             item { HorizontalDivider() }
             item { SectionHeader("Lecture quotidienne") }
             item {
@@ -104,10 +136,68 @@ fun SettingsScreen(container: AppContainer) {
             }
 
             item { HorizontalDivider() }
+            item { SectionHeader("Rappel quotidien") }
+            item { NotificationsSettingsSection() }
+
+            item { HorizontalDivider() }
+            item { SectionHeader("Accessibilité") }
+            item {
+                androidx.compose.material3.TextButton(
+                    onClick = { navController?.navigate("about/accessibility") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Déclaration d'accessibilité",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        null
+                    )
+                }
+            }
+
+            item { HorizontalDivider() }
             item { SectionHeader("À propos") }
             item {
+                androidx.compose.material3.TextButton(
+                    onClick = { navController?.navigate("about/content") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Sources du contenu",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        null
+                    )
+                }
+            }
+            item {
+                androidx.compose.material3.TextButton(
+                    onClick = { navController?.navigate("about/privacy") },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Confidentialité",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        null
+                    )
+                }
+            }
+            item {
                 Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                    Text("Version 1.0.0", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        "Version ${com.david.tehilim.BuildConfig.VERSION_NAME}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     Text(
                         "Texte hébreu : Sefaria · Traduction française : Beth Loubavitch · Traduction anglaise : JPS 1917",
                         style = MaterialTheme.typography.labelSmall,
@@ -116,6 +206,64 @@ fun SettingsScreen(container: AppContainer) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun HebrewPreviewRow(mode: TextMode, size: TextSize) {
+    val sample = "שִׁיר לַמַּעֲלוֹת אֶשָּׂא עֵינַי"
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            "Aperçu",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        if (mode == TextMode.HEBREW) {
+            androidx.compose.runtime.CompositionLocalProvider(
+                androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Rtl
+            ) {
+                Text(
+                    sample,
+                    style = hebrewBodyStyle(size.scale),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.End
+                )
+            }
+        } else {
+            Text(
+                "Chir lamaalot essa enaï",
+                style = hebrewBodyStyle(size.scale).copy(
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun FrenchPreviewRow(size: TextSize) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            "Aperçu traduction",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            "Cantique des degrés. Je lève mes yeux vers les montagnes…",
+            style = frenchBodyStyle(size.scale),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

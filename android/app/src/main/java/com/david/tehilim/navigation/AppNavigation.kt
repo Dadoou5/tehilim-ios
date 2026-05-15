@@ -40,6 +40,7 @@ import com.david.tehilim.features.psalms.PsalmsScreen
 import com.david.tehilim.features.search.SearchScreen
 import com.david.tehilim.features.settings.AboutContentScreen
 import com.david.tehilim.features.settings.AboutPrivacyScreen
+import com.david.tehilim.features.settings.AccessibilityScreen
 import com.david.tehilim.features.settings.SettingsScreen
 
 @Composable
@@ -90,7 +91,7 @@ fun AppNavigation(container: AppContainer) {
                 LifeCasesScreen(container = container, navController = navController)
             }
             composable(TopLevelDestination.Settings.route) {
-                SettingsScreen(container = container)
+                SettingsScreen(container = container, navController = navController)
             }
 
             // Recherche
@@ -104,6 +105,9 @@ fun AppNavigation(container: AppContainer) {
             }
             composable("about/privacy") {
                 AboutPrivacyScreen(navController = navController)
+            }
+            composable("about/accessibility") {
+                AccessibilityScreen(navController = navController)
             }
 
             // Détail Tehilim

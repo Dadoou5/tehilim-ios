@@ -1,5 +1,10 @@
 package com.david.tehilim.features.settings
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.david.tehilim.core.service.NotificationScheduler
 
 /**
@@ -40,6 +46,43 @@ fun NotificationsSettingsSection() {
     var hour by remember { mutableIntStateOf(9) }
     var minute by remember { mutableIntStateOf(0) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var permissionDenied by remember { mutableStateOf(false) }
+
+    // Android 13+ : on doit demander POST_NOTIFICATIONS au runtime.
+    val permLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            enabled = true
+            permissionDenied = false
+            NotificationScheduler.scheduleDaily(context, hour, minute)
+        } else {
+            enabled = false
+            permissionDenied = true
+        }
+    }
+
+    fun toggleEnabled(isOn: Boolean) {
+        if (!isOn) {
+            enabled = false
+            NotificationScheduler.cancelDaily(context)
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val granted = ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (granted) {
+                enabled = true
+                NotificationScheduler.scheduleDaily(context, hour, minute)
+            } else {
+                permLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        } else {
+            enabled = true
+            NotificationScheduler.scheduleDaily(context, hour, minute)
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -51,11 +94,14 @@ fun NotificationsSettingsSection() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Rappel quotidien", style = MaterialTheme.typography.bodyMedium)
-            Switch(checked = enabled, onCheckedChange = { isOn ->
-                enabled = isOn
-                if (isOn) NotificationScheduler.scheduleDaily(context, hour, minute)
-                else NotificationScheduler.cancelDaily(context)
-            })
+            Switch(checked = enabled, onCheckedChange = ::toggleEnabled)
+        }
+        if (permissionDenied) {
+            Text(
+                "Permission refusée. Active les notifications dans Réglages → Apps → Tehilim → Notifications pour recevoir le rappel.",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error
+            )
         }
         if (enabled) {
             Row(

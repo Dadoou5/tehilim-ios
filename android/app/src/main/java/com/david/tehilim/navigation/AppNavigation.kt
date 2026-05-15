@@ -45,28 +45,27 @@ import com.david.tehilim.features.settings.SettingsScreen
 fun AppNavigation(container: AppContainer) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
 
-    val showBottomBar = TopLevelDestination.all.any { it.route == currentRoute }
-
+    // V1.2.5 — La barre de navigation reste toujours visible, comme la TabView
+    // iOS qui enveloppe chaque NavigationStack. Avant V1.2.5, on la cachait sur
+    // les écrans de détail (PsalmDetail, LifeCaseDetail, Search…) ce qui
+    // empêchait l'utilisateur de switcher d'onglet sans revenir en arrière.
     Scaffold(
         bottomBar = {
-            if (showBottomBar) {
-                NavigationBar {
-                    TopLevelDestination.all.forEach { dest ->
-                        NavigationBarItem(
-                            selected = backStackEntry?.destination?.hierarchy?.any { it.route == dest.route } == true,
-                            onClick = {
-                                navController.navigate(dest.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { Icon(iconFor(dest), contentDescription = dest.labelFR) },
-                            label = { Text(dest.labelFR) }
-                        )
-                    }
+            NavigationBar {
+                TopLevelDestination.all.forEach { dest ->
+                    NavigationBarItem(
+                        selected = backStackEntry?.destination?.hierarchy?.any { it.route == dest.route } == true,
+                        onClick = {
+                            navController.navigate(dest.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = { Icon(iconFor(dest), contentDescription = dest.labelFR) },
+                        label = { Text(dest.labelFR) }
+                    )
                 }
             }
         }

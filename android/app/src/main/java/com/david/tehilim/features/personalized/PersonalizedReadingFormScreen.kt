@@ -8,17 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -51,6 +50,9 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
     var relativeName by remember { mutableStateOf("") }
     var motherName by remember { mutableStateOf("") }
     var relation by remember { mutableStateOf(RelationType.BEN) }
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val hasHebrewKeyboard = remember { isHebrewKeyboardInstalled(context) }
 
     val isValid = HebrewLetterMapper.isValidHebrewName(relativeName) &&
         HebrewLetterMapper.isValidHebrewName(motherName)
@@ -74,6 +76,42 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Bannière de conseil si pas de clavier hébreu installé
+            if (!hasHebrewKeyboard) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Icon(
+                        Icons.Outlined.Info,
+                        null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "Active le clavier hébreu",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            "Réglages → Système → Langues et saisie → Clavier virtuel → Gboard → Langues → ajouter Hébreu. Tu pourras ensuite basculer avec 🌐.",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                        TextButton(onClick = { openSystemKeyboardSettings(context) }) {
+                            Text("Ouvrir Réglages clavier")
+                        }
+                    }
+                }
+            }
+
             // Bannière Lelouy Nichmat — mirror V1.10.2 iOS
             Row(
                 modifier = Modifier
@@ -105,21 +143,14 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 }
             }
 
-            // Section : le défunt
-            Text(
-                "Le défunt",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            OutlinedTextField(
+            // Section : le défunt — HebrewKeyboardTextField force le clavier
+            // hébreu via imeHintLocales (équivalent du textInputMode iOS V1.10.1)
+            HebrewKeyboardTextField(
                 value = relativeName,
-                onValueChange = { relativeName = HebrewLetterMapper.filterHebrew(it) },
-                label = { Text("Prénom (hébreu)") },
-                placeholder = { Text("ex. יוסף") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(fontFamily = EzraSilFontFamily, textAlign = TextAlign.End),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                onValueChange = { relativeName = it },
+                label = "Le défunt — prénom (hébreu)",
+                placeholder = "ex. יוסף",
+                modifier = Modifier.fillMaxWidth()
             )
 
             // Lien (Ben / Bat)
@@ -149,20 +180,12 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
             }
 
             // Section : sa mère
-            Text(
-                "Sa mère",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            OutlinedTextField(
+            HebrewKeyboardTextField(
                 value = motherName,
-                onValueChange = { motherName = HebrewLetterMapper.filterHebrew(it) },
-                label = { Text("Prénom de la mère (hébreu)") },
-                placeholder = { Text("ex. שרה") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(fontFamily = EzraSilFontFamily, textAlign = TextAlign.End),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                onValueChange = { motherName = it },
+                label = "Prénom de la mère (hébreu)",
+                placeholder = "ex. שרה",
+                modifier = Modifier.fillMaxWidth()
             )
 
             // Aperçu hébraïque
@@ -220,4 +243,33 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
             )
         }
     }
+}
+
+/**
+ * Détecte si l'utilisateur a au moins un IME hébreu installé/activé.
+ * Inspecte la liste des input method subtypes via `InputMethodManager`.
+ */
+private fun isHebrewKeyboardInstalled(context: android.content.Context): Boolean {
+    val imm = context.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+    val imis = imm.enabledInputMethodList ?: return false
+    for (imi in imis) {
+        val subtypes = imm.getEnabledInputMethodSubtypeList(imi, true) ?: continue
+        for (st in subtypes) {
+            val locale = st.languageTag.ifBlank {
+                @Suppress("DEPRECATION") st.locale
+            }
+            if (locale?.startsWith("he", ignoreCase = true) == true ||
+                locale?.startsWith("iw", ignoreCase = true) == true) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
+/** Ouvre les paramètres clavier système Android. */
+private fun openSystemKeyboardSettings(context: android.content.Context) {
+    val intent = android.content.Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
+    intent.flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+    runCatching { context.startActivity(intent) }
 }

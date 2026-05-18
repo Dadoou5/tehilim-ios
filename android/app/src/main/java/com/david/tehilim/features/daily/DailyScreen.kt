@@ -65,6 +65,15 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                 )
             }
 
+            // Prière avant — au-dessus de la liste, mirror iOS DailyView (V1.2.17)
+            item {
+                PrayerRow(
+                    title = "Prière avant la lecture",
+                    icon = Icons.Outlined.PlayCircle,
+                    onClick = { presentedPrayer = Prayer.Kind.BEFORE }
+                )
+            }
+
             // Au programme (header)
             item {
                 Text(
@@ -72,15 +81,6 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            // Prière avant — entre le header et la liste (V1.2.16)
-            item {
-                PrayerRow(
-                    title = "Prière avant la lecture",
-                    icon = Icons.Outlined.PlayCircle,
-                    onClick = { presentedPrayer = Prayer.Kind.BEFORE }
                 )
             }
 

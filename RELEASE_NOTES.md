@@ -1,6 +1,14 @@
 # Notes de version Tehilim
 
-## V1.10.6 — 18 mai 2026 (build 23) — Stabilité App Group + politique de confidentialité
+## V1.10.6 — 18 mai 2026 — Stabilité App Group + politique de confidentialité + icônes adaptives
+
+### Build 24 (re-soumission, 18 mai 2026)
+Re-upload sur la même version 1.10.6 après ajout des icônes adaptives
+jour/nuit (iOS 18+) et nettoyage du fond pour éviter le double-arrondi
+quand iOS applique son propre masque. Premier build (23) déjà soumis,
+échangé contre 24 dans App Store Connect avant le passage en review.
+
+### Build 23 (soumission initiale)
 
 ### Communication app ↔ widget plus robuste
 Ajout d'une double garde dans `AppGroup.swift` pour gérer proprement les

@@ -20,9 +20,21 @@ enum AppGroup {
 
     /// `UserDefaults` partagé entre app et widget, ou `.standard` si l'App
     /// Group n'est pas accessible (free provisioning, capability non activée).
+    ///
+    /// Double garde :
+    /// 1. `FileManager.containerURL` — vérifie l'existence du conteneur sans
+    ///    toucher cfprefsd (évite le warning CFPrefsPlistSource).
+    /// 2. Probe roundtrip — détecte le cas simulateur où le conteneur existe
+    ///    côté filesystem mais les écritures sont silencieusement ignorées.
     static let userDefaults: UserDefaults = {
+        // Étape 1 : conteneur partagé présent ? (FileManager, pas cfprefsd)
+        guard FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: id) != nil else {
+            log.notice("App Group \(id, privacy: .public) : conteneur absent — UserDefaults.standard. Enregistre l'App Group sur developer.apple.com pour activer la synchro widget.")
+            return .standard
+        }
+        // Étape 2 : probe roundtrip pour détecter une initialisation sans accès réel
         guard let suite = UserDefaults(suiteName: id), isAccessible(suite) else {
-            log.notice("App Group \(id, privacy: .public) inaccessible — fallback sur UserDefaults.standard. Pour la synchro widget, active l'App Group dans le compte Apple Developer.")
+            log.notice("App Group \(id, privacy: .public) : roundtrip échoué — UserDefaults.standard.")
             return .standard
         }
         return suite

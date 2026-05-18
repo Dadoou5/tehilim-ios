@@ -1,5 +1,42 @@
 # Notes de version Tehilim
 
+## V1.10.6 — 18 mai 2026 (build 23) — Stabilité App Group + politique de confidentialité
+
+### Communication app ↔ widget plus robuste
+Ajout d'une double garde dans `AppGroup.swift` pour gérer proprement les
+configurations de déploiement où l'App Group `group.com.david.tehilim`
+n'est pas pleinement accessible (free provisioning, capability non
+encore enregistrée sur Apple Developer portal, simulateur non synchronisé) :
+
+1. **Pré-check filesystem** via `FileManager.containerURL(forSecurityApplicationGroupIdentifier:)` —
+   si le conteneur n'existe pas, on retourne immédiatement `UserDefaults.standard`
+   sans toucher cfprefsd.
+2. **Probe roundtrip** (`set` → `get` → `remove`) — détecte le cas
+   simulateur où le conteneur existe côté FS mais où les écritures sont
+   silencieusement ignorées.
+
+Quand la garde se déclenche, un seul log informatif via
+`Logger(category: "AppGroup")` est émis au lieu des warnings
+`CFPrefsPlistSource` répétés. L'app fonctionne normalement, seul le
+widget perd la synchro du mode quotidien (sans erreur).
+
+### Politique de confidentialité mise à jour
+`PRIVACY.md` corrigée pour refléter la synchronisation iCloud
+Key-Value Store introduite en V1.10.5 :
+
+- Nouvelle section **Synchronisation iCloud** détaillant les données
+  synchronisées (favoris, Lelouy Nichmat), le mécanisme
+  (`NSUbiquitousKeyValueStore`), et la non-implication de l'éditeur.
+- Droit RGPD enrichi : procédure pour effacer aussi les données iCloud
+  via *Réglages → Apple ID → iCloud → Gérer le stockage*.
+- Date de dernière mise à jour : 2026-05-18.
+
+### Pas de changement utilisateur visible
+Aucune modification du moteur de lecture, du corpus, du widget visuel
+ou du flow de navigation. Mise à jour de polissage uniquement.
+
+---
+
 ## V1.10.5 — 14 mai 2026 (build 22) — Auto-save + sync iCloud
 
 ### Sauvegarde automatique des Lelouy Nichmat

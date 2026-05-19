@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.david.tehilim.features.onboarding.OnboardingScreen
@@ -37,7 +38,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TehilimTheme {
-                var splashDone by remember { mutableStateOf(false) }
+                // V1.3.3 — rememberSaveable pour que la splash ne rejoue PAS
+                // quand l'Activity est recréée suite à un changement de langue.
+                var splashDone by rememberSaveable { mutableStateOf(false) }
 
                 val onboardingDone by container.preferences.onboardingDone.collectAsState(initial = true)
                 var shouldShowOnboarding by remember { mutableStateOf<Boolean?>(null) }

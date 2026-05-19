@@ -20,7 +20,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,47 +60,6 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
     val verseNumStyle by prefs.verseNumberStyle.collectAsState(initial = VerseNumberStyle.HEBREW)
     val dailyMode by prefs.dailyMode.collectAsState(initial = DailyMode.MONTHLY)
 
-    // V1.3.6 — applique la locale et recrée l'Activity DÈS QUE la préférence
-    // appLanguage a été persistée dans DataStore (= flow émet). Avant, on
-    // appelait recreate() directement dans le onChange du dropdown : ça
-    // détruisait l'Activity AVANT que `scope.launch { setAppLanguage(it) }`
-    // n'ait fini d'écrire dans DataStore → la coroutine était cancellée
-    // (scope est lié à l'Activity) → la pref n'était jamais persistée →
-    // la nouvelle Activity relit l'ancienne valeur → bascule jamais appliquée.
-    //
-    // Maintenant la séquence est :
-    //   1. user clique « Français » → scope.launch persiste FR dans DataStore
-    //   2. DataStore émet FR sur le flow → appLanguage devient FR
-    //   3. LaunchedEffect(FR) fire → applique setApplicationLocales("fr")
-    //      → recreate() (le write est déjà fait, plus de race)
-    //   4. Nouvelle Activity → attachBaseContext lit AppCompat (fr) → applique
-    //      → Resources servent values-fr/ → UI bascule
-    var didInitialize by remember { mutableStateOf(false) }
-    LaunchedEffect(appLanguage) {
-        // Première émission = la valeur `initial` de collectAsState (SYSTEM).
-        // On la skip pour ne pas overrider la locale déjà appliquée par
-        // TehilimApplication.onCreate() au démarrage.
-        if (!didInitialize) {
-            didInitialize = true
-            return@LaunchedEffect
-        }
-        val targetTag = when (appLanguage) {
-            AppLanguage.FR -> "fr"
-            AppLanguage.EN -> "en"
-            AppLanguage.SYSTEM -> ""
-        }
-        val currentLocales = AppCompatDelegate.getApplicationLocales()
-        val currentTag = if (currentLocales.isEmpty) "" else (currentLocales[0]?.language ?: "")
-        if (currentTag == targetTag) return@LaunchedEffect
-
-        val newLocales = if (targetTag.isEmpty()) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(targetTag)
-        }
-        AppCompatDelegate.setApplicationLocales(newLocales)
-        activity?.recreate()
-    }
 
     Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_settings)) }) }) { padding ->
         LazyColumn(
@@ -113,12 +71,34 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
         ) {
             item { SectionHeader(stringResource(R.string.section_language)) }
             item {
-                EnumSettingRow(stringResource(R.string.label_app_language), appLanguage, AppLanguage.entries) {
-                    // Juste persister. Le LaunchedEffect(appLanguage) ci-dessus
-                    // s'occupera d'appliquer la locale + recreate APRÈS que
-                    // DataStore ait fini son write — évite la race condition
-                    // qui annulait silencieusement le write.
-                    scope.launch { prefs.setAppLanguage(it) }
+                EnumSettingRow(stringResource(R.string.label_app_language), appLanguage, AppLanguage.entries) { newLang ->
+                    // V1.3.7 — séquence atomique en une seule coroutine :
+                    //   1. AWAIT le write DataStore (prefs.setAppLanguage suspend)
+                    //   2. Applique la locale AppCompat
+                    //   3. Recrée l'Activity
+                    //
+                    // recreate() est appelé en DERNIER de la coroutine, donc le
+                    // corps a déjà terminé quand Android destroy la scope. Pas
+                    // de race entre le write et la destruction.
+                    //
+                    // Pas de LaunchedEffect réactif sur appLanguage : ça
+                    // causait un loop EN ↔ SYSTEM à cause de la double-émission
+                    // (initial SYSTEM + valeur persistée).
+                    scope.launch {
+                        prefs.setAppLanguage(newLang)
+                        val tag = when (newLang) {
+                            AppLanguage.FR -> "fr"
+                            AppLanguage.EN -> "en"
+                            AppLanguage.SYSTEM -> ""
+                        }
+                        val newLocales = if (tag.isEmpty()) {
+                            LocaleListCompat.getEmptyLocaleList()
+                        } else {
+                            LocaleListCompat.forLanguageTags(tag)
+                        }
+                        AppCompatDelegate.setApplicationLocales(newLocales)
+                        activity?.recreate()
+                    }
                 }
             }
             item {

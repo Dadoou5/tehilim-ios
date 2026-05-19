@@ -32,11 +32,11 @@ class TehilimApplication : Application() {
         // sa configuration. Lecture synchrone du DataStore via runBlocking : le
         // DataStore est lu une seule fois au démarrage, l'impact perf est nul.
         val savedLang = runBlocking { container.preferences.appLanguage.first() }
-        val tag = when (savedLang) {
-            AppLanguage.FR -> "fr"
-            AppLanguage.EN -> "en"
-            AppLanguage.SYSTEM -> ""
+        val locales = when (savedLang) {
+            AppLanguage.FR -> LocaleListCompat.forLanguageTags("fr")
+            AppLanguage.EN -> LocaleListCompat.forLanguageTags("en")
+            AppLanguage.SYSTEM -> LocaleListCompat.getEmptyLocaleList()
         }
-        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
+        AppCompatDelegate.setApplicationLocales(locales)
     }
 }

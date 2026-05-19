@@ -1,5 +1,6 @@
 package com.david.tehilim.features.settings
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
@@ -46,6 +48,10 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(container: AppContainer, navController: androidx.navigation.NavController? = null) {
     val scope = rememberCoroutineScope()
     val prefs = container.preferences
+    // V1.3.4 — récupère l'Activity courante pour forcer recreate() au changement
+    // de langue (sinon setApplicationLocales n'a aucun effet immédiat sur
+    // ComponentActivity, seulement sur AppCompatActivity).
+    val activity = LocalContext.current as? Activity
 
     val appLanguage by prefs.appLanguage.collectAsState(initial = AppLanguage.SYSTEM)
     val theme by prefs.theme.collectAsState(initial = AppTheme.SYSTEM)
@@ -68,14 +74,23 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             item {
                 EnumSettingRow(stringResource(R.string.label_app_language), appLanguage, AppLanguage.entries) {
                     scope.launch { prefs.setAppLanguage(it) }
-                    // Applique immédiatement la locale système — recompose toute
-                    // l'UI dans la nouvelle langue sans redémarrage. API thread-safe.
                     val tag = when (it) {
                         AppLanguage.FR -> "fr"
                         AppLanguage.EN -> "en"
                         AppLanguage.SYSTEM -> ""
                     }
-                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
+                    val locales = if (tag.isEmpty()) {
+                        LocaleListCompat.getEmptyLocaleList()
+                    } else {
+                        LocaleListCompat.forLanguageTags(tag)
+                    }
+                    AppCompatDelegate.setApplicationLocales(locales)
+                    // Force la recréation de l'Activity : sur ComponentActivity,
+                    // AppCompatDelegate ne déclenche pas la recréation auto
+                    // (contrairement à AppCompatActivity). Sans ça, le cache
+                    // Resources reste figé sur l'ancienne langue, sauf pour les
+                    // données lues depuis DataStore (Cas de la vie).
+                    activity?.recreate()
                 }
             }
             item {

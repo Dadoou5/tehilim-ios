@@ -51,7 +51,7 @@ fun LifeCasesScreen(container: AppContainer, navController: NavController) {
             groups.forEach { group ->
                 item {
                     Text(
-                        group.title,
+                        group.localizedTitle(appLanguage.translation),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Start,
@@ -68,6 +68,7 @@ fun LifeCasesScreen(container: AppContainer, navController: NavController) {
                             Box(modifier = Modifier.weight(1f)) {
                                 LifeCaseCard(
                                     lifeCase = c,
+                                    language = appLanguage.translation,
                                     onClick = { navController.navigate(Routes.lifeCaseDetail(c.id)) }
                                 )
                             }

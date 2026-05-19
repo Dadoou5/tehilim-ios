@@ -37,11 +37,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
 import com.david.tehilim.R
+import com.david.tehilim.core.model.AppLanguage
 import com.david.tehilim.core.model.LifeCase
 import com.david.tehilim.core.model.Prayer
+import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.features.prayers.PrayerSheet
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
@@ -57,12 +60,14 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
     val c = container.lifeCaseRepository.find(caseId) ?: run {
         Text(stringResource(R.string.msg_category_not_found)); return
     }
+    val appLanguage by container.preferences.appLanguage.collectAsState(initial = AppLanguage.SYSTEM)
+    val lang = appLanguage.translation
     var presentedPrayer by remember { mutableStateOf<Prayer.Kind?>(null) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(c.title) },
+                title = { Text(c.localizedTitle(lang)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
@@ -79,7 +84,7 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Header card avec icône colorée + note + compteur
-            item { LifeCaseHeaderCard(c) }
+            item { LifeCaseHeaderCard(c, lang) }
 
             // Bouton prière avant
             item {
@@ -169,7 +174,7 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
 }
 
 @Composable
-private fun LifeCaseHeaderCard(c: LifeCase) {
+private fun LifeCaseHeaderCard(c: LifeCase, language: TranslationLanguage) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -194,7 +199,7 @@ private fun LifeCaseHeaderCard(c: LifeCase) {
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
-                Text(c.note, style = MaterialTheme.typography.bodyMedium,
+                Text(c.localizedNote(language), style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
                     text = if (c.psalms.size > 1)

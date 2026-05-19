@@ -14,8 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.david.tehilim.R
 import com.david.tehilim.core.model.LifeCase
+import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.ui.components.AppCard
 
 /**
@@ -23,7 +26,12 @@ import com.david.tehilim.ui.components.AppCard
  * Icône colorée + titre + extrait du conseil + compteur de Tehilim.
  */
 @Composable
-fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun LifeCaseCard(
+    lifeCase: LifeCase,
+    language: TranslationLanguage,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     AppCard(onClick = onClick, modifier = modifier) {
         Column(
             modifier = Modifier
@@ -50,7 +58,7 @@ fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = M
             }
 
             Text(
-                lifeCase.title,
+                lifeCase.localizedTitle(language),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
@@ -61,7 +69,7 @@ fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = M
             )
 
             Text(
-                lifeCase.note,
+                lifeCase.localizedNote(language),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
@@ -72,7 +80,7 @@ fun LifeCaseCard(lifeCase: LifeCase, onClick: () -> Unit, modifier: Modifier = M
             )
 
             Text(
-                text = "${lifeCase.psalms.size} Tehilim",
+                text = stringResource(R.string.label_tehilim_count, lifeCase.psalms.size),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Start,

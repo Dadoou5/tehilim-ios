@@ -219,6 +219,12 @@
     <string name="letter_source_lien">relation</string>
     <string name="letter_source_mere">mother</string>
 
+    <!-- ==================== SHARING ==================== -->
+    <string name="msg_translation_unavailable">Translation not available.</string>
+    <string name="share_verse_label">Verse %1$d</string>
+    <string name="share_chooser_title">Share the verse</string>
+    <string name="share_subject">Tehilim %1$d · verse %2$d</string>
+
     <!-- ==================== NOTIFICATIONS ==================== -->
     <string name="notif_channel_name">Today\'s Tehilim</string>
     <string name="notif_channel_description">Daily reminder to read today\'s Tehilim.</string>

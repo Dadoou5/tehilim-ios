@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.david.tehilim.R
 import com.david.tehilim.core.model.TextMode
 import com.david.tehilim.core.model.TextSize
 import com.david.tehilim.core.model.TranslationLanguage
@@ -75,7 +77,7 @@ fun VerseRow(
             // Colonne gauche : traduction (LTR)
             val translation = verse.translation(translationLang)
             Text(
-                text = translation ?: "Traduction non disponible.",
+                text = translation ?: stringResource(R.string.msg_translation_unavailable),
                 style = frenchBodyStyle(textSizeFR.scale),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
@@ -163,7 +165,7 @@ fun VerseRow(
                 )
             } else {
                 Text(
-                    text = "Traduction non disponible.",
+                    text = stringResource(R.string.msg_translation_unavailable),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

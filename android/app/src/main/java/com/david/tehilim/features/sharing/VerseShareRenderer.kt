@@ -10,6 +10,8 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.net.Uri
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
+import com.david.tehilim.R
 import com.david.tehilim.core.model.Psalm
 import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.core.model.Verse
@@ -63,16 +65,20 @@ object VerseShareRenderer {
         }
         canvas.drawText("Tehilim ${psalm.id} · ${psalm.hebrewNumber}", SIZE / 2f, 140f, titlePaint)
 
-        // Hébreu — large, centré
+        // Hébreu — large, centré, police Ezra SIL SR (téamim + nikud)
         val hebrewPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.parseColor("#0F1F2E")
             textSize = 64f
             textAlign = Paint.Align.CENTER
         }
-        // Charge la police Ezra SIL SR si dispo
+        // Charge la police Ezra SIL SR depuis res/font (copiée au build depuis
+        // le projet iOS via la task copySharedFonts). Fallback silencieux sur
+        // la police système si la ressource n'est pas dispo.
         runCatching {
-            hebrewPaint.typeface = Typeface.createFromAsset(context.assets, "data/dummy.ttf")
-        } // fallback : système si pas dispo
+            ResourcesCompat.getFont(context, R.font.ezra_sil_sr)?.let { typeface ->
+                hebrewPaint.typeface = typeface
+            }
+        }
 
         drawWrappedText(canvas, verse.hebrew, hebrewPaint, RectF(80f, 250f, SIZE - 80f, 600f))
 
@@ -94,7 +100,10 @@ object VerseShareRenderer {
             textSize = 34f
             textAlign = Paint.Align.CENTER
         }
-        canvas.drawText("Verset ${verse.number}", SIZE / 2f, 970f, footerPaint)
+        canvas.drawText(
+            context.getString(R.string.share_verse_label, verse.number),
+            SIZE / 2f, 970f, footerPaint
+        )
         canvas.drawText(translationLang.sourceCredit, SIZE / 2f, 1020f, footerPaint)
 
         return bitmap
@@ -136,10 +145,16 @@ object VerseShareRenderer {
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "image/png"
             putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "Tehilim $psalmId · verset $verseNumber")
+            putExtra(
+                Intent.EXTRA_SUBJECT,
+                context.getString(R.string.share_subject, psalmId, verseNumber)
+            )
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        val chooser = Intent.createChooser(intent, "Partager le verset").apply {
+        val chooser = Intent.createChooser(
+            intent,
+            context.getString(R.string.share_chooser_title)
+        ).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(chooser)

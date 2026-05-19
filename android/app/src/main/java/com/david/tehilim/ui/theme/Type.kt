@@ -42,12 +42,24 @@ fun hebrewTitleStyle(scale: Float = 1.0f): TextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold
 )
 
+/**
+ * Numéro de verset — monospace pour aligner visuellement les colonnes.
+ * Mirror iOS `.system(design: .monospaced)`.
+ */
 fun verseNumberStyle(scale: Float = 1.0f): TextStyle = TextStyle(
+    fontFamily = FontFamily.Monospace,
     fontSize = (15 * scale).sp,
     fontWeight = FontWeight.Medium
 )
 
+/**
+ * Texte de lecture français / anglais — sérif (Noto Serif via FontFamily.Serif
+ * sur Android, équivalent du `.system(design: .serif)` iOS qui mappe sur
+ * New York). Confort de lecture longue pour les traductions et les Lelouy
+ * Nichmat.
+ */
 fun frenchBodyStyle(scale: Float = 1.0f): TextStyle = TextStyle(
+    fontFamily = FontFamily.Serif,
     fontSize = (16 * scale).sp,
     lineHeight = (22 * scale).sp
 )

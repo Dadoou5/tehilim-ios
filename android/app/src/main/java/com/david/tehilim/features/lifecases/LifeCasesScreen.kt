@@ -17,12 +17,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
+import com.david.tehilim.core.model.AppLanguage
 import com.david.tehilim.core.model.LifeCase
 import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.navigation.Routes
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 /**
  * Cas de la vie — grille adaptive 2 cols (compact) / 3 cols (tablette).
@@ -31,10 +36,11 @@ import com.david.tehilim.navigation.Routes
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LifeCasesScreen(container: AppContainer, navController: NavController) {
-    val groups = container.lifeCaseRepository.grouped(TranslationLanguage.FR)
+    val appLanguage by container.preferences.appLanguage.collectAsState(initial = AppLanguage.SYSTEM)
+    val groups = container.lifeCaseRepository.grouped(appLanguage.translation)
     val columnsCount = if (LocalConfiguration.current.screenWidthDp >= 600) 3 else 2
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Cas de la vie") }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_life_cases)) }) }) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

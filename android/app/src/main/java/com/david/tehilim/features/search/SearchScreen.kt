@@ -32,11 +32,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.Psalm
 import com.david.tehilim.navigation.Routes
 import kotlinx.coroutines.launch
@@ -73,10 +75,10 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Rechercher") },
+                title = { Text(stringResource(R.string.title_search)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Fermer")
+                        Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.cd_close))
                     }
                 }
             )
@@ -90,7 +92,7 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                label = { Text("23, כג, tehilim 23…") },
+                label = { Text(stringResource(R.string.placeholder_search_short)) },
                 leadingIcon = { Icon(Icons.Outlined.Search, null) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -105,7 +107,7 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
             ) {
                 // 1) Résultat exact
                 result.exactMatch?.let { exact ->
-                    item { SectionHeader("Résultat") }
+                    item { SectionHeader(stringResource(R.string.section_result)) }
                     item { ResultRow(psalm = exact, primary = true, onClick = { openPsalm(exact.id) }) }
                     item { HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp)) }
                 }
@@ -114,7 +116,7 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
                 if (result.exactMatch == null && query.isNotBlank()) {
                     item {
                         Text(
-                            "Aucun Tehilim trouvé. Essaie un numéro entre 1 et 150, ou les lettres hébraïques (ex. כג).",
+                            stringResource(R.string.msg_no_psalm_found),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(vertical = 12.dp)
@@ -124,7 +126,7 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
 
                 // 3) Suggestions
                 if (result.suggestions.isNotEmpty()) {
-                    item { SectionHeader("Suggestions") }
+                    item { SectionHeader(stringResource(R.string.section_suggestions)) }
                     items(result.suggestions) { p ->
                         ResultRow(psalm = p, primary = false, onClick = { openPsalm(p.id) })
                         HorizontalDivider()
@@ -133,7 +135,7 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
 
                 // 4) Récents — uniquement quand query est vide pour ne pas polluer l'UI
                 if (query.isBlank() && recents.isNotEmpty()) {
-                    item { SectionHeader("Récents", icon = Icons.Outlined.History) }
+                    item { SectionHeader(stringResource(R.string.section_recents), icon = Icons.Outlined.History) }
                     items(recents) { id ->
                         val p = container.psalmRepository.psalm(id) ?: return@items
                         ResultRow(psalm = p, primary = false, onClick = { openPsalm(p.id) })
@@ -174,7 +176,7 @@ private fun ResultRow(psalm: Psalm, primary: Boolean, onClick: () -> Unit) {
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
-                "Tehilim ${psalm.id} · ${psalm.hebrewNumber}",
+                stringResource(R.string.label_psalm_with_hebrew, psalm.id, psalm.hebrewNumber),
                 style = if (primary) MaterialTheme.typography.titleMedium
                         else MaterialTheme.typography.bodyLarge,
                 fontWeight = if (primary) FontWeight.SemiBold else FontWeight.Normal,

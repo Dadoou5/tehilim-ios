@@ -35,9 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.Prayer
 import com.david.tehilim.features.prayers.PrayerSheet
 import com.david.tehilim.navigation.Routes
@@ -61,10 +63,10 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tehilim") },
+                title = { Text(stringResource(R.string.title_psalms)) },
                 actions = {
                     IconButton(onClick = { navController.navigate("search") }) {
-                        Icon(Icons.Outlined.Search, "Rechercher")
+                        Icon(Icons.Outlined.Search, stringResource(R.string.cd_search))
                     }
                 }
             )
@@ -84,14 +86,14 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
             // Reprendre la lecture
             if (lastReadId != null) {
                 item {
-                    SectionHeader("Reprendre la lecture")
+                    SectionHeader(stringResource(R.string.section_resume_reading))
                     AppCard(onClick = { navController.navigate(Routes.psalmDetail(lastReadId!!)) }) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Tehilim $lastReadId", style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(R.string.label_psalm_with_id, lastReadId!!), style = MaterialTheme.typography.titleMedium)
                             Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
                         }
                     }
@@ -100,7 +102,7 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
 
             // Mes favoris
             item {
-                SectionHeader("Mes favoris")
+                SectionHeader(stringResource(R.string.section_my_favorites))
                 AppCard(onClick = { navController.navigate(Routes.PSALM_LIST_FAVORITES) }) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -111,16 +113,16 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = when (favorites.size) {
-                                    0 -> "Aucun favori"
-                                    1 -> "1 Tehilim sauvegardé"
-                                    else -> "${favorites.size} Tehilim sauvegardés"
+                                    0 -> stringResource(R.string.msg_no_favorite)
+                                    1 -> stringResource(R.string.label_psalms_saved_singular)
+                                    else -> stringResource(R.string.label_psalms_saved_plural, favorites.size)
                                 },
                                 style = MaterialTheme.typography.titleSmall
                             )
                             Text(
                                 text = if (favorites.isEmpty())
-                                    "Tape ♡ sur un Tehilim pour l'ajouter ici"
-                                else "Voir la liste",
+                                    stringResource(R.string.msg_tap_heart_to_add)
+                                else stringResource(R.string.msg_view_list),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -132,11 +134,11 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
 
             // Tehilim du jour
             item {
-                SectionHeader("Tehilim du jour", subtitle = dailyMode.label)
+                SectionHeader(stringResource(R.string.section_today_psalms), subtitle = stringResource(dailyMode.labelRes))
                 AppCard(onClick = { navController.switchTopLevel(TopLevelDestination.Daily.route) }) {
                     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                         if (todayPsalms.isEmpty()) {
-                            Text("Aucun Tehilim défini pour ce mode.", style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.msg_no_psalm_for_mode), style = MaterialTheme.typography.bodyMedium)
                         } else {
                             Text(
                                 todayPsalms.take(8).joinToString(" · "),
@@ -156,7 +158,7 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
 
             // Explorer — grille 2 colonnes construite manuellement (pas de LazyVerticalGrid
             // dans un LazyColumn : ça casse les contraintes verticales).
-            item { SectionHeader("Explorer") }
+            item { SectionHeader(stringResource(R.string.section_explore)) }
             item {
                 val cards = exploreCards(navController) { presentedPrayer = it }
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -216,6 +218,7 @@ private fun ExploreCard(symbol: ImageVector, title: String, onClick: () -> Unit)
 
 private data class ExploreCardSpec(val icon: ImageVector, val title: String, val onClick: () -> Unit)
 
+@Composable
 private fun exploreCards(
     nav: NavController,
     onPrayer: (Prayer.Kind) -> Unit
@@ -223,16 +226,16 @@ private fun exploreCards(
     // V1.2.1 : pour les top-level destinations, on utilise switchTopLevel pour
     // que la navigation passe par le pattern tab proprement (et ne push pas
     // Psalms par-dessus Home, ce qui causait que tapping Accueil affiche Psalms).
-    ExploreCardSpec(Icons.AutoMirrored.Outlined.MenuBook, "5 livres") { nav.switchTopLevel(TopLevelDestination.Psalms.route) },
-    ExploreCardSpec(Icons.Outlined.Favorite, "Cas de la vie") { nav.switchTopLevel(TopLevelDestination.LifeCases.route) },
-    ExploreCardSpec(Icons.Outlined.TextFields, "119 - AlphaBeta") { nav.navigate(Routes.PSALM_119_HOME) },
+    ExploreCardSpec(Icons.AutoMirrored.Outlined.MenuBook, stringResource(R.string.explore_5_books)) { nav.switchTopLevel(TopLevelDestination.Psalms.route) },
+    ExploreCardSpec(Icons.Outlined.Favorite, stringResource(R.string.explore_life_cases)) { nav.switchTopLevel(TopLevelDestination.LifeCases.route) },
+    ExploreCardSpec(Icons.Outlined.TextFields, stringResource(R.string.explore_119_alphabeta)) { nav.navigate(Routes.PSALM_119_HOME) },
     // V1.2.12 — « Tous » de l'accueil ouvre l'onglet Tehilim directement sur
     // son segment "Tous" (segment=1) — plus de doublon avec PsalmListScreen.
-    ExploreCardSpec(Icons.Outlined.AutoStories, "Tous (1–150)") {
+    ExploreCardSpec(Icons.Outlined.AutoStories, stringResource(R.string.explore_all_1_150)) {
         nav.switchTopLevelTo(TopLevelDestination.Psalms.route, segment = 1)
     },
-    ExploreCardSpec(Icons.Outlined.PlayCircle, "Prière avant") { onPrayer(Prayer.Kind.BEFORE) },
-    ExploreCardSpec(Icons.Outlined.CheckCircle, "Prière après") { onPrayer(Prayer.Kind.AFTER) }
+    ExploreCardSpec(Icons.Outlined.PlayCircle, stringResource(R.string.explore_prayer_before)) { onPrayer(Prayer.Kind.BEFORE) },
+    ExploreCardSpec(Icons.Outlined.CheckCircle, stringResource(R.string.explore_prayer_after)) { onPrayer(Prayer.Kind.AFTER) }
 )
 
 /**

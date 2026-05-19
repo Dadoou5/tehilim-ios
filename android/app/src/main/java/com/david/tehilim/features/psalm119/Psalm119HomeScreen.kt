@@ -29,9 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
 import com.david.tehilim.ui.components.HebrewLetterTile
@@ -55,10 +57,10 @@ fun Psalm119HomeScreen(container: AppContainer, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("119 - AlphaBeta") },
+                title = { Text(stringResource(R.string.title_psalm_119_home)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -77,12 +79,12 @@ fun Psalm119HomeScreen(container: AppContainer, navController: NavController) {
                     AppCard(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
-                                "Tehilim 119",
+                                stringResource(R.string.title_psalm_119_full),
                                 style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                "Les 22 lettres de l'alphabet hébreu, huit versets chacune.",
+                                stringResource(R.string.msg_psalm_119_subtitle),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 6.dp)
@@ -95,7 +97,7 @@ fun Psalm119HomeScreen(container: AppContainer, navController: NavController) {
             // Section Lelouy Nichmat — 2 cards (nouvelle lecture + mes prières)
             item {
                 Text(
-                    "Lelouy Nichmat",
+                    stringResource(R.string.title_lelouy_nichmat),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -105,14 +107,14 @@ fun Psalm119HomeScreen(container: AppContainer, navController: NavController) {
                 val rows = listOf(
                     ActionCardSpec(
                         symbol = Icons.Outlined.LocalFireDepartment,
-                        title = "Nouvelle lecture",
-                        subtitle = "Élévation de l'âme — prénom + mère",
+                        title = stringResource(R.string.msg_new_reading),
+                        subtitle = stringResource(R.string.msg_new_reading_subtitle),
                         accent = true,
                         onClick = { navController.navigate(Routes.PERSONALIZED_FORM) }
                     ),
                     ActionCardSpec(
                         symbol = Icons.Outlined.Inbox,
-                        title = "Mes prières",
+                        title = stringResource(R.string.title_my_prayers),
                         subtitle = savedCountLabel(savedPrayers.size),
                         accent = false,
                         onClick = { navController.navigate(Routes.SAVED_PRAYERS) }
@@ -211,9 +213,10 @@ private fun ActionCard(spec: ActionCardSpec) {
     }
 }
 
+@Composable
 private fun savedCountLabel(count: Int): String = when (count) {
-    0 -> "Aucun sauvegardé"
-    1 -> "1 sauvegardé"
-    else -> "$count sauvegardés"
+    0 -> stringResource(R.string.label_saved_none)
+    1 -> stringResource(R.string.label_saved_singular)
+    else -> stringResource(R.string.label_saved_plural, count)
 }
 

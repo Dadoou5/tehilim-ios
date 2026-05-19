@@ -1,5 +1,7 @@
 package com.david.tehilim.features.psalm119
 
+import android.content.Context
+import com.david.tehilim.R
 import com.david.tehilim.core.model.ReadingLetterItem
 
 /**
@@ -14,7 +16,10 @@ data class PsalmSequenceContext(
     val currentItem: ReadingLetterItem? = items.getOrNull(currentPosition)
     val hasPrevious: Boolean = currentPosition > 0
     val hasNext: Boolean = currentPosition < items.size - 1
-    val progressLabel: String = "Lettre ${currentPosition + 1} sur ${items.size}"
+
+    /** Label localisé « Lettre X sur N ». Nécessite un Context pour résoudre la ressource. */
+    fun progressLabel(context: Context): String =
+        context.getString(R.string.label_letter_progress, currentPosition + 1, items.size)
 
     fun previousItem(): ReadingLetterItem? = items.getOrNull(currentPosition - 1)
     fun nextItem(): ReadingLetterItem? = items.getOrNull(currentPosition + 1)

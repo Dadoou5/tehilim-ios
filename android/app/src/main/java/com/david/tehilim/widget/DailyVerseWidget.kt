@@ -26,6 +26,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.david.tehilim.MainActivity
+import com.david.tehilim.R
 import com.david.tehilim.TehilimApplication
 import com.david.tehilim.core.service.HebrewDateFormatter
 import kotlinx.coroutines.flow.first
@@ -53,10 +54,11 @@ class DailyVerseWidget : GlanceAppWidget() {
     private fun WidgetContent(psalmIds: List<Int>, hebrewDate: String) {
         // Deep link tehilim://daily — ouvre l'app directement sur l'onglet
         // « Aujourd'hui ». Mirror du widget iOS V1.10.5.
+        val context = LocalContext.current
         val openDailyIntent = Intent(
             Intent.ACTION_VIEW,
             Uri.parse("tehilim://daily")
-        ).setClass(LocalContext.current, MainActivity::class.java)
+        ).setClass(context, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         Column(
@@ -69,7 +71,7 @@ class DailyVerseWidget : GlanceAppWidget() {
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                "Tehilim du jour",
+                context.getString(R.string.section_today_psalms),
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
@@ -78,7 +80,7 @@ class DailyVerseWidget : GlanceAppWidget() {
             )
             if (psalmIds.isEmpty()) {
                 Text(
-                    "Aucun Tehilim défini",
+                    context.getString(R.string.msg_widget_no_psalm),
                     style = TextStyle(color = ColorProvider(Color(0xFF5C6B7A)))
                 )
             } else {

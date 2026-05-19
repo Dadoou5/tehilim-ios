@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -80,7 +81,7 @@ fun AppNavigation(container: AppContainer) {
                         },
                         // Icône seule, sans label. Le contentDescription garde
                         // l'accessibilité TalkBack via le nom de l'onglet.
-                        icon = { Icon(iconFor(dest), contentDescription = dest.labelFR) }
+                        icon = { Icon(iconFor(dest), contentDescription = stringResource(dest.labelRes)) }
                     )
                 }
             }

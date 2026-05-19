@@ -1,5 +1,7 @@
 package com.david.tehilim.core.model
 
+import androidx.annotation.StringRes
+import com.david.tehilim.R
 import kotlinx.serialization.Serializable
 
 /**
@@ -39,7 +41,7 @@ data class DailyRules(
 /**
  * Mode de cycle quotidien.
  */
-enum class DailyMode(val label: String) {
-    MONTHLY("Cycle mensuel"),
-    WEEKLY("Jour de la semaine");
+enum class DailyMode(@StringRes val labelRes: Int) {
+    MONTHLY(R.string.enum_dailymode_monthly),
+    WEEKLY(R.string.enum_dailymode_weekly);
 }

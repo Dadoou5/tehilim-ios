@@ -41,7 +41,9 @@ import androidx.navigation.NavController
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.TextMode
 import com.david.tehilim.features.sharing.VerseShareRenderer
 import com.david.tehilim.navigation.Routes
@@ -62,7 +64,7 @@ fun PsalmDetailScreen(
 ) {
     val psalm = container.psalmRepository.psalm(psalmId)
     if (psalm == null) {
-        Text("Tehilim introuvable.")
+        Text(stringResource(R.string.msg_psalm_not_found))
         return
     }
 
@@ -91,10 +93,10 @@ fun PsalmDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tehilim ${psalm.id} · ${psalm.hebrewNumber}") },
+                title = { Text(stringResource(R.string.label_psalm_with_hebrew, psalm.id, psalm.hebrewNumber)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 actions = {
@@ -103,14 +105,18 @@ fun PsalmDetailScreen(
                     }) {
                         Icon(
                             if (isFav) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                            contentDescription = if (isFav) "Retirer des favoris" else "Ajouter aux favoris",
+                            contentDescription = if (isFav)
+                                stringResource(R.string.cd_remove_favorite)
+                            else stringResource(R.string.cd_add_favorite),
                             tint = if (isFav) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                         )
                     }
                     IconButton(onClick = { localShowFR = !showFR }) {
                         Icon(
                             Icons.Outlined.RecordVoiceOver,
-                            contentDescription = if (showFR) "Masquer la traduction" else "Afficher la traduction",
+                            contentDescription = if (showFR)
+                                stringResource(R.string.cd_hide_translation)
+                            else stringResource(R.string.cd_show_translation),
                             tint = if (showFR) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -139,7 +145,8 @@ fun PsalmDetailScreen(
                                 tint = if (showFR) MaterialTheme.colorScheme.primary
                                        else MaterialTheme.colorScheme.onSurface)
                             Text(
-                                if (showFR) "  Masquer la traduction" else "  Afficher la traduction",
+                                if (showFR) stringResource(R.string.cd_hide_translation_inline)
+                                else stringResource(R.string.cd_show_translation_inline),
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }
@@ -238,14 +245,14 @@ private fun PrevNextFooter(prevId: Int?, nextId: Int?, onClick: (Int) -> Unit) {
         if (prevId != null) {
             OutlinedButton(onClick = { onClick(prevId) }) {
                 Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null)
-                Text(" Tehilim $prevId")
+                Text(stringResource(R.string.label_psalm_button_prev, prevId))
             }
         } else {
             androidx.compose.foundation.layout.Spacer(Modifier.padding(1.dp))
         }
         if (nextId != null) {
             OutlinedButton(onClick = { onClick(nextId) }) {
-                Text("Tehilim $nextId ")
+                Text(stringResource(R.string.label_psalm_button, nextId))
                 Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
             }
         } else {

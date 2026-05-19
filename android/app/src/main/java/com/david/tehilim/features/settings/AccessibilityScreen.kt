@@ -20,9 +20,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.david.tehilim.R
 
 /**
  * Déclaration d'accessibilité — mirror AccessibilityDeclarationView.swift V1.10.5.
@@ -35,10 +37,10 @@ fun AccessibilityScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Accessibilité") },
+                title = { Text(stringResource(R.string.title_accessibility)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -52,49 +54,43 @@ fun AccessibilityScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item {
-                Section("Engagement") {
-                    Body("L'application Tehilim s'engage à rendre son contenu accessible conformément au Référentiel Général d'Amélioration de l'Accessibilité (RGAA 4.1.2) et au standard WCAG 2.1 niveau AA, applicables aux applications mobiles.")
+                Section(stringResource(R.string.section_engagement)) {
+                    Body(stringResource(R.string.a11y_engagement_body))
                 }
             }
             item {
-                Section("État de conformité") {
-                    Body("Statut : conformité partielle (auto-déclaration).", bold = true)
-                    Body(
-                        "Cette déclaration est établie sur la base d'un auto-audit. Un audit externe est prévu avant la mise en production.",
-                        secondary = true
-                    )
+                Section(stringResource(R.string.section_compliance_status)) {
+                    Body(stringResource(R.string.a11y_status_main), bold = true)
+                    Body(stringResource(R.string.a11y_status_secondary), secondary = true)
                 }
             }
             item {
-                Section("Caractéristiques d'accessibilité prises en charge") {
-                    Bullet("Compatibilité complète avec TalkBack.")
-                    Bullet("Respect de la taille de texte système (jusqu'à l'échelle accessibilité maximale).")
-                    Bullet("Modes clair, sombre, et automatique.")
-                    Bullet("Contrastes de texte conformes au niveau AA (≥ 4.5:1).")
-                    Bullet("Cibles tactiles supérieures ou égales à 48 × 48 dp.")
-                    Bullet("Aucune information transmise uniquement par la couleur.")
-                    Bullet("Respect du paramètre « Supprimer les animations » du système.")
-                    Bullet("Lecture TalkBack de l'hébreu en sens RTL et de la traduction en LTR, dans cet ordre.")
+                Section(stringResource(R.string.section_a11y_features)) {
+                    Bullet(stringResource(R.string.a11y_feature_talkback))
+                    Bullet(stringResource(R.string.a11y_feature_text_size))
+                    Bullet(stringResource(R.string.a11y_feature_themes))
+                    Bullet(stringResource(R.string.a11y_feature_contrast))
+                    Bullet(stringResource(R.string.a11y_feature_targets))
+                    Bullet(stringResource(R.string.a11y_feature_no_color_only))
+                    Bullet(stringResource(R.string.a11y_feature_animations))
+                    Bullet(stringResource(R.string.a11y_feature_rtl_ltr))
                 }
             }
             item {
-                Section("Limites connues") {
-                    Bullet("Le texte hébreu est lu phonétiquement par TalkBack selon les capacités de la voix sélectionnée par l'utilisateur·rice.")
-                    Bullet("La grille des 22 lettres du Tehilim 119 peut nécessiter un défilement avec une très grande taille de texte.")
+                Section(stringResource(R.string.section_known_limits)) {
+                    Bullet(stringResource(R.string.a11y_limit_hebrew_tts))
+                    Bullet(stringResource(R.string.a11y_limit_119_grid))
                 }
             }
             item {
-                Section("Voies de recours") {
-                    Body(
-                        "Pour signaler un problème d'accessibilité : contact à définir avant publication Google Play.",
-                        secondary = true
-                    )
+                Section(stringResource(R.string.section_recourse)) {
+                    Body(stringResource(R.string.a11y_recourse_body), secondary = true)
                 }
             }
             item {
                 HorizontalDivider()
                 Text(
-                    "RGAA 4.1.2 — version de l'application : ${com.david.tehilim.BuildConfig.VERSION_NAME}",
+                    stringResource(R.string.label_a11y_rgaa_version, com.david.tehilim.BuildConfig.VERSION_NAME),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)

@@ -27,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.david.tehilim.R
 import com.david.tehilim.core.service.NotificationScheduler
 
 /**
@@ -93,12 +95,12 @@ fun NotificationsSettingsSection() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Rappel quotidien", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.label_daily_reminder), style = MaterialTheme.typography.bodyMedium)
             Switch(checked = enabled, onCheckedChange = ::toggleEnabled)
         }
         if (permissionDenied) {
             Text(
-                "Permission refusée. Active les notifications dans Réglages → Apps → Tehilim → Notifications pour recevoir le rappel.",
+                stringResource(R.string.msg_permission_denied_notifications),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.error
             )
@@ -109,13 +111,13 @@ fun NotificationsSettingsSection() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Heure", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.label_hour), style = MaterialTheme.typography.bodyMedium)
                 TextButton(onClick = { showTimePicker = true }) {
                     Text("%02d:%02d".format(hour, minute))
                 }
             }
             Text(
-                "Tu peux changer l'heure plus tard. Les notifications restent locales (WorkManager).",
+                stringResource(R.string.msg_reminder_time_hint),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -126,7 +128,7 @@ fun NotificationsSettingsSection() {
         val state = rememberTimePickerState(initialHour = hour, initialMinute = minute, is24Hour = true)
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
-            title = { Text("Heure du rappel") },
+            title = { Text(stringResource(R.string.label_reminder_time)) },
             text = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     TimePicker(state = state)
@@ -139,12 +141,12 @@ fun NotificationsSettingsSection() {
                     NotificationScheduler.scheduleDaily(context, hour, minute)
                     showTimePicker = false
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.action_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showTimePicker = false }) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.action_cancel))
                 }
             }
         )

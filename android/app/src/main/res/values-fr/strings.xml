@@ -1,4 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App metadata -->
     <string name="app_name">Tehilim</string>
+    <string name="widget_description">Affiche les Tehilim du jour</string>
+
+    <!-- ==================== TITLES ==================== -->
+    <string name="title_today">Aujourd\'hui</string>
+    <string name="title_favorites">Mes favoris</string>
+    <string name="title_settings">Réglages</string>
+    <string name="title_life_cases">Cas de la vie</string>
+    <string name="title_psalms">Tehilim</string>
+    <string name="title_search">Rechercher</string>
+    <string name="title_lelouy_nichmat">Lelouy Nichmat</string>
+    <string name="title_my_prayers">Mes prières</string>
+    <string name="title_psalm_119_home">119 - AlphaBeta</string>
+    <string name="title_psalm_119_full">Tehilim 119</string>
+    <string name="title_about_content">Sources du contenu</string>
+    <string name="title_about_privacy">Confidentialité</string>
+    <string name="title_accessibility">Accessibilité</string>
+    <string name="title_accessibility_declaration">Déclaration d\'accessibilité</string>
+    <string name="title_all_psalms">Tous les Tehilim</string>
+
+    <!-- ==================== TAB / DESTINATION LABELS ==================== -->
+    <string name="tab_home">Accueil</string>
+    <string name="tab_psalms">Tehilim</string>
+    <string name="tab_daily">Aujourd\'hui</string>
+    <string name="tab_life_cases">Cas de la vie</string>
+    <string name="tab_settings">Réglages</string>
+    <string name="tab_books">Livres</string>
+    <string name="tab_all">Tous</string>
+    <string name="tab_favorites">Favoris</string>
+
+    <!-- ==================== SECTIONS / HEADERS ==================== -->
+    <string name="section_resume_reading">Reprendre la lecture</string>
+    <string name="section_my_favorites">Mes favoris</string>
+    <string name="section_today_psalms">Tehilim du jour</string>
+    <string name="section_explore">Explorer</string>
+    <string name="section_schedule">Au programme</string>
+    <string name="section_favorite_psalms">Tehilim favoris</string>
+    <string name="section_psalms_to_read">Tehilim à lire</string>
+    <string name="section_reading_sequence">Séquence de lecture</string>
+    <string name="section_result">Résultat</string>
+    <string name="section_suggestions">Suggestions</string>
+    <string name="section_recents">Récents</string>
+    <string name="section_language">Langue</string>
+    <string name="section_display">Affichage</string>
+    <string name="section_daily_reading">Lecture quotidienne</string>
+    <string name="section_daily_reminder">Rappel quotidien</string>
+    <string name="section_accessibility">Accessibilité</string>
+    <string name="section_about">À propos</string>
+    <string name="section_engagement">Engagement</string>
+    <string name="section_compliance_status">État de conformité</string>
+    <string name="section_a11y_features">Caractéristiques d\'accessibilité prises en charge</string>
+    <string name="section_known_limits">Limites connues</string>
+    <string name="section_recourse">Voies de recours</string>
+    <string name="section_label_source">SOURCE</string>
+
+    <!-- ==================== ACTIONS ==================== -->
+    <string name="action_skip">Passer</string>
+    <string name="action_next">Suivant</string>
+    <string name="action_previous">Précédent</string>
+    <string name="action_start">Commencer</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_generate_save">Générer et sauvegarder</string>
+    <string name="action_open_keyboard_settings">Ouvrir Réglages clavier</string>
+
+    <!-- ==================== LABELS (static labels for fields/rows) ==================== -->
+    <string name="label_hour">Heure</string>
+    <string name="label_link">Lien :</string>
+    <string name="label_daily_reminder">Rappel quotidien</string>
+    <string name="label_reminder_time">Heure du rappel</string>
+    <string name="label_app_language">Langue de l\'app</string>
+    <string name="label_show_translation_default">Afficher la traduction par défaut</string>
+    <string name="label_theme">Thème</string>
+    <string name="label_text_mode">Mode du texte</string>
+    <string name="label_hebrew_size">Taille de l\'hébreu</string>
+    <string name="label_translation_size">Taille de la traduction</string>
+    <string name="label_numbering">Numérotation</string>
+    <string name="label_mode">Mode</string>
+    <string name="label_preview">Aperçu</string>
+    <string name="label_translation_preview">Aperçu traduction</string>
+    <string name="label_book">Livre %1$d</string>
+    <string name="label_tehilim_count">%1$d Tehilim</string>
+    <string name="label_verses_count">%1$d versets</string>
+    <string name="label_letters_count">%1$d lettres</string>
+    <string name="label_psalm_with_id">Tehilim %1$d</string>
+    <string name="label_psalm_with_hebrew">Tehilim %1$d · %2$s</string>
+    <string name="label_psalm_only_number">Tehilim %1$d</string>
+    <string name="label_psalm_button">Tehilim %1$d </string>
+    <string name="label_psalm_button_prev">" Tehilim %1$d"</string>
+    <string name="label_mode_count">Mode : %1$s · %2$d Tehilim</string>
+    <string name="label_section_letter_range">%1$s — %2$s · v. %3$d–%4$d</string>
+    <string name="label_section_letter_name">%1$s — %2$s</string>
+    <string name="label_psalms_recommended_singular">%1$d Tehilim recommandé</string>
+    <string name="label_psalms_recommended_plural">%1$d Tehilim recommandés</string>
+    <string name="label_at_letter_n_of_m">À la lettre %1$d sur %2$d</string>
+    <string name="label_letter_progress">Lettre %1$d sur %2$d</string>
+    <string name="label_dot_source">· source : %1$s</string>
+    <string name="label_saved_singular">1 sauvegardé</string>
+    <string name="label_saved_plural">%1$d sauvegardés</string>
+    <string name="label_saved_none">Aucun sauvegardé</string>
+    <string name="label_psalms_saved_singular">1 Tehilim sauvegardé</string>
+    <string name="label_psalms_saved_plural">%1$d Tehilim sauvegardés</string>
+    <string name="label_version">Version %1$s</string>
+    <string name="label_a11y_rgaa_version">RGAA 4.1.2 — version de l\'application : %1$s</string>
+
+    <!-- ==================== PLACEHOLDERS ==================== -->
+    <string name="placeholder_search_psalms">Rechercher (23, כג, mot du titre…)</string>
+    <string name="placeholder_search_short">23, כג, tehilim 23…</string>
+    <string name="placeholder_relative_name">Le défunt — prénom (hébreu)</string>
+    <string name="placeholder_relative_example">ex. יוסף</string>
+    <string name="placeholder_mother_name">Prénom de la mère (hébreu)</string>
+    <string name="placeholder_mother_example">ex. שרה</string>
+
+    <!-- ==================== CONTENT DESCRIPTIONS (a11y) ==================== -->
+    <string name="cd_search">Rechercher</string>
+    <string name="cd_back">Retour</string>
+    <string name="cd_close">Fermer</string>
+    <string name="cd_clear">Effacer</string>
+    <string name="cd_favorite">Favori</string>
+    <string name="cd_add_favorite">Ajouter aux favoris</string>
+    <string name="cd_remove_favorite">Retirer des favoris</string>
+    <string name="cd_show_translation">Afficher la traduction</string>
+    <string name="cd_hide_translation">Masquer la traduction</string>
+    <string name="cd_show_translation_inline">  Afficher la traduction</string>
+    <string name="cd_hide_translation_inline">  Masquer la traduction</string>
+
+    <!-- ==================== MESSAGES / EMPTY STATES ==================== -->
+    <string name="msg_no_favorite">Aucun favori</string>
+    <string name="msg_tap_heart_to_add">Tape ♡ sur un Tehilim pour l\'ajouter ici</string>
+    <string name="msg_tap_heart_to_add_dot">Tape ♡ sur un Tehilim pour l\'ajouter ici.</string>
+    <string name="msg_tap_heart_to_add_long">Tape sur le cœur dans un Tehilim pour l\'ajouter ici.</string>
+    <string name="msg_view_list">Voir la liste</string>
+    <string name="msg_no_psalm_for_mode">Aucun Tehilim défini pour ce mode.</string>
+    <string name="msg_no_psalm_for_day">Aucun Tehilim défini pour ce jour.</string>
+    <string name="msg_no_psalm_in_book">Aucun Tehilim dans ce livre.</string>
+    <string name="msg_no_psalm_matches">Aucun Tehilim ne correspond à « %1$s ».</string>
+    <string name="msg_no_psalm_found">Aucun Tehilim trouvé. Essaie un numéro entre 1 et 150, ou les lettres hébraïques (ex. כג).</string>
+    <string name="msg_psalm_not_found">Tehilim introuvable.</string>
+    <string name="msg_category_not_found">Catégorie introuvable</string>
+    <string name="msg_lelouy_nichmat_not_found">Lelouy Nichmat introuvable</string>
+    <string name="msg_no_saved_lelouy_nichmat">Aucun Lelouy Nichmat sauvegardé</string>
+    <string name="msg_generate_to_find_here">Génère une lecture pour la retrouver ici.</string>
+    <string name="msg_resume_reading">Reprendre la lecture</string>
+    <string name="msg_new_reading">Nouvelle lecture</string>
+    <string name="msg_new_reading_subtitle">Élévation de l\'âme — prénom + mère</string>
+    <string name="msg_psalm_119_subtitle">Les 22 lettres de l\'alphabet hébreu, huit versets chacune.</string>
+    <string name="msg_tradition_disclaimer">Tradition. Ne remplace pas un avis professionnel.</string>
+    <string name="msg_neshama_appended_form">« נשמה » sera ajouté automatiquement à la fin de la séquence.</string>
+    <string name="msg_neshama_appended_list">« נשמה » a été ajouté automatiquement à la fin de la séquence.</string>
+    <string name="msg_enable_hebrew_keyboard_title">Active le clavier hébreu</string>
+    <string name="msg_enable_hebrew_keyboard_body">Réglages → Système → Langues et saisie → Clavier virtuel → Gboard → Langues → ajouter Hébreu. Tu pourras ensuite basculer avec 🌐.</string>
+    <string name="msg_lelouy_banner_title">Lecture pour l\'élévation de l\'âme</string>
+    <string name="msg_lelouy_banner_body">La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה.</string>
+    <string name="msg_restart_required_title">Redémarrage requis</string>
+    <string name="msg_restart_required_body">La traduction des Tehilim a basculé immédiatement. Pour que l\'interface change aussi, ferme l\'app puis rouvre-la.</string>
+    <string name="msg_permission_denied_notifications">Permission refusée. Active les notifications dans Réglages → Apps → Tehilim → Notifications pour recevoir le rappel.</string>
+    <string name="msg_reminder_time_hint">Tu peux changer l\'heure plus tard. Les notifications restent locales (WorkManager).</string>
+    <string name="msg_sources_footer">Texte hébreu : Sefaria · Traduction française : Beth Loubavitch · Traduction anglaise : JPS 1917</string>
+    <string name="msg_widget_no_psalm">Aucun Tehilim défini</string>
+
+    <!-- Sample previews -->
+    <string name="msg_preview_hebrew_phonetic">Chir lamaalot essa enaï</string>
+    <string name="msg_preview_french">Cantique des degrés. Je lève mes yeux vers les montagnes…</string>
+
+    <!-- Prayer titles & subtitles -->
+    <string name="prayer_before_title">Prière avant la lecture</string>
+    <string name="prayer_after_title">Prière après la lecture</string>
+    <string name="prayer_before_subtitle">À dire avant de commencer</string>
+    <string name="prayer_after_subtitle">À dire à la fin</string>
+
+    <!-- Explore card titles -->
+    <string name="explore_5_books">5 livres</string>
+    <string name="explore_life_cases">Cas de la vie</string>
+    <string name="explore_119_alphabeta">119 - AlphaBeta</string>
+    <string name="explore_all_1_150">Tous (1–150)</string>
+    <string name="explore_prayer_before">Prière avant</string>
+    <string name="explore_prayer_after">Prière après</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Bienvenue</string>
+    <string name="onboarding_welcome_subtitle">L\'intégralité des 150 Tehilim, en hébreu vocalisé avec téamim, et en traduction française.</string>
+    <string name="onboarding_daily_title">Tehilim du jour</string>
+    <string name="onboarding_daily_subtitle">Cycle mensuel ou hebdomadaire, avec un widget pour ton écran d\'accueil.</string>
+    <string name="onboarding_lifecases_title">Cas de la vie + AlphaBeta</string>
+    <string name="onboarding_lifecases_subtitle">18 parcours thématiques. Tehilim 119 lettre par lettre. Lecture personnalisée Lelouy Nichmat.</string>
+
+    <!-- Splash dedication -->
+    <string name="splash_dedication_french">Pour l\'élévation de l\'âme de Johann Meïr ben Sarah Bouganim</string>
+
+    <!-- ==================== ENUM LABELS ==================== -->
+    <string name="enum_applang_system">Système</string>
+    <string name="enum_applang_fr">Français</string>
+    <string name="enum_applang_en">English</string>
+
+    <string name="enum_theme_system">Système</string>
+    <string name="enum_theme_light">Clair</string>
+    <string name="enum_theme_dark">Sombre</string>
+
+    <string name="enum_textmode_hebrew">Hébreu</string>
+    <string name="enum_textmode_phonetic">Phonétique</string>
+
+    <string name="enum_textsize_xsmall">Très petit</string>
+    <string name="enum_textsize_small">Petit</string>
+    <string name="enum_textsize_medium">Moyen</string>
+    <string name="enum_textsize_large">Grand</string>
+    <string name="enum_textsize_xlarge">Très grand</string>
+
+    <string name="enum_versestyle_hebrew">Hébreu</string>
+    <string name="enum_versestyle_arabic">Numérique</string>
+
+    <string name="enum_dailymode_monthly">Cycle mensuel</string>
+    <string name="enum_dailymode_weekly">Jour de la semaine</string>
+
+    <!-- Letter source labels -->
+    <string name="letter_source_proche">proche</string>
+    <string name="letter_source_lien">lien</string>
+    <string name="letter_source_mere">mère</string>
+
+    <!-- ==================== NOTIFICATIONS ==================== -->
+    <string name="notif_channel_name">Tehilim du jour</string>
+    <string name="notif_channel_description">Rappel quotidien de la lecture des Tehilim du jour.</string>
+    <string name="notif_title">Tehilim du jour</string>
+    <string name="notif_body">C\'est le moment de lire tes Tehilim du jour.</string>
+
+    <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
+    <string name="about_content_hebrew_title">Texte hébreu</string>
+    <string name="about_content_hebrew_body">Le texte hébreu vocalisé avec téamim provient de Sefaria (sefaria.org), distribué sous licence Creative Commons By 4.0.</string>
+    <string name="about_content_fr_title">Traduction française</string>
+    <string name="about_content_fr_body">La traduction française provient de Beth Loubavitch (le-tehilim.online), utilisée avec leur autorisation.</string>
+    <string name="about_content_en_title">Traduction anglaise</string>
+    <string name="about_content_en_body">La traduction anglaise est la JPS Tanakh 1917, dans le domaine public et fournie via Sefaria.</string>
+    <string name="about_content_font_title">Police hébraïque</string>
+    <string name="about_content_font_body">La police d\'affichage de l\'hébreu est Ezra SIL SR, fournie par SIL International sous licence SIL OFL.</string>
+    <string name="about_content_calendar_title">Calendrier hébraïque</string>
+    <string name="about_content_calendar_body">Les conversions de date utilisent le calendrier hébraïque officiel via ICU (Unicode CLDR).</string>
+
+    <!-- ==================== ABOUT — PRIVACY ==================== -->
+    <string name="about_privacy_none_title">Aucune donnée collectée</string>
+    <string name="about_privacy_none_body">Tehilim ne collecte, ne transmet ni ne stocke aucune donnée personnelle.</string>
+    <string name="about_privacy_local_title">Stockage local</string>
+    <string name="about_privacy_local_body">Tes préférences (langue, taille du texte, favoris, dernière lecture, Lelouy Nichmat) sont stockées localement sur ton appareil via Android DataStore, et sauvegardées par Android Auto Backup si tu actives la sauvegarde cloud Google.</string>
+    <string name="about_privacy_offline_title">Hors-ligne</string>
+    <string name="about_privacy_offline_body">L\'app fonctionne entièrement hors-ligne après installation — aucun appel réseau.</string>
+    <string name="about_privacy_notifications_title">Notifications</string>
+    <string name="about_privacy_notifications_body">Les rappels quotidiens utilisent WorkManager Android et restent locaux. Aucun serveur push n\'est utilisé.</string>
+    <string name="about_privacy_thirdparty_title">Tiers</string>
+    <string name="about_privacy_thirdparty_body">Aucun tracker, aucune publicité, aucun service tiers de quelque nature que ce soit.</string>
+    <string name="about_privacy_contact_title">Contact</string>
+    <string name="about_privacy_contact_body">Pour toute question : david.bouganim@gmail.com</string>
+
+    <!-- ==================== ACCESSIBILITY DECLARATION ==================== -->
+    <string name="a11y_engagement_body">L\'application Tehilim s\'engage à rendre son contenu accessible conformément au Référentiel Général d\'Amélioration de l\'Accessibilité (RGAA 4.1.2) et au standard WCAG 2.1 niveau AA, applicables aux applications mobiles.</string>
+    <string name="a11y_status_main">Statut : conformité partielle (auto-déclaration).</string>
+    <string name="a11y_status_secondary">Cette déclaration est établie sur la base d\'un auto-audit. Un audit externe est prévu avant la mise en production.</string>
+    <string name="a11y_feature_talkback">Compatibilité complète avec TalkBack.</string>
+    <string name="a11y_feature_text_size">Respect de la taille de texte système (jusqu\'à l\'échelle accessibilité maximale).</string>
+    <string name="a11y_feature_themes">Modes clair, sombre, et automatique.</string>
+    <string name="a11y_feature_contrast">Contrastes de texte conformes au niveau AA (≥ 4.5:1).</string>
+    <string name="a11y_feature_targets">Cibles tactiles supérieures ou égales à 48 × 48 dp.</string>
+    <string name="a11y_feature_no_color_only">Aucune information transmise uniquement par la couleur.</string>
+    <string name="a11y_feature_animations">Respect du paramètre « Supprimer les animations » du système.</string>
+    <string name="a11y_feature_rtl_ltr">Lecture TalkBack de l\'hébreu en sens RTL et de la traduction en LTR, dans cet ordre.</string>
+    <string name="a11y_limit_hebrew_tts">Le texte hébreu est lu phonétiquement par TalkBack selon les capacités de la voix sélectionnée par l\'utilisateur·rice.</string>
+    <string name="a11y_limit_119_grid">La grille des 22 lettres du Tehilim 119 peut nécessiter un défilement avec une très grande taille de texte.</string>
+    <string name="a11y_recourse_body">Pour signaler un problème d\'accessibilité : contact à définir avant publication Google Play.</string>
 </resources>

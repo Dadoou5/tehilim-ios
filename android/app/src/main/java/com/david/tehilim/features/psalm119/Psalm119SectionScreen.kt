@@ -32,9 +32,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.TextMode
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.IluyNishmatBanner
@@ -93,10 +96,10 @@ fun Psalm119SectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("${section.letter} — ${section.name}") },
+                title = { Text(stringResource(R.string.label_section_letter_name, section.letter, section.name)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -117,7 +120,10 @@ fun Psalm119SectionScreen(
 
             item {
                 Text(
-                    "${section.letter} — ${section.name} · v. ${section.verseStart}–${section.verseEnd}",
+                    stringResource(
+                        R.string.label_section_letter_range,
+                        section.letter, section.name, section.verseStart, section.verseEnd
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(vertical = 12.dp)
@@ -152,6 +158,7 @@ fun Psalm119SectionScreen(
 
 @Composable
 private fun SequenceProgressBanner(ctx: PsalmSequenceContext) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,10 +176,10 @@ private fun SequenceProgressBanner(ctx: PsalmSequenceContext) {
             null,
             tint = MaterialTheme.colorScheme.primary
         )
-        Text(ctx.progressLabel, style = MaterialTheme.typography.titleSmall)
+        Text(ctx.progressLabel(context), style = MaterialTheme.typography.titleSmall)
         ctx.currentItem?.let { item ->
             Text(
-                "· source : ${item.source.labelFR}",
+                stringResource(R.string.label_dot_source, item.source.localizedLabel(context)),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -187,6 +194,7 @@ private fun SequenceFooter(
     savedIntentId: String?,
     navController: NavController
 ) {
+    val context = LocalContext.current
     val prev = ctx.previousItem()
     val next = ctx.nextItem()
 
@@ -203,20 +211,20 @@ private fun SequenceFooter(
                 navController.navigate(buildPsalm119Route(sectionIdx, savedIntentId, ctx.currentPosition - 1))
             }) {
                 Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null)
-                Text("Précédent")
+                Text(stringResource(R.string.action_previous))
             }
         } else {
             Spacer(Modifier.size(1.dp))
         }
 
-        Text(ctx.progressLabel, style = MaterialTheme.typography.labelMedium)
+        Text(ctx.progressLabel(context), style = MaterialTheme.typography.labelMedium)
 
         if (next != null) {
             OutlinedButton(onClick = {
                 val sectionIdx = container.psalm119Repository.sectionByLetter(next.psalmLetterKey)?.index ?: 1
                 navController.navigate(buildPsalm119Route(sectionIdx, savedIntentId, ctx.currentPosition + 1))
             }) {
-                Text("Suivant")
+                Text(stringResource(R.string.action_next))
                 Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
             }
         } else {
@@ -239,7 +247,7 @@ private fun AlphabetFooter(index: Int, navController: NavController) {
                 navController.navigate(Routes.psalm119Section(index - 1))
             }) {
                 Icon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft, null)
-                Text("Précédent")
+                Text(stringResource(R.string.action_previous))
             }
         } else {
             Spacer(Modifier.size(1.dp))
@@ -248,7 +256,7 @@ private fun AlphabetFooter(index: Int, navController: NavController) {
             OutlinedButton(onClick = {
                 navController.navigate(Routes.psalm119Section(index + 1))
             }) {
-                Text("Suivant")
+                Text(stringResource(R.string.action_next))
                 Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
             }
         } else {

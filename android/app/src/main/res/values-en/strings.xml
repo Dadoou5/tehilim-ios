@@ -1,4 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App metadata -->
     <string name="app_name">Tehilim</string>
+    <string name="widget_description">Shows today\'s Tehilim</string>
+
+    <!-- ==================== TITLES ==================== -->
+    <string name="title_today">Today</string>
+    <string name="title_favorites">My favorites</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_life_cases">Life cases</string>
+    <string name="title_psalms">Tehilim</string>
+    <string name="title_search">Search</string>
+    <string name="title_lelouy_nichmat">Lelouy Nichmat</string>
+    <string name="title_my_prayers">My prayers</string>
+    <string name="title_psalm_119_home">119 - AlphaBeta</string>
+    <string name="title_psalm_119_full">Tehilim 119</string>
+    <string name="title_about_content">Content sources</string>
+    <string name="title_about_privacy">Privacy</string>
+    <string name="title_accessibility">Accessibility</string>
+    <string name="title_accessibility_declaration">Accessibility statement</string>
+    <string name="title_all_psalms">All Tehilim</string>
+
+    <!-- ==================== TAB / DESTINATION LABELS ==================== -->
+    <string name="tab_home">Home</string>
+    <string name="tab_psalms">Tehilim</string>
+    <string name="tab_daily">Today</string>
+    <string name="tab_life_cases">Life cases</string>
+    <string name="tab_settings">Settings</string>
+    <string name="tab_books">Books</string>
+    <string name="tab_all">All</string>
+    <string name="tab_favorites">Favorites</string>
+
+    <!-- ==================== SECTIONS / HEADERS ==================== -->
+    <string name="section_resume_reading">Resume reading</string>
+    <string name="section_my_favorites">My favorites</string>
+    <string name="section_today_psalms">Today\'s Tehilim</string>
+    <string name="section_explore">Explore</string>
+    <string name="section_schedule">On the schedule</string>
+    <string name="section_favorite_psalms">Favorite Tehilim</string>
+    <string name="section_psalms_to_read">Tehilim to read</string>
+    <string name="section_reading_sequence">Reading sequence</string>
+    <string name="section_result">Result</string>
+    <string name="section_suggestions">Suggestions</string>
+    <string name="section_recents">Recent</string>
+    <string name="section_language">Language</string>
+    <string name="section_display">Display</string>
+    <string name="section_daily_reading">Daily reading</string>
+    <string name="section_daily_reminder">Daily reminder</string>
+    <string name="section_accessibility">Accessibility</string>
+    <string name="section_about">About</string>
+    <string name="section_engagement">Commitment</string>
+    <string name="section_compliance_status">Compliance status</string>
+    <string name="section_a11y_features">Supported accessibility features</string>
+    <string name="section_known_limits">Known limitations</string>
+    <string name="section_recourse">Recourse</string>
+    <string name="section_label_source">SOURCE</string>
+
+    <!-- ==================== ACTIONS ==================== -->
+    <string name="action_skip">Skip</string>
+    <string name="action_next">Next</string>
+    <string name="action_previous">Previous</string>
+    <string name="action_start">Get started</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_generate_save">Generate and save</string>
+    <string name="action_open_keyboard_settings">Open keyboard settings</string>
+
+    <!-- ==================== LABELS ==================== -->
+    <string name="label_hour">Time</string>
+    <string name="label_link">Relation:</string>
+    <string name="label_daily_reminder">Daily reminder</string>
+    <string name="label_reminder_time">Reminder time</string>
+    <string name="label_app_language">App language</string>
+    <string name="label_show_translation_default">Show translation by default</string>
+    <string name="label_theme">Theme</string>
+    <string name="label_text_mode">Text mode</string>
+    <string name="label_hebrew_size">Hebrew text size</string>
+    <string name="label_translation_size">Translation text size</string>
+    <string name="label_numbering">Verse numbering</string>
+    <string name="label_mode">Mode</string>
+    <string name="label_preview">Preview</string>
+    <string name="label_translation_preview">Translation preview</string>
+    <string name="label_book">Book %1$d</string>
+    <string name="label_tehilim_count">%1$d Tehilim</string>
+    <string name="label_verses_count">%1$d verses</string>
+    <string name="label_letters_count">%1$d letters</string>
+    <string name="label_psalm_with_id">Tehilim %1$d</string>
+    <string name="label_psalm_with_hebrew">Tehilim %1$d · %2$s</string>
+    <string name="label_psalm_only_number">Tehilim %1$d</string>
+    <string name="label_psalm_button">Tehilim %1$d </string>
+    <string name="label_psalm_button_prev">" Tehilim %1$d"</string>
+    <string name="label_mode_count">Mode: %1$s · %2$d Tehilim</string>
+    <string name="label_section_letter_range">%1$s — %2$s · v. %3$d–%4$d</string>
+    <string name="label_section_letter_name">%1$s — %2$s</string>
+    <string name="label_psalms_recommended_singular">%1$d recommended Tehilim</string>
+    <string name="label_psalms_recommended_plural">%1$d recommended Tehilim</string>
+    <string name="label_at_letter_n_of_m">At letter %1$d of %2$d</string>
+    <string name="label_letter_progress">Letter %1$d of %2$d</string>
+    <string name="label_dot_source">· source: %1$s</string>
+    <string name="label_saved_singular">1 saved</string>
+    <string name="label_saved_plural">%1$d saved</string>
+    <string name="label_saved_none">None saved</string>
+    <string name="label_psalms_saved_singular">1 Tehilim saved</string>
+    <string name="label_psalms_saved_plural">%1$d Tehilim saved</string>
+    <string name="label_version">Version %1$s</string>
+    <string name="label_a11y_rgaa_version">RGAA 4.1.2 — app version: %1$s</string>
+
+    <!-- ==================== PLACEHOLDERS ==================== -->
+    <string name="placeholder_search_psalms">Search (23, כג, title word…)</string>
+    <string name="placeholder_search_short">23, כג, tehilim 23…</string>
+    <string name="placeholder_relative_name">The deceased — first name (Hebrew)</string>
+    <string name="placeholder_relative_example">e.g. יוסף</string>
+    <string name="placeholder_mother_name">Mother\'s first name (Hebrew)</string>
+    <string name="placeholder_mother_example">e.g. שרה</string>
+
+    <!-- ==================== CONTENT DESCRIPTIONS ==================== -->
+    <string name="cd_search">Search</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_close">Close</string>
+    <string name="cd_clear">Clear</string>
+    <string name="cd_favorite">Favorite</string>
+    <string name="cd_add_favorite">Add to favorites</string>
+    <string name="cd_remove_favorite">Remove from favorites</string>
+    <string name="cd_show_translation">Show translation</string>
+    <string name="cd_hide_translation">Hide translation</string>
+    <string name="cd_show_translation_inline">  Show translation</string>
+    <string name="cd_hide_translation_inline">  Hide translation</string>
+
+    <!-- ==================== MESSAGES / EMPTY STATES ==================== -->
+    <string name="msg_no_favorite">No favorites</string>
+    <string name="msg_tap_heart_to_add">Tap ♡ on a Tehilim to add it here</string>
+    <string name="msg_tap_heart_to_add_dot">Tap ♡ on a Tehilim to add it here.</string>
+    <string name="msg_tap_heart_to_add_long">Tap the heart on a Tehilim to add it here.</string>
+    <string name="msg_view_list">View list</string>
+    <string name="msg_no_psalm_for_mode">No Tehilim defined for this mode.</string>
+    <string name="msg_no_psalm_for_day">No Tehilim defined for today.</string>
+    <string name="msg_no_psalm_in_book">No Tehilim in this book.</string>
+    <string name="msg_no_psalm_matches">No Tehilim matches “%1$s”.</string>
+    <string name="msg_no_psalm_found">No Tehilim found. Try a number between 1 and 150, or Hebrew letters (e.g. כג).</string>
+    <string name="msg_psalm_not_found">Tehilim not found.</string>
+    <string name="msg_category_not_found">Category not found</string>
+    <string name="msg_lelouy_nichmat_not_found">Lelouy Nichmat not found</string>
+    <string name="msg_no_saved_lelouy_nichmat">No saved Lelouy Nichmat</string>
+    <string name="msg_generate_to_find_here">Generate a reading to find it here.</string>
+    <string name="msg_resume_reading">Resume reading</string>
+    <string name="msg_new_reading">New reading</string>
+    <string name="msg_new_reading_subtitle">Elevation of the soul — first name + mother</string>
+    <string name="msg_psalm_119_subtitle">The 22 letters of the Hebrew alphabet, eight verses each.</string>
+    <string name="msg_tradition_disclaimer">Tradition. Does not replace professional advice.</string>
+    <string name="msg_neshama_appended_form">“נשמה” will be appended automatically at the end of the sequence.</string>
+    <string name="msg_neshama_appended_list">“נשמה” has been appended automatically at the end of the sequence.</string>
+    <string name="msg_enable_hebrew_keyboard_title">Enable the Hebrew keyboard</string>
+    <string name="msg_enable_hebrew_keyboard_body">Settings → System → Languages and input → Virtual keyboard → Gboard → Languages → add Hebrew. You can then switch with 🌐.</string>
+    <string name="msg_lelouy_banner_title">Reading for the elevation of the soul</string>
+    <string name="msg_lelouy_banner_body">The generated sequence matches the letters of the deceased\'s first name, the relation (בן/בת), the mother\'s first name, then נשמה.</string>
+    <string name="msg_restart_required_title">Restart required</string>
+    <string name="msg_restart_required_body">The Tehilim translation switched immediately. For the interface to update too, close and reopen the app.</string>
+    <string name="msg_permission_denied_notifications">Permission denied. Enable notifications in Settings → Apps → Tehilim → Notifications to receive the reminder.</string>
+    <string name="msg_reminder_time_hint">You can change the time later. Notifications stay local (WorkManager).</string>
+    <string name="msg_sources_footer">Hebrew text: Sefaria · French translation: Beth Loubavitch · English translation: JPS 1917</string>
+    <string name="msg_widget_no_psalm">No Tehilim defined</string>
+
+    <!-- Sample previews -->
+    <string name="msg_preview_hebrew_phonetic">Chir lamaalot essa enaï</string>
+    <string name="msg_preview_french">A Song of Ascents. I will lift up mine eyes unto the mountains…</string>
+
+    <!-- Prayer titles & subtitles -->
+    <string name="prayer_before_title">Prayer before reading</string>
+    <string name="prayer_after_title">Prayer after reading</string>
+    <string name="prayer_before_subtitle">To say before starting</string>
+    <string name="prayer_after_subtitle">To say at the end</string>
+
+    <!-- Explore card titles -->
+    <string name="explore_5_books">5 books</string>
+    <string name="explore_life_cases">Life cases</string>
+    <string name="explore_119_alphabeta">119 - AlphaBeta</string>
+    <string name="explore_all_1_150">All (1–150)</string>
+    <string name="explore_prayer_before">Prayer before</string>
+    <string name="explore_prayer_after">Prayer after</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Welcome</string>
+    <string name="onboarding_welcome_subtitle">All 150 Tehilim, in vocalized Hebrew with teamim, and in English translation.</string>
+    <string name="onboarding_daily_title">Today\'s Tehilim</string>
+    <string name="onboarding_daily_subtitle">Monthly or weekly cycle, with a widget for your home screen.</string>
+    <string name="onboarding_lifecases_title">Life cases + AlphaBeta</string>
+    <string name="onboarding_lifecases_subtitle">18 thematic paths. Tehilim 119 letter by letter. Personalized Lelouy Nichmat reading.</string>
+
+    <!-- Splash dedication -->
+    <string name="splash_dedication_french">For the elevation of the soul of Johann Meïr ben Sarah Bouganim</string>
+
+    <!-- ==================== ENUM LABELS ==================== -->
+    <string name="enum_applang_system">System</string>
+    <string name="enum_applang_fr">Français</string>
+    <string name="enum_applang_en">English</string>
+
+    <string name="enum_theme_system">System</string>
+    <string name="enum_theme_light">Light</string>
+    <string name="enum_theme_dark">Dark</string>
+
+    <string name="enum_textmode_hebrew">Hebrew</string>
+    <string name="enum_textmode_phonetic">Phonetic</string>
+
+    <string name="enum_textsize_xsmall">Very small</string>
+    <string name="enum_textsize_small">Small</string>
+    <string name="enum_textsize_medium">Medium</string>
+    <string name="enum_textsize_large">Large</string>
+    <string name="enum_textsize_xlarge">Very large</string>
+
+    <string name="enum_versestyle_hebrew">Hebrew</string>
+    <string name="enum_versestyle_arabic">Numeric</string>
+
+    <string name="enum_dailymode_monthly">Monthly cycle</string>
+    <string name="enum_dailymode_weekly">Day of the week</string>
+
+    <!-- Letter source labels -->
+    <string name="letter_source_proche">relative</string>
+    <string name="letter_source_lien">relation</string>
+    <string name="letter_source_mere">mother</string>
+
+    <!-- ==================== NOTIFICATIONS ==================== -->
+    <string name="notif_channel_name">Today\'s Tehilim</string>
+    <string name="notif_channel_description">Daily reminder to read today\'s Tehilim.</string>
+    <string name="notif_title">Today\'s Tehilim</string>
+    <string name="notif_body">It\'s time to read today\'s Tehilim.</string>
+
+    <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
+    <string name="about_content_hebrew_title">Hebrew text</string>
+    <string name="about_content_hebrew_body">The vocalized Hebrew text with teamim comes from Sefaria (sefaria.org), distributed under Creative Commons By 4.0.</string>
+    <string name="about_content_fr_title">French translation</string>
+    <string name="about_content_fr_body">The French translation comes from Beth Loubavitch (le-tehilim.online), used with their permission.</string>
+    <string name="about_content_en_title">English translation</string>
+    <string name="about_content_en_body">The English translation is the JPS Tanakh 1917, in the public domain and provided via Sefaria.</string>
+    <string name="about_content_font_title">Hebrew typeface</string>
+    <string name="about_content_font_body">The Hebrew display font is Ezra SIL SR, provided by SIL International under the SIL OFL license.</string>
+    <string name="about_content_calendar_title">Hebrew calendar</string>
+    <string name="about_content_calendar_body">Date conversions use the official Hebrew calendar via ICU (Unicode CLDR).</string>
+
+    <!-- ==================== ABOUT — PRIVACY ==================== -->
+    <string name="about_privacy_none_title">No data collected</string>
+    <string name="about_privacy_none_body">Tehilim does not collect, transmit, or store any personal data.</string>
+    <string name="about_privacy_local_title">Local storage</string>
+    <string name="about_privacy_local_body">Your preferences (language, text size, favorites, last reading, Lelouy Nichmat) are stored locally on your device via Android DataStore, and backed up by Android Auto Backup if you enable Google cloud backup.</string>
+    <string name="about_privacy_offline_title">Offline</string>
+    <string name="about_privacy_offline_body">The app works entirely offline after installation — no network calls.</string>
+    <string name="about_privacy_notifications_title">Notifications</string>
+    <string name="about_privacy_notifications_body">Daily reminders use Android WorkManager and stay local. No push server is used.</string>
+    <string name="about_privacy_thirdparty_title">Third parties</string>
+    <string name="about_privacy_thirdparty_body">No tracker, no advertising, no third-party services of any kind.</string>
+    <string name="about_privacy_contact_title">Contact</string>
+    <string name="about_privacy_contact_body">For any question: david.bouganim@gmail.com</string>
+
+    <!-- ==================== ACCESSIBILITY DECLARATION ==================== -->
+    <string name="a11y_engagement_body">The Tehilim app is committed to making its content accessible in accordance with the French RGAA 4.1.2 reference and WCAG 2.1 level AA standards applicable to mobile apps.</string>
+    <string name="a11y_status_main">Status: partial compliance (self-declaration).</string>
+    <string name="a11y_status_secondary">This statement is based on a self-audit. An external audit is planned before production release.</string>
+    <string name="a11y_feature_talkback">Full TalkBack compatibility.</string>
+    <string name="a11y_feature_text_size">Respects the system text size (up to maximum accessibility scale).</string>
+    <string name="a11y_feature_themes">Light, dark, and automatic modes.</string>
+    <string name="a11y_feature_contrast">Text contrast meets AA level (≥ 4.5:1).</string>
+    <string name="a11y_feature_targets">Tap targets equal to or greater than 48 × 48 dp.</string>
+    <string name="a11y_feature_no_color_only">No information conveyed by color alone.</string>
+    <string name="a11y_feature_animations">Respects the system “Remove animations” setting.</string>
+    <string name="a11y_feature_rtl_ltr">TalkBack reads Hebrew in RTL direction and the translation in LTR, in that order.</string>
+    <string name="a11y_limit_hebrew_tts">Hebrew text is read phonetically by TalkBack according to the capabilities of the voice chosen by the user.</string>
+    <string name="a11y_limit_119_grid">The 22-letter grid of Tehilim 119 may require scrolling at very large text size.</string>
+    <string name="a11y_recourse_body">To report an accessibility issue: contact to be defined before Google Play release.</string>
 </resources>

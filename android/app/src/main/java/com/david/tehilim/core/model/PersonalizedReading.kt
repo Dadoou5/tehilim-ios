@@ -1,5 +1,8 @@
 package com.david.tehilim.core.model
 
+import android.content.Context
+import androidx.annotation.StringRes
+import com.david.tehilim.R
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -43,11 +46,21 @@ enum class RelationType {
 enum class LetterSource {
     PROCHE, LIEN, MERE, NESHAMA;
 
-    val labelFR: String get() = when (this) {
-        PROCHE  -> "proche"
-        LIEN    -> "lien"
-        MERE    -> "mère"
+    /** Label localisé (FR/EN selon locale active). NESHAMA reste en hébreu. */
+    fun localizedLabel(context: Context): String = when (this) {
+        PROCHE  -> context.getString(R.string.letter_source_proche)
+        LIEN    -> context.getString(R.string.letter_source_lien)
+        MERE    -> context.getString(R.string.letter_source_mere)
         NESHAMA -> "נשמה"
+    }
+
+    /** Resource string id (utilisable depuis Composable via stringResource). */
+    @get:StringRes
+    val labelRes: Int? get() = when (this) {
+        PROCHE  -> R.string.letter_source_proche
+        LIEN    -> R.string.letter_source_lien
+        MERE    -> R.string.letter_source_mere
+        NESHAMA -> null // hébreu pur, pas de ressource
     }
 }
 

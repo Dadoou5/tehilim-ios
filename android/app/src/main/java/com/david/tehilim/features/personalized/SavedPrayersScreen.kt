@@ -21,10 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
 import com.david.tehilim.ui.components.EmptyState
@@ -38,7 +40,7 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mes prières") },
+                title = { Text(stringResource(R.string.title_my_prayers)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, null)
@@ -50,8 +52,8 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
         if (intents.isEmpty()) {
             EmptyState(
                 icon = Icons.Outlined.Inbox,
-                title = "Aucun Lelouy Nichmat sauvegardé",
-                message = "Génère une lecture pour la retrouver ici.",
+                title = stringResource(R.string.msg_no_saved_lelouy_nichmat),
+                message = stringResource(R.string.msg_generate_to_find_here),
                 modifier = Modifier.padding(padding)
             )
             return@Scaffold
@@ -73,7 +75,7 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                         Text(intent.hebrewSubject,
                             style = TextStyle(fontFamily = EzraSilFontFamily))
                         Text(
-                            "${intent.generatedLetters.size} lettres",
+                            stringResource(R.string.label_letters_count, intent.generatedLetters.size),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

@@ -38,10 +38,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.navigation.Routes
 
 /**
@@ -60,14 +62,19 @@ fun PsalmsScreen(
     var segment by rememberSaveable(initialSegment) { mutableIntStateOf(initialSegment) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Tehilim") }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.title_psalms)) }) }
     ) { padding ->
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(padding)) {
 
             PrimaryTabRow(selectedTabIndex = segment) {
-                listOf("Livres", "Tous", "Favoris").forEachIndexed { i, label ->
+                val tabLabels = listOf(
+                    stringResource(R.string.tab_books),
+                    stringResource(R.string.tab_all),
+                    stringResource(R.string.tab_favorites)
+                )
+                tabLabels.forEachIndexed { i, label ->
                     Tab(
                         selected = segment == i,
                         onClick = { segment = i },
@@ -117,12 +124,12 @@ private fun BookRow(book: Int, rangeLabel: String, count: Int, onClick: () -> Un
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Livre $book", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.label_book, book), style = MaterialTheme.typography.titleMedium)
                 Text(rangeLabel, style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Text(
-                "$count Tehilim",
+                stringResource(R.string.label_tehilim_count, count),
                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.primary
             )
@@ -144,12 +151,12 @@ private fun AllPsalmsContent(container: AppContainer, navController: NavControll
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
-            label = { Text("Rechercher (23, כג, mot du titre…)") },
+            label = { Text(stringResource(R.string.placeholder_search_psalms)) },
             leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
             trailingIcon = if (query.isNotEmpty()) {
                 {
                     IconButton(onClick = { query = "" }) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Effacer")
+                        Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.cd_clear))
                     }
                 }
             } else null,
@@ -165,7 +172,7 @@ private fun AllPsalmsContent(container: AppContainer, navController: NavControll
                 contentAlignment = Alignment.TopCenter
             ) {
                 Text(
-                    "Aucun Tehilim ne correspond à « $query ».",
+                    stringResource(R.string.msg_no_psalm_matches, query),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -205,9 +212,12 @@ private fun AllPsalmsContent(container: AppContainer, navController: NavControll
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Tehilim ${psalm.id}", style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            "${psalm.verses.size} versets",
+                            stringResource(R.string.label_psalm_only_number, psalm.id),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            stringResource(R.string.label_verses_count, psalm.verses.size),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -236,9 +246,9 @@ private fun FavoritesContent(container: AppContainer, navController: NavControll
     if (favorites.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Aucun favori", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.msg_no_favorite), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "Tape ♡ sur un Tehilim pour l'ajouter ici.",
+                    stringResource(R.string.msg_tap_heart_to_add_dot),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -251,14 +261,14 @@ private fun FavoritesContent(container: AppContainer, navController: NavControll
         // Prière avant la lecture (mirror FavoritesScreen dédié)
         item {
             PrayerRow(
-                title = "Prière avant la lecture",
+                title = stringResource(R.string.prayer_before_title),
                 icon = Icons.Outlined.PlayCircle,
                 onClick = { presentedPrayer = com.david.tehilim.core.model.Prayer.Kind.BEFORE }
             )
         }
         item {
             Text(
-                "Tehilim favoris",
+                stringResource(R.string.section_favorite_psalms),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
@@ -284,8 +294,10 @@ private fun FavoritesContent(container: AppContainer, navController: NavControll
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Tehilim ${psalm.id} · ${psalm.hebrewNumber}",
-                        style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        stringResource(R.string.label_psalm_with_hebrew, psalm.id, psalm.hebrewNumber),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                     Icon(
                         Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                         contentDescription = null,
@@ -300,7 +312,7 @@ private fun FavoritesContent(container: AppContainer, navController: NavControll
         item {
             androidx.compose.foundation.layout.Spacer(Modifier.padding(top = 12.dp))
             PrayerRow(
-                title = "Prière après la lecture",
+                title = stringResource(R.string.prayer_after_title),
                 icon = Icons.Outlined.CheckCircle,
                 onClick = { presentedPrayer = com.david.tehilim.core.model.Prayer.Kind.AFTER }
             )

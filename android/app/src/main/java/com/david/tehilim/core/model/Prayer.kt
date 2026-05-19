@@ -1,8 +1,13 @@
 package com.david.tehilim.core.model
 
+import androidx.annotation.StringRes
+import com.david.tehilim.R
+
 /**
  * Prière avant ou après la lecture des Tehilim — mirror du modèle iOS.
  * Construit à partir de versets référencés par psaume + numéro.
+ *
+ * V1.3.0 — Les labels sont des @StringRes, résolus dans la locale active de l'app.
  */
 data class Prayer(
     val kind: Kind,
@@ -10,9 +15,13 @@ data class Prayer(
 ) {
     data class VerseRef(val psalmId: Int, val verseNumber: Int)
 
-    enum class Kind(val titleFR: String, val subtitleFR: String, val symbol: String) {
-        BEFORE("Prière avant la lecture", "À dire avant de commencer", "PlayCircle"),
-        AFTER("Prière après la lecture", "À dire à la fin", "CheckCircle");
+    enum class Kind(
+        @StringRes val titleRes: Int,
+        @StringRes val subtitleRes: Int,
+        val symbol: String
+    ) {
+        BEFORE(R.string.prayer_before_title, R.string.prayer_before_subtitle, "PlayCircle"),
+        AFTER(R.string.prayer_after_title, R.string.prayer_after_subtitle, "CheckCircle");
     }
 
     companion object {

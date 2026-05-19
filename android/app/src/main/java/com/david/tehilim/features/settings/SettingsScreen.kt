@@ -1,5 +1,6 @@
 package com.david.tehilim.features.settings
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,8 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.LocaleListCompat
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.AppLanguage
 import com.david.tehilim.core.model.AppTheme
 import com.david.tehilim.core.model.DailyMode
@@ -52,26 +56,7 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
     val verseNumStyle by prefs.verseNumberStyle.collectAsState(initial = VerseNumberStyle.HEBREW)
     val dailyMode by prefs.dailyMode.collectAsState(initial = DailyMode.MONTHLY)
 
-    var showRestartAlert by remember { mutableStateOf(false) }
-
-    if (showRestartAlert) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showRestartAlert = false },
-            title = { Text("Redémarrage requis") },
-            text = {
-                Text(
-                    "La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la."
-                )
-            },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = { showRestartAlert = false }) {
-                    Text("OK")
-                }
-            }
-        )
-    }
-
-    Scaffold(topBar = { TopAppBar(title = { Text("Réglages") }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_settings)) }) }) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -79,45 +64,50 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item { SectionHeader("Langue") }
+            item { SectionHeader(stringResource(R.string.section_language)) }
             item {
-                EnumSettingRow("Langue de l'app", appLanguage, AppLanguage.entries) {
-                    scope.launch {
-                        prefs.setAppLanguage(it)
-                        showRestartAlert = true
+                EnumSettingRow(stringResource(R.string.label_app_language), appLanguage, AppLanguage.entries) {
+                    scope.launch { prefs.setAppLanguage(it) }
+                    // Applique immédiatement la locale système — recompose toute
+                    // l'UI dans la nouvelle langue sans redémarrage. API thread-safe.
+                    val tag = when (it) {
+                        AppLanguage.FR -> "fr"
+                        AppLanguage.EN -> "en"
+                        AppLanguage.SYSTEM -> ""
                     }
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
                 }
             }
             item {
-                SwitchRow("Afficher la traduction par défaut", translationFR) {
+                SwitchRow(stringResource(R.string.label_show_translation_default), translationFR) {
                     scope.launch { prefs.setTranslationFR(it) }
                 }
             }
 
             item { HorizontalDivider() }
-            item { SectionHeader("Affichage") }
+            item { SectionHeader(stringResource(R.string.section_display)) }
             item {
-                EnumSettingRow("Thème", theme, AppTheme.entries) {
+                EnumSettingRow(stringResource(R.string.label_theme), theme, AppTheme.entries) {
                     scope.launch { prefs.setTheme(it) }
                 }
             }
             item {
-                EnumSettingRow("Mode du texte", textMode, TextMode.entries) {
+                EnumSettingRow(stringResource(R.string.label_text_mode), textMode, TextMode.entries) {
                     scope.launch { prefs.setTextMode(it) }
                 }
             }
             item {
-                EnumSettingRow("Taille de l'hébreu", textSizeHebrew, TextSize.entries) {
+                EnumSettingRow(stringResource(R.string.label_hebrew_size), textSizeHebrew, TextSize.entries) {
                     scope.launch { prefs.setTextSizeHebrew(it) }
                 }
             }
             item {
-                EnumSettingRow("Taille de la traduction", textSizeFR, TextSize.entries) {
+                EnumSettingRow(stringResource(R.string.label_translation_size), textSizeFR, TextSize.entries) {
                     scope.launch { prefs.setTextSizeFR(it) }
                 }
             }
             item {
-                EnumSettingRow("Numérotation", verseNumStyle, VerseNumberStyle.entries) {
+                EnumSettingRow(stringResource(R.string.label_numbering), verseNumStyle, VerseNumberStyle.entries) {
                     scope.launch { prefs.setVerseNumberStyle(it) }
                 }
             }
@@ -131,26 +121,26 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             }
 
             item { HorizontalDivider() }
-            item { SectionHeader("Lecture quotidienne") }
+            item { SectionHeader(stringResource(R.string.section_daily_reading)) }
             item {
-                EnumSettingRow("Mode", dailyMode, DailyMode.entries) {
+                EnumSettingRow(stringResource(R.string.label_mode), dailyMode, DailyMode.entries) {
                     scope.launch { prefs.setDailyMode(it) }
                 }
             }
 
             item { HorizontalDivider() }
-            item { SectionHeader("Rappel quotidien") }
+            item { SectionHeader(stringResource(R.string.section_daily_reminder)) }
             item { NotificationsSettingsSection() }
 
             item { HorizontalDivider() }
-            item { SectionHeader("Accessibilité") }
+            item { SectionHeader(stringResource(R.string.section_accessibility)) }
             item {
                 androidx.compose.material3.TextButton(
                     onClick = { navController?.navigate("about/accessibility") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        "Déclaration d'accessibilité",
+                        stringResource(R.string.title_accessibility_declaration),
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -159,14 +149,14 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             }
 
             item { HorizontalDivider() }
-            item { SectionHeader("À propos") }
+            item { SectionHeader(stringResource(R.string.section_about)) }
             item {
                 androidx.compose.material3.TextButton(
                     onClick = { navController?.navigate("about/content") },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        "Sources du contenu",
+                        stringResource(R.string.title_about_content),
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -179,7 +169,7 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        "Confidentialité",
+                        stringResource(R.string.title_about_privacy),
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium
                     )
@@ -189,11 +179,11 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             item {
                 Column(modifier = Modifier.padding(vertical = 4.dp)) {
                     Text(
-                        "Version ${com.david.tehilim.BuildConfig.VERSION_NAME}",
+                        stringResource(R.string.label_version, com.david.tehilim.BuildConfig.VERSION_NAME),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        "Texte hébreu : Sefaria · Traduction française : Beth Loubavitch · Traduction anglaise : JPS 1917",
+                        stringResource(R.string.msg_sources_footer),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -213,7 +203,7 @@ private fun HebrewPreviewRow(mode: TextMode, size: TextSize) {
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            "Aperçu",
+            stringResource(R.string.label_preview),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -230,7 +220,7 @@ private fun HebrewPreviewRow(mode: TextMode, size: TextSize) {
             }
         } else {
             Text(
-                "Chir lamaalot essa enaï",
+                stringResource(R.string.msg_preview_hebrew_phonetic),
                 style = hebrewBodyStyle(size.scale).copy(
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 ),
@@ -249,12 +239,12 @@ private fun FrenchPreviewRow(size: TextSize) {
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            "Aperçu traduction",
+            stringResource(R.string.label_translation_preview),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            "Cantique des degrés. Je lève mes yeux vers les montagnes…",
+            stringResource(R.string.msg_preview_french),
             style = frenchBodyStyle(size.scale),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -323,16 +313,17 @@ private inline fun <reified T : Enum<T>> EnumSettingRow(
     }
 }
 
+/**
+ * Résout le libellé localisé d'un enum de préférence. Tous les enums migrés
+ * V1.3.0 exposent un `labelRes` (R.string.*) qu'on résout via stringResource.
+ */
+@Composable
 private fun <T : Enum<T>> humanLabel(value: T): String = when (value) {
-    is AppLanguage -> when (value) {
-        AppLanguage.SYSTEM -> "Système"
-        AppLanguage.FR -> "Français"
-        AppLanguage.EN -> "English"
-    }
-    is AppTheme -> value.label
-    is TextMode -> value.label
-    is TextSize -> value.label
-    is VerseNumberStyle -> value.label
-    is DailyMode -> value.label
+    is AppLanguage -> stringResource(value.labelRes)
+    is AppTheme -> stringResource(value.labelRes)
+    is TextMode -> stringResource(value.labelRes)
+    is TextSize -> stringResource(value.labelRes)
+    is VerseNumberStyle -> stringResource(value.labelRes)
+    is DailyMode -> stringResource(value.labelRes)
     else -> value.name
 }

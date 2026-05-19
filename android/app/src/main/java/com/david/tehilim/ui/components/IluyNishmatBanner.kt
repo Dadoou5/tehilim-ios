@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.david.tehilim.R
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 
 /**
@@ -50,7 +52,7 @@ fun IluyNishmatBanner(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(2.dp))
 
         Text(
-            text = "Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim",
+            text = stringResource(R.string.splash_dedication_french),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

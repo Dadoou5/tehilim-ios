@@ -98,6 +98,9 @@ dependencies {
     // Splash screen
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // AppCompat — pour AppCompatDelegate.setApplicationLocales (per-app language)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+
     // WorkManager — notifications quotidiennes
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 

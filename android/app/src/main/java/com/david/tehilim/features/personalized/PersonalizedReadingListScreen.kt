@@ -30,12 +30,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
 import com.david.tehilim.ui.theme.EzraSilFontFamily
@@ -45,9 +48,10 @@ import com.david.tehilim.ui.theme.EzraSilFontFamily
 fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, navController: NavController) {
     val intents by container.savedPrayers.intents.collectAsState()
     val intent = intents.firstOrNull { it.id == intentId } ?: run {
-        Text("Lelouy Nichmat introuvable")
+        Text(stringResource(R.string.msg_lelouy_nichmat_not_found))
         return
     }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -55,7 +59,7 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                 title = { Text(intent.title, maxLines = 1) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -89,7 +93,7 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                                 modifier = Modifier.size(14.dp)
                             )
                             Text(
-                                "Lelouy Nichmat",
+                                stringResource(R.string.title_lelouy_nichmat),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimary
                             )
@@ -140,9 +144,16 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Column(modifier = Modifier.weight(1f)) {
-                                Text("Reprendre la lecture", style = MaterialTheme.typography.titleSmall)
                                 Text(
-                                    "À la lettre ${lastIdx + 1} sur ${intent.generatedLetters.size}",
+                                    stringResource(R.string.msg_resume_reading),
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Text(
+                                    stringResource(
+                                        R.string.label_at_letter_n_of_m,
+                                        lastIdx + 1,
+                                        intent.generatedLetters.size
+                                    ),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -161,11 +172,11 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Séquence de lecture",
+                        stringResource(R.string.section_reading_sequence),
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        "${intent.generatedLetters.size} lettres",
+                        stringResource(R.string.label_letters_count, intent.generatedLetters.size),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -202,12 +213,12 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                         )
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "SOURCE",
+                                stringResource(R.string.section_label_source),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                item.source.labelFR,
+                                item.source.localizedLabel(context),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -219,7 +230,7 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
 
             item {
                 Text(
-                    "« נשמה » a été ajouté automatiquement à la fin de la séquence.",
+                    stringResource(R.string.msg_neshama_appended_list),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 12.dp)

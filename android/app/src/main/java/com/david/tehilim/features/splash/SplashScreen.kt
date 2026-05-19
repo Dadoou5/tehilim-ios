@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import com.david.tehilim.R
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -195,7 +197,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                 }
 
                 Text(
-                    "Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim",
+                    stringResource(R.string.splash_dedication_french),
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontStyle = FontStyle.Italic,

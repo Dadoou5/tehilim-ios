@@ -35,9 +35,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.Psalm
 import com.david.tehilim.core.service.HebrewNumerals
 import com.david.tehilim.navigation.Routes
@@ -67,9 +69,9 @@ fun PsalmListScreen(
         else -> container.psalmRepository.allPsalms
     }
     val title = when {
-        favoritesOnly -> "Favoris"
-        book != null -> "Livre $book"
-        else -> "Tous les Tehilim"
+        favoritesOnly -> stringResource(R.string.tab_favorites)
+        book != null -> stringResource(R.string.label_book, book)
+        else -> stringResource(R.string.title_all_psalms)
     }
 
     var query by rememberSaveable { mutableStateOf("") }
@@ -84,7 +86,7 @@ fun PsalmListScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -98,12 +100,12 @@ fun PsalmListScreen(
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                label = { Text("Rechercher (23, כג, mot du titre…)") },
+                label = { Text(stringResource(R.string.placeholder_search_psalms)) },
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
                 trailingIcon = if (query.isNotEmpty()) {
                     {
                         IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Outlined.Close, contentDescription = "Effacer")
+                            Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.cd_clear))
                         }
                     }
                 } else null,
@@ -119,8 +121,8 @@ fun PsalmListScreen(
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(
-                        if (query.isBlank()) "Aucun Tehilim dans ce livre."
-                        else "Aucun Tehilim ne correspond à « $query ».",
+                        if (query.isBlank()) stringResource(R.string.msg_no_psalm_in_book)
+                        else stringResource(R.string.msg_no_psalm_matches, query),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -169,9 +171,9 @@ private fun PsalmRow(psalm: Psalm, isFavorite: Boolean, onClick: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Column(modifier = Modifier.weight(1f)) {
-            Text("Tehilim ${psalm.id}", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.label_psalm_only_number, psalm.id), style = MaterialTheme.typography.bodyLarge)
             Text(
-                "${psalm.verses.size} versets",
+                stringResource(R.string.label_verses_count, psalm.verses.size),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -179,7 +181,7 @@ private fun PsalmRow(psalm: Psalm, isFavorite: Boolean, onClick: () -> Unit) {
         if (isFavorite) {
             Icon(
                 Icons.Outlined.Favorite,
-                contentDescription = "Favori",
+                contentDescription = stringResource(R.string.cd_favorite),
                 tint = MaterialTheme.colorScheme.primary
             )
         }

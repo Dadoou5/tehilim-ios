@@ -28,9 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.annotation.StringRes
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import kotlinx.coroutines.launch
 
 /**
@@ -48,18 +51,18 @@ fun OnboardingScreen(container: AppContainer, onFinished: () -> Unit) {
     val pages = listOf(
         OnboardingPage(
             icon = Icons.AutoMirrored.Outlined.MenuBook,
-            title = "Bienvenue",
-            subtitle = "L'intégralité des 150 Tehilim, en hébreu vocalisé avec téamim, et en traduction française."
+            titleRes = R.string.onboarding_welcome_title,
+            subtitleRes = R.string.onboarding_welcome_subtitle
         ),
         OnboardingPage(
             icon = Icons.Outlined.WbSunny,
-            title = "Tehilim du jour",
-            subtitle = "Cycle mensuel ou hebdomadaire, avec un widget pour ton écran d'accueil."
+            titleRes = R.string.onboarding_daily_title,
+            subtitleRes = R.string.onboarding_daily_subtitle
         ),
         OnboardingPage(
             icon = Icons.Outlined.AutoStories,
-            title = "Cas de la vie + AlphaBeta",
-            subtitle = "18 parcours thématiques. Tehilim 119 lettre par lettre. Lecture personnalisée Lelouy Nichmat."
+            titleRes = R.string.onboarding_lifecases_title,
+            subtitleRes = R.string.onboarding_lifecases_subtitle
         )
     )
 
@@ -76,7 +79,7 @@ fun OnboardingScreen(container: AppContainer, onFinished: () -> Unit) {
                         onFinished()
                     }
                 }) {
-                    Text("Passer")
+                    Text(stringResource(R.string.action_skip))
                 }
             }
 
@@ -121,13 +124,20 @@ fun OnboardingScreen(container: AppContainer, onFinished: () -> Unit) {
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
-                Text(if (pagerState.currentPage < 2) "Suivant" else "Commencer")
+                Text(
+                    if (pagerState.currentPage < 2) stringResource(R.string.action_next)
+                    else stringResource(R.string.action_start)
+                )
             }
         }
     }
 }
 
-private data class OnboardingPage(val icon: ImageVector, val title: String, val subtitle: String)
+private data class OnboardingPage(
+    val icon: ImageVector,
+    @StringRes val titleRes: Int,
+    @StringRes val subtitleRes: Int
+)
 
 @Composable
 private fun OnboardingPageContent(page: OnboardingPage) {
@@ -145,13 +155,13 @@ private fun OnboardingPageContent(page: OnboardingPage) {
             tint = MaterialTheme.colorScheme.primary
         )
         Text(
-            page.title,
+            stringResource(page.titleRes),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(top = 24.dp),
             textAlign = TextAlign.Center
         )
         Text(
-            page.subtitle,
+            stringResource(page.subtitleRes),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -159,4 +169,3 @@ private fun OnboardingPageContent(page: OnboardingPage) {
         )
     }
 }
-

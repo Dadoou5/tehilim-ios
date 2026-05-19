@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.DailyMode
 import com.david.tehilim.core.model.Prayer
 import com.david.tehilim.features.prayers.PrayerSheet
@@ -49,7 +51,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
     val ids = container.dailyEngine.psalmsForToday(mode)
     var presentedPrayer by remember { mutableStateOf<Prayer.Kind?>(null) }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Aujourd'hui") }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_today)) }) }) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -59,7 +61,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
         ) {
             item {
                 Text(
-                    text = "Mode : ${mode.label} · ${ids.size} Tehilim",
+                    text = stringResource(R.string.label_mode_count, stringResource(mode.labelRes), ids.size),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -68,7 +70,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
             // Prière avant — au-dessus de la liste, mirror iOS DailyView (V1.2.17)
             item {
                 PrayerRow(
-                    title = "Prière avant la lecture",
+                    title = stringResource(R.string.prayer_before_title),
                     icon = Icons.Outlined.PlayCircle,
                     onClick = { presentedPrayer = Prayer.Kind.BEFORE }
                 )
@@ -77,7 +79,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
             // Au programme (header)
             item {
                 Text(
-                    text = "Au programme",
+                    text = stringResource(R.string.section_schedule),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp)
@@ -97,7 +99,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "Tehilim ${p.id} · ${p.hebrewNumber}",
+                            stringResource(R.string.label_psalm_with_hebrew, p.id, p.hebrewNumber),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
@@ -108,7 +110,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
             if (ids.isEmpty()) {
                 item {
                     Text(
-                        "Aucun Tehilim défini pour ce jour.",
+                        stringResource(R.string.msg_no_psalm_for_day),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -118,7 +120,7 @@ fun DailyScreen(container: AppContainer, navController: NavController) {
             // Prière après — en fin de liste
             item {
                 PrayerRow(
-                    title = "Prière après la lecture",
+                    title = stringResource(R.string.prayer_after_title),
                     icon = Icons.Outlined.CheckCircle,
                     onClick = { presentedPrayer = Prayer.Kind.AFTER }
                 )

@@ -18,6 +18,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.david.tehilim.R
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -73,10 +74,10 @@ object NotificationScheduler {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Tehilim du jour",
+                context.getString(R.string.notif_channel_name),
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Rappel quotidien de la lecture des Tehilim du jour."
+                description = context.getString(R.string.notif_channel_description)
             }
             nm.createNotificationChannel(channel)
         }
@@ -115,8 +116,8 @@ class DailyReminderWorker(
 
         val notif = NotificationCompat.Builder(context, NotificationScheduler.CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Tehilim du jour")
-            .setContentText("C'est le moment de lire tes Tehilim du jour.")
+            .setContentTitle(context.getString(R.string.notif_title))
+            .setContentText(context.getString(R.string.notif_body))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pending)
             .setAutoCancel(true)

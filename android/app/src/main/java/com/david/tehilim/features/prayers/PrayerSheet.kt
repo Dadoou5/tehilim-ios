@@ -15,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.Prayer
 import com.david.tehilim.core.model.TextMode
 import com.david.tehilim.core.model.Verse
@@ -54,9 +56,9 @@ fun PrayerSheet(
     ) {
         LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) {
             item {
-                Text(kind.titleFR, style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(kind.titleRes), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    kind.subtitleFR,
+                    stringResource(kind.subtitleRes),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 12.dp)

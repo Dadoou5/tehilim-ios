@@ -30,12 +30,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.PrayerType
 import com.david.tehilim.core.model.RelationType
 import com.david.tehilim.core.model.SavedPrayerIntent
@@ -60,10 +62,10 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Lelouy Nichmat") },
+                title = { Text(stringResource(R.string.title_lelouy_nichmat)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -96,17 +98,17 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                     )
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Active le clavier hébreu",
+                            stringResource(R.string.msg_enable_hebrew_keyboard_title),
                             style = MaterialTheme.typography.titleSmall
                         )
                         Text(
-                            "Réglages → Système → Langues et saisie → Clavier virtuel → Gboard → Langues → ajouter Hébreu. Tu pourras ensuite basculer avec 🌐.",
+                            stringResource(R.string.msg_enable_hebrew_keyboard_body),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                         TextButton(onClick = { openSystemKeyboardSettings(context) }) {
-                            Text("Ouvrir Réglages clavier")
+                            Text(stringResource(R.string.action_open_keyboard_settings))
                         }
                     }
                 }
@@ -131,11 +133,11 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 )
                 Column {
                     Text(
-                        "Lecture pour l'élévation de l'âme",
+                        stringResource(R.string.msg_lelouy_banner_title),
                         style = MaterialTheme.typography.titleSmall
                     )
                     Text(
-                        "La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה.",
+                        stringResource(R.string.msg_lelouy_banner_body),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 4.dp)
@@ -148,8 +150,8 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
             HebrewKeyboardTextField(
                 value = relativeName,
                 onValueChange = { relativeName = it },
-                label = "Le défunt — prénom (hébreu)",
-                placeholder = "ex. יוסף",
+                label = stringResource(R.string.placeholder_relative_name),
+                placeholder = stringResource(R.string.placeholder_relative_example),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -158,7 +160,7 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Lien :", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.label_link), style = MaterialTheme.typography.bodyMedium)
                 FilterChip(
                     selected = relation == RelationType.BEN,
                     onClick = { relation = RelationType.BEN },
@@ -183,15 +185,15 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
             HebrewKeyboardTextField(
                 value = motherName,
                 onValueChange = { motherName = it },
-                label = "Prénom de la mère (hébreu)",
-                placeholder = "ex. שרה",
+                label = stringResource(R.string.placeholder_mother_name),
+                placeholder = stringResource(R.string.placeholder_mother_example),
                 modifier = Modifier.fillMaxWidth()
             )
 
             // Aperçu hébraïque
             if (isValid) {
                 Text(
-                    "Aperçu",
+                    stringResource(R.string.label_preview),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -233,11 +235,11 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 enabled = isValid,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Générer et sauvegarder")
+                Text(stringResource(R.string.action_generate_save))
             }
 
             Text(
-                "« נשמה » sera ajouté automatiquement à la fin de la séquence.",
+                stringResource(R.string.msg_neshama_appended_form),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

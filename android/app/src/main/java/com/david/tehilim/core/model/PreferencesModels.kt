@@ -1,13 +1,20 @@
 package com.david.tehilim.core.model
 
+import androidx.annotation.StringRes
+import com.david.tehilim.R
+
 /**
  * Enums utilisés par les Préférences. Mirror du modèle iOS Preferences.swift.
+ *
+ * V1.3.0 — chaque enum expose un `labelRes` (R.string.*) au lieu d'un label
+ * français en dur. Le label final est résolu côté UI via stringResource() ou
+ * context.getString() pour respecter la locale (FR/EN) choisie par l'utilisateur.
  */
 
-enum class AppLanguage(val storageValue: String) {
-    SYSTEM("system"),
-    FR("fr"),
-    EN("en");
+enum class AppLanguage(val storageValue: String, @StringRes val labelRes: Int) {
+    SYSTEM("system", R.string.enum_applang_system),
+    FR("fr", R.string.enum_applang_fr),
+    EN("en", R.string.enum_applang_en);
 
     /**
      * Langue de traduction effective utilisée pour afficher les versets.
@@ -23,27 +30,27 @@ enum class AppLanguage(val storageValue: String) {
     }
 }
 
-enum class AppTheme(val label: String) {
-    SYSTEM("Système"),
-    LIGHT("Clair"),
-    DARK("Sombre");
+enum class AppTheme(@StringRes val labelRes: Int) {
+    SYSTEM(R.string.enum_theme_system),
+    LIGHT(R.string.enum_theme_light),
+    DARK(R.string.enum_theme_dark);
 }
 
-enum class TextMode(val label: String) {
-    HEBREW("Hébreu"),
-    PHONETIC("Phonétique");
+enum class TextMode(@StringRes val labelRes: Int) {
+    HEBREW(R.string.enum_textmode_hebrew),
+    PHONETIC(R.string.enum_textmode_phonetic);
 }
 
 /** Échelle d'affichage du texte (mêmes ratios que iOS). */
-enum class TextSize(val scale: Float, val label: String) {
-    XSMALL(0.85f, "Très petit"),
-    SMALL(0.95f, "Petit"),
-    MEDIUM(1.0f, "Moyen"),
-    LARGE(1.15f, "Grand"),
-    XLARGE(1.30f, "Très grand");
+enum class TextSize(val scale: Float, @StringRes val labelRes: Int) {
+    XSMALL(0.85f, R.string.enum_textsize_xsmall),
+    SMALL(0.95f, R.string.enum_textsize_small),
+    MEDIUM(1.0f, R.string.enum_textsize_medium),
+    LARGE(1.15f, R.string.enum_textsize_large),
+    XLARGE(1.30f, R.string.enum_textsize_xlarge);
 }
 
-enum class VerseNumberStyle(val label: String) {
-    HEBREW("Hébreu"),
-    ARABIC("Numérique");
+enum class VerseNumberStyle(@StringRes val labelRes: Int) {
+    HEBREW(R.string.enum_versestyle_hebrew),
+    ARABIC(R.string.enum_versestyle_arabic);
 }

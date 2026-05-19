@@ -32,10 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.Prayer
 import com.david.tehilim.features.prayers.PrayerSheet
 import com.david.tehilim.navigation.Routes
@@ -61,10 +63,10 @@ fun FavoritesScreen(container: AppContainer, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mes favoris") },
+                title = { Text(stringResource(R.string.title_favorites)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -83,7 +85,7 @@ fun FavoritesScreen(container: AppContainer, navController: NavController) {
                 // Prière avant
                 item {
                     PrayerRow(
-                        title = "Prière avant la lecture",
+                        title = stringResource(R.string.prayer_before_title),
                         icon = Icons.Outlined.PlayCircle,
                         onClick = { presentedPrayer = Prayer.Kind.BEFORE }
                     )
@@ -91,7 +93,7 @@ fun FavoritesScreen(container: AppContainer, navController: NavController) {
 
                 item {
                     Text(
-                        "Tehilim favoris",
+                        stringResource(R.string.section_favorite_psalms),
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 8.dp)
@@ -111,7 +113,7 @@ fun FavoritesScreen(container: AppContainer, navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                "Tehilim ${p.id} · ${p.hebrewNumber}",
+                                stringResource(R.string.label_psalm_with_hebrew, p.id, p.hebrewNumber),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
@@ -122,7 +124,7 @@ fun FavoritesScreen(container: AppContainer, navController: NavController) {
                 // Prière après
                 item {
                     PrayerRow(
-                        title = "Prière après la lecture",
+                        title = stringResource(R.string.prayer_after_title),
                         icon = Icons.Outlined.CheckCircle,
                         onClick = { presentedPrayer = Prayer.Kind.AFTER }
                     )
@@ -154,13 +156,13 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            "Aucun favori",
+            stringResource(R.string.msg_no_favorite),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(top = 16.dp),
             textAlign = TextAlign.Center
         )
         Text(
-            "Tape sur le cœur dans un Tehilim pour l'ajouter ici.",
+            stringResource(R.string.msg_tap_heart_to_add_long),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

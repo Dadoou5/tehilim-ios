@@ -1,16 +1,22 @@
 package com.david.tehilim.navigation
 
+import androidx.annotation.StringRes
+import com.david.tehilim.R
+
 /**
  * Routes de navigation centralisées. Évite les strings magiques dans les calls.
  *
  * Les 5 onglets correspondent à ceux de l'iOS.
+ *
+ * V1.3.0 — `labelRes` au lieu d'un label FR en dur ; la barre de navigation
+ * affiche le bon libellé selon la locale active (FR/EN).
  */
-sealed class TopLevelDestination(val route: String, val labelFR: String) {
-    data object Home : TopLevelDestination("home", "Accueil")
-    data object Psalms : TopLevelDestination("psalms", "Tehilim")
-    data object Daily : TopLevelDestination("daily", "Aujourd'hui")
-    data object LifeCases : TopLevelDestination("lifecases", "Cas de la vie")
-    data object Settings : TopLevelDestination("settings", "Réglages")
+sealed class TopLevelDestination(val route: String, @StringRes val labelRes: Int) {
+    data object Home : TopLevelDestination("home", R.string.tab_home)
+    data object Psalms : TopLevelDestination("psalms", R.string.tab_psalms)
+    data object Daily : TopLevelDestination("daily", R.string.tab_daily)
+    data object LifeCases : TopLevelDestination("lifecases", R.string.tab_life_cases)
+    data object Settings : TopLevelDestination("settings", R.string.tab_settings)
 
     companion object {
         val all = listOf(Home, Psalms, Daily, LifeCases, Settings)

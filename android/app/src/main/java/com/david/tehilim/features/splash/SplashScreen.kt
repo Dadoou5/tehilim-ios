@@ -29,8 +29,8 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -38,7 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import com.david.tehilim.R
-import com.david.tehilim.ui.theme.EzraSilFontFamily
+import com.david.tehilim.ui.theme.FrankRuhlLibreFontFamily
+import com.david.tehilim.ui.theme.PinyonScriptFontFamily
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -132,13 +133,13 @@ fun SplashScreen(onFinished: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // תהילים — Hebrew RTL avec glow
+                // תהילים — Hebrew RTL avec glow, police Frank Ruhl Libre (mirror iOS)
                 androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                     Text(
                         text = "תהילים",
                         style = TextStyle(
-                            fontFamily = EzraSilFontFamily,
-                            fontSize = 88.sp,
+                            fontFamily = FrankRuhlLibreFontFamily,
+                            fontSize = 96.sp,
                             color = accent.copy(alpha = visibleHebrew.value),
                             textAlign = TextAlign.Center,
                             shadow = Shadow(
@@ -150,13 +151,12 @@ fun SplashScreen(onFinished: () -> Unit) {
                     )
                 }
 
-                // Tehilim — Latin serif italic
+                // Tehilim — calligraphie latine Pinyon Script (mirror iOS Snell Roundhand)
                 Text(
                     text = "Tehilim",
                     style = TextStyle(
-                        fontSize = 48.sp,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = PinyonScriptFontFamily,
+                        fontSize = 64.sp,
                         color = accent.copy(alpha = visibleLatin.value),
                         textAlign = TextAlign.Center
                     ),
@@ -186,7 +186,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                     Text(
                         "לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים",
                         style = TextStyle(
-                            fontFamily = EzraSilFontFamily,
+                            fontFamily = FrankRuhlLibreFontFamily,
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -199,6 +199,7 @@ fun SplashScreen(onFinished: () -> Unit) {
                 Text(
                     stringResource(R.string.splash_dedication_french),
                     style = TextStyle(
+                        fontFamily = FontFamily.Serif,
                         fontSize = 12.sp,
                         fontStyle = FontStyle.Italic,
                         textAlign = TextAlign.Center,

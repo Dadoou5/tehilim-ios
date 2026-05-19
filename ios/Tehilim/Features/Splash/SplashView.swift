@@ -30,9 +30,10 @@ struct SplashView: View {
                     .opacity(visibleHebrew ? 1 : 0)
                     .scaleEffect(visibleHebrew ? 1 : 0.88)
 
-                // Tehilim — Latin, calligraphie Snell Roundhand
+                // Tehilim — Latin, calligraphie Pinyon Script (Google Fonts OFL).
+                // V1.10.7 — remplace SnellRoundhand-Bold (Apple-only) pour parité Android.
                 Text("Tehilim")
-                    .font(.custom("SnellRoundhand-Bold", size: 64))
+                    .font(.custom("PinyonScript-Regular", size: 64))
                     .foregroundStyle(Color.accentMain)
                     .opacity(visibleLatin ? 1 : 0)
                     .offset(y: visibleLatin ? 0 : 16)

@@ -64,6 +64,8 @@
     <key>UIAppFonts</key>
     <array>
         <string>SILEOTSR.ttf</string>
+        <string>FrankRuhlLibre-Regular.ttf</string>
+        <string>PinyonScript-Regular.ttf</string>
     </array>
 </dict>
 </plist>

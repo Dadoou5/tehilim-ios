@@ -20,6 +20,23 @@ val EzraSilFontFamily = FontFamily(
     Font(R.font.ezra_sil_sr, FontWeight.Normal)
 )
 
+/**
+ * Frank Ruhl Libre — police hébraïque + latine élégante (Google Fonts, OFL).
+ * Utilisée pour les titres décoratifs de la splash (mirror iOS V1.10.7).
+ */
+val FrankRuhlLibreFontFamily = FontFamily(
+    Font(R.font.frank_ruhl_libre_regular, FontWeight.Normal)
+)
+
+/**
+ * Pinyon Script — calligraphie latine copperplate (Google Fonts, OFL).
+ * Utilisée pour le « Tehilim » de la splash, remplace SnellRoundhand iOS
+ * pour offrir une vraie parité visuelle entre iOS et Android.
+ */
+val PinyonScriptFontFamily = FontFamily(
+    Font(R.font.pinyon_script_regular, FontWeight.Normal)
+)
+
 val TehilimTypography = Typography(
     // Material 3 styles par défaut — Compose les fournit, on garde.
 )

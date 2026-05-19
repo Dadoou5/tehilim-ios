@@ -5,6 +5,7 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.icu.util.HebrewCalendar
 import android.icu.util.ULocale
+import androidx.appcompat.app.AppCompatDelegate
 import java.util.Date
 import java.util.Locale
 
@@ -20,15 +21,32 @@ import java.util.Locale
 object HebrewDateFormatter {
 
     data class DisplayDate(
-        val dayOfWeek: String,         // "Jeudi"
-        val transliterated: String,    // "27 Iyar 5786"
-        val hebrew: String             // "כ״ז באייר ה׳תשפ״ו"
+        val dayOfWeek: String,         // « Jeudi » ou « Thursday »
+        val transliterated: String,    // « 27 Iyar 5786 »
+        val hebrew: String             // « כ״ז באייר ה׳תשפ״ו »
     )
 
+    /**
+     * Résout la locale courante de l'app (FR/EN) à partir d'AppCompatDelegate.
+     * V1.3.8 — fixe le bug « Mercredi » en anglais : avant, on hardcodait
+     * `Locale.FRENCH` au lieu de lire la locale active.
+     */
+    private fun currentLocale(): Locale {
+        val locales = AppCompatDelegate.getApplicationLocales()
+        if (!locales.isEmpty) {
+            return locales[0] ?: Locale.getDefault()
+        }
+        // Mode SYSTEM ou pas d'override : on suit la locale système.
+        val sys = Locale.getDefault()
+        // Si système exotique (autre que fr/en), tombe sur français par défaut.
+        return if (sys.language == "en" || sys.language == "fr") sys else Locale.FRENCH
+    }
+
     fun formatted(date: Date = Date()): DisplayDate {
-        // Jour de la semaine dans la locale FR (« lundi », « mardi »...)
-        val dowFmt = SimpleDateFormat("EEEE", Locale.FRENCH)
-        val day = dowFmt.format(date).replaceFirstChar { it.titlecase(Locale.FRENCH) }
+        val locale = currentLocale()
+        // Jour de la semaine dans la locale courante (« lundi » ou « Monday »)
+        val dowFmt = SimpleDateFormat("EEEE", locale)
+        val day = dowFmt.format(date).replaceFirstChar { it.titlecase(locale) }
 
         // Date hébraïque translittérée (anglais — « 27 Iyar 5786 »)
         val latinCal = HebrewCalendar()

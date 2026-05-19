@@ -1,6 +1,8 @@
 package com.david.tehilim.features.settings
 
 import android.app.Activity
+import android.os.Build
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -72,20 +74,10 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             item { SectionHeader(stringResource(R.string.section_language)) }
             item {
                 EnumSettingRow(stringResource(R.string.label_app_language), appLanguage, AppLanguage.entries) { newLang ->
-                    // V1.3.7 — séquence atomique en une seule coroutine :
-                    //   1. AWAIT le write DataStore (prefs.setAppLanguage suspend)
-                    //   2. Applique la locale AppCompat
-                    //   3. Recrée l'Activity
-                    //
-                    // recreate() est appelé en DERNIER de la coroutine, donc le
-                    // corps a déjà terminé quand Android destroy la scope. Pas
-                    // de race entre le write et la destruction.
-                    //
-                    // Pas de LaunchedEffect réactif sur appLanguage : ça
-                    // causait un loop EN ↔ SYSTEM à cause de la double-émission
-                    // (initial SYSTEM + valeur persistée).
                     scope.launch {
+                        Log.i("TehilimLang", "click: $newLang (sdk=${Build.VERSION.SDK_INT})")
                         prefs.setAppLanguage(newLang)
+                        Log.i("TehilimLang", "datastore written")
                         val tag = when (newLang) {
                             AppLanguage.FR -> "fr"
                             AppLanguage.EN -> "en"
@@ -97,7 +89,18 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
                             LocaleListCompat.forLanguageTags(tag)
                         }
                         AppCompatDelegate.setApplicationLocales(newLocales)
-                        activity?.recreate()
+                        Log.i("TehilimLang", "AppCompat set tag=$tag, now=${AppCompatDelegate.getApplicationLocales()}")
+                        // V1.3.9 — recreate() uniquement sur API < 33. Sur API
+                        // 33+, LocaleManager recrée l'Activity automatiquement
+                        // (configChanges retiré dans le manifest) ; un recreate
+                        // manuel ferait double action et peut racer avec le
+                        // refresh des Resources OS.
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                            Log.i("TehilimLang", "manual recreate (SDK < 33)")
+                            activity?.recreate()
+                        } else {
+                            Log.i("TehilimLang", "OS handles recreate (SDK >= 33)")
+                        }
                     }
                 }
             }

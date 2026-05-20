@@ -90,17 +90,12 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
                         }
                         AppCompatDelegate.setApplicationLocales(newLocales)
                         Log.i("TehilimLang", "AppCompat set tag=$tag, now=${AppCompatDelegate.getApplicationLocales()}")
-                        // V1.3.9 — recreate() uniquement sur API < 33. Sur API
-                        // 33+, LocaleManager recrée l'Activity automatiquement
-                        // (configChanges retiré dans le manifest) ; un recreate
-                        // manuel ferait double action et peut racer avec le
-                        // refresh des Resources OS.
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                            Log.i("TehilimLang", "manual recreate (SDK < 33)")
-                            activity?.recreate()
-                        } else {
-                            Log.i("TehilimLang", "OS handles recreate (SDK >= 33)")
-                        }
+                        // V1.3.10 — recreate inconditionnel. Sur certains
+                        // Android (notamment 16/API 37+), LocaleManager ne
+                        // déclenche pas la recréation auto même sans
+                        // configChanges → on force.
+                        Log.i("TehilimLang", "calling activity.recreate() — activity=$activity")
+                        activity?.recreate()
                     }
                 }
             }

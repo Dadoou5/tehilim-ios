@@ -36,30 +36,23 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
 
     /**
-     * V1.3.9 — applique la locale AppCompat manuellement UNIQUEMENT sur API < 33.
+     * V1.3.10 — applique la locale AppCompat à toutes les APIs (33+ inclus).
      *
-     * Sur API 33+ (Android 13+), LocaleManager du système applique déjà la locale
-     * per-app à `newBase` avant que ce hook ne soit appelé — notre wrapping
-     * supplémentaire ferait double emploi et peut cacher une stale config.
-     *
-     * Sur API 32-, AppCompat n'a pas de hook automatique pour ComponentActivity
-     * (uniquement pour AppCompatActivity) → on applique nous-mêmes la locale au
-     * contexte de base, sinon le cache Resources reste figé.
+     * Sur Android 16 (API 37) l'OS ne respecte pas toujours notre per-app
+     * locale même quand on a retiré locale|layoutDirection de configChanges.
+     * Mieux vaut wrap manuellement à chaque fois — idempotent côté pré-33.
      */
     override fun attachBaseContext(newBase: Context) {
-        Log.i(TAG, "attachBaseContext: SDK=${Build.VERSION.SDK_INT}, base locale=${newBase.resources.configuration.locales[0]}")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // API 33+ : laisse l'OS faire son job, pas de double wrap.
-            super.attachBaseContext(newBase)
-            return
-        }
+        val baseLocale = newBase.resources.configuration.locales[0]
         val locales = AppCompatDelegate.getApplicationLocales()
+        Log.i(TAG, "attachBaseContext: SDK=${Build.VERSION.SDK_INT}, base=$baseLocale, appcompat=$locales")
         if (locales.isEmpty) {
+            // SYSTEM → suit la locale OS, pas de wrap.
             super.attachBaseContext(newBase)
             return
         }
         val locale = locales[0] ?: return super.attachBaseContext(newBase)
-        Log.i(TAG, "attachBaseContext: applying AppCompat locale=$locale")
+        Log.i(TAG, "attachBaseContext: wrapping with locale=$locale")
         Locale.setDefault(locale)
         val config = Configuration(newBase.resources.configuration)
         config.setLocale(locale)

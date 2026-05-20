@@ -1,0 +1,19 @@
+/* ============================================================
+   Chaînes UI françaises du widget — V2.1.b
+   Convention : clé = valeur FR ; SwiftUI retourne la clé telle quelle
+   si elle est absente, on les explicite ici pour la lisibilité.
+   ============================================================ */
+
+"Aujourd'hui" = "Aujourd'hui";
+"Tehilim du jour" = "Tehilim du jour";
+"Aucun Tehilim défini" = "Aucun Tehilim défini";
+
+/* Modes — repris du modèle DailyMode du shared */
+"Cycle mensuel" = "Cycle mensuel";
+"Jour de la semaine" = "Jour de la semaine";
+"Personnalisé" = "Personnalisé";
+
+/* Footer + débordement */
+"%lld Tehilim" = "%lld Tehilim";
+"+ %lld autres" = "+ %lld autres";
+"+ %lld autres Tehilim" = "+ %lld autres Tehilim";

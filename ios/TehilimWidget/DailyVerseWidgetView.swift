@@ -10,7 +10,7 @@ struct DailyVerseWidgetView: View {
         scheme == .dark ? WidgetPalette.accentDark : WidgetPalette.accentLight
     }
 
-    private var modeLabel: String {
+    private var modeLabel: LocalizedStringKey {
         switch entry.mode {
         case .monthly: return "Cycle mensuel"
         case .weekly:  return "Jour de la semaine"

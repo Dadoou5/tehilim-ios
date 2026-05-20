@@ -56,6 +56,8 @@ targets:
       - path: ios/Tehilim/Core/Services/DailyEngine.swift
       - path: ios/Tehilim/Core/Services/AppGroup.swift
       - path: ios/Tehilim/Core/Services/HebrewDateFormatter.swift
+      # V2.1.b — partage du swizzle Bundle pour i18n du widget.
+      - path: ios/Tehilim/Core/Services/LocalizedBundle.swift
       # JSONs embarqués dans le widget pour fonctionnement autonome.
       - path: data
         buildPhase: resources

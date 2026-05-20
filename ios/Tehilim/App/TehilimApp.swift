@@ -74,6 +74,8 @@ struct TehilimApp: App {
         } else {
             standard.removeObject(forKey: "AppleLanguages")
         }
+        // V2.1.b — partagé avec le widget pour le swizzle LocalizedBundle.
+        AppGroup.userDefaults.set(stored, forKey: AppGroup.Keys.appLanguage)
     }
 
     // MARK: - Migrations

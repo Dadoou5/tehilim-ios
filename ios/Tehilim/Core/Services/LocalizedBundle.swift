@@ -39,10 +39,18 @@ private final class LocalizedBundle: Bundle, @unchecked Sendable {
     }
 
     /// Lecture directe de la préférence — pas de dépendance sur la classe
-    /// `Preferences` qui est lazy-initialized et qui consommerait ce bundle.
+    /// `Preferences` (lazy-initialized, consommerait ce bundle).
+    ///
+    /// **AppGroup d'abord** pour que le widget voie la même préférence que
+    /// l'app (les deux processus partagent ce store). Fallback sur
+    /// `UserDefaults.standard` pour les cas où AppGroup tombe en .standard
+    /// (free provisioning, capability absente) — voir `AppGroup.userDefaults`.
+    ///
     /// Retourne `nil` pour `.system` (le comportement standard reprend).
     private func userLanguageOverride() -> String? {
-        let raw = UserDefaults.standard.string(forKey: "pref.app.language") ?? "system"
+        let raw = AppGroup.userDefaults.string(forKey: AppGroup.Keys.appLanguage)
+            ?? UserDefaults.standard.string(forKey: "pref.app.language")
+            ?? "system"
         switch raw {
         case "fr": return "fr"
         case "en": return "en"

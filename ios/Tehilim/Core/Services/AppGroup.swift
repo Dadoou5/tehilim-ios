@@ -54,5 +54,8 @@ enum AppGroup {
 
     enum Keys {
         static let dailyMode = "pref.dailyMode"
+        /// V2.1.b — pref de langue partagée app ↔ widget pour le swizzle
+        /// `LocalizedBundle` côté extension.
+        static let appLanguage = "pref.app.language"
     }
 }

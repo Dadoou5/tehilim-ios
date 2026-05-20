@@ -340,12 +340,15 @@ TEHILIM/
 | **V1.4** | Tikkoun HaKlali, partage de verset, onboarding | ✅ Livrée |
 | **V1.5** | Widget WidgetKit 3 tailles avec design enrichi | ✅ Livrée |
 | **V1.6** | App Group : pref `dailyMode` partagée app↔widget | ✅ Livrée |
+| **V1.9.5** | **iPad universel** — NavigationSplitView 2 colonnes (`PsalmsTabView`), sidebar `IPadPsalmsSidebar`, side-by-side translation (`VerseRowView.sideBySideLayout`), `AdaptiveLayout` (breakpoint 900pt), `@Environment(\.horizontalSizeClass)` sur tous les écrans | ✅ Livrée |
 | **V1.10.5** | Lelouy Nichmat, séquences personnalisées, polish UI | ✅ Livrée |
 | **V1.10.6** | Robustesse App Group, privacy iCloud KVS, build 23 sur App Store | ✅ Publiée |
-| **V2.0** | Mode Shabbat auto-détecté, fêtes juives, iPad universel | 📋 Planifiée |
 | **V2.1.a** | iCloud KVS étendu — snapshot Codable des 14 prefs (textSize HE/FR, theme, textMode, appLanguage, dailyMode, notifs, lastRead, onboarding…) synchronisé via `Preferences.swift`. Favoris + Lelouy Nichmat déjà en V1.10.5. | ✅ Livrée |
-| **V2.1.b** | Anglais UI iOS — bascule à chaud via swizzle `Bundle.main` (LocalizedBundle.swift) + `.id(appLanguage)` sur racine SwiftUI, widget bilingue (lproj + AppGroup pour la pref partagée), trous `en.lproj` comblés, alerte « Redémarrage requis » supprimée. Reste optionnel : screenshots App Store EN. | ✅ Livrée |
-| **V2.2** | CloudKit pour Lelouy Nichmat (sync intentions multi-device) | 💡 |
+| **V2.1.b** | Anglais UI iOS — bascule à chaud via swizzle `Bundle.main` + helper `L()` (LocalizedBundle.swift) + `.id(appLanguage)` sur racine SwiftUI, widget bilingue (lproj + AppGroup pour la pref partagée), pickers/prières suivent la locale, trous `en.lproj` comblés, alerte « Redémarrage requis » supprimée | ✅ Livrée |
+| **V1.11.0** | **Release publique** de V2.1.a + V2.1.b — bump 1.10.6→1.11.0, build 23→24, What's New, soumission App Store | 📋 ~0,5 j |
+| **V2.0.a** | Mode Shabbat — détection auto Shabbat / Yom Tov / Roch Hodech via calendrier hébraïque + sets de Tehilim associés (Hallel, Shabbat, fêtes) | 📋 ~4–5 j |
+| **V2.0.b** | Zmanim — liste 30 villes pré-définies + désactivation notifs pendant Shabbat | 📋 ~3 j |
+| **V2.0.d** | CoreLocation pour zmanim précis (opt-in) | 💡 ~2 j |
 | **V2.5** | Apple Watch companion, audio récitation | 💡 |
 | **V3.0** | Commentaires PaRDeS multi-couches | 💡 |
 

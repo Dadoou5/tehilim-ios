@@ -1,8 +1,11 @@
-# Tehilim — Application iPhone
+# Tehilim — Applications iOS & Android
 
-Application iOS native (**SwiftUI · iOS 17+**) dédiée à la lecture quotidienne et contextuelle des Tehilim.
+Applications natives dédiées à la lecture quotidienne et contextuelle des Tehilim.
 
-> Sobre, premium, hors-ligne, sans collecte de données. Le texte est l'objet principal.
+- **iOS** : SwiftUI · iOS 17+ — V1.10.6 publiée sur l'App Store.
+- **Android** : Jetpack Compose · Material 3 · min SDK 26 (Android 8) — V1.3.12 en cours.
+
+> Sobre, premium, hors-ligne, sans collecte de données. Le texte est l'objet principal. UI bilingue **FR + EN** (texte hébreu + translittération + traduction).
 
 ---
 
@@ -10,7 +13,8 @@ Application iOS native (**SwiftUI · iOS 17+**) dédiée à la lecture quotidien
 
 - [Fonctionnalités](#fonctionnalités)
 - [Sources de contenu](#sources-de-contenu)
-- [Pour lancer l'app](#pour-lancer-lapp)
+- [Pour lancer l'app (iOS)](#pour-lancer-lapp-ios)
+- [Port Android](#port-android)
 - [Architecture](#architecture)
 - [Structure du dépôt](#structure-du-dépôt)
 - [Roadmap](#roadmap)
@@ -75,13 +79,14 @@ Application iOS native (**SwiftUI · iOS 17+**) dédiée à la lecture quotidien
 |---------|--------|---------|
 | Texte hébreu | [Sefaria](https://www.sefaria.org) — *Miqra according to the Masorah* (te'amim retirés, nikud conservé) | Domaine public |
 | Traduction française | [Beth Loubavitch — le-tehilim.online](https://le-tehilim.online) (8 rue Lamartine, 75009 Paris — `chabad@loubavitch.fr`) | **Autorisation expresse reçue.** Mention obligatoire affichée dans Réglages → Sources de l'app. |
+| Traduction anglaise | [Sefaria — JPS 1917 Tanakh](https://www.sefaria.org) | Domaine public |
 | Catégorisation cas de la vie | Compilations classiques (*Tehillot Hashem*) | Validé rabbiniquement (cf. `docs/05-content/content_validation_notes.md`) |
 
 Toutes les sources sont citées dans l'app : **Réglages → Sources du contenu**.
 
 ---
 
-## Pour lancer l'app
+## Pour lancer l'app (iOS)
 
 ### Pré-requis
 - macOS avec **Xcode 15+** (iOS 17 SDK).
@@ -116,6 +121,61 @@ DEVELOPER_DIR=/Library/Developer/CommandLineTools /usr/bin/python3 scripts/fetch
 DEVELOPER_DIR=/Library/Developer/CommandLineTools /usr/bin/python3 scripts/fetch_letehilim.py
 DEVELOPER_DIR=/Library/Developer/CommandLineTools /usr/bin/python3 scripts/merge_letehilim.py
 ```
+
+---
+
+## Port Android
+
+Port natif **Jetpack Compose** + **Material 3** mirror 1:1 de l'app iOS. Mêmes données (les JSON sont partagés depuis `data/`), même comportement, même typographie.
+
+### Pré-requis
+- **Android Studio Hedgehog+** (AGP 8.5+, Kotlin 2.0+).
+- **JDK 17** (`brew install --cask temurin@17`).
+- Min SDK **26** (Android 8) — Target SDK 34.
+
+### Lancer
+```bash
+cd android
+./gradlew installDebug          # build + push sur device/émulateur connecté
+# ou ouvrir le dossier `android/` dans Android Studio puis ⌃R.
+```
+
+### Parité fonctionnelle avec iOS
+
+| Domaine | iOS | Android | Notes |
+|---------|-----|---------|-------|
+| 150 psaumes HE + traduction | ✅ | ✅ | JSON `data/psalms.json` partagé |
+| Cas de la vie (17) | ✅ | ✅ | JSON `data/life_cases.json` partagé, EN inclus |
+| Tehilim 119 (22 lettres) | ✅ | ✅ | Toggle traduction local en V1.3.12 |
+| Tikkoun HaKlali | ✅ | ✅ | |
+| Recherche tolérante FR/HE/mixte | ✅ | ✅ | |
+| Favoris locaux | ✅ | ✅ | DataStore Preferences |
+| Mode phonétique sépharade | ✅ | ✅ | Algorithme partagé en Kotlin |
+| Notifications quotidiennes | ✅ | ✅ | AlarmManager + WorkManager |
+| Widget date hébraïque | ✅ (WidgetKit) | ✅ (Glance) | Tailles small/medium/large |
+| Partage de verset (image) | ✅ | ✅ | Bitmap 1080×1080 + FileProvider |
+| Onboarding 1ʳᵉ utilisation | ✅ | ✅ | |
+| Iluy Nishmat dédicace | ✅ | ✅ | |
+| Lelouy Nichmat (séquences) | ✅ | ✅ | |
+
+### Spécificités Android
+- **Langue UI** : FR / EN / Système via `LocaleManager.applicationLocales` (API 33+, fallback `AppCompatDelegate` pour API 26–32). Voir `MainActivity.attachBaseContext()`.
+- **Date hébraïque** : `android.icu.HebrewCalendar` (ICU/CLDR officiel), pas de dépendance tierce.
+- **Polices** : Frank Ruhl Libre + Pinyon Script bundlées en `res/font/` (mêmes fichiers OFL qu'iOS pour parité visuelle), Ezra SIL SR pour le texte hébreu, `FontFamily.Serif` (Noto Serif) pour le corps FR/EN, `FontFamily.Monospace` pour les numéros de verset.
+- **Sauvegarde cloud** : Google Play Auto Backup (DataStore + favorites.json) — pas d'iCloud KVS côté Android, l'OS gère.
+- **Pas de framework DI** : container manuel `AppContainer` injecté dans les Composables (mirror du conteneur SwiftUI).
+
+### Roadmap Android
+
+| Version | Périmètre | Statut |
+|---------|-----------|--------|
+| **V1.0–V1.2** | Mirror MVP iOS, navigation 5 onglets, widget Glance | ✅ Livrée |
+| **V1.3.0** | UI bilingue FR + EN (~265 string keys) | ✅ Livrée |
+| **V1.3.1** | Typographie alignée iOS (Frank Ruhl Libre + Pinyon Script) | ✅ Livrée |
+| **V1.3.2** | Cas de la vie traduits EN | ✅ Livrée |
+| **V1.3.3–V1.3.11** | Itérations bascule de langue à chaud (Android 13–16) | ✅ Livrée |
+| **V1.3.12** | Toggle traduction sur sections Tehilim 119 + séparateurs hairline | ✅ Livrée |
+| **V1.4** | Publication Play Store closed testing | 📋 Planifiée |
 
 ---
 
@@ -269,6 +329,8 @@ TEHILIM/
 
 ## Roadmap
 
+### iOS
+
 | Version | Périmètre | Statut |
 |---------|-----------|--------|
 | **V1.0** | MVP : 150 Tehilim, 5 livres, recherche, cas de la vie, Tehilim 119, favoris, accessibilité | ✅ Livrée |
@@ -278,10 +340,16 @@ TEHILIM/
 | **V1.4** | Tikkoun HaKlali, partage de verset, onboarding | ✅ Livrée |
 | **V1.5** | Widget WidgetKit 3 tailles avec design enrichi | ✅ Livrée |
 | **V1.6** | App Group : pref `dailyMode` partagée app↔widget | ✅ Livrée |
+| **V1.10.5** | Lelouy Nichmat, séquences personnalisées, polish UI | ✅ Livrée |
+| **V1.10.6** | Robustesse App Group, privacy iCloud KVS, build 23 sur App Store | ✅ Publiée |
 | **V2.0** | Mode Shabbat auto-détecté, fêtes juives, iPad universel | 📋 Planifiée |
 | **V2.1** | Anglais UI, iCloud sync favoris/réglages | 📋 |
 | **V2.5** | Apple Watch companion, audio récitation | 💡 |
 | **V3.0** | Commentaires PaRDeS multi-couches | 💡 |
+
+### Android
+
+Voir le tableau dédié dans la section [Port Android](#port-android) ci-dessus.
 
 Détails par version dans `docs/V*.md`.
 

@@ -8,9 +8,9 @@ enum AppTheme: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .system: return String(localized: "Système")
-        case .light:  return String(localized: "Clair")
-        case .dark:   return String(localized: "Sombre")
+        case .system: return L("Système")
+        case .light:  return L("Clair")
+        case .dark:   return L("Sombre")
         }
     }
 
@@ -40,11 +40,11 @@ enum TextSize: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .xs: return String(localized: "Très petit")
-        case .s:  return String(localized: "Petit")
-        case .m:  return String(localized: "Moyen")
-        case .l:  return String(localized: "Grand")
-        case .xl: return String(localized: "Très grand")
+        case .xs: return L("Très petit")
+        case .s:  return L("Petit")
+        case .m:  return L("Moyen")
+        case .l:  return L("Grand")
+        case .xl: return L("Très grand")
         }
     }
 }
@@ -53,7 +53,7 @@ enum VerseNumberStyle: String, Codable, CaseIterable, Identifiable {
     case hebrew, arabic
     var id: String { rawValue }
     var label: String {
-        self == .hebrew ? String(localized: "Hébreu") : String(localized: "Numérique")
+        self == .hebrew ? L("Hébreu") : L("Numérique")
     }
 }
 
@@ -67,8 +67,8 @@ enum TextMode: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .hebrew:   return String(localized: "Hébreu")
-        case .phonetic: return String(localized: "Phonétique")
+        case .hebrew:   return L("Hébreu")
+        case .phonetic: return L("Phonétique")
         }
     }
 }
@@ -148,13 +148,21 @@ final class Preferences: ObservableObject {
     /// Observe les écritures locales. `UserDefaults.didChangeNotification` est
     /// posté par TOUTES les instances UserDefaults du process (standard + App
     /// Group), donc on filtre côté `pushIfChanged` via l'égalité de snapshot.
+    ///
+    /// **Défense récursion** : Apple poste `didChangeNotification` de façon
+    /// **synchrone** sur la thread d'écriture, même avec `queue: .main` quand
+    /// on est déjà sur main. On force l'exécution sur un prochain run loop
+    /// via `DispatchQueue.main.async` pour casser la pile et empêcher la
+    /// récursion infinie sur le `local.set()` dans `iCloudKVS.save()`.
     private func observeLocalChanges() {
         udObserverToken = NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: nil,
-            queue: .main
+            queue: nil
         ) { [weak self] _ in
-            self?.pushIfChanged()
+            DispatchQueue.main.async {
+                self?.pushIfChanged()
+            }
         }
     }
 
@@ -177,8 +185,12 @@ final class Preferences: ObservableObject {
     private func pushIfChanged() {
         let now = currentSnapshot()
         guard now != lastPushedSnapshot else { return }
-        iCloudKVS.shared.save(now, forKey: Self.kvsKey)
+        // **Avant save()** : si une notif synchrone re-déclenchait pushIfChanged
+        // pendant `iCloudKVS.shared.save`, elle verrait now == lastPushed et
+        // ressortirait immédiatement — pas de récursion. Combiné avec le
+        // dispatch async de l'observer, on est doublement protégé.
         lastPushedSnapshot = now
+        iCloudKVS.shared.save(now, forKey: Self.kvsKey)
     }
 
     private func currentSnapshot() -> PreferencesSnapshot {

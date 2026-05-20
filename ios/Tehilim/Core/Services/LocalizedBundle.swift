@@ -1,5 +1,18 @@
 import Foundation
 
+/// Helper global pour résoudre une chaîne localisée **en passant explicitement
+/// par `Bundle.main.localizedString(...)`** (donc par le swizzle).
+///
+/// Indispensable parce que `String(localized:)` (iOS 15+) passe par
+/// CoreFoundation internalement — court-circuite `object_setClass`. Les enums
+/// `AppTheme`, `TextSize`, `TextMode`, `DailyMode`, etc. doivent utiliser ce
+/// helper au lieu de `String(localized:)` pour que leurs labels suivent la
+/// bascule de langue à chaud.
+@inline(__always)
+func L(_ key: String) -> String {
+    Bundle.main.localizedString(forKey: key, value: nil, table: nil)
+}
+
 /// Swizzle de `Bundle.main` pour que `Text("…")` SwiftUI résolve les chaînes
 /// contre la `.lproj` correspondant à la préférence utilisateur
 /// `pref.app.language` — indépendamment de `AppleLanguages` global.

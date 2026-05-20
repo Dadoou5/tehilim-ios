@@ -344,7 +344,7 @@ TEHILIM/
 | **V1.10.6** | Robustesse App Group, privacy iCloud KVS, build 23 sur App Store | ✅ Publiée |
 | **V2.0** | Mode Shabbat auto-détecté, fêtes juives, iPad universel | 📋 Planifiée |
 | **V2.1.a** | iCloud KVS étendu — snapshot Codable des 14 prefs (textSize HE/FR, theme, textMode, appLanguage, dailyMode, notifs, lastRead, onboarding…) synchronisé via `Preferences.swift`. Favoris + Lelouy Nichmat déjà en V1.10.5. | ✅ Livrée |
-| **V2.1.b** | **Finition** Anglais UI iOS — infra ✅ (psalms.json EN complet 2527/2527, AppLanguage enum, picker Réglages, switching traductions), reste : extraire les ~30 `Text(...)` durs restants, combler trous `fr.lproj`, bascule à chaud sans relancer l'app, localizer widget, screenshots App Store EN | 🟡 partiellement faite — ~3,5 j restants |
+| **V2.1.b** | Anglais UI iOS — bascule à chaud via swizzle `Bundle.main` (LocalizedBundle.swift) + `.id(appLanguage)` sur racine SwiftUI, widget bilingue (lproj + AppGroup pour la pref partagée), trous `en.lproj` comblés, alerte « Redémarrage requis » supprimée. Reste optionnel : screenshots App Store EN. | ✅ Livrée |
 | **V2.2** | CloudKit pour Lelouy Nichmat (sync intentions multi-device) | 💡 |
 | **V2.5** | Apple Watch companion, audio récitation | 💡 |
 | **V3.0** | Commentaires PaRDeS multi-couches | 💡 |

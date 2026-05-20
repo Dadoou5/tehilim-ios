@@ -195,7 +195,13 @@ fun PsalmDetailScreen(
                         }
                     }
                 )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                // V1.3.12 — séparateur à peine visible (hairline + alpha 30 %)
+                // pour ne pas alourdir visuellement la lecture.
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    thickness = androidx.compose.ui.unit.Dp.Hairline,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.30f)
+                )
             }
 
             // Footer prev/next — mirror PsalmDetailView.navigation(prev:next:) iOS.

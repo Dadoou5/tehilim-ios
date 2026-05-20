@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.FormatListNumbered
+import androidx.compose.material.icons.outlined.RecordVoiceOver
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,6 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -77,6 +81,12 @@ fun Psalm119SectionScreen(
     val numberStyle by container.preferences.verseNumberStyle.collectAsState(initial = com.david.tehilim.core.model.VerseNumberStyle.HEBREW)
     val appLanguage by container.preferences.appLanguage.collectAsState(initial = com.david.tehilim.core.model.AppLanguage.SYSTEM)
 
+    // Override local pour toggle la traduction sans toucher au global —
+    // mirror PsalmDetailScreen. V1.3.12 : avant, la section 119 n'avait pas
+    // de bouton et obligeait à passer par Réglages.
+    var localShowFR by remember { mutableStateOf<Boolean?>(null) }
+    val showFR = localShowFR ?: translationFR
+
     // Si on lit dans une séquence Lelouy Nichmat sauvegardée, on récupère le contexte.
     val savedIntent = savedIntentId?.let { id ->
         container.savedPrayers.intents.collectAsState().value.firstOrNull { it.id == id }
@@ -100,6 +110,17 @@ fun Psalm119SectionScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { localShowFR = !showFR }) {
+                        Icon(
+                            Icons.Outlined.RecordVoiceOver,
+                            contentDescription = if (showFR)
+                                stringResource(R.string.cd_hide_translation)
+                            else stringResource(R.string.cd_show_translation),
+                            tint = if (showFR) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             )
@@ -133,14 +154,20 @@ fun Psalm119SectionScreen(
             items(verses) { v ->
                 VerseRow(
                     verse = v,
-                    showTranslation = translationFR,
+                    showTranslation = showFR,
                     textMode = textMode,
                     textSizeHebrew = textSizeHebrew,
                     textSizeFR = textSizeFR,
                     numberStyle = numberStyle,
                     translationLang = appLanguage.translation
                 )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                // V1.3.12 — séparateur à peine visible (hairline + alpha 30 %)
+                // pour ne pas alourdir visuellement la lecture.
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    thickness = androidx.compose.ui.unit.Dp.Hairline,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.30f)
+                )
             }
 
             // Footer prev/next

@@ -1,7 +1,9 @@
 package com.david.tehilim.features.settings
 
 import android.app.Activity
+import android.app.LocaleManager
 import android.os.Build
+import android.os.LocaleList
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
@@ -83,17 +85,29 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
                             AppLanguage.EN -> "en"
                             AppLanguage.SYSTEM -> ""
                         }
-                        val newLocales = if (tag.isEmpty()) {
-                            LocaleListCompat.getEmptyLocaleList()
+                        // V1.3.11 — sur API 33+, AppCompatDelegate.setApplicationLocales
+                        // ne persiste PAS sur certains devices (Android 16/SDK 37
+                        // notamment) → getApplicationLocales() retourne [] après
+                        // set. On bypasse AppCompat et on appelle directement
+                        // LocaleManager de l'OS.
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            val lm = activity?.getSystemService(LocaleManager::class.java)
+                            val list = if (tag.isEmpty()) {
+                                LocaleList.getEmptyLocaleList()
+                            } else {
+                                LocaleList.forLanguageTags(tag)
+                            }
+                            lm?.applicationLocales = list
+                            Log.i("TehilimLang", "LocaleManager set tag=$tag, now=${lm?.applicationLocales}")
                         } else {
-                            LocaleListCompat.forLanguageTags(tag)
+                            val newLocales = if (tag.isEmpty()) {
+                                LocaleListCompat.getEmptyLocaleList()
+                            } else {
+                                LocaleListCompat.forLanguageTags(tag)
+                            }
+                            AppCompatDelegate.setApplicationLocales(newLocales)
+                            Log.i("TehilimLang", "AppCompat set tag=$tag, now=${AppCompatDelegate.getApplicationLocales()}")
                         }
-                        AppCompatDelegate.setApplicationLocales(newLocales)
-                        Log.i("TehilimLang", "AppCompat set tag=$tag, now=${AppCompatDelegate.getApplicationLocales()}")
-                        // V1.3.10 — recreate inconditionnel. Sur certains
-                        // Android (notamment 16/API 37+), LocaleManager ne
-                        // déclenche pas la recréation auto même sans
-                        // configChanges → on force.
                         Log.i("TehilimLang", "calling activity.recreate() — activity=$activity")
                         activity?.recreate()
                     }

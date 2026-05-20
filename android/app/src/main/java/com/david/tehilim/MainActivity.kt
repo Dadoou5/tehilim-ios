@@ -1,5 +1,6 @@
 package com.david.tehilim
 
+import android.app.LocaleManager
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
@@ -36,26 +37,32 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
 
     /**
-     * V1.3.10 — applique la locale AppCompat à toutes les APIs (33+ inclus).
+     * V1.3.11 — applique la locale per-app au contexte de base.
      *
-     * Sur Android 16 (API 37) l'OS ne respecte pas toujours notre per-app
-     * locale même quand on a retiré locale|layoutDirection de configChanges.
-     * Mieux vaut wrap manuellement à chaque fois — idempotent côté pré-33.
+     * Sur API 33+ on lit LocaleManager directement (AppCompatDelegate ne
+     * persiste pas sur certains devices Android 16/SDK 37).
+     * Sur API 32- on tombe sur AppCompatDelegate.
      */
     override fun attachBaseContext(newBase: Context) {
         val baseLocale = newBase.resources.configuration.locales[0]
-        val locales = AppCompatDelegate.getApplicationLocales()
-        Log.i(TAG, "attachBaseContext: SDK=${Build.VERSION.SDK_INT}, base=$baseLocale, appcompat=$locales")
-        if (locales.isEmpty) {
-            // SYSTEM → suit la locale OS, pas de wrap.
+        val targetLocale: Locale? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val lm = newBase.getSystemService(LocaleManager::class.java)
+            val list = lm?.applicationLocales
+            Log.i(TAG, "attachBaseContext: SDK=${Build.VERSION.SDK_INT}, base=$baseLocale, lm=$list")
+            if (list == null || list.isEmpty) null else list[0]
+        } else {
+            val locales = AppCompatDelegate.getApplicationLocales()
+            Log.i(TAG, "attachBaseContext: SDK=${Build.VERSION.SDK_INT}, base=$baseLocale, appcompat=$locales")
+            if (locales.isEmpty) null else locales[0]
+        }
+        if (targetLocale == null) {
             super.attachBaseContext(newBase)
             return
         }
-        val locale = locales[0] ?: return super.attachBaseContext(newBase)
-        Log.i(TAG, "attachBaseContext: wrapping with locale=$locale")
-        Locale.setDefault(locale)
+        Log.i(TAG, "attachBaseContext: wrapping with locale=$targetLocale")
+        Locale.setDefault(targetLocale)
         val config = Configuration(newBase.resources.configuration)
-        config.setLocale(locale)
+        config.setLocale(targetLocale)
         super.attachBaseContext(newBase.createConfigurationContext(config))
     }
 

@@ -1,6 +1,9 @@
 package com.david.tehilim
 
 import android.app.Application
+import android.app.LocaleManager
+import android.os.Build
+import android.os.LocaleList
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.david.tehilim.core.model.AppLanguage
@@ -32,11 +35,27 @@ class TehilimApplication : Application() {
         // sa configuration. Lecture synchrone du DataStore via runBlocking : le
         // DataStore est lu une seule fois au démarrage, l'impact perf est nul.
         val savedLang = runBlocking { container.preferences.appLanguage.first() }
-        val locales = when (savedLang) {
-            AppLanguage.FR -> LocaleListCompat.forLanguageTags("fr")
-            AppLanguage.EN -> LocaleListCompat.forLanguageTags("en")
-            AppLanguage.SYSTEM -> LocaleListCompat.getEmptyLocaleList()
+        val tag = when (savedLang) {
+            AppLanguage.FR -> "fr"
+            AppLanguage.EN -> "en"
+            AppLanguage.SYSTEM -> ""
         }
-        AppCompatDelegate.setApplicationLocales(locales)
+        // V1.3.11 — sur API 33+ on bypass AppCompat et on tape LocaleManager
+        // directement (AppCompat ne persiste pas sur Android 16/SDK 37).
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val lm = getSystemService(LocaleManager::class.java)
+            lm?.applicationLocales = if (tag.isEmpty()) {
+                LocaleList.getEmptyLocaleList()
+            } else {
+                LocaleList.forLanguageTags(tag)
+            }
+        } else {
+            val locales = if (tag.isEmpty()) {
+                LocaleListCompat.getEmptyLocaleList()
+            } else {
+                LocaleListCompat.forLanguageTags(tag)
+            }
+            AppCompatDelegate.setApplicationLocales(locales)
+        }
     }
 }

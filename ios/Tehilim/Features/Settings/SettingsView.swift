@@ -5,7 +5,6 @@ struct SettingsView: View {
     @Binding var path: NavigationPath
     @StateObject private var prefs = Preferences()
     @ObservedObject private var notifications = NotificationManager.shared
-    @State private var showRestartAlert = false
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -39,14 +38,18 @@ struct SettingsView: View {
                         Text("English").tag(AppLanguage.en)
                     }
                     .onChange(of: prefs.appLanguage) { _, _ in
-                        // Écrit AppleLanguages tout de suite ; effet UI au prochain démarrage.
+                        // V2.1.b — écrit AppleLanguages pour les API système
+                        // (Locale.current, DateFormatter). Le swizzle de
+                        // Bundle.main + `.id(appLanguage)` racine fait
+                        // basculer toute l'UI à chaud, plus de redémarrage.
                         TehilimApp.applyLanguagePreference()
-                        showRestartAlert = true
                     }
                     Toggle("Afficher la traduction par défaut", isOn: $prefs.translationFR)
                 } header: {
                     Text("Langue")
                 } footer: {
+                    // Interpolation SwiftUI native : la clé Localizable.strings
+                    // est `"Source : %@"`. Cf. en.lproj/fr.lproj.
                     Text("Source : \(prefs.appLanguage.translation.sourceCredit)")
                         .font(.caption)
                 }
@@ -92,11 +95,6 @@ struct SettingsView: View {
             }
             .appBackground()
             .navigationTitle("Réglages")
-            .alert("Redémarrage requis", isPresented: $showRestartAlert) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text("La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la.")
-            }
         }
     }
 }

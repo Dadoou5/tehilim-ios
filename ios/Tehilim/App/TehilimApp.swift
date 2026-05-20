@@ -6,11 +6,21 @@ struct TehilimApp: App {
 
     @AppStorage("pref.theme") private var theme: AppTheme = .system
     @AppStorage("pref.onboarding.done") private var onboardingCompleted: Bool = false
+    /// V2.1.b — observée pour forcer la recréation du tree au changement
+    /// (via `.id(appLanguage)` sur la racine).
+    @AppStorage("pref.app.language") private var appLanguage: AppLanguage = .system
 
     @State private var showSplash = true
 
     init() {
-        // Doit s'exécuter en premier — modifie AppleLanguages avant que SwiftUI lise le Bundle.
+        // V2.1.b — swizzle de Bundle.main installé AVANT toute lecture de
+        // ressources localisées par SwiftUI. Les `Text("…")` résolvent
+        // désormais contre la `.lproj` choisie par l'utilisateur.
+        LocalizedBundleInstaller.installOnce()
+
+        // Conservé pour les API iOS qui lisent Locale.current/AppleLanguages
+        // (DateFormatter système, voix VoiceOver). Le swizzle prend le relais
+        // pour les chaînes UI.
         Self.applyLanguagePreference()
         _ = NotificationManager.shared
         Self.migrateSharedPreferences()
@@ -37,6 +47,11 @@ struct TehilimApp: App {
                 }
             }
             .animation(.easeInOut(duration: 0.45), value: showSplash)
+            // V2.1.b — recrée le tree au changement de langue : conjugué au
+            // swizzle de Bundle.main, ça force chaque `Text("…")` à relire
+            // sa traduction dans la nouvelle locale, sans relancer l'app.
+            .id(appLanguage)
+            .environment(\.locale, Locale(identifier: appLanguage.activeCode))
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) {
                     showSplash = false

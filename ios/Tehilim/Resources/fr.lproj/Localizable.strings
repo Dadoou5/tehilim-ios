@@ -113,3 +113,8 @@
 /* Notifications */
 "Tehilim du jour" = "Tehilim du jour";
 "C'est le moment de lire tes Tehilim du jour." = "C'est le moment de lire tes Tehilim du jour.";
+
+/* V2.1.b — parité avec en.lproj.
+   "Français"/"English" laissés tels quels (clés = valeurs) : les langues
+   s'affichent dans leur propre langue (convention iOS Settings). */
+"Source : %@" = "Source : %@";

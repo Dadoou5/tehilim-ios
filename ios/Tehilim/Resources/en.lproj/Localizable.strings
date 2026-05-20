@@ -240,3 +240,11 @@
 /* Settings labels not yet covered */
 "Catégories en cours de validation" = "Categories pending validation";
 "Le contenu sera disponible après validation éditoriale." = "The content will be available after editorial validation.";
+
+/* V2.1.b — keys discovered missing during the EN polish pass.
+   "Français"/"English" volontairement laissés tels quels : les langues
+   s'affichent dans leur propre langue (convention iOS Settings). */
+"Source : %@" = "Source: %@";
+"Aperçu traduction" = "Translation preview";
+"Cantique des degrés. Je lève mes yeux vers les montagnes…" = "A Song of Degrees. I will lift up mine eyes unto the mountains…";
+"Transcription assistée du texte hébreu en lettres latines (sépharade). Approximation algorithmique, ne remplace pas une lecture du texte original." = "Phonetic transliteration of Hebrew text into Latin letters (Sephardic). Algorithmic approximation, does not replace reading the original text.";

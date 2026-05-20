@@ -30,9 +30,19 @@ extension LifeCase {
         LifeCase.preferEnglish ? (sectionEN ?? section) : section
     }
 
-    /// `true` si l'utilisateur·rice a iOS configuré en anglais.
+    /// `true` si la langue active de l'app est l'anglais.
+    ///
+    /// V2.1.b — lecture directe de `pref.app.language` (UserDefaults) au lieu
+    /// de `Locale.current`. Ça suit la pref in-app même quand l'utilisateur
+    /// bascule à chaud, et fallback sur la locale iOS pour `.system`.
     static var preferEnglish: Bool {
-        let code = Locale.current.language.languageCode?.identifier ?? "fr"
-        return code == "en"
+        let raw = UserDefaults.standard.string(forKey: "pref.app.language") ?? "system"
+        switch raw {
+        case "en": return true
+        case "fr": return false
+        default:
+            let code = Locale.current.language.languageCode?.identifier ?? "fr"
+            return code == "en"
+        }
     }
 }

@@ -160,6 +160,11 @@
     <string name="msg_reminder_time_hint">You can change the time later. Notifications stay local (WorkManager).</string>
     <string name="msg_sources_footer">Hebrew text: Sefaria · French translation: Beth Loubavitch · English translation: JPS 1917</string>
     <string name="msg_widget_no_psalm">No Tehilim defined</string>
+    <!-- V1.4 — widget responsive 3 sizes (iOS mirror) -->
+    <string name="label_today_short">Today</string>
+    <string name="label_widget_psalm_count">%d Tehilim</string>
+    <string name="label_widget_more_n">+ %d more</string>
+    <string name="label_widget_more_psalms_n">+ %d more Tehilim</string>
 
     <!-- Sample previews -->
     <string name="msg_preview_hebrew_phonetic">Chir lamaalot essa enaï</string>

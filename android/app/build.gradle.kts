@@ -41,7 +41,8 @@ android {
         // Build 2 : fix package → app.tehilim + mode sombre + cycle hébraïque
         // Build 3 : fix onboarding non-affiché (lecture synchrone DataStore)
         // Build 4 : fix onboarding edge-to-edge (boutons sous barres système)
-        versionCode = 4
+        // Build 5 : widget responsive 3 tailles (mirror iOS WidgetKit)
+        versionCode = 5
         versionName = "1.0.0"
 
         // Tests

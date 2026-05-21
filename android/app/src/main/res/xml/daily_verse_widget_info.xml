@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  V1.4 — widget responsive 3 tailles (mirror WidgetKit iOS) :
+  - Small (~140×140)    → header « Aujourd'hui » + grille 2 cols
+  - Medium (~280×140)   → header + date hébraïque + grille 4 cols
+  - Large (~280×300)    → idem + verset accent en bas
+
+  minWidth/Height définissent le format Small minimum ; resizeMode
+  horizontal|vertical permet à l'utilisateur de bumper en Medium / Large.
+-->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/widget_loading"
-    android:minWidth="180dp"
-    android:minHeight="110dp"
-    android:targetCellWidth="3"
+    android:minWidth="140dp"
+    android:minHeight="140dp"
+    android:minResizeWidth="140dp"
+    android:minResizeHeight="140dp"
+    android:targetCellWidth="2"
     android:targetCellHeight="2"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"

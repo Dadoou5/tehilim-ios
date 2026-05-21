@@ -355,20 +355,24 @@ class DailyVerseWidget : GlanceAppWidget() {
 
     @Composable
     private fun PsalmChip(ref: PsalmRef, compact: Boolean) {
+        // V1.4 — hauteur passée de fixe (28/38 dp) à `padding vertical`
+        // intrinsèque, sinon le hebrewNumber sur la 2ᵉ ligne était tronqué
+        // verticalement. Police hébreu également bumpée (9/10 → 11/13 sp)
+        // car les caractères hébraïques (ex. « כ״ג ») ont un trait fin qui
+        // devient illisible sous 10sp dans Glance.
         Column(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .height(if (compact) 28.dp else 38.dp)
                 .background(ColorProvider(day = Color(0xFFE6EEF6), night = Color(0xFF1E2A38)))
                 .cornerRadius(8.dp)
-                .padding(horizontal = 2.dp, vertical = 2.dp),
+                .padding(horizontal = 4.dp, vertical = if (compact) 4.dp else 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 ref.id.toString(),
                 style = TextStyle(
-                    fontSize = if (compact) 12.sp else 14.sp,
+                    fontSize = if (compact) 13.sp else 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = GlanceTheme.colors.onSurface
                 )
@@ -376,9 +380,10 @@ class DailyVerseWidget : GlanceAppWidget() {
             Text(
                 ref.hebrewNumber,
                 style = TextStyle(
-                    fontSize = if (compact) 9.sp else 10.sp,
+                    fontSize = if (compact) 11.sp else 13.sp,
                     color = GlanceTheme.colors.primary
-                )
+                ),
+                maxLines = 1
             )
         }
     }

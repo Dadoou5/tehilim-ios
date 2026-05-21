@@ -51,7 +51,9 @@ android {
         // Build 10 : Home tap brute-force (popBackStack + fallback navigate
         //            avec popUpTo graph.id inclusive) — robuste à toutes
         //            les configurations de back stack
-        versionCode = 10
+        // Build 11 : chips widget — hauteur intrinsèque + bump font hébreu
+        //            (caractères tronqués sous 10sp dans Glance)
+        versionCode = 11
         versionName = "1.0.0"
 
         // Tests

@@ -78,7 +78,18 @@ class MainActivity : ComponentActivity() {
         val container = (application as TehilimApplication).container
 
         setContent {
-            TehilimTheme {
+            // V1.4 — câble la pref `theme` (système/clair/sombre) sur le
+            // mode dark du TehilimTheme. Avant, TehilimTheme lisait
+            // uniquement `isSystemInDarkTheme()`, le picker dans Réglages
+            // était ignoré.
+            val themePref by container.preferences.theme.collectAsState(initial = com.david.tehilim.core.model.AppTheme.SYSTEM)
+            val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
+            val darkMode = when (themePref) {
+                com.david.tehilim.core.model.AppTheme.LIGHT -> false
+                com.david.tehilim.core.model.AppTheme.DARK -> true
+                com.david.tehilim.core.model.AppTheme.SYSTEM -> systemDark
+            }
+            TehilimTheme(darkTheme = darkMode) {
                 // V1.3.3 — rememberSaveable pour que la splash ne rejoue PAS
                 // quand l'Activity est recréée suite à un changement de langue.
                 var splashDone by rememberSaveable { mutableStateOf(false) }

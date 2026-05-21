@@ -1,8 +1,22 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.kotlin.plugin.serialization")
+}
+
+// V1.4 — credentials du keystore release lus depuis `keystore.properties`
+// (non commité, voir .gitignore). Si absent (CI ou nouveau clone), la
+// signature de release est désactivée — ne pas uploader sur le Play Store
+// dans ce cas, le bundle resterait non signé.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        load(FileInputStream(keystorePropertiesFile))
+    }
 }
 
 android {
@@ -13,6 +27,10 @@ android {
         applicationId = "com.david.tehilim"
         minSdk = 26              // Android 8.0 — 95%+ devices, RTL natif solide
         targetSdk = 36           // Android 16 (Baklava) — recommandé Play Store 2026
+        // V1.4 — premier upload Play Store. versionCode s'incrémente à
+        // chaque build envoyé au store. versionName V1.0.0 marque le
+        // lancement public ; le suivi dev interne (V1.3.12) reste dans
+        // README et release notes.
         versionCode = 1
         versionName = "1.0.0"
 
@@ -24,8 +42,24 @@ android {
         resourceConfigurations += listOf("fr", "en", "iw")
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // Signature explicite avec la clé de upload Play Store. Google Play
+            // re-signe ensuite avec la « app signing key » qu'il gère.
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

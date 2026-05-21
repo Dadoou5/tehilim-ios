@@ -24,3 +24,9 @@ keystore.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Release signing (V1.4 Play Store)
+keystore.properties
+keystores/
+*.jks
+*.keystore

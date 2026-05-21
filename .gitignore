@@ -62,7 +62,5 @@ android/.cxx/
 android/app/src/main/assets/data/
 # Polices copiées au build depuis ios/ — pas commitées
 android/app/src/main/res/font/ezra_sil_sr.ttf
-# Gradle wrapper jar — généré par Android Studio
-android/gradle/wrapper/gradle-wrapper.jar
-android/gradlew
-android/gradlew.bat
+# V1.4 — Gradle wrapper committé pour build CLI sans Android Studio
+# (CI futurs, nouveau clone). Pratique standard Android.

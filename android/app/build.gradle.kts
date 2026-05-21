@@ -45,7 +45,8 @@ android {
         // Build 6 : labels visibles barre du bas + taille de police adaptative
         // Build 7 : fix navigation depuis widget/notif (singleTop + onNewIntent
         //           + findStartDestination pour la bottom bar)
-        versionCode = 7
+        // Build 8 : date hébraïque alignée à gauche (mirror iOS) — RTL via Unicode
+        versionCode = 8
         versionName = "1.0.0"
 
         // Tests

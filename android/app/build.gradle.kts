@@ -48,7 +48,10 @@ android {
         // Build 8 : date hébraïque alignée à gauche (mirror iOS) — RTL via Unicode
         // Build 9 : fix double-routing deep link au cold-start (back stack
         //           dupliquée [home, daily, home, daily] → bouton Accueil cassé)
-        versionCode = 9
+        // Build 10 : Home tap brute-force (popBackStack + fallback navigate
+        //            avec popUpTo graph.id inclusive) — robuste à toutes
+        //            les configurations de back stack
+        versionCode = 10
         versionName = "1.0.0"
 
         // Tests

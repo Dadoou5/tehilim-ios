@@ -113,20 +113,42 @@ fun AppNavigation(container: AppContainer) {
                         selected = backStackEntry?.destination?.hierarchy
                             ?.any { (it.route?.substringBefore('?') ?: "") == dest.route } == true,
                         onClick = {
-                            // V1.4 — `findStartDestination().id` au lieu de
-                            // `Home.route` : robuste au cold-start via deep link
-                            // (widget/notif). Quand l'app ouvre directement sur
-                            // Daily, "home" n'est pas dans la back stack, donc
-                            // popUpTo("home") ne pouvait pas pop quoi que ce
-                            // soit → bouton Accueil cassé. La vraie start
-                            // destination du graph est toujours présente
-                            // virtuellement, popUpTo dessus marche universellement.
-                            navController.navigate(dest.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                            // V1.4 — fix brute-force pour l'onglet Accueil
+                            // (cold-start via widget/notif sur Daily) :
+                            // - `popBackStack(home, inclusive=false)` essaie
+                            //   de revenir à home s'il est déjà dans la stack
+                            //   (cas chaud : app déjà ouverte, user a vu home).
+                            // - Si home n'est pas dans la stack (cas cold start
+                            //   via deep link tehilim://daily, où le synthetic
+                            //   back stack n'inclut pas forcément home),
+                            //   `popped == false` → on `navigate("home")` en
+                            //   reset complet de la stack via `popUpTo(graph.id)
+                            //   inclusive=true`.
+                            // Pour les autres onglets, le pattern standard
+                            // popUpTo(home.route) suffit puisque home est
+                            // toujours la base.
+                            if (dest == TopLevelDestination.Home) {
+                                val popped = navController.popBackStack(
+                                    TopLevelDestination.Home.route,
+                                    inclusive = false
+                                )
+                                if (!popped) {
+                                    navController.navigate(TopLevelDestination.Home.route) {
+                                        popUpTo(navController.graph.id) {
+                                            inclusive = true
+                                            saveState = false
+                                        }
+                                        launchSingleTop = true
+                                    }
                                 }
-                                launchSingleTop = true
-                                restoreState = true
+                            } else {
+                                navController.navigate(dest.route) {
+                                    popUpTo(TopLevelDestination.Home.route) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
                         },
                         icon = { Icon(iconFor(dest), contentDescription = null) },

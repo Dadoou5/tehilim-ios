@@ -24,7 +24,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.david.tehilim"
+        // V1.4 — `applicationId` (Play Store identifier) diffère du
+        // `namespace` Kotlin/Android (`com.david.tehilim`) : Google sépare
+        // les deux exprès. Le code Kotlin garde son organisation
+        // historique, `app.tehilim` est notre namespace public sur le
+        // Play Store. Voir build.gradle.kts namespace ci-dessus.
+        applicationId = "app.tehilim"
         minSdk = 26              // Android 8.0 — 95%+ devices, RTL natif solide
         targetSdk = 36           // Android 16 (Baklava) — recommandé Play Store 2026
         // V1.4 — premier upload Play Store. versionCode s'incrémente à

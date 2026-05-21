@@ -9,7 +9,7 @@ Premier upload Play Console — V1.4 dev tracker (versionCode=1, versionName="1.
 | Champ | Valeur |
 |-------|--------|
 | Nom de l'app | **Tehilim** |
-| Package ID | com.david.tehilim |
+| Package ID | **app.tehilim** (V1.4 — `com.david.tehilim` était déjà réservé sur Play Store) |
 | Catégorie | Style de vie (Lifestyle) |
 | Étiquettes | Livres et références, Religion |
 | Public cible | Tous (13+) — confirmer après questionnaire de classification |

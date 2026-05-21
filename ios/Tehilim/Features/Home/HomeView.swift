@@ -5,8 +5,21 @@ struct HomeView: View {
     @EnvironmentObject private var container: AppContainer
     @EnvironmentObject private var router: TabRouter
     @EnvironmentObject private var favorites: FavoritesStore
-    @StateObject private var viewModel = HomeViewModel()
     @Environment(\.horizontalSizeClass) private var hSize
+
+    /// V2.1.b — observation directe via @AppStorage pour que la carte
+    /// « Reprendre la lecture » et le bloc « Tehilim du jour » se mettent à
+    /// jour instantanément quand l'utilisateur ouvre un Tehilim ou change le
+    /// mode dans Réglages (avant, le HomeViewModel n'était rafraîchi que sur
+    /// `onAppear` qui ne firait pas si Home restait monté en arrière-plan).
+    @AppStorage("pref.lastReadPsalmId") private var lastReadIdStored: Int = 0
+    @AppStorage("pref.dailyMode", store: AppGroup.userDefaults) private var dailyModeRaw: String = DailyMode.monthly.rawValue
+
+    private var lastReadId: Int? { lastReadIdStored == 0 ? nil : lastReadIdStored }
+    private var dailyMode: DailyMode { DailyMode(rawValue: dailyModeRaw) ?? .monthly }
+    private var todayPsalms: [Int] {
+        container.dailyEngine.psalmsForToday(mode: dailyMode)
+    }
 
     @State private var searchPresented = false
     @State private var presentedPrayer: Prayer.Kind? = nil
@@ -25,7 +38,7 @@ struct HomeView: View {
 
                     HebrewDateBanner()
 
-                    if let lastId = viewModel.lastReadId, let psalm = container.psalmRepository.psalm(id: lastId) {
+                    if let lastId = lastReadId, let psalm = container.psalmRepository.psalm(id: lastId) {
                         SectionHeader(title: "Reprendre la lecture")
                         NavigationLink(destination: PsalmDetailView(psalmId: psalm.id)) {
                             ResumeCard(psalm: psalm)
@@ -41,11 +54,11 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
 
-                    SectionHeader(title: "Tehilim du jour", subtitle: viewModel.dailyMode.label)
+                    SectionHeader(title: "Tehilim du jour", subtitle: dailyMode.label)
                     Button {
                         router.go(.daily, resetPath: true)
                     } label: {
-                        DailySummaryCard(psalmIds: viewModel.todayPsalms)
+                        DailySummaryCard(psalmIds: todayPsalms)
                     }
                     .buttonStyle(.plain)
 
@@ -93,22 +106,7 @@ struct HomeView: View {
             .sheet(item: $presentedPrayer) { kind in
                 PrayerView(prayer: Prayer.of(kind))
             }
-            .onAppear { viewModel.refresh(container: container) }
         }
-    }
-}
-
-@MainActor
-final class HomeViewModel: ObservableObject {
-    @Published var lastReadId: Int? = nil
-    @Published var todayPsalms: [Int] = []
-    @Published var dailyMode: DailyMode = .monthly
-
-    func refresh(container: AppContainer) {
-        let prefs = container.preferences
-        lastReadId = prefs.lastReadPsalmId == 0 ? nil : prefs.lastReadPsalmId
-        dailyMode = prefs.dailyMode
-        todayPsalms = container.dailyEngine.psalmsForToday(mode: prefs.dailyMode)
     }
 }
 

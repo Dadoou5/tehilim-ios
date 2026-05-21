@@ -2,16 +2,35 @@ import Foundation
 
 enum HebrewDateFormatter {
     struct DisplayDate {
-        let dayOfWeek: String          // "Lundi"
+        let dayOfWeek: String          // "Lundi" / "Monday"
         let transliterated: String     // "7 Iyar 5786"
         let hebrew: String             // "ז׳ באייר ה׳תשפ״ו"
     }
 
+    /// Résout la locale du jour de la semaine depuis `pref.app.language` —
+    /// indispensable pour suivre la bascule de langue à chaud (V2.1.b). Avant,
+    /// `Locale(identifier: "fr_FR")` était hardcodé, donc « Lundi » restait
+    /// FR même quand l'app passait en EN.
+    private static func dayOfWeekLocale() -> Locale {
+        let raw = AppGroup.userDefaults.string(forKey: AppGroup.Keys.appLanguage)
+            ?? UserDefaults.standard.string(forKey: "pref.app.language")
+            ?? "system"
+        switch raw {
+        case "fr": return Locale(identifier: "fr_FR")
+        case "en": return Locale(identifier: "en_US")
+        default:
+            // .system : suit la locale iOS, fallback FR si exotique.
+            let sys = Locale.current
+            let code = sys.language.languageCode?.identifier ?? "fr"
+            return (code == "en" || code == "fr") ? sys : Locale(identifier: "fr_FR")
+        }
+    }
+
     static func formatted(_ date: Date = Date()) -> DisplayDate {
-        let frFmt = DateFormatter()
-        frFmt.locale = Locale(identifier: "fr_FR")
-        frFmt.dateFormat = "EEEE"
-        let day = frFmt.string(from: date).capitalized
+        let dowFmt = DateFormatter()
+        dowFmt.locale = dayOfWeekLocale()
+        dowFmt.dateFormat = "EEEE"
+        let day = dowFmt.string(from: date).capitalized(with: dowFmt.locale)
 
         let latinFmt = DateFormatter()
         latinFmt.calendar = Calendar(identifier: .hebrew)

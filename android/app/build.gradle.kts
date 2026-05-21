@@ -40,7 +40,8 @@ android {
         // Build 1 : upload initial rejeté côté package (com.david.tehilim pris)
         // Build 2 : fix package → app.tehilim + mode sombre + cycle hébraïque
         // Build 3 : fix onboarding non-affiché (lecture synchrone DataStore)
-        versionCode = 3
+        // Build 4 : fix onboarding edge-to-edge (boutons sous barres système)
+        versionCode = 4
         versionName = "1.0.0"
 
         // Tests

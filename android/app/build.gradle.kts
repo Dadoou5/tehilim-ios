@@ -53,7 +53,9 @@ android {
         //            les configurations de back stack
         // Build 11 : chips widget — hauteur intrinsèque + bump font hébreu
         //            (caractères tronqués sous 10sp dans Glance)
-        versionCode = 11
+        // Build 12 : skip Compose splash quand cold-start via deep link
+        //            (widget/notif) — accès direct au contenu
+        versionCode = 12
         versionName = "1.0.0"
 
         // Tests

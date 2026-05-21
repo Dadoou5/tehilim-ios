@@ -104,6 +104,14 @@ class MainActivity : ComponentActivity() {
         // jamais. Pattern aligné sur `TehilimApplication.applyLanguagePreference`.
         val initialOnboardingDone = runBlocking { container.preferences.onboardingDone.first() }
 
+        // V1.4 — détecte si l'app est lancée via deep link (widget / notif).
+        // Dans ce cas, on saute le Compose splash (1.8s d'animation) pour
+        // accéder directement à la destination demandée. Le system splash
+        // (installSplashScreen, ~300ms) joue toujours, mais c'est inévitable
+        // côté OS. Pour les launches classiques (tap icône launcher),
+        // l'animation Compose continue à s'afficher normalement.
+        val launchedViaDeepLink = intent?.data != null
+
         setContent {
             // V1.4 — câble la pref `theme` (système/clair/sombre) sur le
             // mode dark du TehilimTheme. Avant, TehilimTheme lisait
@@ -119,7 +127,9 @@ class MainActivity : ComponentActivity() {
             TehilimTheme(darkTheme = darkMode) {
                 // V1.3.3 — rememberSaveable pour que la splash ne rejoue PAS
                 // quand l'Activity est recréée suite à un changement de langue.
-                var splashDone by rememberSaveable { mutableStateOf(false) }
+                // V1.4 — initial state = true si lancement via deep link
+                // (skip animation, l'user veut le contenu vite).
+                var splashDone by rememberSaveable { mutableStateOf(launchedViaDeepLink) }
 
                 // V1.4 — décision « onboarding ou pas » commitée UNE fois au
                 // démarrage à partir du `initialOnboardingDone` lu de façon

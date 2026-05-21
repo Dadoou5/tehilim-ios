@@ -11,10 +11,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -52,6 +56,19 @@ fun AppNavigation(container: AppContainer) {
     // iOS qui enveloppe chaque NavigationStack. Avant V1.2.5, on la cachait sur
     // les écrans de détail (PsalmDetail, LifeCaseDetail, Search…) ce qui
     // empêchait l'utilisateur de switcher d'onglet sans revenir en arrière.
+    // V1.4 — taille de police adaptative pour les labels de la barre du bas,
+    // calculée à partir de la largeur d'écran divisée par 5 onglets. Le label
+    // le plus long (« Cas de la vie », 12 chars) doit tenir sur une seule
+    // ligne sans tronquer sur les écrans les plus étroits (320–360dp).
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
+    val tabWidthDp = screenWidthDp / 5
+    val labelFontSp = when {
+        tabWidthDp >= 78 -> 11   // grands écrans (Pixel 9, S24 Ultra…)
+        tabWidthDp >= 70 -> 10   // milieu de gamme (Pixel 7a, ~411dp)
+        tabWidthDp >= 60 -> 9    // compact (Pixel 4a, ~393dp)
+        else -> 8                // très étroit (320dp, devices vintage)
+    }
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -79,9 +96,21 @@ fun AppNavigation(container: AppContainer) {
                                 restoreState = true
                             }
                         },
-                        // Icône seule, sans label. Le contentDescription garde
-                        // l'accessibilité TalkBack via le nom de l'onglet.
-                        icon = { Icon(iconFor(dest), contentDescription = stringResource(dest.labelRes)) }
+                        icon = { Icon(iconFor(dest), contentDescription = null) },
+                        // V1.4 — label visible en permanence (alwaysShowLabel)
+                        // mirror du comportement iOS TabView. Taille adaptative
+                        // + maxLines=1 + softWrap=false pour garantir une ligne
+                        // unique, ellipsize si vraiment trop étroit.
+                        label = {
+                            Text(
+                                text = stringResource(dest.labelRes),
+                                fontSize = labelFontSp.sp,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        alwaysShowLabel = true
                     )
                 }
             }

@@ -42,7 +42,8 @@ android {
         // Build 3 : fix onboarding non-affiché (lecture synchrone DataStore)
         // Build 4 : fix onboarding edge-to-edge (boutons sous barres système)
         // Build 5 : widget responsive 3 tailles (mirror iOS WidgetKit)
-        versionCode = 5
+        // Build 6 : labels visibles barre du bas + taille de police adaptative
+        versionCode = 6
         versionName = "1.0.0"
 
         // Tests

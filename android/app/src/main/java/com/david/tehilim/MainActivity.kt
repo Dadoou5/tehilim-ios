@@ -21,6 +21,8 @@ import com.david.tehilim.features.onboarding.OnboardingScreen
 import com.david.tehilim.features.splash.SplashScreen
 import com.david.tehilim.navigation.AppNavigation
 import com.david.tehilim.ui.theme.TehilimTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
 
 /**
@@ -77,6 +79,13 @@ class MainActivity : ComponentActivity() {
 
         val container = (application as TehilimApplication).container
 
+        // V1.4 — lecture synchrone du flag onboarding AVANT setContent pour
+        // éviter le piège du `collectAsState(initial = true)` qui captait
+        // `true` à la 1re composition (alors que la valeur réelle DataStore
+        // pour un fresh install est `false`) → l'onboarding ne s'affichait
+        // jamais. Pattern aligné sur `TehilimApplication.applyLanguagePreference`.
+        val initialOnboardingDone = runBlocking { container.preferences.onboardingDone.first() }
+
         setContent {
             // V1.4 — câble la pref `theme` (système/clair/sombre) sur le
             // mode dark du TehilimTheme. Avant, TehilimTheme lisait
@@ -94,15 +103,16 @@ class MainActivity : ComponentActivity() {
                 // quand l'Activity est recréée suite à un changement de langue.
                 var splashDone by rememberSaveable { mutableStateOf(false) }
 
-                val onboardingDone by container.preferences.onboardingDone.collectAsState(initial = true)
-                var shouldShowOnboarding by remember { mutableStateOf<Boolean?>(null) }
-                if (shouldShowOnboarding == null) {
-                    shouldShowOnboarding = !onboardingDone
-                }
+                // V1.4 — décision « onboarding ou pas » commitée UNE fois au
+                // démarrage à partir du `initialOnboardingDone` lu de façon
+                // synchrone (cf. onCreate). Reste stable pour la session ;
+                // re-écrasable via le callback quand l'utilisateur finit
+                // l'onboarding.
+                var shouldShowOnboarding by remember { mutableStateOf(!initialOnboardingDone) }
 
                 when {
                     !splashDone -> SplashScreen(onFinished = { splashDone = true })
-                    shouldShowOnboarding == true -> OnboardingScreen(container = container) {
+                    shouldShowOnboarding -> OnboardingScreen(container = container) {
                         shouldShowOnboarding = false
                     }
                     else -> AppNavigation(container = container)

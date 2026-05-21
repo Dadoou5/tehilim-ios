@@ -206,6 +206,13 @@ final class Preferences: ObservableObject {
     }
 
     private func currentSnapshot() -> PreferencesSnapshot {
+        // V2.1.a — `onboardingCompleted`, `lastReadPsalmId` et `lastReadVerseId`
+        // SONT VOLONTAIREMENT EXCLUS du snapshot iCloud :
+        // - onboardingCompleted = flag par appareil (« cet appareil a vu
+        //   l'intro »), pas une préférence user → un nouveau device doit
+        //   refaire l'onboarding.
+        // - lastReadPsalmId / lastReadVerseId = session locale, ne doit pas
+        //   être écrasé par un autre device au milieu d'une lecture.
         PreferencesSnapshot(
             translationFR: translationFR,
             appLanguage: appLanguage.rawValue,
@@ -217,10 +224,7 @@ final class Preferences: ObservableObject {
             dailyMode: dailyMode.rawValue,
             notificationEnabled: notificationEnabled,
             notificationHour: notificationHour,
-            notificationMinute: notificationMinute,
-            lastReadPsalmId: lastReadPsalmId,
-            lastReadVerseId: lastReadVerseId,
-            onboardingCompleted: onboardingCompleted
+            notificationMinute: notificationMinute
         )
     }
 
@@ -242,13 +246,17 @@ final class Preferences: ObservableObject {
         notificationEnabled = snap.notificationEnabled
         notificationHour = snap.notificationHour
         notificationMinute = snap.notificationMinute
-        lastReadPsalmId = snap.lastReadPsalmId
-        lastReadVerseId = snap.lastReadVerseId
-        onboardingCompleted = snap.onboardingCompleted
+        // onboardingCompleted / lastReadPsalmId / lastReadVerseId :
+        // intentionnellement non synchronisés (voir currentSnapshot).
     }
 }
 
-/// Snapshot Codable de l'état complet des préférences pour transit iCloud.
+/// Snapshot Codable des préférences utilisateur réellement synchronisables
+/// entre appareils via iCloud KVS.
+///
+/// Exclus volontairement (cf. `Preferences.currentSnapshot`) :
+/// - `onboardingCompleted` (flag par appareil, pas une pref)
+/// - `lastReadPsalmId` / `lastReadVerseId` (session locale)
 ///
 /// Enums sérialisés via leurs `rawValue` (String) — robuste à l'ajout futur de
 /// cases et lisible dans le store. L'`Equatable` synthétisé permet la
@@ -265,7 +273,4 @@ struct PreferencesSnapshot: Codable, Equatable {
     let notificationEnabled: Bool
     let notificationHour: Int
     let notificationMinute: Int
-    let lastReadPsalmId: Int
-    let lastReadVerseId: String
-    let onboardingCompleted: Bool
 }

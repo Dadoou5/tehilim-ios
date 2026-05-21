@@ -2,6 +2,7 @@ package com.david.tehilim
 
 import android.app.LocaleManager
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -70,6 +71,23 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         private const val TAG = "TehilimLang"
+    }
+
+    /**
+     * V1.4 — quand l'app est déjà ouverte et que le widget/notification
+     * envoie un nouveau deep link (`tehilim://daily`, etc.), Android appelle
+     * `onNewIntent` plutôt que de recréer l'Activity (grâce à
+     * `launchMode="singleTop"` dans le manifest). On met à jour l'Intent
+     * courant avec `setIntent()` pour que NavHost.compose re-route le deep
+     * link via son mécanisme `navDeepLink` au prochain recomposition.
+     *
+     * Sans ce relais, l'Intent original (souvent ACTION_MAIN du launcher)
+     * restait dans l'Activity, et le nouveau deep link était ignoré → bug
+     * où taper le widget ne ramenait pas l'utilisateur sur Aujourd'hui.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

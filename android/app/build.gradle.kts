@@ -43,7 +43,9 @@ android {
         // Build 4 : fix onboarding edge-to-edge (boutons sous barres système)
         // Build 5 : widget responsive 3 tailles (mirror iOS WidgetKit)
         // Build 6 : labels visibles barre du bas + taille de police adaptative
-        versionCode = 6
+        // Build 7 : fix navigation depuis widget/notif (singleTop + onNewIntent
+        //           + findStartDestination pour la bottom bar)
+        versionCode = 7
         versionName = "1.0.0"
 
         // Tests

@@ -10,16 +10,20 @@ import androidx.compose.material.icons.outlined.WbSunny
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import android.app.Activity
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -52,6 +56,20 @@ fun AppNavigation(container: AppContainer) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
+    // V1.4 — re-route les deep links arrivés via `onNewIntent` (cas typique :
+    // widget/notif tappé alors que l'app était déjà ouverte). Avec
+    // `launchMode="singleTop"` dans le manifest, l'Activity n'est pas
+    // recréée → NavHost a déjà fait son routing initial → le nouvel Intent
+    // serait ignoré sans ce relais explicite via `handleDeepLink`.
+    val activity = LocalContext.current as? Activity
+    LaunchedEffect(activity?.intent) {
+        activity?.intent?.let { intent ->
+            if (intent.data != null) {
+                navController.handleDeepLink(intent)
+            }
+        }
+    }
+
     // V1.2.5 — La barre de navigation reste toujours visible, comme la TabView
     // iOS qui enveloppe chaque NavigationStack. Avant V1.2.5, on la cachait sur
     // les écrans de détail (PsalmDetail, LifeCaseDetail, Search…) ce qui
@@ -80,16 +98,16 @@ fun AppNavigation(container: AppContainer) {
                         selected = backStackEntry?.destination?.hierarchy
                             ?.any { (it.route?.substringBefore('?') ?: "") == dest.route } == true,
                         onClick = {
-                            // V1.2.11 — popUpTo par route nommée plutôt que par
-                            // startDestination().id. Compose Navigation peut perdre
-                            // le lien vers la start destination quand la back stack
-                            // contient des routes avec query params (cas réel : Psalm
-                            // 119 section dont la route est
-                            // "psalm119/section/{index}?intentId={intentId}&pos={pos}").
-                            // Avec popUpTo(Home.route) ça marche dans tous les cas.
+                            // V1.4 — `findStartDestination().id` au lieu de
+                            // `Home.route` : robuste au cold-start via deep link
+                            // (widget/notif). Quand l'app ouvre directement sur
+                            // Daily, "home" n'est pas dans la back stack, donc
+                            // popUpTo("home") ne pouvait pas pop quoi que ce
+                            // soit → bouton Accueil cassé. La vraie start
+                            // destination du graph est toujours présente
+                            // virtuellement, popUpTo dessus marche universellement.
                             navController.navigate(dest.route) {
-                                popUpTo(TopLevelDestination.Home.route) {
-                                    inclusive = false
+                                popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
                                 launchSingleTop = true

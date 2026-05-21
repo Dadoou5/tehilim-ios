@@ -46,7 +46,9 @@ android {
         // Build 7 : fix navigation depuis widget/notif (singleTop + onNewIntent
         //           + findStartDestination pour la bottom bar)
         // Build 8 : date hébraïque alignée à gauche (mirror iOS) — RTL via Unicode
-        versionCode = 8
+        // Build 9 : fix double-routing deep link au cold-start (back stack
+        //           dupliquée [home, daily, home, daily] → bouton Accueil cassé)
+        versionCode = 9
         versionName = "1.0.0"
 
         // Tests

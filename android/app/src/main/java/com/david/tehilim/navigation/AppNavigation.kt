@@ -16,6 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
@@ -56,13 +59,25 @@ fun AppNavigation(container: AppContainer) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
 
-    // V1.4 — re-route les deep links arrivés via `onNewIntent` (cas typique :
-    // widget/notif tappé alors que l'app était déjà ouverte). Avec
-    // `launchMode="singleTop"` dans le manifest, l'Activity n'est pas
-    // recréée → NavHost a déjà fait son routing initial → le nouvel Intent
-    // serait ignoré sans ce relais explicite via `handleDeepLink`.
+    // V1.4 — re-route les deep links arrivés via `onNewIntent` (cas widget/
+    // notif tappé alors que l'app était déjà ouverte). Avec
+    // `launchMode="singleTop"`, l'Activity n'est pas recréée → NavHost a
+    // déjà fait son routing initial → le nouvel Intent serait ignoré sans
+    // ce relais explicite.
+    //
+    // **Skip de la 1ʳᵉ invocation** : sur le cold-start, NavHost lit lui-même
+    // l'`Activity.intent` initial et route correctement. Re-appeler
+    // `handleDeepLink` dupliquerait les entrées de back stack (stack
+    // [home, daily] devient [home, daily, home, daily]) — ce qui cassait
+    // le bouton Accueil de la bottom bar (popUpTo trouvait le mauvais
+    // « home »). On consomme silencieusement le 1ᵉʳ tick.
     val activity = LocalContext.current as? Activity
+    var initialIntentSeen by remember { mutableStateOf(false) }
     LaunchedEffect(activity?.intent) {
+        if (!initialIntentSeen) {
+            initialIntentSeen = true
+            return@LaunchedEffect
+        }
         activity?.intent?.let { intent ->
             if (intent.data != null) {
                 navController.handleDeepLink(intent)

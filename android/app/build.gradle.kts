@@ -36,7 +36,10 @@ android {
         // chaque build envoyé au store. versionName V1.0.0 marque le
         // lancement public ; le suivi dev interne (V1.3.12) reste dans
         // README et release notes.
-        versionCode = 1
+        //
+        // Build 1 : upload initial rejeté côté package (com.david.tehilim pris)
+        // Build 2 : fix package → app.tehilim + mode sombre + cycle hébraïque
+        versionCode = 2
         versionName = "1.0.0"
 
         // Tests
@@ -71,6 +74,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // V1.4 — embarque les symboles de débogage natifs (libs
+            // androidx.graphics.path + androidx.datastore packagées en .so)
+            // pour que Play Console puisse symboliser les stack traces.
+            // Sans ça, avertissement « code natif sans symboles » à l'upload.
+            // Ajoute ~5 MB au AAB mais améliore le diagnostic des crashes.
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
         debug {
             applicationIdSuffix = ".debug"

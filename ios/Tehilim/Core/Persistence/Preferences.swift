@@ -96,11 +96,23 @@ final class Preferences: ObservableObject {
     private var udObserverToken: NSObjectProtocol?
     private var lastPushedSnapshot: PreferencesSnapshot?
 
+    /// V2.1.a — garde-fou : le bootstrap iCloud et les observers ne tournent
+    /// qu'une seule fois par process. Les Views créent leur propre instance
+    /// `Preferences()` via @StateObject, mais seule la première (celle de
+    /// `AppContainer`) installe la machinerie de sync. Sans ce garde-fou, la
+    /// 2e/3e instance ré-exécuterait `applyRemoteSnapshot` et pourrait écraser
+    /// des valeurs récentes (ex. `onboardingCompleted=true` après que
+    /// l'utilisateur a terminé l'onboarding) avec un snapshot KVS antérieur.
+    private static var didInstallCloudSync = false
+
     init(_ defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        bootstrapCloudSync()
-        observeLocalChanges()
-        observeCloudChanges()
+        if !Self.didInstallCloudSync {
+            Self.didInstallCloudSync = true
+            bootstrapCloudSync()
+            observeLocalChanges()
+            observeCloudChanges()
+        }
     }
 
     deinit {

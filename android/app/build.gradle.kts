@@ -55,7 +55,9 @@ android {
         //            (caractères tronqués sous 10sp dans Glance)
         // Build 12 : skip Compose splash quand cold-start via deep link
         //            (widget/notif) — accès direct au contenu
-        versionCode = 12
+        // Build 13 : grille Tehilim 119 en sens de lecture hébreu —
+        //            Aleph en haut à droite (parité avec iOS, RTL natif)
+        versionCode = 13
         versionName = "1.0.0"
 
         // Tests

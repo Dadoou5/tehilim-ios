@@ -24,6 +24,32 @@ struct PersonalizedReadingListView: View {
                     .listRowBackground(Color.clear)
             }
 
+            // V1.10.7 — Bloc Commémoration affiché en haut quand l'utilisateur
+            // a renseigné une date du décès. Donne la date de la prochaine
+            // azcara calculée par MemorialCalculator.
+            if let death = intent.civilDateOfDeath,
+               let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
+                Section {
+                    HStack(spacing: 14) {
+                        Image(systemName: "flame.fill")
+                            .font(.title3)
+                            .foregroundStyle(Color.accentMain)
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Prochaine azcara")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .textCase(.uppercase)
+                            Text(next.formatted(date: .complete, time: .omitted))
+                                .font(.headline)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 4)
+                    .accessibilityElement(children: .combine)
+                }
+            }
+
             // Liste des lettres numérotée
             Section {
                 ForEach(Array(intent.generatedLetters.enumerated()), id: \.element.id) { idx, item in

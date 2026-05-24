@@ -20,6 +20,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -27,10 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
 import com.david.tehilim.R
+import com.david.tehilim.core.service.MemorialCalculator
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
 import com.david.tehilim.ui.components.EmptyState
 import com.david.tehilim.ui.theme.EzraSilFontFamily
+import java.text.DateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +70,11 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
             contentPadding = PaddingValues(16.dp)
         ) {
             items(intents) { intent ->
+                // V1.4 — `remember` doit être dans le scope @Composable des
+                // items, pas dans LazyColumn { } qui est un LazyListScope DSL.
+                val dateFormatter = remember {
+                    DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
+                }
                 AppCard(
                     onClick = { navController.navigate(Routes.personalizedList(intent.id)) },
                     modifier = Modifier
@@ -79,6 +89,21 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        // V1.4 — Prochaine azcara si date du décès renseignée.
+                        val millis = intent.civilDateOfDeathEpochMillis
+                        if (millis != null) {
+                            val next = remember(millis) {
+                                MemorialCalculator.nextYahrzeit(Date(millis))
+                            }
+                            if (next != null) {
+                                Text(
+                                    "${stringResource(R.string.memorial_next_azcara)} : ${dateFormatter.format(next)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }

@@ -70,6 +70,22 @@ struct SavedPrayersListView: View {
             }
             .font(.caption)
             .foregroundStyle(.secondary)
+
+            // V1.10.7 — Prochaine azcara si la date du décès est renseignée.
+            // Calcul fait par MemorialCalculator (règles traditionnelles).
+            if let death = intent.civilDateOfDeath,
+               let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
+                HStack(spacing: 6) {
+                    Image(systemName: "flame.fill")
+                        .font(.caption2)
+                    Text("Prochaine azcara")
+                    Text(":")
+                    Text(next.formatted(date: .abbreviated, time: .omitted))
+                        .fontWeight(.medium)
+                }
+                .font(.caption)
+                .foregroundStyle(Color.accentMain)
+            }
         }
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)

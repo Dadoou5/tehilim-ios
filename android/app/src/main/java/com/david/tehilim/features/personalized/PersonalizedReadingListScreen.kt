@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,9 +41,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
 import com.david.tehilim.R
+import com.david.tehilim.core.service.MemorialCalculator
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
 import com.david.tehilim.ui.theme.EzraSilFontFamily
+import java.text.DateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,6 +119,49 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                             textAlign = TextAlign.End,
                             modifier = Modifier.fillMaxWidth()
                         )
+                    }
+                }
+            }
+
+            // V1.4 — Card « Prochaine azcara » si la date du décès est
+            // renseignée. Placée juste après le header sujet pour mettre
+            // l'info en avant. Calcul `next` fait dans le scope `item {}`
+            // (qui est @Composable) — sortir du `let` pour préserver le
+            // contexte composable nécessaire à `remember`.
+            val deathMillis = intent.civilDateOfDeathEpochMillis
+            if (deathMillis != null) {
+                item {
+                    val next = remember(deathMillis) {
+                        MemorialCalculator.nextYahrzeit(Date(deathMillis))
+                    }
+                    if (next != null) {
+                        val dateFmt = remember {
+                            DateFormat.getDateInstance(DateFormat.FULL, Locale.getDefault())
+                        }
+                        AppCard(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Event,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        stringResource(R.string.memorial_next_azcara),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        dateFmt.format(next),
+                                        style = MaterialTheme.typography.titleSmall
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }

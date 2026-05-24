@@ -13,9 +13,23 @@ import UIKit
 /// Le filtre live (`HebrewLetterMapper.filterHebrew`) reste actif comme garde-fou :
 /// même si l'utilisateur garde son clavier français, seuls les caractères hébreux
 /// sont conservés.
+///
+/// V1.10.7 — paramètres `returnKeyType` + `isFocused` (Binding) + `onReturn`
+/// pour permettre au parent de chaîner deux champs : « Suivant » sur le 1er
+/// transfère le focus au 2nd sans refermer le clavier ; « Terminé » sur le
+/// 2nd ferme le clavier. Parité avec Android `HebrewFieldImeAction` Next/Done.
 struct HebrewKeyboardTextField: UIViewRepresentable {
     @Binding var text: String
     var placeholder: String
+    var returnKeyType: UIReturnKeyType = .default
+    /// Binding optionnel : si fourni, le parent peut prendre/perdre le focus
+    /// programmatiquement (set à `true` → becomeFirstResponder, set à `false`
+    /// → resignFirstResponder). Si `nil`, le champ se comporte de manière
+    /// classique (focus piloté uniquement par l'utilisateur).
+    var isFocused: Binding<Bool>? = nil
+    /// Appelé quand l'utilisateur tape la touche return du clavier (Next ou
+    /// Done). Le parent décide quoi faire (focus suivant, fermer clavier…).
+    var onReturn: () -> Void = {}
 
     func makeUIView(context: Context) -> UITextField {
         let tf = HebrewPreferredTextField()
@@ -28,6 +42,7 @@ struct HebrewKeyboardTextField: UIViewRepresentable {
         tf.smartQuotesType = .no
         tf.smartDashesType = .no
         tf.smartInsertDeleteType = .no
+        tf.returnKeyType = returnKeyType
         tf.font = UIFont.preferredFont(forTextStyle: .body)
         tf.adjustsFontForContentSizeCategory = true
         tf.delegate = context.coordinator
@@ -42,6 +57,16 @@ struct HebrewKeyboardTextField: UIViewRepresentable {
     func updateUIView(_ uiView: UITextField, context: Context) {
         if uiView.text != text {
             uiView.text = text
+        }
+        // V1.10.7 — applique l'éventuelle demande de focus venue du parent.
+        // Garde-fou : on n'agit que si l'état actuel diffère, sinon on tombe
+        // dans une boucle de mises à jour SwiftUI lors d'un re-render.
+        if let isFocused = isFocused?.wrappedValue {
+            if isFocused && !uiView.isFirstResponder {
+                uiView.becomeFirstResponder()
+            } else if !isFocused && uiView.isFirstResponder {
+                uiView.resignFirstResponder()
+            }
         }
     }
 
@@ -58,6 +83,30 @@ struct HebrewKeyboardTextField: UIViewRepresentable {
                 tf.text = filtered
             }
             parent.text = filtered
+        }
+
+        // V1.10.7 — sync de la focus state vers le @State du parent quand
+        // le focus change suite à un tap utilisateur direct sur le champ.
+        // Garde le binding et l'état UIKit cohérents dans les deux sens.
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            if let binding = parent.isFocused, !binding.wrappedValue {
+                DispatchQueue.main.async { binding.wrappedValue = true }
+            }
+        }
+
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            if let binding = parent.isFocused, binding.wrappedValue {
+                DispatchQueue.main.async { binding.wrappedValue = false }
+            }
+        }
+
+        // V1.10.7 — touche return : on délègue au parent (qui décide de
+        // passer au champ suivant ou de fermer le clavier). On renvoie
+        // `false` pour ne pas insérer de saut de ligne dans le champ
+        // (singleLine de toute façon).
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            parent.onReturn()
+            return false
         }
     }
 }

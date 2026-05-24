@@ -24,6 +24,14 @@ struct PersonalizedReadingFormView: View {
     @State private var navigateToList = false
     @State private var generatedIntent: SavedPrayerIntent? = nil
 
+    /// V1.10.7 — focus chain entre les deux champs hébreux. Le 1er champ a
+    /// returnKeyType `.next` et son callback bascule à `motherFocused = true`,
+    /// ce qui déclenche `becomeFirstResponder` côté UITextField mère SANS
+    /// refermer le clavier. Le 2nd a `.done` et son callback ferme le
+    /// clavier (`motherFocused = false` → resignFirstResponder).
+    @State private var relativeFocused: Bool = false
+    @State private var motherFocused: Bool = false
+
     /// Type figé pour cette feature — toutes les lectures personnalisées sont
     /// des Lelouy Nichmat depuis V1.10.2 (la partie « Malade » a été retirée).
     private let prayerType: PrayerType = .defunt
@@ -54,9 +62,14 @@ struct PersonalizedReadingFormView: View {
                 // MARK: - Défunt
                 Section {
                     LabeledRow(label: "Prénom") {
+                        // V1.10.7 — returnKey `.next` + onReturn qui transfère
+                        // le focus au champ mère (motherFocused = true).
                         HebrewKeyboardTextField(
                             text: $relativeFirstName,
-                            placeholder: "ex. יוסף"
+                            placeholder: "ex. יוסף",
+                            returnKeyType: .next,
+                            isFocused: $relativeFocused,
+                            onReturn: { motherFocused = true }
                         )
                     }
                     Picker("Lien", selection: $relationType) {
@@ -78,9 +91,15 @@ struct PersonalizedReadingFormView: View {
                 // MARK: - Mère
                 Section {
                     LabeledRow(label: "Prénom de la mère") {
+                        // V1.10.7 — returnKey `.done` + onReturn qui ferme
+                        // le clavier en relâchant le focus (motherFocused = false
+                        // → resignFirstResponder).
                         HebrewKeyboardTextField(
                             text: $motherFirstName,
-                            placeholder: "ex. שרה"
+                            placeholder: "ex. שרה",
+                            returnKeyType: .done,
+                            isFocused: $motherFocused,
+                            onReturn: { motherFocused = false }
                         )
                     }
                 } header: {

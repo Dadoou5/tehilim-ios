@@ -57,6 +57,18 @@ struct SavedPrayersListView: View {
         }
         .navigationTitle("Mes prières")
         .navigationBarTitleDisplayMode(.large)
+        // V1.10.7 — EditButton dans la toolbar : rend la suppression
+        // découvrable pour les nouveaux users (qui ne pensent pas
+        // spontanément au swipe). Pattern natif iOS — utilisé par Mail,
+        // Notes, Rappels. Le swipe-to-delete continue de fonctionner en
+        // parallèle pour les power users.
+        .toolbar {
+            if !savedPrayers.intents.isEmpty {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    EditButton()
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -160,9 +172,14 @@ struct SavedPrayersListView: View {
 
     /// Mappe les offsets du `ForEach(sortedIntents)` vers les indices du
     /// store sous-jacent (qui peut être dans un ordre différent).
+    /// V1.10.7 — annule aussi les rappels d'azcara associés à la prière
+    /// supprimée, sinon les UNNotificationRequest restent en file et
+    /// déclenchent des notifs orphelines.
     private func deleteFromSorted(at offsets: IndexSet) {
         let toDelete = offsets.map { sortedIntents[$0] }
         for intent in toDelete {
+            let intentId = intent.id
+            Task { await NotificationManager.shared.cancelMemorialReminders(intentId: intentId) }
             savedPrayers.delete(intent)
         }
     }

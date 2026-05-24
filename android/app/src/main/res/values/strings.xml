@@ -253,6 +253,10 @@
     <string name="memorial_notif_body_today">Azcara de %1$s.</string>
     <string name="memorial_notif_body_j7">Azcara de %1$s dans %2$d jours.</string>
     <string name="memorial_starts_previous_evening">* commence la veille au soir</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="confirm_delete_prayer_title">Supprimer ce Lelouy Nichmat ?</string>
+    <string name="confirm_delete_prayer_body">Cette action est irréversible. Les rappels associés seront aussi annulés.</string>
+    <string name="cd_delete_prayer">Supprimer la prière</string>
 
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Texte hébreu</string>

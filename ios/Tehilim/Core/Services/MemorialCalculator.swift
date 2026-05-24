@@ -94,36 +94,34 @@ enum MemorialCalculator {
 
     /// Adaptation du mois entre année source et année cible.
     ///
-    /// Indexation Apple Hebrew :
-    /// - Année commune : 1=Tishri, 2=Heshvan, 3=Kislev, 4=Tevet, 5=Shevat,
-    ///                   **6=Adar** (unique), 7=Nisan, ..., 12=Elul.
-    /// - Année embolismique : 1=Tishri, ..., 5=Shevat,
-    ///                        **6=Adar I**, **7=Adar II**, 8=Nisan, ..., 13=Elul.
+    /// **Indexation Apple Hebrew (= ICU 1-indexé)** — STABLE quel que soit
+    /// le statut leap de l'année :
+    /// - 1 = Tishri, 2 = Heshvan, 3 = Kislev, 4 = Tevet, 5 = Shevat
+    /// - **6 = Adar I** — n'existe QUE dans les années embolismiques
+    /// - **7 = Adar** — en année commune = Adar unique ; en année
+    ///                 embolismique = Adar II
+    /// - 8 = Nisan, 9 = Iyar, 10 = Sivan, 11 = Tammuz, 12 = Av, 13 = Elul
+    ///
+    /// Conséquence : en année commune, le mois 6 est *skipped* (les mois
+    /// retournés sont {1,2,3,4,5,7,8,9,10,11,12}). Pas de re-numérotation.
+    /// Donc la seule transformation nécessaire est pour Adar I → Adar
+    /// quand on passe d'une année leap à une non-leap.
+    ///
+    /// V1.10.7 — fix bug remonté en test : ancienne logique faisait des
+    /// décalages ±1 pour les mois post-Adar (en supposant à tort une
+    /// indexation contiguë), résultant en off-by-one (Sivan → Tammuz, etc.).
     static func adjustedMonth(
         sourceMonth: Int,
         sourceLeap: Bool,
         targetLeap: Bool
     ) -> Int {
-        if sourceLeap {
-            // Source en Adar I (mois 6) : cible en Adar I si année cible
-            // embolismique, sinon Adar unique (mois 6 non-leap).
-            if sourceMonth == 6 { return 6 }
-            // Source en Adar II (mois 7) : Adar II en leap, Adar unique
-            // en non-leap.
-            if sourceMonth == 7 { return targetLeap ? 7 : 6 }
-            // Source post-Adar (Nisan..Elul = 8..13 en leap). En non-leap,
-            // ils sont décalés à 7..12.
-            if !targetLeap && sourceMonth >= 8 { return sourceMonth - 1 }
-            return sourceMonth
-        } else {
-            // Source en Adar unique (non-leap, mois 6) : observée en
-            // Adar II si cible embolismique (tradition Ashkenazi standard).
-            if sourceMonth == 6 { return targetLeap ? 7 : 6 }
-            // Source post-Adar (Nisan..Elul = 7..12 en non-leap). En leap,
-            // décalés à 8..13 (insertion d'Adar II).
-            if targetLeap && sourceMonth >= 7 { return sourceMonth + 1 }
-            return sourceMonth
+        // Source Adar I (mois 6, leap-only) + cible commune → Adar (7).
+        if sourceLeap && sourceMonth == 6 && !targetLeap {
+            return 7
         }
+        // Tous les autres cas (incluant Adar source → Adar II target leap
+        // = même indice 7) : indice stable.
+        return sourceMonth
     }
 
     /// Adaptation du jour quand le mois cible est plus court (29 vs 30).
@@ -144,7 +142,8 @@ enum MemorialCalculator {
         if sourceLeap && sourceMonth == 6 && sourceDay == 30 {
             return (5, 30)
         }
-        // Règle standard : 30 Heshvan → 1 Kislev, 30 Kislev → 1 Tevet.
+        // Règle standard : 30 Heshvan (2) → 1 Kislev (3),
+        //                  30 Kislev (3)  → 1 Tevet (4).
         return (targetMonth + 1, 1)
     }
 }

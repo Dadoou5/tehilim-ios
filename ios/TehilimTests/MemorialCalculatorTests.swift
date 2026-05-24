@@ -45,47 +45,52 @@ final class MemorialCalculatorTests: XCTestCase {
     }
 
     // MARK: - Adaptation du mois (Adar / Adar II)
+    //
+    // Indexation Apple Hebrew (= ICU 1-indexée, STABLE) :
+    //   6 = Adar I (leap-only), 7 = Adar (commune unique OU leap = Adar II),
+    //   8 = Nisan (toujours), 10 = Sivan (toujours), etc.
 
-    func testAdarFromNonLeapToLeap_observedInAdarII() {
-        // Source Adar année commune (mois 6) → cible année embolismique :
-        // observée en Adar II (mois 7) — tradition Ashkenazi standard.
-        let m = MemorialCalculator.adjustedMonth(
-            sourceMonth: 6, sourceLeap: false, targetLeap: true
-        )
-        XCTAssertEqual(m, 7)
-    }
-
-    func testAdarIFromLeapToNonLeap_observedInSingleAdar() {
-        // Source Adar I (leap, mois 6) → cible année commune : Adar unique (mois 6).
-        let m = MemorialCalculator.adjustedMonth(
-            sourceMonth: 6, sourceLeap: true, targetLeap: false
-        )
-        XCTAssertEqual(m, 6)
-    }
-
-    func testAdarIIFromLeapToNonLeap_observedInSingleAdar() {
-        // Source Adar II (leap, mois 7) → cible année commune : Adar unique (mois 6).
-        let m = MemorialCalculator.adjustedMonth(
-            sourceMonth: 7, sourceLeap: true, targetLeap: false
-        )
-        XCTAssertEqual(m, 6)
-    }
-
-    func testPostAdarMonthShift_NonLeapToLeap() {
-        // Source Nisan année commune (mois 7) → cible année embolismique :
-        // Nisan (mois 8 dans l'indexation Apple leap).
+    func testAdarFromNonLeapToLeap_observedInAdarII_sameIndex() {
+        // Source Adar année commune (mois 7) → cible embolismique : Adar II
+        // (mois 7 aussi, indexation stable). C'est l'interprétation
+        // « observée en Adar II » de la tradition Ashkenazi.
         let m = MemorialCalculator.adjustedMonth(
             sourceMonth: 7, sourceLeap: false, targetLeap: true
         )
-        XCTAssertEqual(m, 8)
+        XCTAssertEqual(m, 7)
     }
 
-    func testPostAdarMonthShift_LeapToNonLeap() {
-        // Source Nisan leap (mois 8) → cible commune : Nisan (mois 7).
+    func testAdarIFromLeapToNonLeap_collapsesToSingleAdar() {
+        // Source Adar I (leap, mois 6) → cible commune : Adar I n'existe pas,
+        // observée en Adar unique (mois 7).
         let m = MemorialCalculator.adjustedMonth(
-            sourceMonth: 8, sourceLeap: true, targetLeap: false
+            sourceMonth: 6, sourceLeap: true, targetLeap: false
         )
         XCTAssertEqual(m, 7)
+    }
+
+    func testAdarIIFromLeapToNonLeap_stillIndex7() {
+        // Source Adar II (leap, mois 7) → cible commune : Adar unique (7).
+        let m = MemorialCalculator.adjustedMonth(
+            sourceMonth: 7, sourceLeap: true, targetLeap: false
+        )
+        XCTAssertEqual(m, 7)
+    }
+
+    func testAdarI_LeapToLeap_stillAdarI() {
+        let m = MemorialCalculator.adjustedMonth(
+            sourceMonth: 6, sourceLeap: true, targetLeap: true
+        )
+        XCTAssertEqual(m, 6)
+    }
+
+    func testPostAdarMonths_stableIndices() {
+        // Nisan = 8 toujours, Sivan = 10 toujours, peu importe leap.
+        // Plus de décalage post-Adar dans l'indexation stable.
+        XCTAssertEqual(MemorialCalculator.adjustedMonth(sourceMonth: 8, sourceLeap: false, targetLeap: true), 8)
+        XCTAssertEqual(MemorialCalculator.adjustedMonth(sourceMonth: 8, sourceLeap: true, targetLeap: false), 8)
+        XCTAssertEqual(MemorialCalculator.adjustedMonth(sourceMonth: 10, sourceLeap: false, targetLeap: true), 10)
+        XCTAssertEqual(MemorialCalculator.adjustedMonth(sourceMonth: 10, sourceLeap: true, targetLeap: false), 10)
     }
 
     // MARK: - Adaptation du jour (rollover 30 → 1 du mois suivant)
@@ -100,8 +105,7 @@ final class MemorialCalculatorTests: XCTestCase {
     }
 
     func testHeshvan30Rollover() {
-        // Source : 30 Heshvan (mois 2). Cible : année où Heshvan = 29 jours
-        // (cas le plus fréquent, années « régulières » ou « déficientes »).
+        // Source : 30 Heshvan (mois 2). Cible : année où Heshvan = 29 jours.
         // Attendu : 1 Kislev (mois 3, jour 1).
         guard let year = findYear(month: 2, withDays: 29) else {
             XCTFail("No year with Heshvan = 29 days found in 5780..5810"); return
@@ -110,13 +114,12 @@ final class MemorialCalculatorTests: XCTestCase {
             sourceDay: 30, sourceMonth: 2, sourceLeap: false,
             targetMonth: 2, targetYear: year
         )
-        XCTAssertEqual(m, 3, "Heshvan 30 dans année à Heshvan-29 → devrait basculer en Kislev (mois 3)")
+        XCTAssertEqual(m, 3)
         XCTAssertEqual(d, 1)
     }
 
     func testKislev30Rollover() {
-        // Source : 30 Kislev (mois 3). Cible : année où Kislev = 29 jours
-        // (années « déficientes » — plus rares).
+        // Source : 30 Kislev (mois 3). Cible : année où Kislev = 29 jours.
         // Attendu : 1 Tevet (mois 4, jour 1).
         guard let year = findYear(month: 3, withDays: 29) else {
             XCTFail("No year with Kislev = 29 days found in 5780..5810"); return
@@ -125,18 +128,19 @@ final class MemorialCalculatorTests: XCTestCase {
             sourceDay: 30, sourceMonth: 3, sourceLeap: false,
             targetMonth: 3, targetYear: year
         )
-        XCTAssertEqual(m, 4, "Kislev 30 dans année à Kislev-29 → devrait basculer en Tevet (mois 4)")
+        XCTAssertEqual(m, 4)
         XCTAssertEqual(d, 1)
     }
 
     func testAdarI30ToNonLeap_observedOn30Shevat() {
-        // Source : 30 Adar I (leap, mois 6). Cible : année commune (Adar I
-        // n'existe pas → Adar unique 29 jours). Attendu : 30 Shevat (mois 5).
+        // Source : 30 Adar I (leap, mois 6). Cible : année commune.
+        // Attendu : 30 Shevat (mois 5).
+        // Note : on simule un targetMonth quelconque non-leap (e.g. 7 = Adar).
         let (m, d) = MemorialCalculator.adjustedDay(
             sourceDay: 30, sourceMonth: 6, sourceLeap: true,
-            targetMonth: 6, targetYear: 5786
+            targetMonth: 7, targetYear: 5786 // non-leap
         )
-        XCTAssertEqual(m, 5)
+        XCTAssertEqual(m, 5, "30 Adar I + non-leap → 30 Shevat (mois 5)")
         XCTAssertEqual(d, 30)
     }
 
@@ -228,5 +232,23 @@ final class MemorialCalculatorTests: XCTestCase {
         XCTAssertEqual(back.remindersEnabled, true)
         XCTAssertEqual(back.notifySameDay, false)
         XCTAssertEqual(back.hebrewDateOfDeath?.year, 5784)
+    }
+}
+
+extension MemorialCalculatorTests {
+    /// Test de régression — bug remonté en V1.10.7 dev :
+    /// décès 24 mai 2020 (1 Sivan 5780), attendue prochaine azcara
+    /// en juin 2027 (1 Sivan 5787, année embolismique). L'ancienne
+    /// logique faisait un mauvais shift de +1 sur Sivan (mois 10)
+    /// → renvoyait Tammuz (11) → 6 juillet 2027, faux.
+    func testRegression_SivanInLeapTarget_24May2020() {
+        let death = civil(2020, 5, 24)
+        let now = civil(2026, 5, 24)
+        let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)
+        XCTAssertNotNil(next)
+        let nextMonth = Calendar(identifier: .gregorian)
+            .dateComponents([.month, .year], from: next!)
+        XCTAssertEqual(nextMonth.year, 2027)
+        XCTAssertEqual(nextMonth.month, 6, "Doit être en juin 2027 (1 Sivan 5787), pas juillet")
     }
 }

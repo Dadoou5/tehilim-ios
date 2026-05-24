@@ -9,11 +9,41 @@ struct Psalm119HomeView: View {
 
     private var isRegular: Bool { hSize == .regular }
 
+    private var columnsCount: Int {
+        AdaptiveLayout.psalm119ColumnCount(for: hSize)
+    }
+
     private var columns: [GridItem] {
         Array(
             repeating: GridItem(.flexible(), spacing: isRegular ? 16 : 12),
-            count: AdaptiveLayout.psalm119ColumnCount(for: hSize)
+            count: columnsCount
         )
+    }
+
+    /// V1.4 — sections aplaties pour rendu RTL : chaque ligne est inversée
+    /// (Aleph finit en haut à droite), et la dernière ligne incomplète est
+    /// préfixée de placeholders `nil` côté gauche pour coller ses lettres
+    /// à droite. LazyVGrid remplit ensuite ce flat list cellule par cellule
+    /// dans l'ordre LTR natif → visuellement on lit RTL.
+    private var rtlGridCells: [Psalm119Section?] {
+        let raw = container.psalm119Repository.sections
+        let cols = columnsCount
+        guard cols > 0, !raw.isEmpty else { return [] }
+        var result: [Psalm119Section?] = []
+        var index = 0
+        while index < raw.count {
+            let end = min(index + cols, raw.count)
+            let chunk = Array(raw[index..<end])
+            let padding = cols - chunk.count
+            // Placeholders à gauche pour la ligne incomplète
+            if padding > 0 {
+                result.append(contentsOf: Array(repeating: nil, count: padding))
+            }
+            // Sections inversées (la plus petite index = la plus à droite)
+            result.append(contentsOf: chunk.reversed().map { Optional($0) })
+            index = end
+        }
+        return result
     }
 
     var body: some View {
@@ -26,19 +56,28 @@ struct Psalm119HomeView: View {
                 // V1.10.0 — Entry points lecture personnalisée
                 personalizedSection
 
-                // Grille alphabet classique
+                // Grille alphabet — sens de lecture hébreu (Aleph haut-droite).
+                // Voir `rtlGridCells` pour la construction du flat list avec
+                // placeholders.
                 LazyVGrid(columns: columns, spacing: isRegular ? 16 : 12) {
-                    ForEach(container.psalm119Repository.sections) { section in
-                        NavigationLink(destination: Psalm119SectionView(index: section.index)) {
-                            HebrewLetterTile(
-                                letter: section.letter,
-                                index: section.index,
-                                name: section.name,
-                                verseStart: section.verseStart,
-                                verseEnd: section.verseEnd
-                            )
+                    ForEach(Array(rtlGridCells.enumerated()), id: \.offset) { _, maybeSection in
+                        if let section = maybeSection {
+                            NavigationLink(destination: Psalm119SectionView(index: section.index)) {
+                                HebrewLetterTile(
+                                    letter: section.letter,
+                                    index: section.index,
+                                    name: section.name,
+                                    verseStart: section.verseStart,
+                                    verseEnd: section.verseEnd
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            // Cellule vide pour aligner la dernière ligne à droite
+                            Color.clear
+                                .frame(maxWidth: .infinity, minHeight: isRegular ? 150 : 88)
+                                .accessibilityHidden(true)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }

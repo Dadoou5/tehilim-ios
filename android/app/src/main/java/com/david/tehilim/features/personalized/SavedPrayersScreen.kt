@@ -40,7 +40,29 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
-    val intents by container.savedPrayers.intents.collectAsState()
+    val rawIntents by container.savedPrayers.intents.collectAsState()
+
+    // V1.4 — Tri : (1) prières avec date du décès → triées par prochaine
+    // azcara croissante (les commémorations à venir en premier),
+    // (2) prières sans date → triées par date de création décroissante,
+    // ajoutées après le premier groupe.
+    val intents = remember(rawIntents) {
+        val now = Date()
+        val withAzcara = rawIntents.mapNotNull { intent ->
+            val millis = intent.civilDateOfDeathEpochMillis ?: return@mapNotNull null
+            val next = MemorialCalculator.nextYahrzeit(Date(millis), now) ?: return@mapNotNull null
+            intent to next
+        }.sortedWith(
+            compareBy<Pair<com.david.tehilim.core.model.SavedPrayerIntent, Date>> { it.second }
+                .thenByDescending { it.first.createdAtEpochMillis }
+        ).map { it.first }
+
+        val withoutAzcara = rawIntents
+            .filter { it.civilDateOfDeathEpochMillis == null }
+            .sortedByDescending { it.createdAtEpochMillis }
+
+        withAzcara + withoutAzcara
+    }
 
     Scaffold(
         topBar = {

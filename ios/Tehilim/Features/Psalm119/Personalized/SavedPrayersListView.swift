@@ -18,12 +18,12 @@ struct SavedPrayersListView: View {
             } else {
                 List {
                     Section {
-                        ForEach(savedPrayers.intents) { intent in
+                        ForEach(sortedIntents) { intent in
                             NavigationLink(destination: PersonalizedReadingListView(intent: intent, isSaved: true)) {
                                 row(intent)
                             }
                         }
-                        .onDelete(perform: delete)
+                        .onDelete(perform: deleteFromSorted)
                     } header: {
                         Text("Lelouy Nichmat")
                     } footer: {
@@ -93,5 +93,41 @@ struct SavedPrayersListView: View {
 
     private func delete(at offsets: IndexSet) {
         savedPrayers.delete(at: offsets)
+    }
+
+    /// V1.10.7 — Mes prières triées par prochaine azcara croissante
+    /// (les commémorations à venir en premier), puis par date de création
+    /// décroissante pour les prières sans date du décès renseignée.
+    private var sortedIntents: [SavedPrayerIntent] {
+        let now = Date()
+        let withAzcara = savedPrayers.intents.compactMap { intent -> (SavedPrayerIntent, Date)? in
+            guard let death = intent.civilDateOfDeath,
+                  let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)
+            else { return nil }
+            return (intent, next)
+        }
+        .sorted { lhs, rhs in
+            if lhs.1 != rhs.1 { return lhs.1 < rhs.1 }
+            // Tiebreaker : créé en dernier en premier (= comportement
+            // historique pour les prières insérées le même jour avec
+            // la même date du décès).
+            return lhs.0.createdAt > rhs.0.createdAt
+        }
+        .map { $0.0 }
+
+        let withoutAzcara = savedPrayers.intents
+            .filter { $0.civilDateOfDeath == nil }
+            .sorted { $0.createdAt > $1.createdAt }
+
+        return withAzcara + withoutAzcara
+    }
+
+    /// Mappe les offsets du `ForEach(sortedIntents)` vers les indices du
+    /// store sous-jacent (qui peut être dans un ordre différent).
+    private func deleteFromSorted(at offsets: IndexSet) {
+        let toDelete = offsets.map { sortedIntents[$0] }
+        for intent in toDelete {
+            savedPrayers.delete(intent)
+        }
     }
 }

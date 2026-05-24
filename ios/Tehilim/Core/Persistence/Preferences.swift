@@ -142,17 +142,38 @@ final class Preferences: ObservableObject {
 
     static let kvsKey = "preferences.snapshot"
 
-    /// Au démarrage : si iCloud a déjà un snapshot, on l'applique localement
-    /// (le device adopte la config la plus récente sur le réseau). Sinon on
-    /// pousse le snapshot local pour seed iCloud.
+    /// Au démarrage, on FAIT CONFIANCE AU LOCAL si l'utilisateur a déjà
+    /// configuré l'app sur ce device. Le multi-device sync reste assuré par
+    /// `observeCloudChanges` (notification KVS push à la volée quand un
+    /// autre device modifie).
+    ///
+    /// **V1.10.7 — fix régression** : l'ancienne logique chargeait iCloud
+    /// inconditionnellement au démarrage et écrasait `appLanguage` (et tous
+    /// les autres champs) avec la valeur cloud. Si la dernière modif locale
+    /// n'avait pas eu le temps d'être pushée (app fermée trop vite, réseau
+    /// lent, iCloud account temporairement indispo), la valeur retournée
+    /// par iCloud était stale et écrasait le choix utilisateur.
+    /// Bug reproduit : changer langue FR→EN, fermer l'app, rouvrir → revient
+    /// en FR. Pareil potentiellement pour theme, textSize, etc.
     private func bootstrapCloudSync() {
-        if let cloud = iCloudKVS.shared.load(PreferencesSnapshot.self, forKey: Self.kvsKey) {
+        let cloud = iCloudKVS.shared.load(PreferencesSnapshot.self, forKey: Self.kvsKey)
+        let isFreshInstall = defaults.object(forKey: "pref.app.language") == nil
+
+        if isFreshInstall, let cloud {
+            // Fresh install ET iCloud a déjà un snapshot d'un autre device
+            // → on adopte la config cloud (= « nouveau iPhone signe sur le
+            // même Apple ID, retrouve ses préférences »).
             applyRemoteSnapshot(cloud)
-            // Snapshot effectivement appliqué (cf. note dans observeCloudChanges).
             lastPushedSnapshot = currentSnapshot()
         } else {
+            // Cas normal (relance app, ou fresh install sans iCloud) : on
+            // pousse l'état local courant vers iCloud. Si le snapshot local
+            // diffère du snapshot cloud (= il y a eu une modif depuis le
+            // dernier push), iCloud reçoit la version à jour. Sinon no-op.
             let snap = currentSnapshot()
-            iCloudKVS.shared.save(snap, forKey: Self.kvsKey)
+            if snap != cloud {
+                iCloudKVS.shared.save(snap, forKey: Self.kvsKey)
+            }
             lastPushedSnapshot = snap
         }
     }

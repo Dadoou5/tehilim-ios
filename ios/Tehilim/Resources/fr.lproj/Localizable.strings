@@ -118,3 +118,14 @@
    "Français"/"English" laissés tels quels (clés = valeurs) : les langues
    s'affichent dans leur propre langue (convention iOS Settings). */
 "Source : %@" = "Source : %@";
+
+/* V1.10.7 — page Tehilim 119 (AlphaBeta) home : keys déclarées pour
+   parité avec en.lproj. En FR, clé = valeur (langue source). */
+"Les 22 lettres de l'alphabet hébreu, huit versets chacune." = "Les 22 lettres de l'alphabet hébreu, huit versets chacune.";
+"Lelouy Nichmat" = "Lelouy Nichmat";
+"Nouvelle lecture" = "Nouvelle lecture";
+"Mes prières" = "Mes prières";
+"Élévation de l'âme — prénom + mère" = "Élévation de l'âme — prénom + mère";
+"Aucun sauvegardé" = "Aucun sauvegardé";
+"1 sauvegardé" = "1 sauvegardé";
+"%lld sauvegardés" = "%lld sauvegardés";

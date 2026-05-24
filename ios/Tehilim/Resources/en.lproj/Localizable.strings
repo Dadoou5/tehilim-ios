@@ -250,3 +250,15 @@
 "Transcription assistée du texte hébreu en lettres latines (sépharade). Approximation algorithmique, ne remplace pas une lecture du texte original." = "Phonetic transliteration of Hebrew text into Latin letters (Sephardic). Algorithmic approximation, does not replace reading the original text.";
 "Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "In memory of Johann Meïr ben Sarah Bouganim";
 "Tehilim. Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "Tehilim. In memory of Johann Meïr ben Sarah Bouganim";
+
+/* V1.10.7 — page Tehilim 119 (AlphaBeta) home : strings hardcodées
+   FR rendues localisables. La page restait en français quand l'app
+   était en EN parce que les keys manquaient. */
+"Les 22 lettres de l'alphabet hébreu, huit versets chacune." = "The 22 letters of the Hebrew alphabet, eight verses each.";
+"Lelouy Nichmat" = "Lelouy Nichmat";
+"Nouvelle lecture" = "New reading";
+"Mes prières" = "My prayers";
+"Élévation de l'âme — prénom + mère" = "Soul elevation — first name + mother";
+"Aucun sauvegardé" = "None saved";
+"1 sauvegardé" = "1 saved";
+"%lld sauvegardés" = "%lld saved";

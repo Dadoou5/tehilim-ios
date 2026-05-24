@@ -132,11 +132,14 @@ struct Psalm119HomeView: View {
                 spacing: 12
             ) {
                 // Carte : nouvelle lecture
+                // V1.10.7 — subtitle via L() pour passer par le swizzle
+                // Bundle (sans ça, `String` passé à `Text()` ne se localise
+                // pas — seul `LocalizedStringKey` le fait automatiquement).
                 Button { showingForm = true } label: {
                     actionCard(
                         symbol: "flame.fill",
                         title: "Nouvelle lecture",
-                        subtitle: "Élévation de l'âme — prénom + mère",
+                        subtitle: L("Élévation de l'âme — prénom + mère"),
                         accent: true
                     )
                 }
@@ -156,12 +159,14 @@ struct Psalm119HomeView: View {
         }
     }
 
+    // V1.10.7 — localisé via L() (passe par le swizzle Bundle pour
+    // suivre la bascule de langue à chaud V2.1.b).
     private var savedCountLabel: String {
         let count = savedPrayers.intents.count
         switch count {
-        case 0: return "Aucun sauvegardé"
-        case 1: return "1 sauvegardé"
-        default: return "\(count) sauvegardés"
+        case 0: return L("Aucun sauvegardé")
+        case 1: return L("1 sauvegardé")
+        default: return String(format: L("%lld sauvegardés"), count)
         }
     }
 

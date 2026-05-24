@@ -296,3 +296,10 @@
 
 /* Section Tehilim 119 — header de progression dans la séquence */
 "· source : %@" = "· source: %@";
+
+/* V1.10.7 — Life Cases : strings hardcodées rendues localisables. */
+"1 Tehilim recommandé" = "1 recommended Tehilim";
+"%lld Tehilim recommandés" = "%lld recommended Tehilim";
+"Tehilim à lire" = "Tehilim to read";
+"Tradition. Ne remplace pas un avis professionnel." = "Tradition. Does not replace professional advice.";
+"Cas de la vie" = "Life cases";

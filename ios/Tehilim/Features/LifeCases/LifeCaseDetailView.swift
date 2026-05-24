@@ -182,8 +182,12 @@ struct LifeCaseDetailView: View {
             .padding(.bottom, 16)
     }
 
+    // V1.10.7 — localisé via L() (Text(stringVar) ne passe pas par
+    // LocalizedStringKey, d'où le besoin du helper).
     private func psalmCountLabel(for c: LifeCase) -> String {
         let n = c.psalms.count
-        return n == 1 ? "1 Tehilim recommandé" : "\(n) Tehilim recommandés"
+        return n == 1
+            ? L("1 Tehilim recommandé")
+            : String(format: L("%lld Tehilim recommandés"), n)
     }
 }

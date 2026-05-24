@@ -162,3 +162,10 @@
 
 /* Section Tehilim 119 — header de progression dans la séquence */
 "· source : %@" = "· source : %@";
+
+/* V1.10.7 — Life Cases : keys déclarées pour parité avec en.lproj. */
+"1 Tehilim recommandé" = "1 Tehilim recommandé";
+"%lld Tehilim recommandés" = "%lld Tehilim recommandés";
+"Tehilim à lire" = "Tehilim à lire";
+"Tradition. Ne remplace pas un avis professionnel." = "Tradition. Ne remplace pas un avis professionnel.";
+"Cas de la vie" = "Cas de la vie";

@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Info
@@ -29,7 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +65,14 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
     val isValid = HebrewLetterMapper.isValidHebrewName(relativeName) &&
         HebrewLetterMapper.isValidHebrewName(motherName)
 
+    // V1.4 — FocusRequester pour chaîner les deux champs hébreux :
+    // tap "Suivant" sur le clavier du 1er champ → focus le 2e sans
+    // refermer le clavier. Tap "Terminé" sur le 2e → ferme le clavier.
+    val relativeFocus = remember { FocusRequester() }
+    val motherFocus = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,6 +89,13 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                // imePadding pousse le contenu au-dessus du clavier soft
+                // (couplé à `adjustResize` du manifest) → la zone visible
+                // ne descend jamais sous le clavier.
+                .imePadding()
+                // Scroll vertical pour que les champs restent accessibles
+                // même si le clavier ouvert réduit la hauteur disponible.
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -146,12 +167,17 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
             }
 
             // Section : le défunt — HebrewKeyboardTextField force le clavier
-            // hébreu via imeHintLocales (équivalent du textInputMode iOS V1.10.1)
+            // hébreu via imeHintLocales (équivalent du textInputMode iOS V1.10.1).
+            // V1.4 — action IME "Suivant" → bascule sur le champ mère sans
+            // refermer le clavier.
             HebrewKeyboardTextField(
                 value = relativeName,
                 onValueChange = { relativeName = it },
                 label = stringResource(R.string.placeholder_relative_name),
                 placeholder = stringResource(R.string.placeholder_relative_example),
+                imeAction = HebrewFieldImeAction.Next,
+                focusRequester = relativeFocus,
+                onImeAction = { motherFocus.requestFocus() },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -181,12 +207,20 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 )
             }
 
-            // Section : sa mère
+            // Section : sa mère. V1.4 — action IME "Terminé" → ferme le
+            // clavier et libère la vue pour la prévisualisation + bouton
+            // Générer.
             HebrewKeyboardTextField(
                 value = motherName,
                 onValueChange = { motherName = it },
                 label = stringResource(R.string.placeholder_mother_name),
                 placeholder = stringResource(R.string.placeholder_mother_example),
+                imeAction = HebrewFieldImeAction.Done,
+                focusRequester = motherFocus,
+                onImeAction = {
+                    focusManager.clearFocus()
+                    keyboard?.hide()
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 

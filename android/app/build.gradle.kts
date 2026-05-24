@@ -57,7 +57,11 @@ android {
         //            (widget/notif) — accès direct au contenu
         // Build 13 : grille Tehilim 119 en sens de lecture hébreu —
         //            Aleph en haut à droite (parité avec iOS, RTL natif)
-        versionCode = 13
+        // Build 14 : formulaire Lelouy Nichmat — labels alignés à droite +
+        //            IME chaîné (Suivant → champ mère, Terminé → ferme
+        //            clavier), scroll vertical + imePadding pour que le
+        //            clavier soft ne masque jamais les champs
+        versionCode = 14
         versionName = "1.0.0"
 
         // Tests

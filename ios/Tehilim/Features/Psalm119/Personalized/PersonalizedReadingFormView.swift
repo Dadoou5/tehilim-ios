@@ -24,13 +24,16 @@ struct PersonalizedReadingFormView: View {
     @State private var navigateToList = false
     @State private var generatedIntent: SavedPrayerIntent? = nil
 
-    /// V1.10.7 — focus chain entre les deux champs hébreux. Le 1er champ a
-    /// returnKeyType `.next` et son callback bascule à `motherFocused = true`,
-    /// ce qui déclenche `becomeFirstResponder` côté UITextField mère SANS
-    /// refermer le clavier. Le 2nd a `.done` et son callback ferme le
-    /// clavier (`motherFocused = false` → resignFirstResponder).
-    @State private var relativeFocused: Bool = false
-    @State private var motherFocused: Bool = false
+    /// V1.10.7 — focus chain entre les deux champs hébreux.
+    ///
+    /// Un seul `@State` enum (pas deux Bool indépendants) garantit l'**exclusivité
+    /// mutuelle** : impossible que les deux champs soient marqués focused
+    /// simultanément. Sans ça, les sync async via `textFieldDid…Editing`
+    /// créaient une fenêtre de race où le UITextField source se ré-arrogeait
+    /// le firstResponder → les keystrokes étaient répliqués sur les deux
+    /// champs (bug remonté en test).
+    private enum FocusedField { case relative, mother }
+    @State private var focusedField: FocusedField? = nil
 
     /// Type figé pour cette feature — toutes les lectures personnalisées sont
     /// des Lelouy Nichmat depuis V1.10.2 (la partie « Malade » a été retirée).
@@ -62,14 +65,15 @@ struct PersonalizedReadingFormView: View {
                 // MARK: - Défunt
                 Section {
                     LabeledRow(label: "Prénom") {
-                        // V1.10.7 — returnKey `.next` + onReturn qui transfère
-                        // le focus au champ mère (motherFocused = true).
+                        // V1.10.7 — returnKey `.next`. Le Binding dérivé
+                        // de `focusedField` garantit qu'à tout moment, AU
+                        // PLUS UN seul champ est focused.
                         HebrewKeyboardTextField(
                             text: $relativeFirstName,
                             placeholder: "ex. יוסף",
                             returnKeyType: .next,
-                            isFocused: $relativeFocused,
-                            onReturn: { motherFocused = true }
+                            isFocused: focusBinding(for: .relative),
+                            onReturn: { focusedField = .mother }
                         )
                     }
                     Picker("Lien", selection: $relationType) {
@@ -91,15 +95,15 @@ struct PersonalizedReadingFormView: View {
                 // MARK: - Mère
                 Section {
                     LabeledRow(label: "Prénom de la mère") {
-                        // V1.10.7 — returnKey `.done` + onReturn qui ferme
-                        // le clavier en relâchant le focus (motherFocused = false
-                        // → resignFirstResponder).
+                        // V1.10.7 — returnKey `.done`. onReturn met
+                        // `focusedField = nil` → resignFirstResponder, le
+                        // clavier se ferme.
                         HebrewKeyboardTextField(
                             text: $motherFirstName,
                             placeholder: "ex. שרה",
                             returnKeyType: .done,
-                            isFocused: $motherFocused,
-                            onReturn: { motherFocused = false }
+                            isFocused: focusBinding(for: .mother),
+                            onReturn: { focusedField = nil }
                         )
                     }
                 } header: {
@@ -152,6 +156,23 @@ struct PersonalizedReadingFormView: View {
     /// Affichage hébraïque compact en live : « יוסף בן שרה · נשמה ».
     private var previewHebrew: String {
         "\(relativeFirstName) \(relationType.hebrew) \(motherFirstName) · נשמה"
+    }
+
+    /// V1.10.7 — convertit l'enum `focusedField` en `Binding<Bool>` pour
+    /// chacun des champs. Le setter ne nilifie l'enum que si on désélectionne
+    /// LE champ correspondant (pas un autre), évitant les races entre
+    /// les didEndEditing async des deux champs.
+    private func focusBinding(for field: FocusedField) -> Binding<Bool> {
+        Binding(
+            get: { focusedField == field },
+            set: { isOn in
+                if isOn {
+                    focusedField = field
+                } else if focusedField == field {
+                    focusedField = nil
+                }
+            }
+        )
     }
 
     /// V1.10.5 — Génère la séquence ET sauvegarde automatiquement.

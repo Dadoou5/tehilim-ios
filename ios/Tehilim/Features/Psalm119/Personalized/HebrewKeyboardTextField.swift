@@ -55,12 +55,19 @@ struct HebrewKeyboardTextField: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextField, context: Context) {
+        // V1.10.7 — pattern standard UIViewRepresentable : on rafraîchit la
+        // référence parent du Coordinator pour qu'il pointe vers la version
+        // courante du struct (closures `onReturn` + bindings à jour). Sans
+        // ça, les callbacks delegate utiliseraient une copie stale des
+        // closures, source de bugs subtils de focus chain.
+        context.coordinator.parent = self
+
         if uiView.text != text {
             uiView.text = text
         }
-        // V1.10.7 — applique l'éventuelle demande de focus venue du parent.
-        // Garde-fou : on n'agit que si l'état actuel diffère, sinon on tombe
-        // dans une boucle de mises à jour SwiftUI lors d'un re-render.
+        // Applique l'éventuelle demande de focus venue du parent. Garde-fou :
+        // on n'agit que si l'état actuel diffère, sinon on tombe dans une
+        // boucle de mises à jour SwiftUI lors d'un re-render.
         if let isFocused = isFocused?.wrappedValue {
             if isFocused && !uiView.isFirstResponder {
                 uiView.becomeFirstResponder()
@@ -73,7 +80,9 @@ struct HebrewKeyboardTextField: UIViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
 
     final class Coordinator: NSObject, UITextFieldDelegate {
-        let parent: HebrewKeyboardTextField
+        // `var` (et pas `let`) : updateUIView le rafraîchit à chaque
+        // re-render pour récupérer les nouvelles closures du parent.
+        var parent: HebrewKeyboardTextField
         init(parent: HebrewKeyboardTextField) { self.parent = parent }
 
         @objc func editingChanged(_ tf: UITextField) {

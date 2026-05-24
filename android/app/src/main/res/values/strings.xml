@@ -252,6 +252,7 @@
     <string name="memorial_notif_title_today">Azcara aujourd\'hui</string>
     <string name="memorial_notif_body_today">Azcara de %1$s.</string>
     <string name="memorial_notif_body_j7">Azcara de %1$s dans %2$d jours.</string>
+    <string name="memorial_starts_previous_evening">* commence la veille au soir</string>
 
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Texte hébreu</string>

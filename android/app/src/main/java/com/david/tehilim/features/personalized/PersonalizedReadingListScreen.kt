@@ -138,29 +138,40 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                         val dateFmt = remember {
                             DateFormat.getDateInstance(DateFormat.FULL, Locale.getDefault())
                         }
-                        AppCard(modifier = Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier.padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Icon(
-                                    Icons.Outlined.Event,
-                                    null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        stringResource(R.string.memorial_next_azcara),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            AppCard(modifier = Modifier.fillMaxWidth()) {
+                                Row(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Outlined.Event,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.primary
                                     )
-                                    Text(
-                                        dateFmt.format(next),
-                                        style = MaterialTheme.typography.titleSmall
-                                    )
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            stringResource(R.string.memorial_next_azcara),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        // V1.4 — astérisque + footer note pour
+                                        // rappeler que le Hebrew day commence
+                                        // la veille au soir.
+                                        Text(
+                                            "${dateFmt.format(next)}*",
+                                            style = MaterialTheme.typography.titleSmall
+                                        )
+                                    }
                                 }
                             }
+                            Text(
+                                stringResource(R.string.memorial_starts_previous_evening),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                            )
                         }
                     }
                 }

@@ -40,13 +40,19 @@ struct PersonalizedReadingListView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .textCase(.uppercase)
-                            Text(next.formatted(date: .complete, time: .omitted))
+                            // Astérisque rappelle que le Hebrew day commence
+                            // au coucher du soleil de la veille civile.
+                            Text("\(next.formatted(date: .complete, time: .omitted))*")
                                 .font(.headline)
                         }
                         Spacer()
                     }
                     .padding(.vertical, 4)
                     .accessibilityElement(children: .combine)
+                } footer: {
+                    Text("* commence la veille au soir")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
 

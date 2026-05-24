@@ -32,11 +32,19 @@ struct SavedPrayersListView: View {
                         // LocalizedStringKey). On choisit la clé selon
                         // le count, chaque clé existe en EN.
                         let count = savedPrayers.intents.count
-                        Group {
-                            if count <= 1 {
-                                Text("\(count) sauvegardé")
-                            } else {
-                                Text("\(count) sauvegardés")
+                        VStack(alignment: .leading, spacing: 6) {
+                            Group {
+                                if count <= 1 {
+                                    Text("\(count) sauvegardé")
+                                } else {
+                                    Text("\(count) sauvegardés")
+                                }
+                            }
+                            // Explication de l'astérisque affichée à côté
+                            // de la prochaine azcara — affichée si au moins
+                            // une prière a une date du décès renseignée.
+                            if sortedIntents.contains(where: { $0.civilDateOfDeath != nil }) {
+                                Text("* commence la veille au soir")
                             }
                         }
                         .font(.caption)
@@ -73,6 +81,8 @@ struct SavedPrayersListView: View {
 
             // V1.10.7 — Prochaine azcara si la date du décès est renseignée.
             // Calcul fait par MemorialCalculator (règles traditionnelles).
+            // Astérisque rappelle que le Hebrew day commence au coucher
+            // du soleil de la veille civile (cf. footer de la section).
             if let death = intent.civilDateOfDeath,
                let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
                 HStack(spacing: 6) {
@@ -80,7 +90,7 @@ struct SavedPrayersListView: View {
                         .font(.caption2)
                     Text("Prochaine azcara")
                     Text(":")
-                    Text(next.formatted(date: .abbreviated, time: .omitted))
+                    Text("\(next.formatted(date: .abbreviated, time: .omitted))*")
                         .fontWeight(.medium)
                 }
                 .font(.caption)

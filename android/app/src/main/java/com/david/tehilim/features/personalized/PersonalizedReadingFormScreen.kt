@@ -333,9 +333,12 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 }
             }
 
-            // Aperçu "Prochaine azcara"
-            civilDateOfDeath?.let { d ->
-                val next = remember(d) { MemorialCalculator.nextYahrzeit(d) }
+            // Aperçu "Prochaine azcara" — l'astérisque rappelle que le
+            // Hebrew day commence au coucher du soleil de la veille civile,
+            // explication dans le helper en dessous.
+            val deathDate = civilDateOfDeath
+            if (deathDate != null) {
+                val next = remember(deathDate) { MemorialCalculator.nextYahrzeit(deathDate) }
                 if (next != null) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -347,11 +350,16 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            dateFormatter.format(next),
+                            "${dateFormatter.format(next)}*",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
+                    Text(
+                        stringResource(R.string.memorial_starts_previous_evening),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 

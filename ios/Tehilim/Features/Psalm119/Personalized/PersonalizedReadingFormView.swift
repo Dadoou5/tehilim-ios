@@ -161,7 +161,8 @@ struct PersonalizedReadingFormView: View {
                             Text("Prochaine azcara")
                                 .foregroundStyle(.secondary)
                             Spacer()
-                            Text(next.formatted(date: .abbreviated, time: .omitted))
+                            // Astérisque expliqué dans le footer de section.
+                            Text("\(next.formatted(date: .abbreviated, time: .omitted))*")
                                 .foregroundStyle(Color.accentMain)
                         }
                     }
@@ -170,6 +171,9 @@ struct PersonalizedReadingFormView: View {
                 } footer: {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("L'application calcule automatiquement la prochaine azcara à partir de la date civile saisie.")
+                        if civilDateOfDeath != nil {
+                            Text("* commence la veille au soir")
+                        }
                         if remindersEnabled && civilDateOfDeath == nil {
                             Text("Ajoutez une date du décès pour programmer les rappels.")
                                 .foregroundStyle(.orange)

@@ -112,6 +112,9 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         // V1.4 — Prochaine azcara si date du décès renseignée.
+                        // L'astérisque rappelle que le Hebrew day commence
+                        // au coucher du soleil de la veille civile —
+                        // explication en bas de l'écran.
                         val millis = intent.civilDateOfDeathEpochMillis
                         if (millis != null) {
                             val next = remember(millis) {
@@ -119,7 +122,7 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                             }
                             if (next != null) {
                                 Text(
-                                    "${stringResource(R.string.memorial_next_azcara)} : ${dateFormatter.format(next)}",
+                                    "${stringResource(R.string.memorial_next_azcara)} : ${dateFormatter.format(next)}*",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.padding(top = 4.dp)
@@ -127,6 +130,19 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                             }
                         }
                     }
+                }
+            }
+
+            // V1.4 — Footer : explication de l'astérisque, affichée seule-
+            // ment si au moins une prière a une azcara à venir affichée.
+            if (intents.any { it.civilDateOfDeathEpochMillis != null }) {
+                item {
+                    Text(
+                        stringResource(R.string.memorial_starts_previous_evening),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
             }
         }

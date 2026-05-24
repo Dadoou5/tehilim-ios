@@ -217,13 +217,40 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.10.4 (build 21)
+## 📋 What's New / Nouveautés — V1.10.7 (build 24)
 
-> Première version publique. Texte « What's New » à coller dans App Store Connect
-> → onglet **Version 1.10.4** → champ **« Nouveautés / Promotional Text »**.
+> Mise à jour visuelle. Texte « What's New » à coller dans App Store Connect
+> → onglet **Version 1.10.7** → champ **« Nouveautés in this Version »**.
 > Limite Apple : 4 000 caractères par locale.
 
 ### 🇫🇷 — App Store (grand public)
+```
+Cette mise à jour améliore l'expérience de lecture en hébreu :
+
+• Tehilim 119 — la grille des 22 lettres suit désormais le sens de lecture hébreu : Aleph en haut à droite, Tav en bas à gauche.
+
+• Lelouy Nichmat — la touche « Suivant » du clavier hébreu enchaîne automatiquement le prénom du défunt et celui de sa mère, sans refermer le clavier.
+
+Merci à tous les lecteurs qui font vivre cette app jour après jour.
+```
+
+### 🇬🇧 — App Store (general public)
+```
+This update improves the Hebrew reading experience:
+
+• Tehilim 119 — the 22-letter grid now follows the Hebrew reading direction: Aleph top-right, Tav bottom-left.
+
+• Lelouy Nichmat — the "Next" key on the Hebrew keyboard automatically chains the departed's first name and the mother's first name, without dismissing the keyboard.
+
+Thank you to every reader keeping this app alive day after day.
+```
+
+### 📜 Archive — What's New précédents (à conserver pour référence)
+
+<details>
+<summary>V1.10.4 (build 21) — première version publique</summary>
+
+🇫🇷
 ```
 Bienvenue dans Tehilim — l'application complète pour lire les 150 Tehilim du roi David sur iPhone et iPad.
 
@@ -245,7 +272,7 @@ Cette première version inclut :
 Que cette lecture soit une élévation pour ג׳והאן מאיר בן שרה בוגנים, et un mérite pour tous les vivants comme pour les âmes des défunts.
 ```
 
-### 🇬🇧 — App Store (general public)
+🇬🇧
 ```
 Welcome to Tehilim — the complete app for reading the 150 Psalms of King David on iPhone and iPad.
 
@@ -266,6 +293,8 @@ This first release includes:
 
 May this reading be an elevation for ג׳והאן מאיר בן שרה בוגנים, and a merit for the living and for the souls of the departed.
 ```
+
+</details>
 
 ---
 

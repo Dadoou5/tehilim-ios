@@ -82,6 +82,102 @@ final class NotificationManager: NSObject, ObservableObject {
         Self.log.info("Cancelled daily reminder")
     }
 
+    // MARK: - Memorial reminders (V1.10.7 — Commémoration)
+
+    /// Identifiants de notification pour les rappels d'azcara — préfixe
+    /// avec l'id du SavedPrayerIntent pour pouvoir annuler ciblé.
+    static func memorialIds(intentId: UUID) -> (sevenDays: String, sameDay: String) {
+        (
+            "tehilim.memorial.\(intentId.uuidString).j7",
+            "tehilim.memorial.\(intentId.uuidString).day"
+        )
+    }
+
+    /// Annule tous les rappels d'azcara pour un intent donné. Appelé quand
+    /// l'utilisateur désactive les rappels, modifie la date, ou supprime
+    /// le Lelouy Nichmat.
+    func cancelMemorialReminders(intentId: UUID) async {
+        let ids = Self.memorialIds(intentId: intentId)
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [ids.sevenDays, ids.sameDay])
+        Self.log.info("Cancelled memorial reminders for \(intentId.uuidString, privacy: .public)")
+    }
+
+    /// Reprogramme (annule puis re-planifie) les rappels d'azcara pour
+    /// un intent. Calcule la prochaine date azcara civile à partir de la
+    /// date du décès, puis pose les UNCalendarNotificationTrigger.
+    ///
+    /// **Conditions** (gérées par le caller) : intent.remindersEnabled +
+    /// au moins un toggle activé + date du décès présente.
+    func rescheduleMemorialReminders(for intent: SavedPrayerIntent) async {
+        await cancelMemorialReminders(intentId: intent.id)
+
+        guard intent.remindersEnabled,
+              intent.notifySevenDaysBefore || intent.notifySameDay,
+              let death = intent.civilDateOfDeath,
+              let nextAzcara = MemorialCalculator.nextYahrzeit(deathCivil: death) else {
+            return
+        }
+
+        let ids = Self.memorialIds(intentId: intent.id)
+        let cal = Calendar.current
+
+        if intent.notifySevenDaysBefore,
+           let triggerDate = cal.date(byAdding: .day, value: -7, to: nextAzcara),
+           triggerDate > Date() {
+            await schedule(
+                id: ids.sevenDays,
+                title: String(localized: "Azcara dans 7 jours"),
+                body: bodyFor(intent: intent, daysOffset: 7),
+                date: triggerDate
+            )
+        }
+        if intent.notifySameDay, nextAzcara > Date() {
+            // 9h locale le jour J pour ne pas réveiller la nuit.
+            var dc = cal.dateComponents([.year, .month, .day], from: nextAzcara)
+            dc.hour = 9
+            if let sameDay = cal.date(from: dc), sameDay > Date() {
+                await schedule(
+                    id: ids.sameDay,
+                    title: String(localized: "Azcara aujourd'hui"),
+                    body: bodyFor(intent: intent, daysOffset: 0),
+                    date: sameDay
+                )
+            }
+        }
+    }
+
+    private func bodyFor(intent: SavedPrayerIntent, daysOffset: Int) -> String {
+        let subject = intent.hebrewSubject
+        if daysOffset == 0 {
+            return String(format: String(localized: "Azcara de %@."), subject)
+        }
+        return String(
+            format: String(localized: "Azcara de %@ dans %lld jours."),
+            subject, daysOffset
+        )
+    }
+
+    private func schedule(id: String, title: String, body: String, date: Date) async {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+
+        let comps = Calendar.current.dateComponents(
+            [.year, .month, .day, .hour, .minute],
+            from: date
+        )
+        let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+            Self.log.info("Scheduled memorial reminder \(id, privacy: .public) at \(date, privacy: .public)")
+        } catch {
+            Self.log.error("Failed to schedule memorial reminder: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
     // MARK: - Open iOS Settings
 
     func openSystemSettings() {

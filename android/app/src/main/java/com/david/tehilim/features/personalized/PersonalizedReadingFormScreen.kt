@@ -16,15 +16,21 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +55,11 @@ import com.david.tehilim.core.model.RelationType
 import com.david.tehilim.core.model.SavedPrayerIntent
 import com.david.tehilim.core.service.HebrewLetterMapper
 import com.david.tehilim.core.service.LetterSequenceGenerator
+import com.david.tehilim.core.service.MemorialCalculator
+import com.david.tehilim.core.service.NotificationScheduler
+import java.text.DateFormat
+import java.util.Date
+import java.util.Locale
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 
@@ -58,6 +69,13 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
     var relativeName by remember { mutableStateOf("") }
     var motherName by remember { mutableStateOf("") }
     var relation by remember { mutableStateOf(RelationType.BEN) }
+
+    // V1.4 — Commémoration : état local de la section azcara.
+    var civilDateOfDeath by remember { mutableStateOf<Date?>(null) }
+    var remindersEnabled by remember { mutableStateOf(false) }
+    var notify7d by remember { mutableStateOf(true) }
+    var notifyDay by remember { mutableStateOf(true) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     val context = androidx.compose.ui.platform.LocalContext.current
     val hasHebrewKeyboard = remember { isHebrewKeyboardInstalled(context) }
@@ -238,6 +256,144 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                 )
             }
 
+            // ─── V1.4 — Section Commémoration ────────────────────────────
+            HorizontalDivider()
+            Text(
+                stringResource(R.string.memorial_section_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            // Date du décès (optionnelle)
+            val dateFormatter = remember {
+                DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault())
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.memorial_date_label),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        civilDateOfDeath?.let { dateFormatter.format(it) }
+                            ?: stringResource(R.string.memorial_date_pick),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                OutlinedButton(onClick = { showDatePicker = true }) {
+                    Text(stringResource(R.string.memorial_date_pick))
+                }
+                if (civilDateOfDeath != null) {
+                    TextButton(onClick = { civilDateOfDeath = null }) {
+                        Text(stringResource(R.string.memorial_date_clear))
+                    }
+                }
+            }
+
+            // Toggle global rappel
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    stringResource(R.string.memorial_reminder_toggle),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Switch(checked = remindersEnabled, onCheckedChange = { remindersEnabled = it })
+            }
+
+            if (remindersEnabled) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.memorial_reminder_7d),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Switch(checked = notify7d, onCheckedChange = { notify7d = it })
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.memorial_reminder_day),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Switch(checked = notifyDay, onCheckedChange = { notifyDay = it })
+                }
+            }
+
+            // Aperçu "Prochaine azcara"
+            civilDateOfDeath?.let { d ->
+                val next = remember(d) { MemorialCalculator.nextYahrzeit(d) }
+                if (next != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            stringResource(R.string.memorial_next_azcara),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            dateFormatter.format(next),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+
+            // Helper + warnings inline
+            Text(
+                stringResource(R.string.memorial_helper),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (remindersEnabled && civilDateOfDeath == null) {
+                Text(
+                    stringResource(R.string.memorial_need_date),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
+            // DatePickerDialog M3
+            if (showDatePicker) {
+                val state = rememberDatePickerState(
+                    initialSelectedDateMillis = civilDateOfDeath?.time
+                        ?: System.currentTimeMillis()
+                )
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            state.selectedDateMillis?.let { civilDateOfDeath = Date(it) }
+                            showDatePicker = false
+                        }) { Text(stringResource(R.string.action_ok)) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text(stringResource(R.string.action_cancel))
+                        }
+                    }
+                ) {
+                    DatePicker(state = state)
+                }
+            }
+            // ───────────────────────────────────────────────────────────────
+
             // Bouton Générer + footer
             Button(
                 onClick = {
@@ -259,9 +415,19 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                         relativeFirstName = relativeName,
                         relationType = relation,
                         motherFirstName = motherName,
-                        generatedLetters = sequence
+                        generatedLetters = sequence,
+                        // V1.4 — Commémoration
+                        civilDateOfDeathEpochMillis = civilDateOfDeath?.time,
+                        hebrewDateOfDeath = civilDateOfDeath?.let {
+                            MemorialCalculator.hebrewYMD(it)
+                        },
+                        remindersEnabled = remindersEnabled,
+                        notifySevenDaysBefore = notify7d,
+                        notifySameDay = notifyDay
                     )
                     val saved = container.savedPrayers.addOrFindExisting(intent)
+                    // V1.4 — schedule (no-op si conditions pas réunies)
+                    NotificationScheduler.rescheduleMemorial(context, saved)
                     navController.navigate(Routes.personalizedList(saved.id)) {
                         popUpTo(Routes.PERSONALIZED_FORM) { inclusive = true }
                     }

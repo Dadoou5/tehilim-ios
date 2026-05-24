@@ -113,9 +113,29 @@ struct ReadingLetterItem: Identifiable, Codable, Hashable {
     var letter: Character { character.first ?? " " }
 }
 
+// MARK: - Date hébraïque (Y/M/D)
+
+/// Date hébraïque mémorisée — cache des composantes calculées par
+/// `Calendar(identifier: .hebrew)` à partir d'une date civile. Le `month`
+/// suit l'indexation Apple Hebrew (1=Tishri, 6=Adar I en année embolismique,
+/// 6=Adar unique en année commune, 7=Adar II / Nisan selon le cas).
+///
+/// V1.10.7 — introduit pour la feature Commémoration.
+struct HebrewYMD: Codable, Hashable {
+    let year: Int
+    let month: Int
+    let day: Int
+}
+
 // MARK: - Prière sauvegardée
 
 /// Objet sauvegardé (Refoua Cheléma / Lelouy Nichmat) — persisté sur disque.
+///
+/// V1.10.7 — ajout des 5 champs `civilDateOfDeath`, `hebrewDateOfDeath`,
+/// `remindersEnabled`, `notifySevenDaysBefore`, `notifySameDay` pour la
+/// feature Commémoration. Le decoder custom assure la rétrocompat : les
+/// intents existants (V1.10.6 et avant) sont lus sans erreur, les nouveaux
+/// champs prennent leurs valeurs par défaut.
 struct SavedPrayerIntent: Identifiable, Codable, Hashable {
     let id: UUID
     /// Titre auto-généré, ex. « Refoua Cheléma — יוסף בן שרה ».
@@ -132,6 +152,22 @@ struct SavedPrayerIntent: Identifiable, Codable, Hashable {
     /// Position de la dernière lettre lue (pour « Reprendre la lecture »).
     var lastReadIndex: Int?
 
+    // MARK: V1.10.7 — Commémoration
+    /// Date civile du décès saisie par l'utilisateur. Optionnelle : un Lelouy
+    /// Nichmat peut être généré sans date, le calcul azcara nécessite cette
+    /// info.
+    var civilDateOfDeath: Date?
+    /// Cache de la date hébraïque dérivée de `civilDateOfDeath` — évite de
+    /// refaire la conversion à chaque accès et stabilise le calcul en cas
+    /// d'évolution future des règles.
+    var hebrewDateOfDeath: HebrewYMD?
+    /// L'utilisateur veut-il recevoir des rappels pour la prochaine azcara ?
+    var remindersEnabled: Bool
+    /// Si true ET `remindersEnabled` : notification 7 jours avant.
+    var notifySevenDaysBefore: Bool
+    /// Si true ET `remindersEnabled` : notification le jour même (à 9h locale).
+    var notifySameDay: Bool
+
     init(
         id: UUID = UUID(),
         title: String,
@@ -141,7 +177,12 @@ struct SavedPrayerIntent: Identifiable, Codable, Hashable {
         motherFirstName: String,
         generatedLetters: [ReadingLetterItem],
         createdAt: Date = Date(),
-        lastReadIndex: Int? = nil
+        lastReadIndex: Int? = nil,
+        civilDateOfDeath: Date? = nil,
+        hebrewDateOfDeath: HebrewYMD? = nil,
+        remindersEnabled: Bool = false,
+        notifySevenDaysBefore: Bool = true,
+        notifySameDay: Bool = true
     ) {
         self.id = id
         self.title = title
@@ -152,6 +193,33 @@ struct SavedPrayerIntent: Identifiable, Codable, Hashable {
         self.generatedLetters = generatedLetters
         self.createdAt = createdAt
         self.lastReadIndex = lastReadIndex
+        self.civilDateOfDeath = civilDateOfDeath
+        self.hebrewDateOfDeath = hebrewDateOfDeath
+        self.remindersEnabled = remindersEnabled
+        self.notifySevenDaysBefore = notifySevenDaysBefore
+        self.notifySameDay = notifySameDay
+    }
+
+    /// V1.10.7 — decoder custom pour absorber sans erreur les anciens
+    /// intents (V1.10.6 et avant) qui n'ont pas les champs Commémoration.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try c.decode(UUID.self, forKey: .id)
+        self.title = try c.decode(String.self, forKey: .title)
+        self.prayerType = try c.decode(PrayerType.self, forKey: .prayerType)
+        self.relativeFirstName = try c.decode(String.self, forKey: .relativeFirstName)
+        self.relationType = try c.decode(RelationType.self, forKey: .relationType)
+        self.motherFirstName = try c.decode(String.self, forKey: .motherFirstName)
+        self.generatedLetters = try c.decode([ReadingLetterItem].self, forKey: .generatedLetters)
+        self.createdAt = try c.decode(Date.self, forKey: .createdAt)
+        self.lastReadIndex = try c.decodeIfPresent(Int.self, forKey: .lastReadIndex)
+        // Nouveaux champs V1.10.7 — `decodeIfPresent` + défauts garantissent
+        // la rétrocompat avec les payloads JSON sans ces clés.
+        self.civilDateOfDeath = try c.decodeIfPresent(Date.self, forKey: .civilDateOfDeath)
+        self.hebrewDateOfDeath = try c.decodeIfPresent(HebrewYMD.self, forKey: .hebrewDateOfDeath)
+        self.remindersEnabled = try c.decodeIfPresent(Bool.self, forKey: .remindersEnabled) ?? false
+        self.notifySevenDaysBefore = try c.decodeIfPresent(Bool.self, forKey: .notifySevenDaysBefore) ?? true
+        self.notifySameDay = try c.decodeIfPresent(Bool.self, forKey: .notifySameDay) ?? true
     }
 
     /// Description hébraïque compacte, ex. « יוסף בן שרה » ou « שרה בת מרים ».

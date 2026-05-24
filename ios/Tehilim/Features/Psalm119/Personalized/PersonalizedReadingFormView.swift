@@ -24,6 +24,16 @@ struct PersonalizedReadingFormView: View {
     @State private var navigateToList = false
     @State private var generatedIntent: SavedPrayerIntent? = nil
 
+    // MARK: - V1.10.7 — Commémoration
+    /// Date civile du décès (optionnelle). Si renseignée et `remindersEnabled`,
+    /// déclenche le scheduling des notifications J-7 / jour J.
+    @State private var civilDateOfDeath: Date? = nil
+    @State private var remindersEnabled: Bool = false
+    @State private var notifySevenDaysBefore: Bool = true
+    @State private var notifySameDay: Bool = true
+    /// Statut de la permission notif système — pour afficher le hint si denied.
+    @ObservedObject private var notifications = NotificationManager.shared
+
     /// V1.10.7 — focus chain entre les deux champs hébreux.
     ///
     /// Un seul `@State` enum (pas deux Bool indépendants) garantit l'**exclusivité
@@ -114,6 +124,65 @@ struct PersonalizedReadingFormView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                // MARK: - V1.10.7 — Commémoration (section optionnelle)
+                Section {
+                    // Date du décès (date civile, optionnelle)
+                    DatePicker(
+                        "Date du décès",
+                        selection: Binding(
+                            get: { civilDateOfDeath ?? Date() },
+                            set: { civilDateOfDeath = $0 }
+                        ),
+                        displayedComponents: .date
+                    )
+                    if civilDateOfDeath != nil {
+                        Button("Effacer la date", role: .destructive) {
+                            civilDateOfDeath = nil
+                        }
+                    }
+
+                    // Toggle global "Recevoir un rappel"
+                    Toggle("Recevoir un rappel", isOn: $remindersEnabled)
+                        .onChange(of: remindersEnabled) { _, newValue in
+                            if newValue {
+                                Task { _ = await notifications.requestPermission() }
+                            }
+                        }
+
+                    if remindersEnabled {
+                        Toggle("7 jours avant", isOn: $notifySevenDaysBefore)
+                        Toggle("Le jour même", isOn: $notifySameDay)
+                    }
+
+                    // Aperçu de la prochaine azcara (calculée en live)
+                    if let death = civilDateOfDeath,
+                       let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
+                        HStack {
+                            Text("Prochaine azcara")
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text(next.formatted(date: .abbreviated, time: .omitted))
+                                .foregroundStyle(Color.accentMain)
+                        }
+                    }
+                } header: {
+                    Text("Commémoration")
+                } footer: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("L'application calcule automatiquement la prochaine azcara à partir de la date civile saisie.")
+                        if remindersEnabled && civilDateOfDeath == nil {
+                            Text("Ajoutez une date du décès pour programmer les rappels.")
+                                .foregroundStyle(.orange)
+                        }
+                        if remindersEnabled && notifications.permission == .denied {
+                            Text("Les notifications sont désactivées sur cet appareil.")
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+
                 // MARK: - Aperçu (calculé en live)
                 if isFormValid {
                     Section {
@@ -179,6 +248,8 @@ struct PersonalizedReadingFormView: View {
     /// Dédup : si un Lelouy Nichmat avec exactement les mêmes paramètres existe
     /// déjà, on le réutilise au lieu de créer un doublon (utile si l'utilisateur
     /// re-tape « Générer » sur le même formulaire).
+    ///
+    /// V1.10.7 — embarque les champs Commémoration et schedule les rappels.
     private func generateAndSave() {
         let sequence = LetterSequenceGenerator.generate(
             relativeName: relativeFirstName,
@@ -197,10 +268,19 @@ struct PersonalizedReadingFormView: View {
             relativeFirstName: relativeFirstName,
             relationType: relationType,
             motherFirstName: motherFirstName,
-            generatedLetters: sequence
+            generatedLetters: sequence,
+            civilDateOfDeath: civilDateOfDeath,
+            hebrewDateOfDeath: civilDateOfDeath.map { MemorialCalculator.hebrewYMD(from: $0) },
+            remindersEnabled: remindersEnabled,
+            notifySevenDaysBefore: notifySevenDaysBefore,
+            notifySameDay: notifySameDay
         )
         // Add ou retourne l'existant (dédup) — déclenche aussi la sync iCloud.
-        generatedIntent = savedPrayers.addOrFindExisting(candidate)
+        let saved = savedPrayers.addOrFindExisting(candidate)
+        generatedIntent = saved
+        // V1.10.7 — schedule (ou no-op si conditions pas réunies, géré dans
+        // NotificationManager.rescheduleMemorialReminders).
+        Task { await notifications.rescheduleMemorialReminders(for: saved) }
         navigateToList = true
     }
 

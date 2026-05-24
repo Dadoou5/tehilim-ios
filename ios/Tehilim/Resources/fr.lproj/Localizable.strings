@@ -169,3 +169,19 @@
 "Tehilim à lire" = "Tehilim à lire";
 "Tradition. Ne remplace pas un avis professionnel." = "Tradition. Ne remplace pas un avis professionnel.";
 "Cas de la vie" = "Cas de la vie";
+
+/* V1.10.7 — Commémoration : keys en parité avec en.lproj. */
+"Commémoration" = "Commémoration";
+"Date du décès" = "Date du décès";
+"Effacer la date" = "Effacer la date";
+"L'application calcule automatiquement la prochaine azcara à partir de la date civile saisie." = "L'application calcule automatiquement la prochaine azcara à partir de la date civile saisie.";
+"Recevoir un rappel" = "Recevoir un rappel";
+"7 jours avant" = "7 jours avant";
+"Le jour même" = "Le jour même";
+"Ajoutez une date du décès pour programmer les rappels." = "Ajoutez une date du décès pour programmer les rappels.";
+"Les notifications sont désactivées sur cet appareil." = "Les notifications sont désactivées sur cet appareil.";
+"Prochaine azcara" = "Prochaine azcara";
+"Azcara dans 7 jours" = "Azcara dans 7 jours";
+"Azcara aujourd'hui" = "Azcara aujourd'hui";
+"Azcara de %@." = "Azcara de %@.";
+"Azcara de %@ dans %lld jours." = "Azcara de %@ dans %lld jours.";

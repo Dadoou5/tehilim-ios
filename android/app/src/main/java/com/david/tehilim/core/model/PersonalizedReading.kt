@@ -75,6 +75,25 @@ data class ReadingLetterItem(
     val letter: Char get() = character.firstOrNull() ?: ' '
 }
 
+/**
+ * Date hébraïque mémorisée — cache des composantes calculées par ICU
+ * `HebrewCalendar` à partir d'une date civile. Le `month` suit l'indexation
+ * ICU (0=TISHRI, 1=HESHVAN, ..., 5=ADAR_1 leap-only, 6=ADAR, ..., 12=ELUL).
+ *
+ * V1.4 — feature Commémoration.
+ */
+@Serializable
+data class HebrewYMD(
+    val year: Int,
+    val month: Int,
+    val day: Int
+)
+
+/**
+ * V1.4 — ajout des 5 champs Commémoration. Les valeurs par défaut + le
+ * `Json { ignoreUnknownKeys = true }` du store garantissent la rétrocompat
+ * avec les payloads existants (V1.3.x) qui n'ont pas ces champs.
+ */
 @Serializable
 data class SavedPrayerIntent(
     val id: String = UUID.randomUUID().toString(),
@@ -85,7 +104,13 @@ data class SavedPrayerIntent(
     val motherFirstName: String,
     val generatedLetters: List<ReadingLetterItem>,
     val createdAtEpochMillis: Long = System.currentTimeMillis(),
-    val lastReadIndex: Int? = null
+    val lastReadIndex: Int? = null,
+    // V1.4 — Commémoration. Optionnels / défauts garantissent la rétrocompat.
+    val civilDateOfDeathEpochMillis: Long? = null,
+    val hebrewDateOfDeath: HebrewYMD? = null,
+    val remindersEnabled: Boolean = false,
+    val notifySevenDaysBefore: Boolean = true,
+    val notifySameDay: Boolean = true
 ) {
     val hebrewSubject: String
         get() = "$relativeFirstName ${relationType.hebrew} $motherFirstName"

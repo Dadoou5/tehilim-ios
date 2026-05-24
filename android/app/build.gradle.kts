@@ -61,7 +61,11 @@ android {
         //            IME chaîné (Suivant → champ mère, Terminé → ferme
         //            clavier), scroll vertical + imePadding pour que le
         //            clavier soft ne masque jamais les champs
-        versionCode = 14
+        // Build 15 : feature Commémoration (azcara) — date du décès
+        //            optionnelle, calcul de la prochaine azcara par règles
+        //            traditionnelles (Adar/Adar II, Heshvan 30, Kislev 30,
+        //            Adar I 30), rappels J-7 + jour J via WorkManager
+        versionCode = 15
         versionName = "1.0.0"
 
         // Tests

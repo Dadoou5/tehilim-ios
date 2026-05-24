@@ -236,6 +236,23 @@
     <string name="notif_title">Tehilim du jour</string>
     <string name="notif_body">C\'est le moment de lire tes Tehilim du jour.</string>
 
+    <!-- V1.4 — Commémoration (azcara) -->
+    <string name="memorial_section_title">Commémoration</string>
+    <string name="memorial_date_label">Date du décès</string>
+    <string name="memorial_date_pick">Choisir une date</string>
+    <string name="memorial_date_clear">Effacer la date</string>
+    <string name="memorial_helper">L\'application calcule automatiquement la prochaine azcara à partir de la date civile saisie.</string>
+    <string name="memorial_reminder_toggle">Recevoir un rappel</string>
+    <string name="memorial_reminder_7d">7 jours avant</string>
+    <string name="memorial_reminder_day">Le jour même</string>
+    <string name="memorial_need_date">Ajoutez une date du décès pour programmer les rappels.</string>
+    <string name="memorial_notif_disabled">Les notifications sont désactivées sur cet appareil.</string>
+    <string name="memorial_next_azcara">Prochaine azcara</string>
+    <string name="memorial_notif_title_j7">Azcara dans 7 jours</string>
+    <string name="memorial_notif_title_today">Azcara aujourd\'hui</string>
+    <string name="memorial_notif_body_today">Azcara de %1$s.</string>
+    <string name="memorial_notif_body_j7">Azcara de %1$s dans %2$d jours.</string>
+
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Texte hébreu</string>
     <string name="about_content_hebrew_body">Le texte hébreu vocalisé avec téamim provient de Sefaria (sefaria.org), distribué sous licence Creative Commons By 4.0.</string>

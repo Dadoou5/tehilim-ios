@@ -1,0 +1,232 @@
+import XCTest
+@testable import Tehilim
+
+/// Tests du calculateur d'azcara — V1.10.7.
+///
+/// Couvre :
+/// - Conversion civile → hébraïque
+/// - Calcul de la prochaine azcara civile
+/// - Cas spéciaux : Adar / Adar II, Heshvan 30, Kislev 30, Adar I 30
+/// - Rétrocompat decoding de SavedPrayerIntent (sans les champs Commémoration)
+final class MemorialCalculatorTests: XCTestCase {
+
+    // Helpers
+
+    private func civil(_ y: Int, _ m: Int, _ d: Int) -> Date {
+        var dc = DateComponents()
+        dc.year = y; dc.month = m; dc.day = d; dc.hour = 12
+        return Calendar(identifier: .gregorian).date(from: dc)!
+    }
+
+    private func hebrewYMD(_ date: Date) -> (Int, Int, Int) {
+        let ymd = MemorialCalculator.hebrewYMD(from: date)
+        return (ymd.year, ymd.month, ymd.day)
+    }
+
+    // MARK: - Conversion civile → hébraïque
+
+    func testConvertCivilToHebrewKnownDate() {
+        // 24 mai 2026 → 8 Sivan 5786 (vérifié sur app + sources externes)
+        let (y, _, _) = hebrewYMD(civil(2026, 5, 24))
+        XCTAssertEqual(y, 5786)
+    }
+
+    // MARK: - Cycle Méton (années embolismiques)
+
+    func testLeapYearMetonic() {
+        // Année 5784 = embolismique (Adar I + Adar II)
+        XCTAssertTrue(MemorialCalculator.isLeap(year: 5784))
+        // Année 5785 = commune
+        XCTAssertFalse(MemorialCalculator.isLeap(year: 5785))
+        // Année 5786 = commune
+        XCTAssertFalse(MemorialCalculator.isLeap(year: 5786))
+        // Année 5787 = embolismique
+        XCTAssertTrue(MemorialCalculator.isLeap(year: 5787))
+    }
+
+    // MARK: - Adaptation du mois (Adar / Adar II)
+
+    func testAdarFromNonLeapToLeap_observedInAdarII() {
+        // Source Adar année commune (mois 6) → cible année embolismique :
+        // observée en Adar II (mois 7) — tradition Ashkenazi standard.
+        let m = MemorialCalculator.adjustedMonth(
+            sourceMonth: 6, sourceLeap: false, targetLeap: true
+        )
+        XCTAssertEqual(m, 7)
+    }
+
+    func testAdarIFromLeapToNonLeap_observedInSingleAdar() {
+        // Source Adar I (leap, mois 6) → cible année commune : Adar unique (mois 6).
+        let m = MemorialCalculator.adjustedMonth(
+            sourceMonth: 6, sourceLeap: true, targetLeap: false
+        )
+        XCTAssertEqual(m, 6)
+    }
+
+    func testAdarIIFromLeapToNonLeap_observedInSingleAdar() {
+        // Source Adar II (leap, mois 7) → cible année commune : Adar unique (mois 6).
+        let m = MemorialCalculator.adjustedMonth(
+            sourceMonth: 7, sourceLeap: true, targetLeap: false
+        )
+        XCTAssertEqual(m, 6)
+    }
+
+    func testPostAdarMonthShift_NonLeapToLeap() {
+        // Source Nisan année commune (mois 7) → cible année embolismique :
+        // Nisan (mois 8 dans l'indexation Apple leap).
+        let m = MemorialCalculator.adjustedMonth(
+            sourceMonth: 7, sourceLeap: false, targetLeap: true
+        )
+        XCTAssertEqual(m, 8)
+    }
+
+    func testPostAdarMonthShift_LeapToNonLeap() {
+        // Source Nisan leap (mois 8) → cible commune : Nisan (mois 7).
+        let m = MemorialCalculator.adjustedMonth(
+            sourceMonth: 8, sourceLeap: true, targetLeap: false
+        )
+        XCTAssertEqual(m, 7)
+    }
+
+    // MARK: - Adaptation du jour (rollover 30 → 1 du mois suivant)
+
+    /// Trouve dynamiquement une année hébraïque où `month` a `expectedDays`
+    /// jours — évite d'hardcoder des numéros d'année qui pourraient devenir
+    /// invalides si la table calendaire d'iOS évoluait.
+    private func findYear(month: Int, withDays expectedDays: Int) -> Int? {
+        (5780...5810).first { year in
+            MemorialCalculator.daysInMonth(month: month, year: year) == expectedDays
+        }
+    }
+
+    func testHeshvan30Rollover() {
+        // Source : 30 Heshvan (mois 2). Cible : année où Heshvan = 29 jours
+        // (cas le plus fréquent, années « régulières » ou « déficientes »).
+        // Attendu : 1 Kislev (mois 3, jour 1).
+        guard let year = findYear(month: 2, withDays: 29) else {
+            XCTFail("No year with Heshvan = 29 days found in 5780..5810"); return
+        }
+        let (m, d) = MemorialCalculator.adjustedDay(
+            sourceDay: 30, sourceMonth: 2, sourceLeap: false,
+            targetMonth: 2, targetYear: year
+        )
+        XCTAssertEqual(m, 3, "Heshvan 30 dans année à Heshvan-29 → devrait basculer en Kislev (mois 3)")
+        XCTAssertEqual(d, 1)
+    }
+
+    func testKislev30Rollover() {
+        // Source : 30 Kislev (mois 3). Cible : année où Kislev = 29 jours
+        // (années « déficientes » — plus rares).
+        // Attendu : 1 Tevet (mois 4, jour 1).
+        guard let year = findYear(month: 3, withDays: 29) else {
+            XCTFail("No year with Kislev = 29 days found in 5780..5810"); return
+        }
+        let (m, d) = MemorialCalculator.adjustedDay(
+            sourceDay: 30, sourceMonth: 3, sourceLeap: false,
+            targetMonth: 3, targetYear: year
+        )
+        XCTAssertEqual(m, 4, "Kislev 30 dans année à Kislev-29 → devrait basculer en Tevet (mois 4)")
+        XCTAssertEqual(d, 1)
+    }
+
+    func testAdarI30ToNonLeap_observedOn30Shevat() {
+        // Source : 30 Adar I (leap, mois 6). Cible : année commune (Adar I
+        // n'existe pas → Adar unique 29 jours). Attendu : 30 Shevat (mois 5).
+        let (m, d) = MemorialCalculator.adjustedDay(
+            sourceDay: 30, sourceMonth: 6, sourceLeap: true,
+            targetMonth: 6, targetYear: 5786
+        )
+        XCTAssertEqual(m, 5)
+        XCTAssertEqual(d, 30)
+    }
+
+    func testRegularDayNoRollover() {
+        // 15 Tishri (mois 1) → toujours 15 Tishri.
+        let (m, d) = MemorialCalculator.adjustedDay(
+            sourceDay: 15, sourceMonth: 1, sourceLeap: false,
+            targetMonth: 1, targetYear: 5786
+        )
+        XCTAssertEqual(m, 1)
+        XCTAssertEqual(d, 15)
+    }
+
+    // MARK: - Calcul end-to-end
+
+    func testNextYahrzeit_FutureDateInSameHebrewYear() {
+        // Décès 1 Janvier 2025 (≈ 1 Shevat 5785).
+        // Au 1 Juillet 2025, l'azcara de Shevat est dans le futur (Shevat 5786 → Janvier 2026).
+        let death = civil(2025, 1, 1)
+        let now = civil(2025, 7, 1)
+        let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)
+        XCTAssertNotNil(next)
+        XCTAssertGreaterThan(next!, now)
+        // Doit être à environ ~1 an après le décès (avec une marge ±60 jours
+        // pour absorber le décalage Greg/Heb).
+        let daysApart = Calendar(identifier: .gregorian)
+            .dateComponents([.day], from: death, to: next!).day ?? 0
+        XCTAssertGreaterThan(daysApart, 365 - 60)
+        XCTAssertLessThan(daysApart, 365 + 60)
+    }
+
+    func testNextYahrzeit_OffsetsByOneYearWhenJustPassed() {
+        // Décès 24 mai 2024. Au 25 mai 2026, l'anniversaire 2026 vient de
+        // passer → next doit être l'azcara 2027.
+        let death = civil(2024, 5, 24)
+        let now = civil(2026, 5, 25)
+        let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)
+        XCTAssertNotNil(next)
+        // Doit être au moins ~10 mois plus tard.
+        let monthsApart = Calendar(identifier: .gregorian)
+            .dateComponents([.month], from: now, to: next!).month ?? 0
+        XCTAssertGreaterThan(monthsApart, 10)
+    }
+
+    // MARK: - Rétrocompat sérialisation
+
+    func testSavedPrayerIntent_DecodesLegacyPayloadWithoutMemorialFields() throws {
+        // JSON tel qu'écrit par V1.10.6 (sans civilDateOfDeath, etc.).
+        let legacyJSON = """
+        {
+          "id": "11111111-2222-3333-4444-555555555555",
+          "title": "Lelouy Nichmat — יוסף בן שרה",
+          "prayerType": "defunt",
+          "relativeFirstName": "יוסף",
+          "relationType": "ben",
+          "motherFirstName": "שרה",
+          "generatedLetters": [],
+          "createdAt": 768000000
+        }
+        """.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        let intent = try decoder.decode(SavedPrayerIntent.self, from: legacyJSON)
+
+        XCTAssertEqual(intent.relativeFirstName, "יוסף")
+        XCTAssertNil(intent.civilDateOfDeath)
+        XCTAssertNil(intent.hebrewDateOfDeath)
+        XCTAssertFalse(intent.remindersEnabled)
+        XCTAssertTrue(intent.notifySevenDaysBefore)  // défaut
+        XCTAssertTrue(intent.notifySameDay)          // défaut
+    }
+
+    func testSavedPrayerIntent_RoundTripWithMemorialFields() throws {
+        let intent = SavedPrayerIntent(
+            title: "Lelouy Nichmat — Test",
+            prayerType: .defunt,
+            relativeFirstName: "יוסף",
+            relationType: .ben,
+            motherFirstName: "שרה",
+            generatedLetters: [],
+            civilDateOfDeath: civil(2024, 1, 15),
+            hebrewDateOfDeath: HebrewYMD(year: 5784, month: 5, day: 5),
+            remindersEnabled: true,
+            notifySevenDaysBefore: true,
+            notifySameDay: false
+        )
+        let data = try JSONEncoder().encode(intent)
+        let back = try JSONDecoder().decode(SavedPrayerIntent.self, from: data)
+        XCTAssertEqual(back.remindersEnabled, true)
+        XCTAssertEqual(back.notifySameDay, false)
+        XCTAssertEqual(back.hebrewDateOfDeath?.year, 5784)
+    }
+}

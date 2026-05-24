@@ -236,6 +236,23 @@
     <string name="notif_title">Today\'s Tehilim</string>
     <string name="notif_body">It\'s time to read today\'s Tehilim.</string>
 
+    <!-- V1.4 — Commemoration (azcara) -->
+    <string name="memorial_section_title">Commemoration</string>
+    <string name="memorial_date_label">Date of death</string>
+    <string name="memorial_date_pick">Pick a date</string>
+    <string name="memorial_date_clear">Clear date</string>
+    <string name="memorial_helper">The app automatically computes the next azcara from the civil date you provide.</string>
+    <string name="memorial_reminder_toggle">Receive a reminder</string>
+    <string name="memorial_reminder_7d">7 days before</string>
+    <string name="memorial_reminder_day">On the day</string>
+    <string name="memorial_need_date">Add a date of death to schedule reminders.</string>
+    <string name="memorial_notif_disabled">Notifications are disabled on this device.</string>
+    <string name="memorial_next_azcara">Next azcara</string>
+    <string name="memorial_notif_title_j7">Azcara in 7 days</string>
+    <string name="memorial_notif_title_today">Azcara today</string>
+    <string name="memorial_notif_body_today">Azcara of %1$s.</string>
+    <string name="memorial_notif_body_j7">Azcara of %1$s in %2$d days.</string>
+
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Hebrew text</string>
     <string name="about_content_hebrew_body">The vocalized Hebrew text with teamim comes from Sefaria (sefaria.org), distributed under Creative Commons By 4.0.</string>

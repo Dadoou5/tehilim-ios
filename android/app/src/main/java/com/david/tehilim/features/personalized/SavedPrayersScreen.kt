@@ -1,15 +1,20 @@
 package com.david.tehilim.features.personalized
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Inbox
+import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -103,31 +108,56 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(intent.hebrewSubject,
-                            style = TextStyle(fontFamily = EzraSilFontFamily))
-                        Text(
-                            stringResource(R.string.label_letters_count, intent.generatedLetters.size),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        // V1.4 — Prochaine azcara si date du décès renseignée.
-                        // L'astérisque rappelle que le Hebrew day commence
-                        // au coucher du soleil de la veille civile —
-                        // explication en bas de l'écran.
-                        val millis = intent.civilDateOfDeathEpochMillis
-                        if (millis != null) {
-                            val next = remember(millis) {
-                                MemorialCalculator.nextYahrzeit(Date(millis))
+                    // V1.4 — Row pour réserver l'espace cloche en haut-droite
+                    // si les rappels sont effectivement plannifiés.
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(intent.hebrewSubject,
+                                style = TextStyle(fontFamily = EzraSilFontFamily))
+                            Text(
+                                stringResource(R.string.label_letters_count, intent.generatedLetters.size),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            // V1.4 — Prochaine azcara si date du décès renseignée.
+                            // L'astérisque rappelle que le Hebrew day commence
+                            // au coucher du soleil de la veille civile —
+                            // explication en bas de l'écran.
+                            val millis = intent.civilDateOfDeathEpochMillis
+                            if (millis != null) {
+                                val next = remember(millis) {
+                                    MemorialCalculator.nextYahrzeit(Date(millis))
+                                }
+                                if (next != null) {
+                                    Text(
+                                        "${stringResource(R.string.memorial_next_azcara)} : ${dateFormatter.format(next)}*",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                }
                             }
-                            if (next != null) {
-                                Text(
-                                    "${stringResource(R.string.memorial_next_azcara)} : ${dateFormatter.format(next)}*",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(top = 4.dp)
-                                )
-                            }
+                        }
+
+                        // Badge cloche : visible UNIQUEMENT si rappels
+                        // effectivement plannifiés (mêmes conditions que
+                        // NotificationScheduler.rescheduleMemorial).
+                        val hasActiveReminders = intent.remindersEnabled &&
+                            intent.civilDateOfDeathEpochMillis != null &&
+                            (intent.notifySevenDaysBefore || intent.notifySameDay)
+                        if (hasActiveReminders) {
+                            Icon(
+                                Icons.Filled.Notifications,
+                                contentDescription = stringResource(R.string.memorial_reminder_toggle),
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(18.dp)
+                            )
                         }
                     }
                 }

@@ -61,44 +61,70 @@ struct SavedPrayersListView: View {
 
     @ViewBuilder
     private func row(_ intent: SavedPrayerIntent) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(intent.hebrewSubject)
-                .font(.headline)
-                .environment(\.layoutDirection, .rightToLeft)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-            HStack(spacing: 8) {
-                Text("\(intent.generatedLetters.count) lettres")
-                Text("·")
-                Text(intent.createdAt.formatted(date: .abbreviated, time: .omitted))
-                if let last = intent.lastReadIndex {
+        // V1.10.7 — wrap row content in HStack pour rendre place à une
+        // icône cloche en haut-droite quand les rappels sont actifs.
+        // VStack original conservé pour ne pas perturber la lecture.
+        HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(intent.hebrewSubject)
+                    .font(.headline)
+                    .environment(\.layoutDirection, .rightToLeft)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                HStack(spacing: 8) {
+                    Text("\(intent.generatedLetters.count) lettres")
                     Text("·")
-                    Text("lue jusqu'à \(last + 1)")
-                        .foregroundStyle(Color.accentMain)
-                }
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-
-            // V1.10.7 — Prochaine azcara si la date du décès est renseignée.
-            // Calcul fait par MemorialCalculator (règles traditionnelles).
-            // Astérisque rappelle que le Hebrew day commence au coucher
-            // du soleil de la veille civile (cf. footer de la section).
-            if let death = intent.civilDateOfDeath,
-               let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
-                HStack(spacing: 6) {
-                    Image(systemName: "flame.fill")
-                        .font(.caption2)
-                    Text("Prochaine azcara")
-                    Text(":")
-                    Text("\(next.formatted(date: .abbreviated, time: .omitted))*")
-                        .fontWeight(.medium)
+                    Text(intent.createdAt.formatted(date: .abbreviated, time: .omitted))
+                    if let last = intent.lastReadIndex {
+                        Text("·")
+                        Text("lue jusqu'à \(last + 1)")
+                            .foregroundStyle(Color.accentMain)
+                    }
                 }
                 .font(.caption)
-                .foregroundStyle(Color.accentMain)
+                .foregroundStyle(.secondary)
+
+                // V1.10.7 — Prochaine azcara si la date du décès est renseignée.
+                // Astérisque rappelle que le Hebrew day commence au coucher
+                // du soleil de la veille civile (cf. footer de la section).
+                if let death = intent.civilDateOfDeath,
+                   let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "flame.fill")
+                            .font(.caption2)
+                        Text("Prochaine azcara")
+                        Text(":")
+                        Text("\(next.formatted(date: .abbreviated, time: .omitted))*")
+                            .fontWeight(.medium)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(Color.accentMain)
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            // V1.10.7 — Badge cloche si rappels effectivement planifiés.
+            // Conditions strictes (= mêmes que le scheduler) pour ne pas
+            // induire en erreur l'utilisateur.
+            if hasActiveReminders(intent) {
+                Image(systemName: "bell.fill")
+                    .font(.caption)
+                    .foregroundStyle(Color.accentMain)
+                    .accessibilityLabel("Rappels activés")
+                    .padding(.top, 4)
             }
         }
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
+    }
+
+    /// V1.10.7 — Réplique exactement les conditions du scheduler
+    /// (`NotificationManager.rescheduleMemorialReminders`) : on n'affiche
+    /// la cloche que si une notif sera réellement posée.
+    private func hasActiveReminders(_ intent: SavedPrayerIntent) -> Bool {
+        intent.remindersEnabled
+            && intent.civilDateOfDeath != nil
+            && (intent.notifySevenDaysBefore || intent.notifySameDay)
     }
 
     private func delete(at offsets: IndexSet) {

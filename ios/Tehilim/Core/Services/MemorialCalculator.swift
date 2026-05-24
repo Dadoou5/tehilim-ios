@@ -18,11 +18,20 @@ import Foundation
 enum MemorialCalculator {
 
     /// API publique : civile → civile. Retourne la date civile de la
-    /// prochaine azcara strictement postérieure à `now`.
+    /// prochaine azcara, comprise comme **« aujourd'hui ou plus tard »**.
+    /// Si l'azcara tombe le jour même, elle est retournée (et non
+    /// repoussée à l'année suivante).
+    ///
+    /// V1.10.7 — comparaison contre `startOfDay(now)` et non `now` :
+    /// sans ça, l'azcara tombant aujourd'hui était considérée comme
+    /// passée dès que `now` dépassait l'heure de noon utilisée
+    /// internement par `civilDate`, ce qui faisait sauter directement
+    /// à l'année suivante (bug remonté en test).
     static func nextYahrzeit(deathCivil: Date, now: Date = Date()) -> Date? {
         let death = hebrewYMD(from: deathCivil)
         let today = hebrewYMD(from: now)
         let sourceLeap = isLeap(year: death.year)
+        let startOfToday = Calendar.current.startOfDay(for: now)
 
         // Borne de sécurité : en pratique 1 itération, max 2 si l'azcara
         // de l'année courante est déjà passée.
@@ -42,7 +51,7 @@ enum MemorialCalculator {
                 targetYear: targetYear
             )
             if let candidate = civilDate(year: targetYear, month: fm, day: fd),
-               candidate > now {
+               candidate >= startOfToday {
                 return candidate
             }
         }

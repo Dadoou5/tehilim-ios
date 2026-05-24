@@ -251,4 +251,28 @@ extension MemorialCalculatorTests {
         XCTAssertEqual(nextMonth.year, 2027)
         XCTAssertEqual(nextMonth.month, 6, "Doit être en juin 2027 (1 Sivan 5787), pas juillet")
     }
+
+    /// Test de régression — l'azcara du JOUR ne doit pas être skippée
+    /// vers l'année suivante simplement parce qu'on l'ouvre l'après-midi.
+    ///
+    /// Cas user : décès 19 mai 2021 (8 Sivan 5781). Le 24 mai 2026 = 8 Sivan
+    /// 5786, donc l'azcara tombe aujourd'hui. Quel que soit l'heure dans
+    /// la journée, le calculateur doit retourner aujourd'hui (et non l'an
+    /// prochain).
+    func testRegression_AzcaraTodayKeptAsToday_19May2021() {
+        let death = civil(2021, 5, 19)
+        // Simule "ouverture de l'app à 18h le 24 mai 2026" — passé midi
+        // mais l'azcara du jour ne doit pas être skippée.
+        var nowDC = DateComponents()
+        nowDC.year = 2026; nowDC.month = 5; nowDC.day = 24; nowDC.hour = 18
+        let now = Calendar(identifier: .gregorian).date(from: nowDC)!
+
+        let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)
+        XCTAssertNotNil(next)
+        let nextDC = Calendar(identifier: .gregorian)
+            .dateComponents([.year, .month, .day], from: next!)
+        XCTAssertEqual(nextDC.year, 2026, "Doit rester en 2026 (aujourd'hui), pas 2027")
+        XCTAssertEqual(nextDC.month, 5)
+        XCTAssertEqual(nextDC.day, 24)
+    }
 }

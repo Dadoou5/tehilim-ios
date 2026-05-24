@@ -33,13 +33,29 @@ import java.util.Date
  */
 object MemorialCalculator {
 
-    /** API publique : civile → civile. */
+    /**
+     * API publique : civile → civile. Retourne la date civile de la
+     * prochaine azcara, comprise comme **« aujourd'hui ou plus tard »**.
+     * Si l'azcara tombe le jour même, elle est retournée (et non repoussée
+     * à l'année suivante).
+     *
+     * V1.4 — comparaison contre `startOfDay(now)` et non `now` strictement.
+     * Sans ça, l'azcara du jour était considérée comme passée dès que
+     * `now` dépassait l'heure de noon utilisée internement par `civilDate`,
+     * faisant sauter directement à l'année suivante.
+     */
     fun nextYahrzeit(deathCivil: Date, now: Date = Date()): Date? {
         val death = hebrewYMD(deathCivil)
         val today = hebrewYMD(now)
         val sourceLeap = isLeap(death.year)
+        val startOfToday = java.util.Calendar.getInstance().apply {
+            time = now
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }.time
 
-        // Borne de sécurité : 1 itération en pratique, max 2 si déjà passé.
         for (offset in 0..2) {
             val targetYear = today.year + offset
             val targetLeap = isLeap(targetYear)
@@ -52,7 +68,8 @@ object MemorialCalculator {
                 targetYear = targetYear
             )
             val candidate = civilDate(targetYear, fm, fd) ?: continue
-            if (candidate.after(now)) return candidate
+            // >= startOfToday : si l'azcara est aujourd'hui, on la retourne.
+            if (!candidate.before(startOfToday)) return candidate
         }
         return null
     }

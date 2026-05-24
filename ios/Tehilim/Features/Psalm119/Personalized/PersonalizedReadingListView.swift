@@ -132,7 +132,7 @@ struct PersonalizedReadingListView: View {
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
                     .textCase(.uppercase)
-                Text(item.source.labelFR)
+                Text(item.source.label)
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Color.accentMain)
                     .environment(
@@ -145,7 +145,7 @@ struct PersonalizedReadingListView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(
             "Lettre \(displayIndex) sur \(intent.generatedLetters.count), " +
-            "\(item.character), source \(item.source.labelFR)"
+            "\(item.character), source \(item.source.label)"
         )
         .accessibilityHint("Ouvre la section correspondante du Tehilim 119")
     }

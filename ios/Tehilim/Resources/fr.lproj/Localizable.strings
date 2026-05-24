@@ -129,3 +129,36 @@
 "Aucun sauvegardé" = "Aucun sauvegardé";
 "1 sauvegardé" = "1 sauvegardé";
 "%lld sauvegardés" = "%lld sauvegardés";
+
+/* V1.10.7 — Lelouy Nichmat : parité avec en.lproj. FR = source. */
+"Aucun Lelouy Nichmat sauvegardé" = "Aucun Lelouy Nichmat sauvegardé";
+"Génère une lecture personnalisée et sauvegarde-la pour la retrouver ici." = "Génère une lecture personnalisée et sauvegarde-la pour la retrouver ici.";
+"Le défunt" = "Le défunt";
+"Sa mère" = "Sa mère";
+"Prénom" = "Prénom";
+"Prénom de la mère" = "Prénom de la mère";
+"Lien" = "Lien";
+"Aperçu hébraïque" = "Aperçu hébraïque";
+"Générer" = "Générer";
+"Lecture pour l'élévation de l'âme" = "Lecture pour l'élévation de l'âme";
+"Active le clavier hébreu" = "Active le clavier hébreu";
+"Séquence de lecture" = "Séquence de lecture";
+"Prénom en hébreu uniquement." = "Prénom en hébreu uniquement.";
+"« נשמה » sera ajouté automatiquement à la fin de la séquence." = "« נשמה » sera ajouté automatiquement à la fin de la séquence.";
+"« נשמה » a été ajouté automatiquement à la fin de la séquence." = "« נשמה » a été ajouté automatiquement à la fin de la séquence.";
+"La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה." = "La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה.";
+"Réglages → Général → Clavier → Claviers → Ajouter un clavier → Hébreu. Puis appuie sur 🌐 pendant la saisie pour basculer." = "Réglages → Général → Clavier → Claviers → Ajouter un clavier → Hébreu. Puis appuie sur 🌐 pendant la saisie pour basculer.";
+
+/* Strings dynamiques (formats %lld) */
+"%lld lettres" = "%lld lettres";
+"%lld sauvegardé" = "%lld sauvegardé";
+"lue jusqu'à %lld" = "lue jusqu'à %lld";
+"À la lettre %lld sur %lld" = "À la lettre %lld sur %lld";
+
+/* Labels LetterSource */
+"proche" = "proche";
+"lien" = "lien";
+"mère" = "mère";
+
+/* Section Tehilim 119 — header de progression dans la séquence */
+"· source : %@" = "· source : %@";

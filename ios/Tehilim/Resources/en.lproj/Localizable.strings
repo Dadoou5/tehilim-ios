@@ -262,3 +262,37 @@
 "Aucun sauvegardé" = "None saved";
 "1 sauvegardé" = "1 saved";
 "%lld sauvegardés" = "%lld saved";
+
+/* V1.10.7 — Lelouy Nichmat : SavedPrayersListView, form, ListView.
+   Toutes les sections d'origine étaient hardcodées en français. */
+"Aucun Lelouy Nichmat sauvegardé" = "No Lelouy Nichmat saved";
+"Génère une lecture personnalisée et sauvegarde-la pour la retrouver ici." = "Generate a personalized reading and save it to find it here.";
+"Le défunt" = "The departed";
+"Sa mère" = "Their mother";
+"Prénom" = "First name";
+"Prénom de la mère" = "Mother's first name";
+"Lien" = "Relationship";
+"Aperçu hébraïque" = "Hebrew preview";
+"Générer" = "Generate";
+"Lecture pour l'élévation de l'âme" = "Reading for the elevation of the soul";
+"Active le clavier hébreu" = "Enable the Hebrew keyboard";
+"Séquence de lecture" = "Reading sequence";
+"Prénom en hébreu uniquement." = "Hebrew first name only.";
+"« נשמה » sera ajouté automatiquement à la fin de la séquence." = "« נשמה » will be appended automatically at the end of the sequence.";
+"« נשמה » a été ajouté automatiquement à la fin de la séquence." = "« נשמה » was appended automatically at the end of the sequence.";
+"La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה." = "The generated sequence corresponds to the letters of the departed's first name, the relationship (בן/בת), their mother's first name, then נשמה.";
+"Réglages → Général → Clavier → Claviers → Ajouter un clavier → Hébreu. Puis appuie sur 🌐 pendant la saisie pour basculer." = "Settings → General → Keyboard → Keyboards → Add New Keyboard → Hebrew. Then tap 🌐 while typing to switch.";
+
+/* Strings dynamiques (formats %lld) — utilisées via String(format:, L(...)) */
+"%lld lettres" = "%lld letters";
+"%lld sauvegardé" = "%lld saved";
+"lue jusqu'à %lld" = "read up to %lld";
+"À la lettre %lld sur %lld" = "At letter %lld of %lld";
+
+/* Labels LetterSource — affichés à droite de chaque ligne de la séquence */
+"proche" = "close";
+"lien" = "link";
+"mère" = "mother";
+
+/* Section Tehilim 119 — header de progression dans la séquence */
+"· source : %@" = "· source: %@";

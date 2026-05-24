@@ -146,7 +146,7 @@ struct Psalm119SectionView: View {
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.primary)
             if let item = ctx.currentItem {
-                Text("· source : \(item.source.labelFR)")
+                Text("· source : \(item.source.label)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

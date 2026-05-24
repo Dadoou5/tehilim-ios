@@ -59,14 +59,23 @@ enum LetterSource: String, Codable, Hashable {
     case neshama
 
     /// Label affiché à droite de chaque ligne de la séquence.
-    var labelFR: String {
+    ///
+    /// V1.10.7 — passe par `L()` (helper qui force le lookup via le swizzle
+    /// Bundle V2.1.b) pour suivre la langue de l'app. La valeur retournée
+    /// est déjà localisée. `נשמה` reste en hébreu dans toutes les langues.
+    var label: String {
         switch self {
-        case .proche:  return "proche"
-        case .lien:    return "lien"
-        case .mere:    return "mère"
+        case .proche:  return L("proche")
+        case .lien:    return L("lien")
+        case .mere:    return L("mère")
         case .neshama: return "נשמה"
         }
     }
+
+    /// Backward-compat : ancien nom utilisé par d'éventuels call sites
+    /// avant la refacto V1.10.7. Délégue à `label`.
+    @available(*, deprecated, renamed: "label")
+    var labelFR: String { label }
 }
 
 // MARK: - Item de la séquence de lecture

@@ -27,9 +27,20 @@ struct SavedPrayersListView: View {
                     } header: {
                         Text("Lelouy Nichmat")
                     } footer: {
-                        Text("\(savedPrayers.intents.count) sauvegardé\(savedPrayers.intents.count > 1 ? "s" : "")")
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
+                        // V1.10.7 — pas de conditionnel `s` dans
+                        // l'interpolation (casserait la clé de lookup
+                        // LocalizedStringKey). On choisit la clé selon
+                        // le count, chaque clé existe en EN.
+                        let count = savedPrayers.intents.count
+                        Group {
+                            if count <= 1 {
+                                Text("\(count) sauvegardé")
+                            } else {
+                                Text("\(count) sauvegardés")
+                            }
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                     }
                 }
                 .listStyle(.insetGrouped)

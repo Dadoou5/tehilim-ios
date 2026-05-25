@@ -36,7 +36,6 @@ struct TehilimApp: App {
                 } else {
                     RootTabView()
                         .environmentObject(container)
-                        .preferredColorScheme(theme.colorScheme)
                         .fullScreenCover(isPresented: Binding(
                             get: { !onboardingCompleted },
                             set: { onboardingCompleted = !$0 }
@@ -47,6 +46,13 @@ struct TehilimApp: App {
                 }
             }
             .animation(.easeInOut(duration: 0.45), value: showSplash)
+            // V1.10.7 — `preferredColorScheme` PROMU sur le ZStack pour
+            // que la SplashView respecte aussi la préférence de thème de
+            // l'app (avant : `preferredColorScheme` était seulement sur
+            // RootTabView → splash en mode système, accueil en mode app
+            // → flash de couleur disgracieux quand l'utilisateur a forcé
+            // un thème opposé à celui du device).
+            .preferredColorScheme(theme.colorScheme)
             // V2.1.b — recrée le tree au changement de langue : conjugué au
             // swizzle de Bundle.main, ça force chaque `Text("…")` à relire
             // sa traduction dans la nouvelle locale, sans relancer l'app.

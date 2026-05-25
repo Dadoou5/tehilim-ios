@@ -258,6 +258,10 @@
     <string name="confirm_delete_prayer_body">This action is irreversible. Associated reminders will also be cancelled.</string>
     <string name="cd_delete_prayer">Delete prayer</string>
     <string name="memorial_scheduled_reminders">Scheduled reminders</string>
+    <string name="memorial_test_section_title">Test notifications</string>
+    <string name="memorial_test_button">Send a test notification in 10 seconds</string>
+    <string name="memorial_test_helper">Check that notifications are authorized on this device.</string>
+    <string name="memorial_test_scheduled">Notification scheduled. Leave the app to see it arrive in ~10 s.</string>
 
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Hebrew text</string>

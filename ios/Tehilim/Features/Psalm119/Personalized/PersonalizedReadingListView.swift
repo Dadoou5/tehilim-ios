@@ -19,6 +19,11 @@ struct PersonalizedReadingListView: View {
     /// programmés pour cet intent. Chargée via `.task` à l'apparition.
     @State private var pendingReminders: [PendingMemorialReminder] = []
 
+    /// V1.10.7 — État du bouton « Tester maintenant ». Bascule à true
+    /// après tap → footer affiche un message de confirmation jusqu'au
+    /// prochain affichage de la vue.
+    @State private var testNotificationScheduled: Bool = false
+
     var body: some View {
         List {
             // En-tête : sujet hébraïque + chip type
@@ -88,6 +93,39 @@ struct PersonalizedReadingListView: View {
                     }
                 } header: {
                     Text("Rappels programmés")
+                }
+            }
+
+            // V1.10.7 — Outil de test : envoie une notif fictive +10s pour
+            // valider que la permission iOS + la livraison fonctionnent
+            // sans devoir attendre le vrai trigger ou bricoler l'horloge
+            // (ce qui ne marche pas sur iOS — Apple ne re-fire pas les
+            // triggers quand l'horloge système change).
+            if intent.civilDateOfDeath != nil {
+                Section {
+                    Button {
+                        Task {
+                            let ok = await NotificationManager.shared
+                                .scheduleTestMemorialNotification(subject: intent.hebrewSubject)
+                            testNotificationScheduled = ok
+                        }
+                    } label: {
+                        HStack(spacing: 14) {
+                            Image(systemName: "paperplane.fill")
+                                .foregroundStyle(Color.accentMain)
+                            Text("Envoyer une notif test dans 10 secondes")
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                } header: {
+                    Text("Tester les notifications")
+                } footer: {
+                    if testNotificationScheduled {
+                        Text("Notification programmée. Quitte l'app pour la voir arriver dans ~10 s.")
+                            .foregroundStyle(Color.accentMain)
+                    } else {
+                        Text("Vérifie que les notifications sont bien autorisées sur cet appareil.")
+                    }
                 }
             }
 

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -73,6 +74,22 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
     }
     LaunchedEffect(intent.id) {
         pendingReminders = NotificationScheduler.pendingMemorial(context, intent.id)
+    }
+
+    // V1.4 — État du bouton « Tester maintenant ». true après tap → affiche
+    // un message de confirmation.
+    var testNotificationScheduled by remember { mutableStateOf(false) }
+
+    // V1.4 — Launcher pour demander POST_NOTIFICATIONS (Android 13+).
+    // Si accordée, on schedule la notif test. Sinon le user voit un toast
+    // implicite via le NotificationScheduler (silencieux dans le Worker).
+    val permLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            NotificationScheduler.scheduleTestMemorial(context, intent.hebrewSubject)
+            testNotificationScheduled = true
+        }
     }
 
     Scaffold(
@@ -250,6 +267,75 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                             }
                         }
                     }
+                }
+            }
+
+            // V1.4 — Outil de test : Card "Envoyer une notif test dans
+            // 10 secondes". Visible si la prière a une date du décès
+            // (sinon le test n'aurait pas vraiment de contexte azcara).
+            // Demande POST_NOTIFICATIONS si pas accordée puis schedule.
+            if (intent.civilDateOfDeathEpochMillis != null) {
+                item {
+                    Text(
+                        stringResource(R.string.memorial_test_section_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                item {
+                    AppCard(
+                        onClick = {
+                            if (android.os.Build.VERSION.SDK_INT >=
+                                android.os.Build.VERSION_CODES.TIRAMISU) {
+                                val granted = androidx.core.app.ActivityCompat
+                                    .checkSelfPermission(
+                                        context,
+                                        android.Manifest.permission.POST_NOTIFICATIONS
+                                    ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                                if (!granted) {
+                                    permLauncher.launch(
+                                        android.Manifest.permission.POST_NOTIFICATIONS
+                                    )
+                                    return@AppCard
+                                }
+                            }
+                            NotificationScheduler.scheduleTestMemorial(
+                                context, intent.hebrewSubject
+                            )
+                            testNotificationScheduled = true
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.Send,
+                                null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                stringResource(R.string.memorial_test_button),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    Text(
+                        stringResource(
+                            if (testNotificationScheduled)
+                                R.string.memorial_test_scheduled
+                            else R.string.memorial_test_helper
+                        ),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (testNotificationScheduled)
+                            MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp, start = 16.dp)
+                    )
                 }
             }
 

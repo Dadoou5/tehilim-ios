@@ -116,6 +116,38 @@ final class NotificationManager: NSObject, ObservableObject {
         Self.log.info("Cancelled memorial reminders for \(intentId.uuidString, privacy: .public)")
     }
 
+    /// V1.10.7 — Outil de test : programme une notification d'azcara
+    /// fictive 10 secondes après l'appel. Permet à l'utilisateur de
+    /// vérifier toute la chaîne (permission + delivery + son + tap-to-open)
+    /// sans avoir à attendre la vraie date d'azcara.
+    ///
+    /// Demande la permission au passage si pas encore accordée. Retourne
+    /// `true` si la notif a effectivement été schedulée, `false` sinon.
+    @discardableResult
+    func scheduleTestMemorialNotification(subject: String) async -> Bool {
+        // Demande de permission si nécessaire — le user a souvent toggle
+        // remindersEnabled mais refusé la permission iOS.
+        if permission != .authorized && permission != .provisional {
+            let granted = await requestPermission()
+            if !granted { return false }
+        }
+        let content = UNMutableNotificationContent()
+        content.title = String(localized: "Test rappel azcara")
+        content.body = String(format: String(localized: "Azcara de %@."), subject)
+        content.sound = .default
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+        let id = "tehilim.memorial.test.\(UUID().uuidString)"
+        let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+        do {
+            try await UNUserNotificationCenter.current().add(request)
+            Self.log.info("Scheduled TEST memorial notif id=\(id, privacy: .public) (+10s)")
+            return true
+        } catch {
+            Self.log.error("Failed to schedule test notif: \(error.localizedDescription, privacy: .public)")
+            return false
+        }
+    }
+
     /// V1.10.7 — Diagnostic : retourne les rappels d'azcara actuellement
     /// programmés pour un intent. Permet à l'UI d'afficher « Rappels
     /// programmés : J-7 le 17 mai 12:00, jour J le 24 mai 09:00 » et

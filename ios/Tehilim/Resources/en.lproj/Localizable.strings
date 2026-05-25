@@ -321,3 +321,8 @@
 "Azcara de %@ dans %lld jours." = "Azcara of %@ in %lld days.";
 "* commence la veille au soir" = "* begins the previous evening";
 "Rappels programmés" = "Scheduled reminders";
+"Test rappel azcara" = "Test azcara reminder";
+"Tester les notifications" = "Test notifications";
+"Envoyer une notif test dans 10 secondes" = "Send a test notification in 10 seconds";
+"Notification programmée. Quitte l'app pour la voir arriver dans ~10 s." = "Notification scheduled. Leave the app to see it arrive in ~10 s.";
+"Vérifie que les notifications sont bien autorisées sur cet appareil." = "Check that notifications are authorized on this device.";

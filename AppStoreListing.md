@@ -217,11 +217,15 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.10.7 (build 28)
+## 📋 What's New / Nouveautés — V1.10.8 (build 29)
 
 > Texte « What's New » à coller dans App Store Connect
-> → onglet **Version 1.10.7** → champ **« Nouveautés in this Version »**.
+> → onglet **Version 1.10.8** → champ **« Nouveautés in this Version »**.
 > Limite Apple : 4 000 caractères par locale.
+>
+> Note V1.10.8 : la V1.10.7 a été soumise séparément (correctif urgent /
+> régression). Cette release embarque l'ensemble des features dev iOS
+> entre les deux uploads.
 
 ### 🇫🇷 — App Store (grand public)
 ```

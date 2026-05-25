@@ -62,11 +62,17 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
         mutableStateOf<com.david.tehilim.core.model.SavedPrayerIntent?>(null)
     }
 
+    // V1.4 — Clé de cache jour-courant. Inclure cette clé dans tous les
+    // `remember(...)` qui dépendent de `nextYahrzeit` garantit l'invalidation
+    // au passage à minuit (sans elle, le résultat restait figé indéfiniment
+    // car la date du décès ne change jamais après création).
+    val todayEpochDay = java.time.LocalDate.now().toEpochDay()
+
     // V1.4 — Tri : (1) prières avec date du décès → triées par prochaine
     // azcara croissante (les commémorations à venir en premier),
     // (2) prières sans date → triées par date de création décroissante,
     // ajoutées après le premier groupe.
-    val intents = remember(rawIntents) {
+    val intents = remember(rawIntents, todayEpochDay) {
         val now = Date()
         val withAzcara = rawIntents.mapNotNull { intent ->
             val millis = intent.civilDateOfDeathEpochMillis ?: return@mapNotNull null
@@ -146,7 +152,10 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                             // explication en bas de l'écran.
                             val millis = intent.civilDateOfDeathEpochMillis
                             if (millis != null) {
-                                val next = remember(millis) {
+                                // Clé `todayEpochDay` : invalidation au
+                                // passage à minuit pour que l'azcara passée
+                                // laisse place à la suivante.
+                                val next = remember(millis, todayEpochDay) {
                                     MemorialCalculator.nextYahrzeit(Date(millis))
                                 }
                                 if (next != null) {

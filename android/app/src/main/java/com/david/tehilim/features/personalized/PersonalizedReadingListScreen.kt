@@ -131,7 +131,15 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
             val deathMillis = intent.civilDateOfDeathEpochMillis
             if (deathMillis != null) {
                 item {
-                    val next = remember(deathMillis) {
+                    // V1.4 — Clé `todayEpochDay` : invalidation au passage
+                    // à minuit pour que l'azcara passée laisse place à la
+                    // suivante. Sinon le `remember(deathMillis)` cacherait
+                    // indéfiniment (la date du décès ne change jamais).
+                    // PAS de `remember` autour de todayEpochDay — il doit
+                    // être recalculé à chaque recomposition pour qu'à la
+                    // prochaine recomposition post-minuit il change.
+                    val todayEpochDay = java.time.LocalDate.now().toEpochDay()
+                    val next = remember(deathMillis, todayEpochDay) {
                         MemorialCalculator.nextYahrzeit(Date(deathMillis))
                     }
                     if (next != null) {

@@ -338,7 +338,11 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
             // explication dans le helper en dessous.
             val deathDate = civilDateOfDeath
             if (deathDate != null) {
-                val next = remember(deathDate) { MemorialCalculator.nextYahrzeit(deathDate) }
+                // V1.4 — Clé todayEpochDay : invalidation au passage à minuit.
+                val todayEpochDay = java.time.LocalDate.now().toEpochDay()
+                val next = remember(deathDate, todayEpochDay) {
+                    MemorialCalculator.nextYahrzeit(deathDate)
+                }
                 if (next != null) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),

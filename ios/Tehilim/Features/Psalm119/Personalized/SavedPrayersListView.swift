@@ -7,6 +7,15 @@ import SwiftUI
 struct SavedPrayersListView: View {
     @EnvironmentObject private var savedPrayers: SavedPrayerStore
 
+    /// V1.10.7 — snapshot du « maintenant » utilisé par `sortedIntents`
+    /// et par chaque row pour calculer la prochaine azcara. Rafraîchi
+    /// quand l'app revient au premier plan (scenePhase → .active), ce
+    /// qui couvre le cas « utilisateur garde Mes prières ouvert toute
+    /// la nuit » : sans ça, body n'est pas réévalué au passage à minuit
+    /// et la date azcara reste figée sur la valeur calculée la veille.
+    @State private var nowSnapshot: Date = Date()
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         Group {
             if savedPrayers.intents.isEmpty {
@@ -69,6 +78,14 @@ struct SavedPrayersListView: View {
                 }
             }
         }
+        // V1.10.7 — refresh du snapshot temps au retour au premier plan.
+        // Forces body à recalculer `sortedIntents` (et donc les prochaines
+        // azcaras) avec une `Date()` à jour.
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                nowSnapshot = Date()
+            }
+        }
     }
 
     @ViewBuilder
@@ -98,8 +115,9 @@ struct SavedPrayersListView: View {
                 // V1.10.7 — Prochaine azcara si la date du décès est renseignée.
                 // Astérisque rappelle que le Hebrew day commence au coucher
                 // du soleil de la veille civile (cf. footer de la section).
+                // Utilise `nowSnapshot` pour invalider au retour foreground.
                 if let death = intent.civilDateOfDeath,
-                   let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
+                   let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: nowSnapshot) {
                     HStack(spacing: 6) {
                         Image(systemName: "flame.fill")
                             .font(.caption2)
@@ -146,8 +164,10 @@ struct SavedPrayersListView: View {
     /// V1.10.7 — Mes prières triées par prochaine azcara croissante
     /// (les commémorations à venir en premier), puis par date de création
     /// décroissante pour les prières sans date du décès renseignée.
+    /// Utilise `nowSnapshot` (et non `Date()`) pour que SwiftUI track la
+    /// dépendance et re-render au passage à minuit / retour foreground.
     private var sortedIntents: [SavedPrayerIntent] {
-        let now = Date()
+        let now = nowSnapshot
         let withAzcara = savedPrayers.intents.compactMap { intent -> (SavedPrayerIntent, Date)? in
             guard let death = intent.civilDateOfDeath,
                   let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)

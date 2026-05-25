@@ -187,8 +187,3 @@
 "Azcara de %@ dans %lld jours." = "Azcara de %@ dans %lld jours.";
 "* commence la veille au soir" = "* commence la veille au soir";
 "Rappels programmés" = "Rappels programmés";
-"Test rappel azcara" = "Test rappel azcara";
-"Tester les notifications" = "Tester les notifications";
-"Envoyer une notif test dans 10 secondes" = "Envoyer une notif test dans 10 secondes";
-"Notification programmée. Quitte l'app pour la voir arriver dans ~10 s." = "Notification programmée. Quitte l'app pour la voir arriver dans ~10 s.";
-"Vérifie que les notifications sont bien autorisées sur cet appareil." = "Vérifie que les notifications sont bien autorisées sur cet appareil.";

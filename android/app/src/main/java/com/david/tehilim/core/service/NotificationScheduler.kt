@@ -128,28 +128,6 @@ object NotificationScheduler {
     }
 
     /**
-     * V1.4 — Outil de test : programme une notification d'azcara fictive
-     * 10 secondes après l'appel. Permet à l'utilisateur de vérifier la
-     * chaîne (permission POST_NOTIFICATIONS + livraison + son + tap-to-open)
-     * sans avoir à attendre le vrai trigger.
-     */
-    fun scheduleTestMemorial(context: Context, subject: String) {
-        ensureChannel(context)
-        val req = OneTimeWorkRequestBuilder<MemorialReminderWorker>()
-            .setInitialDelay(10, TimeUnit.SECONDS)
-            .setInputData(
-                Data.Builder()
-                    .putString(MemorialReminderWorker.KEY_INTENT_ID,
-                        "test.${java.util.UUID.randomUUID()}")
-                    .putString(MemorialReminderWorker.KEY_SUBJECT, subject)
-                    .putInt(MemorialReminderWorker.KEY_DAYS_OFFSET, 0)
-                    .build()
-            )
-            .build()
-        WorkManager.getInstance(context).enqueue(req)
-    }
-
-    /**
      * Reprogramme (annule + re-planifie) les rappels d'azcara pour un intent.
      * No-op si les conditions ne sont pas réunies (rappels off, pas de date,
      * aucun toggle activé, ou prochaine azcara dans le passé).

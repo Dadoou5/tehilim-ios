@@ -284,8 +284,14 @@ struct PersonalizedReadingFormView: View {
         generatedIntent = saved
         // V1.10.7 — schedule (ou no-op si conditions pas réunies, géré dans
         // NotificationManager.rescheduleMemorialReminders).
-        Task { await notifications.rescheduleMemorialReminders(for: saved) }
-        navigateToList = true
+        // **AWAIT avant de naviguer** : sinon PersonalizedReadingListView
+        // s'affiche AVANT que UNUserNotificationCenter ait enregistré la
+        // requête → `pendingMemorialReminders` retourne tableau vide et la
+        // section « Rappels programmés » reste cachée.
+        Task {
+            await notifications.rescheduleMemorialReminders(for: saved)
+            navigateToList = true
+        }
     }
 
     // MARK: - Bannière Lelouy Nichmat

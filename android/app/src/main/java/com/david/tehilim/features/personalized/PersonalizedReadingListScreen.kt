@@ -72,6 +72,12 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
         mutableStateOf<List<PendingMemorialReminder>>(emptyList())
     }
     LaunchedEffect(intent.id) {
+        // V1.4 — petit délai pour laisser WorkManager committer les
+        // OneTimeWorkRequest qui viennent juste d'être enqueued par le
+        // formulaire (sinon, naviguer immédiatement depuis « Générer »
+        // peut faire que la query revienne vide → la section « Rappels
+        // programmés » se masque alors qu'on vient juste de les poser).
+        kotlinx.coroutines.delay(200L)
         pendingReminders = NotificationScheduler.pendingMemorial(context, intent.id)
     }
 

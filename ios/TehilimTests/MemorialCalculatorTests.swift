@@ -275,4 +275,42 @@ extension MemorialCalculatorTests {
         XCTAssertEqual(nextDC.month, 5)
         XCTAssertEqual(nextDC.day, 24)
     }
+
+    /// Test de régression — l'azcara D'HIER doit basculer sur l'année
+    /// suivante. C'est exactement le scénario user : « lorsque je viens
+    /// de passer une azcara ». Vérifie que le calcul saute bien.
+    func testRegression_AzcaraYesterdayJumpsToNextYear_19May2021() {
+        let death = civil(2021, 5, 19)
+        // Hier était l'azcara (24 mai 2026 = 8 Sivan 5786) — aujourd'hui
+        // est le 25 mai 2026 = 9 Sivan 5786, donc passé.
+        var nowDC = DateComponents()
+        nowDC.year = 2026; nowDC.month = 5; nowDC.day = 25; nowDC.hour = 10
+        let now = Calendar(identifier: .gregorian).date(from: nowDC)!
+
+        let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)
+        XCTAssertNotNil(next)
+        let nextDC = Calendar(identifier: .gregorian)
+            .dateComponents([.year, .month, .day], from: next!)
+        // Prochaine azcara = 8 Sivan 5787 = environ 5/6 juin 2027 selon
+        // mapping civil de Apple (year leap, donc Sivan toujours mois 10).
+        XCTAssertEqual(nextDC.year, 2027, "Doit sauter à 2027, pas rester en 2026")
+        XCTAssertEqual(nextDC.month, 6, "Doit être en juin 2027 (Sivan 5787)")
+    }
+
+    /// Test : juste après minuit (00:30) le lendemain de l'azcara.
+    /// Cas limite — vérifie qu'on ne renvoie pas encore l'azcara
+    /// d'hier juste parce qu'il est très tôt le matin.
+    func testRegression_JustPastMidnightAfterAzcara_19May2021() {
+        let death = civil(2021, 5, 19)
+        var nowDC = DateComponents()
+        nowDC.year = 2026; nowDC.month = 5; nowDC.day = 25; nowDC.hour = 0; nowDC.minute = 30
+        let now = Calendar(identifier: .gregorian).date(from: nowDC)!
+
+        let next = MemorialCalculator.nextYahrzeit(deathCivil: death, now: now)
+        XCTAssertNotNil(next)
+        let nextDC = Calendar(identifier: .gregorian)
+            .dateComponents([.year, .month, .day], from: next!)
+        XCTAssertEqual(nextDC.year, 2027,
+                       "À 00:30 le 25 mai, l'azcara du 24 mai est passée → 2027")
+    }
 }

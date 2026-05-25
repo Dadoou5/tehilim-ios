@@ -66,7 +66,19 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
     // `remember(...)` qui dépendent de `nextYahrzeit` garantit l'invalidation
     // au passage à minuit (sans elle, le résultat restait figé indéfiniment
     // car la date du décès ne change jamais après création).
-    val todayEpochDay = java.time.LocalDate.now().toEpochDay()
+    // Stocké en State + poll 60s pour forcer la recomposition au passage
+    // de minuit même sans interaction utilisateur. Sinon Compose ne
+    // recompose pas spontanément et la valeur reste figée.
+    var todayEpochDay by remember {
+        mutableStateOf(java.time.LocalDate.now().toEpochDay())
+    }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(60_000L)
+            val current = java.time.LocalDate.now().toEpochDay()
+            if (current != todayEpochDay) todayEpochDay = current
+        }
+    }
 
     // V1.4 — Tri : (1) prières avec date du décès → triées par prochaine
     // azcara croissante (les commémorations à venir en premier),

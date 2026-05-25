@@ -78,12 +78,23 @@ struct SavedPrayersListView: View {
                 }
             }
         }
-        // V1.10.7 — refresh du snapshot temps au retour au premier plan.
-        // Forces body à recalculer `sortedIntents` (et donc les prochaines
-        // azcaras) avec une `Date()` à jour.
+        // V1.10.7 — refresh du snapshot temps :
+        // - sur retour au premier plan (scenePhase → .active)
+        // - à chaque entrée sur la vue (`.onAppear`)
+        // - poll 60s pour détecter le passage de minuit sans intervention
+        //   utilisateur (cas rare mais réel : app foreground toute la nuit).
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                nowSnapshot = Date()
+            if newPhase == .active { nowSnapshot = Date() }
+        }
+        .onAppear { nowSnapshot = Date() }
+        .onReceive(
+            Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+        ) { _ in
+            let fresh = Date()
+            // N'update que si le jour civil a changé : évite un re-render
+            // inutile chaque minute.
+            if !Calendar.current.isDate(fresh, inSameDayAs: nowSnapshot) {
+                nowSnapshot = fresh
             }
         }
     }

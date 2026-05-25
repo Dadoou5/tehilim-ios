@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -27,9 +28,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +46,8 @@ import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
 import com.david.tehilim.R
 import com.david.tehilim.core.service.MemorialCalculator
+import com.david.tehilim.core.service.NotificationScheduler
+import com.david.tehilim.core.service.PendingMemorialReminder
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
 import com.david.tehilim.ui.theme.EzraSilFontFamily
@@ -58,6 +64,16 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
         return
     }
     val context = LocalContext.current
+
+    // V1.4 — Charge les rappels d'azcara actuellement plannifiés pour
+    // cet intent. LaunchedEffect re-fire si l'intentId change (= navigation
+    // vers une autre prière) — pas besoin de re-fetch sinon.
+    var pendingReminders by remember {
+        mutableStateOf<List<PendingMemorialReminder>>(emptyList())
+    }
+    LaunchedEffect(intent.id) {
+        pendingReminders = NotificationScheduler.pendingMemorial(context, intent.id)
+    }
 
     Scaffold(
         topBar = {
@@ -180,6 +196,58 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
                             )
+                        }
+                    }
+                }
+            }
+
+            // V1.4 — Section diagnostic : rappels d'azcara plannifiés
+            // (= WorkRequest ENQUEUED). Permet de vérifier visuellement
+            // que les notifs sont bien posées sans devoir attendre le
+            // déclenchement réel.
+            if (pendingReminders.isNotEmpty()) {
+                item {
+                    Text(
+                        stringResource(R.string.memorial_scheduled_reminders),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                items(pendingReminders) { reminder ->
+                    val dateFmt = remember {
+                        DateFormat.getDateTimeInstance(
+                            DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault()
+                        )
+                    }
+                    AppCard(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.Notifications,
+                                null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    stringResource(
+                                        if (reminder.kind == PendingMemorialReminder.Kind.SevenDays)
+                                            R.string.memorial_reminder_7d
+                                        else R.string.memorial_reminder_day
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                if (reminder.triggerEpochMillis > 0) {
+                                    Text(
+                                        dateFmt.format(Date(reminder.triggerEpochMillis)),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
                         }
                     }
                 }

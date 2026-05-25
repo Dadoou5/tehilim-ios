@@ -15,6 +15,10 @@ struct PersonalizedReadingListView: View {
     let intent: SavedPrayerIntent
     let isSaved: Bool
 
+    /// V1.10.7 — Diagnostic : liste des rappels d'azcara actuellement
+    /// programmés pour cet intent. Chargée via `.task` à l'apparition.
+    @State private var pendingReminders: [PendingMemorialReminder] = []
+
     var body: some View {
         List {
             // En-tête : sujet hébraïque + chip type
@@ -53,6 +57,37 @@ struct PersonalizedReadingListView: View {
                     Text("* commence la veille au soir")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                }
+            }
+
+            // V1.10.7 — Diagnostic : liste les rappels d'azcara programmés
+            // pour cet intent. Permet à l'utilisateur de vérifier que les
+            // notifs sont bien posées (le scheduling iOS étant invisible
+            // sinon, hors device Settings).
+            if !pendingReminders.isEmpty {
+                Section {
+                    ForEach(pendingReminders) { reminder in
+                        HStack(spacing: 14) {
+                            Image(systemName: "bell.fill")
+                                .font(.body)
+                                .foregroundStyle(Color.accentMain)
+                                .accessibilityHidden(true)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(reminder.kind == .sevenDays
+                                     ? "7 jours avant"
+                                     : "Le jour même")
+                                    .font(.subheadline.weight(.medium))
+                                Text(reminder.triggerDate.formatted(
+                                    date: .abbreviated, time: .shortened))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 2)
+                    }
+                } header: {
+                    Text("Rappels programmés")
                 }
             }
 
@@ -106,6 +141,13 @@ struct PersonalizedReadingListView: View {
         // V1.10.5 : le bouton « Sauvegarder » a été retiré — la sauvegarde
         // est désormais automatique au tap sur « Générer » dans le formulaire,
         // et synchronisée via iCloud entre les appareils.
+        // V1.10.7 — charge les rappels d'azcara programmés pour cet intent
+        // à chaque apparition. Permet de voir immédiatement le résultat
+        // du scheduling après une création/modification.
+        .task(id: intent.id) {
+            pendingReminders = await NotificationManager.shared
+                .pendingMemorialReminders(intentId: intent.id)
+        }
     }
 
     // MARK: - Composants

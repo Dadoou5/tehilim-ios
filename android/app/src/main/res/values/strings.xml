@@ -257,6 +257,7 @@
     <string name="confirm_delete_prayer_title">Supprimer ce Lelouy Nichmat ?</string>
     <string name="confirm_delete_prayer_body">Cette action est irréversible. Les rappels associés seront aussi annulés.</string>
     <string name="cd_delete_prayer">Supprimer la prière</string>
+    <string name="memorial_scheduled_reminders">Rappels programmés</string>
 
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Texte hébreu</string>

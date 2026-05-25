@@ -257,6 +257,7 @@
     <string name="confirm_delete_prayer_title">Delete this Lelouy Nichmat?</string>
     <string name="confirm_delete_prayer_body">This action is irreversible. Associated reminders will also be cancelled.</string>
     <string name="cd_delete_prayer">Delete prayer</string>
+    <string name="memorial_scheduled_reminders">Scheduled reminders</string>
 
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Hebrew text</string>

@@ -93,6 +93,41 @@ object NotificationScheduler {
     }
 
     /**
+     * V1.4 — Diagnostic : retourne les rappels d'azcara actuellement
+     * programmés pour un intent. Permet à l'UI d'afficher
+     * « Rappels programmés : J-7 le … / jour J le … » et de vérifier
+     * que les WorkRequest sont bien en file.
+     *
+     * Le `WorkManager` ne stocke pas le déclenchement absolu mais une
+     * latence relative au moment du enqueue. On lit donc `nextScheduleTimeMillis`
+     * sur le WorkInfo via la query suspending API.
+     */
+    suspend fun pendingMemorial(context: Context, intentId: String): List<PendingMemorialReminder> {
+        val wm = WorkManager.getInstance(context)
+        val out = mutableListOf<PendingMemorialReminder>()
+        for ((suffix, kind) in listOf("j7" to PendingMemorialReminder.Kind.SevenDays,
+                                       "day" to PendingMemorialReminder.Kind.SameDay)) {
+            val name = memorialWorkName(intentId, suffix)
+            val infos = wm.getWorkInfosForUniqueWork(name).get()
+            for (info in infos) {
+                // ENQUEUED ou RUNNING = pas encore exécuté
+                if (info.state != androidx.work.WorkInfo.State.ENQUEUED &&
+                    info.state != androidx.work.WorkInfo.State.RUNNING) continue
+                // API 31+ : nextScheduleTimeMillis fournit l'epoch ms du
+                // prochain déclenchement. Sur API < 31 on retombe sur 0
+                // (l'UI affiche juste « programmée » sans date précise).
+                val ms = info.nextScheduleTimeMillis
+                out += PendingMemorialReminder(
+                    id = name,
+                    kind = kind,
+                    triggerEpochMillis = ms
+                )
+            }
+        }
+        return out.sortedBy { it.triggerEpochMillis }
+    }
+
+    /**
      * Reprogramme (annule + re-planifie) les rappels d'azcara pour un intent.
      * No-op si les conditions ne sont pas réunies (rappels off, pas de date,
      * aucun toggle activé, ou prochaine azcara dans le passé).
@@ -286,4 +321,18 @@ class MemorialReminderWorker(
         NotificationManagerCompat.from(context).notify(intentId.hashCode(), notif)
         return Result.success()
     }
+}
+
+/**
+ * V1.4 — Représente un rappel d'azcara actuellement programmé côté
+ * Android (= WorkRequest ENQUEUED dans WorkManager). Construit par
+ * [NotificationScheduler.pendingMemorial] pour exposer le diagnostic
+ * à l'UI.
+ */
+data class PendingMemorialReminder(
+    val id: String,
+    val kind: Kind,
+    val triggerEpochMillis: Long
+) {
+    enum class Kind { SevenDays, SameDay }
 }

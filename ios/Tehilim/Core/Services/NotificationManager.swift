@@ -3,6 +3,19 @@ import UserNotifications
 import UIKit
 import os.log
 
+/// V1.10.7 — Représente un rappel d'azcara actuellement programmé côté
+/// iOS (= présent dans `UNUserNotificationCenter.pendingNotificationRequests`).
+/// Utilisé par l'UI de diagnostic dans le détail d'un Lelouy Nichmat.
+struct PendingMemorialReminder: Identifiable, Hashable {
+    enum Kind: Hashable {
+        case sevenDays  // J-7 (« Azcara dans 7 jours »)
+        case sameDay    // Jour J à 9h locale
+    }
+    let id: String          // = identifier de la UNNotificationRequest
+    let kind: Kind
+    let triggerDate: Date   // résolu via UNCalendarNotificationTrigger.nextTriggerDate()
+}
+
 /// Gère le rappel quotidien des Tehilim du jour : permission, planification, deep link.
 @MainActor
 final class NotificationManager: NSObject, ObservableObject {
@@ -101,6 +114,30 @@ final class NotificationManager: NSObject, ObservableObject {
         UNUserNotificationCenter.current()
             .removePendingNotificationRequests(withIdentifiers: [ids.sevenDays, ids.sameDay])
         Self.log.info("Cancelled memorial reminders for \(intentId.uuidString, privacy: .public)")
+    }
+
+    /// V1.10.7 — Diagnostic : retourne les rappels d'azcara actuellement
+    /// programmés pour un intent. Permet à l'UI d'afficher « Rappels
+    /// programmés : J-7 le 17 mai 12:00, jour J le 24 mai 09:00 » et
+    /// donc de vérifier visuellement que la chaîne notif fonctionne
+    /// (sans avoir à attendre le déclenchement réel ou bricoler l'horloge).
+    func pendingMemorialReminders(intentId: UUID) async -> [PendingMemorialReminder] {
+        let ids = Self.memorialIds(intentId: intentId)
+        let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+        return requests.compactMap { req -> PendingMemorialReminder? in
+            let kind: PendingMemorialReminder.Kind
+            switch req.identifier {
+            case ids.sevenDays: kind = .sevenDays
+            case ids.sameDay: kind = .sameDay
+            default: return nil
+            }
+            guard let trigger = req.trigger as? UNCalendarNotificationTrigger,
+                  let nextFire = trigger.nextTriggerDate() else {
+                return nil
+            }
+            return PendingMemorialReminder(id: req.identifier, kind: kind, triggerDate: nextFire)
+        }
+        .sorted { $0.triggerDate < $1.triggerDate }
     }
 
     /// Reprogramme (annule puis re-planifie) les rappels d'azcara pour

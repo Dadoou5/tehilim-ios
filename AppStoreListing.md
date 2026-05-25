@@ -217,32 +217,62 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.10.7 (build 24)
+## 📋 What's New / Nouveautés — V1.10.7 (build 28)
 
-> Mise à jour visuelle. Texte « What's New » à coller dans App Store Connect
+> Texte « What's New » à coller dans App Store Connect
 > → onglet **Version 1.10.7** → champ **« Nouveautés in this Version »**.
 > Limite Apple : 4 000 caractères par locale.
 
 ### 🇫🇷 — App Store (grand public)
 ```
-Cette mise à jour améliore l'expérience de lecture en hébreu :
+Cette mise à jour est centrée sur la mémoire des défunts et l'expérience de lecture en hébreu.
 
-• Tehilim 119 — la grille des 22 lettres suit désormais le sens de lecture hébreu : Aleph en haut à droite, Tav en bas à gauche.
+🕯️ COMMÉMORATION (AZCARA)
+Ajoute une date du décès à ton Lelouy Nichmat et l'app calcule automatiquement la prochaine azcara, selon les règles traditionnelles : Adar / Adar II en année embolismique, Heshvan 30, Kislev 30, etc.
+Reçois un rappel 7 jours avant et le jour même, via notifications locales.
+Mes prières est désormais trié par azcara à venir, avec un astérisque rappelant que le jour hébraïque commence la veille au soir.
 
-• Lelouy Nichmat — la touche « Suivant » du clavier hébreu enchaîne automatiquement le prénom du défunt et celui de sa mère, sans refermer le clavier.
+📖 TEHILIM 119
+La grille des 22 lettres suit désormais le sens de lecture hébreu : Aleph en haut à droite, Tav en bas à gauche.
 
-Merci à tous les lecteurs qui font vivre cette app jour après jour.
+⌨️ FORMULAIRE LELOUY NICHMAT
+La touche « Suivant » du clavier hébreu enchaîne automatiquement le prénom du défunt et celui de sa mère, sans refermer le clavier.
+
+🌐 ANGLAIS COMPLET
+Plusieurs pages restaient en français en mode anglais. Désormais entièrement traduites : Tehilim 119, Lelouy Nichmat (formulaire, liste, détail), compteur des Cas de la vie. La langue choisie est correctement sauvegardée à la fermeture de l'app.
+
+✨ UX & POLISH
+• Mes prières : badge cloche signale les rappels actifs, suppression accessible via le bouton « Modifier » (pattern natif Mail / Notes).
+• L'écran de chargement respecte le thème clair/sombre choisi dans Réglages — fini le flash de couleur à l'ouverture.
+• Corrections diverses du calcul d'azcara : indexation des mois Apple Hebrew, traversée de minuit, rafraîchissement de l'affichage.
+
+Cette mise à jour est dédiée לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
 ```
 
 ### 🇬🇧 — App Store (general public)
 ```
-This update improves the Hebrew reading experience:
+This update focuses on remembrance of the departed and the Hebrew reading experience.
 
-• Tehilim 119 — the 22-letter grid now follows the Hebrew reading direction: Aleph top-right, Tav bottom-left.
+🕯️ COMMEMORATION (AZCARA)
+Add a date of death to your Lelouy Nichmat and the app automatically computes the next azcara, following traditional rules: Adar / Adar II in leap years, Heshvan 30, Kislev 30, etc.
+Receive a reminder 7 days before and on the day itself, via local notifications.
+My Prayers is now sorted by upcoming azcara, with an asterisk reminding you that the Hebrew day begins the previous evening.
 
-• Lelouy Nichmat — the "Next" key on the Hebrew keyboard automatically chains the departed's first name and the mother's first name, without dismissing the keyboard.
+📖 TEHILIM 119
+The 22-letter grid now follows the Hebrew reading direction: Aleph top-right, Tav bottom-left.
 
-Thank you to every reader keeping this app alive day after day.
+⌨️ LELOUY NICHMAT FORM
+The "Next" key on the Hebrew keyboard automatically chains the departed's first name and the mother's first name, without dismissing the keyboard.
+
+🌐 FULL ENGLISH
+Several pages remained in French when in English mode. Now fully translated: Tehilim 119, Lelouy Nichmat (form, list, detail), Life Cases counter. The selected language is correctly saved when the app closes.
+
+✨ UX & POLISH
+• My Prayers: bell badge highlights active reminders, deletion accessible via the "Edit" button (native Mail / Notes pattern).
+• The loading screen respects the light/dark theme chosen in Settings — no more color flash on launch.
+• Various azcara calculation fixes: Apple Hebrew month indexing, midnight transition, display refresh.
+
+This update is dedicated in memory of Johann Meïr ben Sarah Bouganim ז״ל.
 ```
 
 ### 📜 Archive — What's New précédents (à conserver pour référence)

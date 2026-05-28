@@ -165,7 +165,7 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
 
             item { HorizontalDivider() }
             item { SectionHeader(stringResource(R.string.section_daily_reminder)) }
-            item { NotificationsSettingsSection() }
+            item { NotificationsSettingsSection(prefs) }
 
             item { HorizontalDivider() }
             item { SectionHeader(stringResource(R.string.section_accessibility)) }

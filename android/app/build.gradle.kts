@@ -69,7 +69,13 @@ android {
         //            « note cruciale » sur glance-appwidget-proto et
         //            external-protobuf) + activity-compose 1.9.2 → 1.9.3
         //            (gestion edge-to-edge SDK 35+ améliorée)
-        versionCode = 16
+        // Build 17 : fix bug rappel quotidien non sauvegardé. Le toggle
+        //            et l'heure étaient en state local du Composable
+        //            (remember mutableStateOf) au lieu d'être persistés
+        //            dans Datastore. Ajout des 3 prefs notif.enabled /
+        //            hour / minute + refacto Composable pour lire/écrire
+        //            via Flow + setters.
+        versionCode = 17
         versionName = "1.0.0"
 
         // Tests

@@ -38,6 +38,11 @@ class Preferences(private val context: Context) {
         val LAST_READ_PSALM_ID = intPreferencesKey("pref.lastReadPsalmId")
         val ONBOARDING_DONE = booleanPreferencesKey("pref.onboarding.done")
         val SEARCH_RECENTS = stringPreferencesKey("pref.search.recents")
+        // V1.4 build 17 — Rappel quotidien : persistance Datastore pour que
+        // l'UI reflète l'état réel après relance app / recomposition.
+        val NOTIF_ENABLED = booleanPreferencesKey("pref.notif.enabled")
+        val NOTIF_HOUR = intPreferencesKey("pref.notif.hour")
+        val NOTIF_MINUTE = intPreferencesKey("pref.notif.minute")
     }
 
     val appLanguage: Flow<AppLanguage> = context.dataStore.data.map { prefs ->
@@ -88,6 +93,12 @@ class Preferences(private val context: Context) {
             .mapNotNull { it.trim().toIntOrNull() }
     }
 
+    // V1.4 build 17 — Rappel quotidien : Flows + setters DataStore.
+    // Défauts : OFF / 09:00 (mirror iOS `notificationHour=8` non, on garde 9).
+    val notificationEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.NOTIF_ENABLED] ?: false }
+    val notificationHour: Flow<Int> = context.dataStore.data.map { it[Keys.NOTIF_HOUR] ?: 9 }
+    val notificationMinute: Flow<Int> = context.dataStore.data.map { it[Keys.NOTIF_MINUTE] ?: 0 }
+
     // MARK: - Setters
 
     suspend fun setAppLanguage(lang: AppLanguage) =
@@ -119,6 +130,15 @@ class Preferences(private val context: Context) {
 
     suspend fun setOnboardingDone(value: Boolean) =
         context.dataStore.edit { it[Keys.ONBOARDING_DONE] = value }
+
+    suspend fun setNotificationEnabled(value: Boolean) =
+        context.dataStore.edit { it[Keys.NOTIF_ENABLED] = value }
+
+    suspend fun setNotificationTime(hour: Int, minute: Int) =
+        context.dataStore.edit {
+            it[Keys.NOTIF_HOUR] = hour
+            it[Keys.NOTIF_MINUTE] = minute
+        }
 
     /** Ajoute [id] en tête de la liste des récents (déduplique, plafonne à 10). */
     suspend fun rememberSearchRecent(id: Int) = context.dataStore.edit { prefs ->

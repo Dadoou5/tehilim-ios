@@ -65,7 +65,11 @@ android {
         //            optionnelle, calcul de la prochaine azcara par règles
         //            traditionnelles (Adar/Adar II, Heshvan 30, Kislev 30,
         //            Adar I 30), rappels J-7 + jour J via WorkManager
-        versionCode = 15
+        // Build 16 : bump Glance 1.1.0 → 1.1.1 (warning Play Console
+        //            « note cruciale » sur glance-appwidget-proto et
+        //            external-protobuf) + activity-compose 1.9.2 → 1.9.3
+        //            (gestion edge-to-edge SDK 35+ améliorée)
+        versionCode = 16
         versionName = "1.0.0"
 
         // Tests
@@ -149,7 +153,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.activity:activity-compose:1.9.3")
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.8.0")
@@ -181,8 +185,12 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 
     // Glance — widget Compose-like
-    implementation("androidx.glance:glance-appwidget:1.1.0")
-    implementation("androidx.glance:glance-material3:1.1.0")
+    // V1.4 build 16 — bump Glance 1.1.0 → 1.1.1 :
+    // Play Console flag « note cruciale » sur androidx.glance:glance-appwidget-proto
+    // et glance-appwidget-external-protobuf à la version 1.1.0. La 1.1.1 corrige
+    // aussi l'usage interne des APIs edge-to-edge dépréciées en SDK 35+.
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.glance:glance-material3:1.1.1")
 
     // Tests
     testImplementation("junit:junit:4.13.2")

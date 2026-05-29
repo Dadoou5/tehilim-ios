@@ -12,6 +12,10 @@ struct RootTabView: View {
     @State private var lifeCasesPath = NavigationPath()
     @State private var settingsPath = NavigationPath()
 
+    /// Prière reçue via lien `tehilim://prayer` en attente de confirmation
+    /// d'import. Non-nil → présente la feuille d'aperçu `PrayerImportView`.
+    @State private var pendingImport: PrayerShareLink.Payload?
+
     var body: some View {
         TabView(selection: tabBinding) {
             HomeView(path: $homePath)
@@ -48,10 +52,21 @@ struct RootTabView: View {
             }
         }
         .onOpenURL { url in handleDeepLink(url) }
+        // Import d'une prière partagée : aperçu + confirmation avant ajout.
+        .sheet(item: $pendingImport) { payload in
+            PrayerImportView(payload: payload)
+                .environmentObject(container)
+                .environmentObject(container.savedPrayers)
+        }
     }
 
     private func handleDeepLink(_ url: URL) {
         guard url.scheme == "tehilim" else { return }
+        // tehilim://prayer?... → import d'une prière partagée (SMS/WhatsApp).
+        if url.host == "prayer" {
+            pendingImport = PrayerShareLink.payload(from: url)
+            return
+        }
         // tehilim://<host> → onglet correspondant, pile vide
         switch url.host {
         case "daily":     router.go(.daily, resetPath: true)

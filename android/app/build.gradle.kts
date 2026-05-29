@@ -75,7 +75,12 @@ android {
         //            dans Datastore. Ajout des 3 prefs notif.enabled /
         //            hour / minute + refacto Composable pour lire/écrire
         //            via Flow + setters.
-        versionCode = 17
+        // Build 18 : feature Partage/import d'une prière (lien tehilim://prayer
+        //            → SMS/WhatsApp, aperçu + confirmation à l'import, dédup)
+        //            + Modification d'une prière existante (formulaire pré-
+        //            rempli réutilisé en mode édition, mise à jour en place,
+        //            re-planification des rappels).
+        versionCode = 18
         versionName = "1.0.0"
 
         // Tests

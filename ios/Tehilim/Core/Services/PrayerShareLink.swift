@@ -1,0 +1,144 @@
+import Foundation
+
+/// Encodage / décodage d'une prière partageable via lien `tehilim://prayer`.
+///
+/// Le lien est volontairement **minimal** : seuls les champs « source » sont
+/// transmis (type, prénom du proche, lien de parenté, prénom de la mère,
+/// date du décès optionnelle). La séquence de lettres (`generatedLetters`)
+/// et la date hébraïque (`hebrewDateOfDeath`) sont **recalculées à l'import**
+/// — elles dérivent déterministiquement de ces champs, inutile de les
+/// transporter (URL plus courte, robuste aux évolutions du générateur).
+///
+/// Format : `tehilim://prayer?v=1&type=<malade|defunt>&name=<enc>&rel=<ben|bat>&mother=<enc>&death=<yyyy-MM-dd>`
+///
+/// Le schéma `tehilim://` est déjà enregistré (CFBundleURLSchemes) et géré
+/// par `RootTabView.handleDeepLink`.
+enum PrayerShareLink {
+
+    static let scheme = "tehilim"
+    static let host = "prayer"
+    /// Version du format de payload — permet d'évoluer sans casser les liens
+    /// déjà partagés.
+    static let version = "1"
+
+    /// `yyyy-MM-dd` en calendrier grégorien + locale POSIX : format stable,
+    /// identique côté Android, indépendant de la locale de l'appareil.
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.timeZone = .current
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
+    // MARK: - Encodage
+
+    /// Construit l'URL `tehilim://prayer?...` représentant l'intent.
+    static func url(for intent: SavedPrayerIntent) -> URL? {
+        var comps = URLComponents()
+        comps.scheme = scheme
+        comps.host = host
+        var items: [URLQueryItem] = [
+            URLQueryItem(name: "v", value: version),
+            URLQueryItem(name: "type", value: intent.prayerType.rawValue),
+            URLQueryItem(name: "name", value: intent.relativeFirstName),
+            URLQueryItem(name: "rel", value: intent.relationType.rawValue),
+            URLQueryItem(name: "mother", value: intent.motherFirstName)
+        ]
+        if let death = intent.civilDateOfDeath {
+            items.append(URLQueryItem(name: "death", value: dateFormatter.string(from: death)))
+        }
+        comps.queryItems = items
+        return comps.url
+    }
+
+    /// Message texte prêt à partager (SMS / WhatsApp) : description lisible
+    /// + lien d'import. Taper le lien ouvre l'app et propose l'import.
+    static func shareMessage(for intent: SavedPrayerIntent) -> String {
+        let subject = intent.hebrewSubject
+        let kind = intent.prayerType.saveActionTitle
+        let link = url(for: intent)?.absoluteString ?? ""
+        return """
+        \(kind) — \(subject)
+
+        Ouvre cette prière dans Tehilim :
+        \(link)
+        """
+    }
+
+    // MARK: - Décodage
+
+    /// Payload décodé depuis un lien partagé.
+    /// `Identifiable` pour piloter une présentation `.sheet(item:)`.
+    struct Payload: Identifiable {
+        let id = UUID()
+        let prayerType: PrayerType
+        let relativeFirstName: String
+        let relationType: RelationType
+        let motherFirstName: String
+        let civilDateOfDeath: Date?
+
+        var hebrewSubject: String {
+            "\(relativeFirstName) \(relationType.hebrew) \(motherFirstName)"
+        }
+    }
+
+    /// Parse une URL `tehilim://prayer?...`. Retourne nil si le lien n'est
+    /// pas une prière valide (champs requis manquants ou invalides).
+    static func payload(from url: URL) -> Payload? {
+        guard url.scheme == scheme, url.host == host,
+              let comps = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        else { return nil }
+
+        let q = Dictionary(
+            (comps.queryItems ?? []).map { ($0.name, $0.value ?? "") },
+            uniquingKeysWith: { first, _ in first }
+        )
+
+        guard let typeRaw = q["type"], let type = PrayerType(rawValue: typeRaw),
+              let relRaw = q["rel"], let rel = RelationType(rawValue: relRaw),
+              let name = q["name"]?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty,
+              let mother = q["mother"]?.trimmingCharacters(in: .whitespacesAndNewlines), !mother.isEmpty
+        else { return nil }
+
+        let death = q["death"].flatMap { dateFormatter.date(from: $0) }
+        return Payload(
+            prayerType: type,
+            relativeFirstName: name,
+            relationType: rel,
+            motherFirstName: mother,
+            civilDateOfDeath: death
+        )
+    }
+
+    /// Construit un `SavedPrayerIntent` complet à partir d'un payload :
+    /// régénère la séquence de lettres et la date hébraïque. Les rappels sont
+    /// désactivés par défaut — le destinataire choisit lui-même de les activer.
+    static func makeIntent(from p: Payload) -> SavedPrayerIntent {
+        let sequence = LetterSequenceGenerator.generate(
+            relativeName: p.relativeFirstName,
+            relation: p.relationType,
+            motherName: p.motherFirstName,
+            prayerType: p.prayerType
+        )
+        return SavedPrayerIntent(
+            title: LetterSequenceGenerator.makeTitle(
+                prayerType: p.prayerType,
+                relativeName: p.relativeFirstName,
+                relation: p.relationType,
+                motherName: p.motherFirstName
+            ),
+            prayerType: p.prayerType,
+            relativeFirstName: p.relativeFirstName,
+            relationType: p.relationType,
+            motherFirstName: p.motherFirstName,
+            generatedLetters: sequence,
+            civilDateOfDeath: p.civilDateOfDeath,
+            hebrewDateOfDeath: p.civilDateOfDeath.map { MemorialCalculator.hebrewYMD(from: $0) },
+            remindersEnabled: false,
+            notifySevenDaysBefore: true,
+            notifySameDay: true
+        )
+    }
+}

@@ -48,6 +48,9 @@ object Routes {
     fun lifeCaseDetail(caseId: String) = "lifecase/$caseId"
 
     const val PERSONALIZED_FORM = "personalized/form"
+    /** Formulaire en mode édition d'une prière existante. */
+    const val PERSONALIZED_EDIT = "personalized/form/edit/{editId}"
+    fun personalizedEdit(intentId: String) = "personalized/form/edit/$intentId"
     const val SAVED_PRAYERS = "personalized/saved"
     const val PERSONALIZED_LIST = "personalized/list/{intentId}"
     fun personalizedList(intentId: String) = "personalized/list/$intentId"

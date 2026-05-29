@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Inbox
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
@@ -193,6 +194,36 @@ fun SavedPrayersScreen(container: AppContainer, navController: NavController) {
                                 contentDescription = stringResource(R.string.memorial_reminder_toggle),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        // Partage (SMS / WhatsApp / …) : ouvre le sélecteur
+                        // système avec un message contenant le lien d'import
+                        // `tehilim://prayer`. Le destinataire qui tape le lien
+                        // ouvre l'app sur l'aperçu d'import.
+                        IconButton(
+                            onClick = {
+                                val send = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(
+                                        android.content.Intent.EXTRA_TEXT,
+                                        com.david.tehilim.core.service.PrayerShareLink.shareMessage(context, intent)
+                                    )
+                                }
+                                context.startActivity(
+                                    android.content.Intent.createChooser(
+                                        send,
+                                        context.getString(R.string.action_share_prayer)
+                                    )
+                                )
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.Share,
+                                contentDescription = stringResource(R.string.action_share_prayer),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 

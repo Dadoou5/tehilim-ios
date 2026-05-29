@@ -66,6 +66,14 @@ final class SavedPrayerStore: ObservableObject {
         return intent
     }
 
+    /// Met à jour une prière existante (modification) — remplace par `id` en
+    /// conservant sa position dans la liste. No-op si l'id est introuvable.
+    func update(_ intent: SavedPrayerIntent) {
+        guard let i = intents.firstIndex(where: { $0.id == intent.id }) else { return }
+        intents[i] = intent
+        persist()
+    }
+
     func delete(_ intent: SavedPrayerIntent) {
         intents.removeAll { $0.id == intent.id }
         persist()

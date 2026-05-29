@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,18 +64,47 @@ import java.util.Locale
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.theme.EzraSilFontFamily
 
+/**
+ * Point d'entrée du formulaire. En mode édition ([editIntentId] non-null), on
+ * résout la prière depuis le store puis on délègue au contenu qui pré-remplit
+ * ses champs. En création, [editIntentId] est null.
+ */
+@Composable
+fun PersonalizedReadingFormScreen(
+    container: AppContainer,
+    navController: NavController,
+    editIntentId: String? = null
+) {
+    val intents by container.savedPrayers.intents.collectAsState()
+    val editIntent = editIntentId?.let { id -> intents.firstOrNull { it.id == id } }
+    // En édition, attendre que la prière soit résolue avant de seeder les
+    // champs (le store est déjà chargé quand on arrive depuis le détail, donc
+    // ce cas « not found » est transitoire / quasi inexistant).
+    if (editIntentId != null && editIntent == null) return
+    PersonalizedReadingFormContent(container, navController, editIntent)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavController) {
-    var relativeName by remember { mutableStateOf("") }
-    var motherName by remember { mutableStateOf("") }
-    var relation by remember { mutableStateOf(RelationType.BEN) }
+private fun PersonalizedReadingFormContent(
+    container: AppContainer,
+    navController: NavController,
+    editIntent: SavedPrayerIntent?
+) {
+    val isEditing = editIntent != null
+
+    // Pré-remplissage en mode édition (sinon valeurs par défaut de création).
+    var relativeName by remember { mutableStateOf(editIntent?.relativeFirstName ?: "") }
+    var motherName by remember { mutableStateOf(editIntent?.motherFirstName ?: "") }
+    var relation by remember { mutableStateOf(editIntent?.relationType ?: RelationType.BEN) }
 
     // V1.4 — Commémoration : état local de la section azcara.
-    var civilDateOfDeath by remember { mutableStateOf<Date?>(null) }
-    var remindersEnabled by remember { mutableStateOf(false) }
-    var notify7d by remember { mutableStateOf(true) }
-    var notifyDay by remember { mutableStateOf(true) }
+    var civilDateOfDeath by remember {
+        mutableStateOf(editIntent?.civilDateOfDeathEpochMillis?.let { Date(it) })
+    }
+    var remindersEnabled by remember { mutableStateOf(editIntent?.remindersEnabled ?: false) }
+    var notify7d by remember { mutableStateOf(editIntent?.notifySevenDaysBefore ?: true) }
+    var notifyDay by remember { mutableStateOf(editIntent?.notifySameDay ?: true) }
     var showDatePicker by remember { mutableStateOf(false) }
 
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -94,7 +124,14 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.title_lelouy_nichmat)) },
+                title = {
+                    Text(
+                        stringResource(
+                            if (isEditing) R.string.title_edit_prayer
+                            else R.string.title_lelouy_nichmat
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
@@ -421,33 +458,65 @@ fun PersonalizedReadingFormScreen(container: AppContainer, navController: NavCon
                         relation = relation,
                         motherName = motherName
                     )
-                    val intent = SavedPrayerIntent(
-                        title = title,
-                        prayerType = PrayerType.DEFUNT,
-                        relativeFirstName = relativeName,
-                        relationType = relation,
-                        motherFirstName = motherName,
-                        generatedLetters = sequence,
-                        // V1.4 — Commémoration
-                        civilDateOfDeathEpochMillis = civilDateOfDeath?.time,
-                        hebrewDateOfDeath = civilDateOfDeath?.let {
-                            MemorialCalculator.hebrewYMD(it)
-                        },
-                        remindersEnabled = remindersEnabled,
-                        notifySevenDaysBefore = notify7d,
-                        notifySameDay = notifyDay
-                    )
-                    val saved = container.savedPrayers.addOrFindExisting(intent)
-                    // V1.4 — schedule (no-op si conditions pas réunies)
-                    NotificationScheduler.rescheduleMemorial(context, saved)
-                    navController.navigate(Routes.personalizedList(saved.id)) {
-                        popUpTo(Routes.PERSONALIZED_FORM) { inclusive = true }
+                    val hebrewDeath = civilDateOfDeath?.let { MemorialCalculator.hebrewYMD(it) }
+
+                    if (isEditing) {
+                        // Mode édition : mise à jour EN PLACE (conserve id +
+                        // createdAt). Séquence + date hébraïque recalculées,
+                        // progression de lecture bornée si la séquence raccourcit.
+                        val clampedLastRead = editIntent!!.lastReadIndex?.let { lri ->
+                            if (lri >= sequence.size) (sequence.size - 1).takeIf { it >= 0 } else lri
+                        }
+                        val updated = editIntent.copy(
+                            title = title,
+                            relativeFirstName = relativeName,
+                            relationType = relation,
+                            motherFirstName = motherName,
+                            generatedLetters = sequence,
+                            lastReadIndex = clampedLastRead,
+                            civilDateOfDeathEpochMillis = civilDateOfDeath?.time,
+                            hebrewDateOfDeath = hebrewDeath,
+                            remindersEnabled = remindersEnabled,
+                            notifySevenDaysBefore = notify7d,
+                            notifySameDay = notifyDay
+                        )
+                        container.savedPrayers.update(updated)
+                        // rescheduleMemorial annule d'abord les anciens rappels.
+                        NotificationScheduler.rescheduleMemorial(context, updated)
+                        // Retour au détail, qui relit le store réactivement.
+                        navController.popBackStack()
+                    } else {
+                        val intent = SavedPrayerIntent(
+                            title = title,
+                            prayerType = PrayerType.DEFUNT,
+                            relativeFirstName = relativeName,
+                            relationType = relation,
+                            motherFirstName = motherName,
+                            generatedLetters = sequence,
+                            // V1.4 — Commémoration
+                            civilDateOfDeathEpochMillis = civilDateOfDeath?.time,
+                            hebrewDateOfDeath = hebrewDeath,
+                            remindersEnabled = remindersEnabled,
+                            notifySevenDaysBefore = notify7d,
+                            notifySameDay = notifyDay
+                        )
+                        val saved = container.savedPrayers.addOrFindExisting(intent)
+                        // V1.4 — schedule (no-op si conditions pas réunies)
+                        NotificationScheduler.rescheduleMemorial(context, saved)
+                        navController.navigate(Routes.personalizedList(saved.id)) {
+                            popUpTo(Routes.PERSONALIZED_FORM) { inclusive = true }
+                        }
                     }
                 },
                 enabled = isValid,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.action_generate_save))
+                Text(
+                    stringResource(
+                        if (isEditing) R.string.action_save
+                        else R.string.action_generate_save
+                    )
+                )
             }
 
             Text(

@@ -66,6 +66,13 @@ class SavedPrayerStore(private val context: Context) {
         return intent
     }
 
+    /** Met à jour une prière existante (modification) — remplace par `id` en
+     *  conservant sa position. No-op si l'id est introuvable. */
+    fun update(intent: SavedPrayerIntent) {
+        _intents.value = _intents.value.map { if (it.id == intent.id) intent else it }
+        scope.launch { persist() }
+    }
+
     fun delete(intent: SavedPrayerIntent) {
         _intents.value = _intents.value.filter { it.id != intent.id }
         scope.launch { persist() }

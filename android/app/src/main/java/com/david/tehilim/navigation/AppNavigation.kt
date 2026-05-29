@@ -73,16 +73,65 @@ fun AppNavigation(container: AppContainer) {
     // « home »). On consomme silencieusement le 1ᵉʳ tick.
     val activity = LocalContext.current as? Activity
     var initialIntentSeen by remember { mutableStateOf(false) }
+
+    // Import d'une prière partagée (`tehilim://prayer?...`) en attente de
+    // confirmation. Géré séparément du routing navController car aucune
+    // destination ne matche ce host : on présente un AlertDialog d'aperçu.
+    var pendingImport by remember {
+        mutableStateOf<com.david.tehilim.core.service.PrayerShareLink.Payload?>(null)
+    }
+    // URI déjà traitée : évite de ré-importer à chaque recomposition / rotation.
+    var lastHandledPrayerUri by remember { mutableStateOf<String?>(null) }
+
     LaunchedEffect(activity?.intent) {
+        val data = activity?.intent?.data
+        // 1) Prière partagée — traitée au cold-start ET via onNewIntent.
+        //    (Contrairement aux deep links de navigation, pas de skip de la
+        //    1ʳᵉ invocation : `tehilim://prayer` n'est routé par aucun
+        //    navDeepLink, donc aucun risque de double-routing de back stack.)
+        if (data != null &&
+            data.scheme == com.david.tehilim.core.service.PrayerShareLink.SCHEME &&
+            data.host == com.david.tehilim.core.service.PrayerShareLink.HOST
+        ) {
+            val uriStr = data.toString()
+            if (uriStr != lastHandledPrayerUri) {
+                lastHandledPrayerUri = uriStr
+                pendingImport = com.david.tehilim.core.service.PrayerShareLink.payload(data)
+            }
+            return@LaunchedEffect
+        }
+        // 2) Deep links de navigation (widget/notif) — skip la 1ʳᵉ invocation.
         if (!initialIntentSeen) {
             initialIntentSeen = true
             return@LaunchedEffect
         }
-        activity?.intent?.let { intent ->
-            if (intent.data != null) {
-                navController.handleDeepLink(intent)
-            }
+        if (data != null) {
+            navController.handleDeepLink(activity.intent)
         }
+    }
+
+    // AlertDialog d'aperçu d'import — overlay au-dessus du Scaffold.
+    pendingImport?.let { payload ->
+        val alreadyExists = container.savedPrayers.findExisting(
+            relativeFirstName = payload.relativeFirstName,
+            relationType = payload.relationType,
+            motherFirstName = payload.motherFirstName
+        ) != null
+        com.david.tehilim.features.personalized.PrayerImportDialog(
+            payload = payload,
+            alreadyExists = alreadyExists,
+            onConfirm = {
+                // addOrFindExisting : ajoute, ou retourne le doublon existant.
+                // Dans les deux cas on ouvre la prière → « Ouvrir » fonctionne
+                // aussi pour un doublon.
+                val saved = container.savedPrayers.addOrFindExisting(
+                    com.david.tehilim.core.service.PrayerShareLink.makeIntent(payload)
+                )
+                pendingImport = null
+                navController.navigate(Routes.personalizedList(saved.id))
+            },
+            onDismiss = { pendingImport = null }
+        )
     }
 
     // V1.2.5 — La barre de navigation reste toujours visible, comme la TabView
@@ -310,6 +359,17 @@ fun AppNavigation(container: AppContainer) {
             // Lelouy Nichmat
             composable(Routes.PERSONALIZED_FORM) {
                 PersonalizedReadingFormScreen(container = container, navController = navController)
+            }
+            composable(
+                Routes.PERSONALIZED_EDIT,
+                arguments = listOf(navArgument("editId") { type = NavType.StringType })
+            ) {
+                val editId = it.arguments?.getString("editId")
+                PersonalizedReadingFormScreen(
+                    container = container,
+                    navController = navController,
+                    editIntentId = editId
+                )
             }
             composable(Routes.SAVED_PRAYERS) {
                 SavedPrayersScreen(container = container, navController = navController)

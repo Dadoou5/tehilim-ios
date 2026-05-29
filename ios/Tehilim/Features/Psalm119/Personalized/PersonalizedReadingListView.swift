@@ -19,6 +19,17 @@ struct PersonalizedReadingListView: View {
     /// programmés pour cet intent. Chargée via `.task` à l'apparition.
     @State private var pendingReminders: [PendingMemorialReminder] = []
 
+    /// Présente le formulaire en mode édition.
+    @State private var showingEdit = false
+
+    /// Version live de la prière, relue depuis le store par `id`. Garantit que
+    /// l'affichage se rafraîchit après une modification (le `intent` passé en
+    /// paramètre est une copie figée). Repli sur `intent` si introuvable
+    /// (ex. juste après suppression).
+    private var current: SavedPrayerIntent {
+        savedPrayers.intents.first(where: { $0.id == intent.id }) ?? intent
+    }
+
     var body: some View {
         List {
             // En-tête : sujet hébraïque + chip type
@@ -31,7 +42,7 @@ struct PersonalizedReadingListView: View {
             // V1.10.7 — Bloc Commémoration affiché en haut quand l'utilisateur
             // a renseigné une date du décès. Donne la date de la prochaine
             // azcara calculée par MemorialCalculator.
-            if let death = intent.civilDateOfDeath,
+            if let death = current.civilDateOfDeath,
                let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
                 Section {
                     HStack(spacing: 14) {
@@ -93,7 +104,7 @@ struct PersonalizedReadingListView: View {
 
             // Liste des lettres numérotée
             Section {
-                ForEach(Array(intent.generatedLetters.enumerated()), id: \.element.id) { idx, item in
+                ForEach(Array(current.generatedLetters.enumerated()), id: \.element.id) { idx, item in
                     NavigationLink(destination: sectionDestination(for: item, at: idx)) {
                         letterRow(item: item, displayIndex: idx + 1)
                     }
@@ -102,7 +113,7 @@ struct PersonalizedReadingListView: View {
                 HStack {
                     Text("Séquence de lecture")
                     Spacer()
-                    Text("\(intent.generatedLetters.count) lettres")
+                    Text("\(current.generatedLetters.count) lettres")
                         .font(.caption.weight(.medium))
                         .foregroundStyle(.secondary)
                 }
@@ -116,7 +127,7 @@ struct PersonalizedReadingListView: View {
             if isSaved, let lastIndex = currentLastIndex {
                 Section {
                     NavigationLink(destination: sectionDestination(
-                        for: intent.generatedLetters[lastIndex],
+                        for: current.generatedLetters[lastIndex],
                         at: lastIndex
                     )) {
                         HStack(spacing: 12) {
@@ -125,7 +136,7 @@ struct PersonalizedReadingListView: View {
                             VStack(alignment: .leading) {
                                 Text("Reprendre la lecture")
                                     .font(.headline)
-                                Text("À la lettre \(lastIndex + 1) sur \(intent.generatedLetters.count)")
+                                Text("À la lettre \(lastIndex + 1) sur \(current.generatedLetters.count)")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -136,8 +147,31 @@ struct PersonalizedReadingListView: View {
         }
         .listStyle(.insetGrouped)
         .appBackground()
-        .navigationTitle(intent.title)
+        .navigationTitle(current.title)
         .navigationBarTitleDisplayMode(.inline)
+        // Actions visibles directement dans la barre (pas sous un menu) :
+        // Partager au premier plan + Modifier à côté.
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button {
+                    showingEdit = true
+                } label: {
+                    Image(systemName: "pencil")
+                }
+                .accessibilityLabel("Modifier")
+
+                ShareLink(item: PrayerShareLink.shareMessage(for: current)) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .accessibilityLabel("Partager la prière")
+            }
+        }
+        // Édition : ré-ouvre le formulaire pré-rempli. À la fermeture, `current`
+        // relit le store → le détail reflète la modification.
+        .sheet(isPresented: $showingEdit) {
+            PersonalizedReadingFormView(editingIntent: current)
+                .environmentObject(savedPrayers)
+        }
         // V1.10.5 : le bouton « Sauvegarder » a été retiré — la sauvegarde
         // est désormais automatique au tap sur « Générer » dans le formulaire,
         // et synchronisée via iCloud entre les appareils.
@@ -164,7 +198,7 @@ struct PersonalizedReadingListView: View {
                     .background(Color.accentMain, in: Capsule())
                 Spacer()
             }
-            Text(intent.hebrewSubject)
+            Text(current.hebrewSubject)
                 .font(.title2.weight(.semibold))
                 .environment(\.layoutDirection, .rightToLeft)
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -218,7 +252,7 @@ struct PersonalizedReadingListView: View {
         .padding(.vertical, 4)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(
-            "Lettre \(displayIndex) sur \(intent.generatedLetters.count), " +
+            "Lettre \(displayIndex) sur \(current.generatedLetters.count), " +
             "\(item.character), source \(item.source.label)"
         )
         .accessibilityHint("Ouvre la section correspondante du Tehilim 119")
@@ -232,7 +266,7 @@ struct PersonalizedReadingListView: View {
             Psalm119SectionView(
                 index: section.index,
                 sequenceContext: PsalmSequenceContext(
-                    items: intent.generatedLetters,
+                    items: current.generatedLetters,
                     currentPosition: position,
                     savedIntentId: isSaved ? intent.id : nil
                 )

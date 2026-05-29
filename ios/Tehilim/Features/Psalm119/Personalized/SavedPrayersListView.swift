@@ -31,6 +31,15 @@ struct SavedPrayersListView: View {
                             NavigationLink(destination: PersonalizedReadingListView(intent: intent, isSaved: true)) {
                                 row(intent)
                             }
+                            // Partage (SMS / WhatsApp / …) : swipe vers la
+                            // droite révèle « Partager ». Le destinataire qui
+                            // tape le lien ouvre l'app sur l'aperçu d'import.
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                ShareLink(item: PrayerShareLink.shareMessage(for: intent)) {
+                                    Label("Partager", systemImage: "square.and.arrow.up")
+                                }
+                                .tint(Color.accentMain)
+                            }
                         }
                         .onDelete(perform: deleteFromSorted)
                     } header: {

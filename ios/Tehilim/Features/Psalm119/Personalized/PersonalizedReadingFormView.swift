@@ -17,6 +17,11 @@ struct PersonalizedReadingFormView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var savedPrayers: SavedPrayerStore
 
+    /// Prière en cours de modification. `nil` → mode création (comportement
+    /// historique). Non-nil → mode édition : les champs sont pré-remplis et
+    /// « Enregistrer » met à jour la prière en place (conserve id + createdAt).
+    private let editingIntent: SavedPrayerIntent?
+
     @State private var relativeFirstName: String = ""
     @State private var relationType: RelationType = .ben
     @State private var motherFirstName: String = ""
@@ -48,6 +53,23 @@ struct PersonalizedReadingFormView: View {
     /// Type figé pour cette feature — toutes les lectures personnalisées sont
     /// des Lelouy Nichmat depuis V1.10.2 (la partie « Malade » a été retirée).
     private let prayerType: PrayerType = .defunt
+
+    /// Mode édition vs création — pilote les libellés (titre + bouton).
+    private var isEditing: Bool { editingIntent != nil }
+
+    /// - Parameter editingIntent: prière à modifier (nil = création).
+    init(editingIntent: SavedPrayerIntent? = nil) {
+        self.editingIntent = editingIntent
+        // Pré-remplissage des champs en mode édition. Les `@State` non
+        // initialisés ici conservent leur valeur par défaut déclarée.
+        _relativeFirstName = State(initialValue: editingIntent?.relativeFirstName ?? "")
+        _relationType = State(initialValue: editingIntent?.relationType ?? .ben)
+        _motherFirstName = State(initialValue: editingIntent?.motherFirstName ?? "")
+        _civilDateOfDeath = State(initialValue: editingIntent?.civilDateOfDeath)
+        _remindersEnabled = State(initialValue: editingIntent?.remindersEnabled ?? false)
+        _notifySevenDaysBefore = State(initialValue: editingIntent?.notifySevenDaysBefore ?? true)
+        _notifySameDay = State(initialValue: editingIntent?.notifySameDay ?? true)
+    }
 
     /// Validation : les 2 prénoms doivent contenir au moins 1 lettre hébraïque.
     private var isFormValid: Bool {
@@ -204,14 +226,14 @@ struct PersonalizedReadingFormView: View {
                     }
                 }
             }
-            .navigationTitle("Lelouy Nichmat")
+            .navigationTitle(isEditing ? "Modifier la prière" : "Lelouy Nichmat")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Annuler") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Générer") {
+                    Button(isEditing ? "Enregistrer" : "Générer") {
                         generateAndSave()
                     }
                     .disabled(!isFormValid)
@@ -261,13 +283,45 @@ struct PersonalizedReadingFormView: View {
             motherName: motherFirstName,
             prayerType: prayerType
         )
+        let title = LetterSequenceGenerator.makeTitle(
+            prayerType: prayerType,
+            relativeName: relativeFirstName,
+            relation: relationType,
+            motherName: motherFirstName
+        )
+
+        if let editing = editingIntent {
+            // Mode édition : on met à jour la prière EN PLACE (conserve id +
+            // createdAt). La séquence et la date hébraïque sont recalculées.
+            var updated = editing
+            updated.title = title
+            updated.relativeFirstName = relativeFirstName
+            updated.relationType = relationType
+            updated.motherFirstName = motherFirstName
+            updated.generatedLetters = sequence
+            updated.civilDateOfDeath = civilDateOfDeath
+            updated.hebrewDateOfDeath = civilDateOfDeath.map { MemorialCalculator.hebrewYMD(from: $0) }
+            updated.remindersEnabled = remindersEnabled
+            updated.notifySevenDaysBefore = notifySevenDaysBefore
+            updated.notifySameDay = notifySameDay
+            // La séquence a pu raccourcir (prénoms plus courts) → on borne la
+            // progression de lecture pour qu'elle reste dans les limites.
+            if let lri = updated.lastReadIndex, lri >= sequence.count {
+                updated.lastReadIndex = sequence.isEmpty ? nil : sequence.count - 1
+            }
+            savedPrayers.update(updated)
+            // Re-planifie les rappels (la fonction annule d'abord les anciens),
+            // puis ferme la feuille → retour au détail, rafraîchi via le store.
+            Task {
+                await notifications.rescheduleMemorialReminders(for: updated)
+                dismiss()
+            }
+            return
+        }
+
+        // Mode création (historique).
         let candidate = SavedPrayerIntent(
-            title: LetterSequenceGenerator.makeTitle(
-                prayerType: prayerType,
-                relativeName: relativeFirstName,
-                relation: relationType,
-                motherName: motherFirstName
-            ),
+            title: title,
             prayerType: prayerType,
             relativeFirstName: relativeFirstName,
             relationType: relationType,

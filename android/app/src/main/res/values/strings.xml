@@ -259,6 +259,19 @@
     <string name="cd_delete_prayer">Supprimer la prière</string>
     <string name="memorial_scheduled_reminders">Rappels programmés</string>
 
+    <!-- Partage / import d'une prière (lien tehilim://prayer) -->
+    <string name="action_share_prayer">Partager la prière</string>
+    <string name="share_prayer_intro">Ouvre cette prière dans Tehilim :</string>
+    <string name="import_prayer_title">Importer cette prière ?</string>
+    <string name="import_prayer_already">Cette prière est déjà dans Mes prières.</string>
+    <string name="action_import">Importer</string>
+    <string name="action_open">Ouvrir</string>
+
+    <!-- Modification d'une prière existante -->
+    <string name="title_edit_prayer">Modifier la prière</string>
+    <string name="action_edit_prayer">Modifier la prière</string>
+    <string name="action_save">Enregistrer</string>
+
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Texte hébreu</string>
     <string name="about_content_hebrew_body">Le texte hébreu vocalisé avec téamim provient de Sefaria (sefaria.org), distribué sous licence Creative Commons By 4.0.</string>

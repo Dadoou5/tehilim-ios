@@ -217,17 +217,54 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.10.8 (build 29)
+## 📋 What's New / Nouveautés — V1.11.0 (build 30) · Android build 18
 
 > Texte « What's New » à coller dans App Store Connect
-> → onglet **Version 1.10.8** → champ **« Nouveautés in this Version »**.
+> → onglet **Version 1.11.0** → champ **« Nouveautés in this Version »**.
 > Limite Apple : 4 000 caractères par locale.
 >
-> Note V1.10.8 : la V1.10.7 a été soumise séparément (correctif urgent /
-> régression). Cette release embarque l'ensemble des features dev iOS
-> entre les deux uploads.
+> Sur Google Play : **Play Console → Version → Notes de version** (build 18).
 
 ### 🇫🇷 — App Store (grand public)
+```
+Cette mise à jour permet de partager et de modifier tes prières personnalisées.
+
+🔗 PARTAGE D'UNE PRIÈRE
+Partage un Lelouy Nichmat par SMS, WhatsApp ou tout autre canal. Le destinataire qui ouvre le lien retrouve la prière directement dans Tehilim, avec un écran d'aperçu et de confirmation avant l'import — sans jamais créer de doublon.
+
+✏️ MODIFICATION D'UNE PRIÈRE
+Tu peux désormais modifier une prière existante : prénom, lien (בן/בת), prénom de la mère, date du décès et rappels. La séquence de lettres et la prochaine azcara sont recalculées automatiquement, et les rappels reprogrammés.
+
+✨ UX & POLISH
+• Boutons Partager et Modifier accessibles directement depuis le détail d'une prière.
+• La fiche se met à jour instantanément après une modification.
+
+Cette mise à jour est dédiée לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
+```
+
+### 🇬🇧 — App Store (general public)
+```
+This update lets you share and edit your personalized prayers.
+
+🔗 SHARE A PRAYER
+Share a Lelouy Nichmat via SMS, WhatsApp or any other channel. Whoever opens the link finds the prayer right inside Tehilim, with a preview and confirmation screen before importing — and never creates a duplicate.
+
+✏️ EDIT A PRAYER
+You can now edit an existing prayer: first name, relation (בן/בת), mother's name, date of death and reminders. The letter sequence and the next azcara are recomputed automatically, and reminders are rescheduled.
+
+✨ UX & POLISH
+• Share and Edit buttons available directly from a prayer's detail screen.
+• The detail view updates instantly after an edit.
+
+This update is dedicated in memory of Johann Meïr ben Sarah Bouganim ז״ל.
+```
+
+### 📜 Archive — What's New V1.10.8 (build 29)
+
+<details>
+<summary>V1.10.8 (build 29) — Commémoration (azcara), Tehilim 119 RTL, anglais complet</summary>
+
+🇫🇷
 ```
 Cette mise à jour est centrée sur la mémoire des défunts et l'expérience de lecture en hébreu.
 
@@ -253,7 +290,7 @@ Plusieurs pages restaient en français en mode anglais. Désormais entièrement 
 Cette mise à jour est dédiée לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
 ```
 
-### 🇬🇧 — App Store (general public)
+🇬🇧
 ```
 This update focuses on remembrance of the departed and the Hebrew reading experience.
 
@@ -278,6 +315,8 @@ Several pages remained in French when in English mode. Now fully translated: Teh
 
 This update is dedicated in memory of Johann Meïr ben Sarah Bouganim ז״ל.
 ```
+
+</details>
 
 ### 📜 Archive — What's New précédents (à conserver pour référence)
 

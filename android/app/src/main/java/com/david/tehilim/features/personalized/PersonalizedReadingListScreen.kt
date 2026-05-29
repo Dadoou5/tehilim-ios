@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -88,6 +89,17 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
+                    }
+                },
+                actions = {
+                    // Modifier la prière : rouvre le formulaire pré-rempli.
+                    IconButton(onClick = {
+                        navController.navigate(Routes.personalizedEdit(intent.id))
+                    }) {
+                        Icon(
+                            Icons.Outlined.Edit,
+                            contentDescription = stringResource(R.string.action_edit_prayer)
+                        )
                     }
                 }
             )

@@ -76,6 +76,8 @@ struct SettingsView: View {
 
                 NotificationsSection(prefs: prefs, notifications: notifications)
 
+                ShabbatSection(prefs: prefs)
+
                 Section("Accessibilité") {
                     NavigationLink("Déclaration d'accessibilité") {
                         AccessibilityDeclarationView()
@@ -95,6 +97,36 @@ struct SettingsView: View {
             }
             .appBackground()
             .navigationTitle("Réglages")
+        }
+    }
+}
+
+// MARK: - Mode Chabbat
+
+private struct ShabbatSection: View {
+    @ObservedObject var prefs: Preferences
+
+    var body: some View {
+        Section {
+            Toggle("Activer le mode Chabbat", isOn: $prefs.shabbatModeEnabled)
+                .onChange(of: prefs.shabbatModeEnabled) { _, _ in
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+            if prefs.shabbatModeEnabled {
+                Picker("Position", selection: $prefs.shabbatCityId) {
+                    Text("Automatique (GPS)").tag("")
+                    ForEach(ShabbatCalculator.cities) { city in
+                        Text(city.nameFR).tag(city.id)
+                    }
+                }
+                .onChange(of: prefs.shabbatCityId) { _, _ in
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+            }
+        } header: {
+            Text("Mode Chabbat")
+        } footer: {
+            Text("Pendant Chabbat, l'app et le widget affichent « Chabbat Chalom ». Le début (allumage des bougies) et la fin (sortie des étoiles) sont calculés selon ta position : GPS si tu l'autorises, sinon la ville choisie. Tu peux toujours « continuer quand même ».")
         }
     }
 }

@@ -272,6 +272,18 @@
     <string name="action_edit_prayer">Modifier la prière</string>
     <string name="action_save">Enregistrer</string>
 
+    <!-- Mode Chabbat -->
+    <string name="shabbat_chalom_latin">Chabbat Chalom</string>
+    <string name="shabbat_ends_label">Fin du Chabbat</string>
+    <string name="shabbat_ends_short">Fin · %1$s</string>
+    <string name="shabbat_end_hint">Horaire calculé selon ta position (sortie des étoiles).</string>
+    <string name="shabbat_continue_anyway">Continuer quand même</string>
+    <string name="shabbat_section_title">Mode Chabbat</string>
+    <string name="shabbat_enable">Activer le mode Chabbat</string>
+    <string name="shabbat_position">Position</string>
+    <string name="shabbat_position_auto">Automatique (GPS)</string>
+    <string name="shabbat_footer">Pendant Chabbat, l\'application et le widget affichent « Chabbat Chalom ». Le début (allumage des bougies) et la fin (sortie des étoiles) sont calculés selon ta position : GPS si tu l\'autorises, sinon la ville choisie. Tu peux toujours « continuer quand même ».</string>
+
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Texte hébreu</string>
     <string name="about_content_hebrew_body">Le texte hébreu vocalisé avec téamim provient de Sefaria (sefaria.org), distribué sous licence Creative Commons By 4.0.</string>

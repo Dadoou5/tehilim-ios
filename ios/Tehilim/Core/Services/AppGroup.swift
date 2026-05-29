@@ -57,5 +57,10 @@ enum AppGroup {
         /// V2.1.b — pref de langue partagée app ↔ widget pour le swizzle
         /// `LocalizedBundle` côté extension.
         static let appLanguage = "pref.app.language"
+        // Mode Chabbat — partagé app ↔ widget. L'app résout la position (GPS
+        // ou ville) et écrit lat/lon ; le widget calcule l'état Chabbat.
+        static let shabbatEnabled = "pref.shabbat.enabled"
+        static let shabbatLatitude = "pref.shabbat.lat"
+        static let shabbatLongitude = "pref.shabbat.lon"
     }
 }

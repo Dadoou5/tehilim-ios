@@ -272,6 +272,18 @@
     <string name="action_edit_prayer">Edit prayer</string>
     <string name="action_save">Save</string>
 
+    <!-- Shabbat mode -->
+    <string name="shabbat_chalom_latin">Chabbat Chalom</string>
+    <string name="shabbat_ends_label">End of Shabbat</string>
+    <string name="shabbat_ends_short">Ends · %1$s</string>
+    <string name="shabbat_end_hint">Time computed from your location (nightfall).</string>
+    <string name="shabbat_continue_anyway">Continue anyway</string>
+    <string name="shabbat_section_title">Shabbat mode</string>
+    <string name="shabbat_enable">Enable Shabbat mode</string>
+    <string name="shabbat_position">Location</string>
+    <string name="shabbat_position_auto">Automatic (GPS)</string>
+    <string name="shabbat_footer">During Shabbat, the app and widget show \"Chabbat Chalom\". The start (candle lighting) and end (nightfall) are computed from your location: GPS if allowed, otherwise the chosen city. You can always \"continue anyway\".</string>
+
     <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
     <string name="about_content_hebrew_title">Hebrew text</string>
     <string name="about_content_hebrew_body">The vocalized Hebrew text with teamim comes from Sefaria (sefaria.org), distributed under Creative Commons By 4.0.</string>

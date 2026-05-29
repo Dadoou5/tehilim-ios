@@ -12,6 +12,10 @@ struct DailyVerseEntry: TimelineEntry {
     let firstVerseFR: String?
     /// Date hébraïque formatée pour le bandeau supérieur.
     let hebrewDate: String
+    /// Mode Chabbat actif → le widget affiche « Chabbat Chalom » au lieu du
+    /// contenu. `shabbatEndsAt` = heure de fin (Havdala) si connue.
+    var isShabbat: Bool = false
+    var shabbatEndsAt: Date? = nil
 
     struct PsalmRef: Hashable {
         let id: Int
@@ -48,13 +52,55 @@ struct DailyVerseProvider: TimelineProvider {
 
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = .current
-        let nextRefresh = cal.startOfDay(for: now.addingTimeInterval(60 * 60 * 24))
+
+        // Rafraîchit à la prochaine bascule Chabbat (fin de Chabbat ou prochain
+        // allumage des bougies) si connue, sinon au prochain minuit.
+        let shabbatState = readShabbatState(now: now)
+        let nextSwitch = shabbatState.isShabbat ? shabbatState.endsAt : shabbatState.nextStartsAt
+        let midnight = cal.startOfDay(for: now.addingTimeInterval(60 * 60 * 24))
+        let nextRefresh: Date = {
+            guard let nextSwitch, nextSwitch > now else { return midnight }
+            return min(nextSwitch.addingTimeInterval(60), midnight)
+        }()
 
         let timeline = Timeline(entries: [entry], policy: .after(nextRefresh))
         completion(timeline)
     }
 
+    /// Lit la position partagée par l'app et évalue l'état Chabbat. Si le mode
+    /// est désactivé ou la position absente, retourne « pas Chabbat ».
+    private func readShabbatState(now: Date) -> ShabbatState {
+        let d = AppGroup.userDefaults
+        guard d.bool(forKey: AppGroup.Keys.shabbatEnabled) else {
+            return ShabbatState(isShabbat: false, endsAt: nil, nextStartsAt: nil)
+        }
+        let lat = d.double(forKey: AppGroup.Keys.shabbatLatitude)
+        let lon = d.double(forKey: AppGroup.Keys.shabbatLongitude)
+        guard lat != 0 || lon != 0 else {
+            return ShabbatState(isShabbat: false, endsAt: nil, nextStartsAt: nil)
+        }
+        return ShabbatCalculator.state(now: now, coordinate: .init(latitude: lat, longitude: lon))
+    }
+
     private func currentEntry(now: Date) -> DailyVerseEntry {
+        // Mode Chabbat prioritaire : on masque le contenu du jour.
+        let shabbat = readShabbatState(now: now)
+        if shabbat.isShabbat {
+            return DailyVerseEntry(
+                date: now,
+                todayPsalms: [],
+                mode: readDailyMode(),
+                firstVerseHebrew: "",
+                firstVerseFR: nil,
+                hebrewDate: HebrewDateFormatter.formatted(now).hebrew,
+                isShabbat: true,
+                shabbatEndsAt: shabbat.endsAt
+            )
+        }
+        return contentEntry(now: now)
+    }
+
+    private func contentEntry(now: Date) -> DailyVerseEntry {
         let psalms = WidgetDataLoader.loadPsalms()
         let rules = WidgetDataLoader.loadDailyRules()
         let engine = DailyEngine(rules: rules)

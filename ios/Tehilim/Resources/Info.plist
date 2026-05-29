@@ -20,6 +20,8 @@
     <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Ta position sert uniquement à calculer l'heure du coucher du soleil pour le mode Chabbat (début et fin de Chabbat). Elle n'est ni stockée ni partagée.</string>
     <key>UILaunchScreen</key>
     <dict>
         <key>UIColorName</key>

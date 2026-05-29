@@ -80,7 +80,13 @@ android {
         //            + Modification d'une prière existante (formulaire pré-
         //            rempli réutilisé en mode édition, mise à jour en place,
         //            re-planification des rappels).
-        versionCode = 18
+        // Build 19 : feature Mode Chabbat. Pendant Chabbat l'app et le widget
+        //            affichent « Chabbat Chalom » (animé) à la place du
+        //            contenu. Début (bougies, coucher −18 min) / fin (Havdala,
+        //            coucher +42 min) calculés selon la position (GPS coarse,
+        //            repli ville) via ShabbatCalculator (NOAA). Échappatoire
+        //            « continuer quand même ». Réglage on/off + choix ville.
+        versionCode = 19
         versionName = "1.0.0"
 
         // Tests

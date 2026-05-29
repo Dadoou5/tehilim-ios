@@ -217,15 +217,61 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.11.0 (build 30) · Android build 18
+## 📋 What's New / Nouveautés — V1.12.0 (build 31) · Android build 19
 
 > Texte « What's New » à coller dans App Store Connect
-> → onglet **Version 1.11.0** → champ **« Nouveautés in this Version »**.
+> → onglet **Version 1.12.0** → champ **« Nouveautés in this Version »**.
 > Limite Apple : 4 000 caractères par locale.
 >
-> Sur Google Play : **Play Console → Version → Notes de version** (build 18).
+> Sur Google Play : **Play Console → Version → Notes de version** (build 19).
+>
+> ⚠️ Note review : la V1.12.0 demande la localisation (« pendant l'utilisation »)
+> pour calculer le coucher du soleil. C'est optionnel (repli sur une ville) et
+> jamais stocké/partagé. Le mode Chabbat est désactivable et offre toujours
+> « continuer quand même » — l'app n'est jamais définitivement bloquée.
 
 ### 🇫🇷 — App Store (grand public)
+```
+Cette mise à jour introduit le mode Chabbat.
+
+🕯️ MODE CHABBAT
+Pendant Chabbat, l'application et le widget laissent place à un écran « Chabbat Chalom » apaisant, à la place du contenu habituel.
+Le début (allumage des bougies) et la fin (sortie des étoiles) sont calculés automatiquement selon ta position et la date — précis à la minute, où que tu sois.
+L'heure de fin de Chabbat est affichée en clair.
+
+🌍 POSITION
+Le calcul utilise le GPS (si tu l'autorises) ou la ville que tu choisis dans les Réglages. Ta position n'est ni stockée ni partagée.
+
+⚙️ SOUPLESSE
+Le mode Chabbat s'active ou se désactive dans les Réglages, et un bouton discret « Continuer quand même » reste toujours disponible.
+
+Cette mise à jour est dédiée לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
+```
+
+### 🇬🇧 — App Store (general public)
+```
+This update introduces Shabbat mode.
+
+🕯️ SHABBAT MODE
+During Shabbat, the app and widget give way to a peaceful "Chabbat Chalom" screen instead of the usual content.
+The start (candle lighting) and end (nightfall) are computed automatically from your location and the date — accurate to the minute, wherever you are.
+The end-of-Shabbat time is shown clearly.
+
+🌍 LOCATION
+The calculation uses GPS (if you allow it) or the city you choose in Settings. Your location is never stored or shared.
+
+⚙️ FLEXIBLE
+Shabbat mode can be turned on or off in Settings, and a discreet "Continue anyway" button is always available.
+
+This update is dedicated in memory of Johann Meïr ben Sarah Bouganim ז״ל.
+```
+
+### 📜 Archive — What's New V1.11.0 (build 30)
+
+<details>
+<summary>V1.11.0 (build 30) — partage & modification d'une prière</summary>
+
+🇫🇷
 ```
 Cette mise à jour permet de partager et de modifier tes prières personnalisées.
 
@@ -242,7 +288,7 @@ Tu peux désormais modifier une prière existante : prénom, lien (בן/בת), p
 Cette mise à jour est dédiée לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
 ```
 
-### 🇬🇧 — App Store (general public)
+🇬🇧
 ```
 This update lets you share and edit your personalized prayers.
 
@@ -258,6 +304,8 @@ You can now edit an existing prayer: first name, relation (בן/בת), mother's 
 
 This update is dedicated in memory of Johann Meïr ben Sarah Bouganim ז״ל.
 ```
+
+</details>
 
 ### 📜 Archive — What's New V1.10.8 (build 29)
 

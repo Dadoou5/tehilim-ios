@@ -19,12 +19,45 @@ struct DailyVerseWidgetView: View {
     }
 
     var body: some View {
-        switch family {
-        case .systemSmall:  smallView
-        case .systemMedium: mediumView
-        case .systemLarge:  largeView
-        default:            mediumView
+        if entry.isShabbat {
+            shabbatView
+        } else {
+            switch family {
+            case .systemSmall:  smallView
+            case .systemMedium: mediumView
+            case .systemLarge:  largeView
+            default:            mediumView
+            }
         }
+    }
+
+    // MARK: - Chabbat
+
+    /// Mode Chabbat : le widget masque le contenu du jour.
+    private var shabbatView: some View {
+        VStack(spacing: family == .systemSmall ? 4 : 8) {
+            Image(systemName: "flame.fill")
+                .font(family == .systemSmall ? .title3 : .largeTitle)
+                .foregroundStyle(accent)
+            Text("שבת שלום")
+                .font(.custom("FrankRuhlLibre-Regular",
+                              size: family == .systemSmall ? 26 : 38))
+                .foregroundStyle(accent)
+                .environment(\.layoutDirection, .rightToLeft)
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
+            Text("Chabbat Chalom")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            if family != .systemSmall, let end = entry.shabbatEndsAt {
+                Text("Fin · \(end.formatted(.dateTime.weekday(.abbreviated).hour().minute()))")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .multilineTextAlignment(.center)
     }
 
     // MARK: - Small (158×158)

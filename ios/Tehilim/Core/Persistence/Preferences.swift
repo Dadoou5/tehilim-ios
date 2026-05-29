@@ -135,6 +135,12 @@ final class Preferences: ObservableObject {
     @AppStorage("pref.notif.hour")         var notificationHour: Int = 8
     @AppStorage("pref.notif.minute")       var notificationMinute: Int = 0
     @AppStorage("pref.lastReadPsalmId")    var lastReadPsalmId: Int = 0
+    /// Mode Chabbat : bloque l'app et le widget pendant Chabbat (défaut activé).
+    /// Stocké dans l'App Group pour que le widget lise le même flag.
+    @AppStorage(AppGroup.Keys.shabbatEnabled, store: AppGroup.userDefaults) var shabbatModeEnabled: Bool = true
+    /// Ville de repli quand le GPS est indisponible/refusé (id de ShabbatCity).
+    /// Vide → on tente le GPS, sinon défaut « paris » (cf. ShabbatManager).
+    @AppStorage("pref.shabbat.cityId")     var shabbatCityId: String = ""
     @AppStorage("pref.lastReadVerseId")    var lastReadVerseId: String = ""
     @AppStorage("pref.onboarding.done")    var onboardingCompleted: Bool = false
 

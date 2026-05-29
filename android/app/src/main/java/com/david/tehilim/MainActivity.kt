@@ -138,8 +138,16 @@ class MainActivity : ComponentActivity() {
                 // l'onboarding.
                 var shouldShowOnboarding by remember { mutableStateOf(!initialOnboardingDone) }
 
+                // Mode Chabbat : si actif, l'app est inaccessible et l'écran de
+                // démarrage laisse place à « Chabbat Chalom ».
+                val shabbat = com.david.tehilim.features.shabbat.rememberShabbatGate(container)
+
                 when {
                     !splashDone -> SplashScreen(onFinished = { splashDone = true })
+                    shabbat.isBlocking -> com.david.tehilim.features.shabbat.ChabbatChalomScreen(
+                        endsAt = shabbat.endsAt,
+                        onContinue = shabbat.onContinue
+                    )
                     shouldShowOnboarding -> OnboardingScreen(container = container) {
                         shouldShowOnboarding = false
                     }

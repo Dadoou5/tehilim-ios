@@ -90,15 +90,83 @@ class DailyVerseWidget : GlanceAppWidget() {
         val hebrewDate = HebrewDateFormatter.formatted().hebrew
         val modeLabel = context.getString(mode.labelRes)
 
+        // Mode Chabbat : si actif et position connue, masque le contenu.
+        val shabbatEnabled = container.preferences.shabbatEnabled.first()
+        val lat = container.preferences.shabbatLatitude.first()
+        val lon = container.preferences.shabbatLongitude.first()
+        val shabbatState = if (shabbatEnabled && lat != null && lon != null) {
+            com.david.tehilim.core.service.ShabbatCalculator.state(
+                java.util.Date(),
+                com.david.tehilim.core.service.GeoCoordinate(lat, lon)
+            )
+        } else {
+            com.david.tehilim.core.service.ShabbatState(false, null, null)
+        }
+
         provideContent {
             GlanceTheme {
-                WidgetContent(
-                    refs = refs,
-                    hebrewDate = hebrewDate,
-                    modeLabel = modeLabel,
-                    firstVerseHebrew = firstVerseHebrew,
-                    firstVerseFR = firstVerseFR
+                if (shabbatState.isShabbat) {
+                    ShabbatWidgetContent(shabbatState.endsAt)
+                } else {
+                    WidgetContent(
+                        refs = refs,
+                        hebrewDate = hebrewDate,
+                        modeLabel = modeLabel,
+                        firstVerseHebrew = firstVerseHebrew,
+                        firstVerseFR = firstVerseFR
+                    )
+                }
+            }
+        }
+    }
+
+    /** Mode Chabbat : « שבת שלום / Chabbat Chalom » + heure de fin. */
+    @Composable
+    private fun ShabbatWidgetContent(endsAt: java.util.Date?) {
+        val context = LocalContext.current
+        Box(
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .background(GlanceTheme.colors.background)
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "שבת שלום",
+                    style = TextStyle(
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = GlanceTheme.colors.primary,
+                        textAlign = TextAlign.Center
+                    )
                 )
+                Spacer(GlanceModifier.height(4.dp))
+                Text(
+                    context.getString(R.string.shabbat_chalom_latin),
+                    style = TextStyle(
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = GlanceTheme.colors.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                )
+                if (endsAt != null) {
+                    Spacer(GlanceModifier.height(6.dp))
+                    val fmt = java.text.DateFormat.getTimeInstance(
+                        java.text.DateFormat.SHORT, java.util.Locale.getDefault()
+                    )
+                    Text(
+                        context.getString(R.string.shabbat_ends_short, fmt.format(endsAt)),
+                        style = TextStyle(
+                            fontSize = 11.sp,
+                            color = GlanceTheme.colors.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
             }
         }
     }

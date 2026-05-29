@@ -43,6 +43,13 @@ class Preferences(private val context: Context) {
         val NOTIF_ENABLED = booleanPreferencesKey("pref.notif.enabled")
         val NOTIF_HOUR = intPreferencesKey("pref.notif.hour")
         val NOTIF_MINUTE = intPreferencesKey("pref.notif.minute")
+        // Mode Chabbat : bloque l'app + le widget pendant Chabbat (défaut on).
+        // La position (lat/lon) est mémorisée pour que le widget calcule
+        // l'état Chabbat sans accès direct à la localisation.
+        val SHABBAT_ENABLED = booleanPreferencesKey("pref.shabbat.enabled")
+        val SHABBAT_CITY_ID = stringPreferencesKey("pref.shabbat.cityId")
+        val SHABBAT_LAT = androidx.datastore.preferences.core.doublePreferencesKey("pref.shabbat.lat")
+        val SHABBAT_LON = androidx.datastore.preferences.core.doublePreferencesKey("pref.shabbat.lon")
     }
 
     val appLanguage: Flow<AppLanguage> = context.dataStore.data.map { prefs ->
@@ -99,6 +106,13 @@ class Preferences(private val context: Context) {
     val notificationHour: Flow<Int> = context.dataStore.data.map { it[Keys.NOTIF_HOUR] ?: 9 }
     val notificationMinute: Flow<Int> = context.dataStore.data.map { it[Keys.NOTIF_MINUTE] ?: 0 }
 
+    // Mode Chabbat
+    val shabbatEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.SHABBAT_ENABLED] ?: true }
+    val shabbatCityId: Flow<String> = context.dataStore.data.map { it[Keys.SHABBAT_CITY_ID] ?: "" }
+    /** Position résolue (GPS ou ville) mémorisée pour le widget. null si jamais écrite. */
+    val shabbatLatitude: Flow<Double?> = context.dataStore.data.map { it[Keys.SHABBAT_LAT] }
+    val shabbatLongitude: Flow<Double?> = context.dataStore.data.map { it[Keys.SHABBAT_LON] }
+
     // MARK: - Setters
 
     suspend fun setAppLanguage(lang: AppLanguage) =
@@ -138,6 +152,19 @@ class Preferences(private val context: Context) {
         context.dataStore.edit {
             it[Keys.NOTIF_HOUR] = hour
             it[Keys.NOTIF_MINUTE] = minute
+        }
+
+    suspend fun setShabbatEnabled(value: Boolean) =
+        context.dataStore.edit { it[Keys.SHABBAT_ENABLED] = value }
+
+    suspend fun setShabbatCityId(value: String) =
+        context.dataStore.edit { it[Keys.SHABBAT_CITY_ID] = value }
+
+    /** Mémorise la dernière position résolue pour le widget. */
+    suspend fun setShabbatLocation(latitude: Double, longitude: Double) =
+        context.dataStore.edit {
+            it[Keys.SHABBAT_LAT] = latitude
+            it[Keys.SHABBAT_LON] = longitude
         }
 
     /** Ajoute [id] en tête de la liste des récents (déduplique, plafonne à 10). */

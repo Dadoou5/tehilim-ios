@@ -3,6 +3,9 @@ import SwiftUI
 @main
 struct TehilimApp: App {
     @StateObject private var container = AppContainer.shared
+    /// Mode Chabbat — pilote l'écran bloquant. Initialisé avec les prefs du
+    /// container (singleton) → instance stable pour la session.
+    @StateObject private var shabbat = ShabbatManager(preferences: AppContainer.shared.preferences)
 
     @AppStorage("pref.theme") private var theme: AppTheme = .system
     @AppStorage("pref.onboarding.done") private var onboardingCompleted: Bool = false
@@ -10,6 +13,7 @@ struct TehilimApp: App {
     /// (via `.id(appLanguage)` sur la racine).
     @AppStorage("pref.app.language") private var appLanguage: AppLanguage = .system
 
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showSplash = true
 
     init() {
@@ -33,9 +37,18 @@ struct TehilimApp: App {
                 if showSplash {
                     SplashView()
                         .transition(.opacity)
+                } else if shabbat.isBlocking {
+                    // Mode Chabbat : l'app est inaccessible, l'écran de
+                    // démarrage laisse place à « Chabbat Chalom ».
+                    ChabbatChalomView(
+                        endsAt: shabbat.state.endsAt,
+                        onContinue: { shabbat.continueAnyway() }
+                    )
+                    .transition(.opacity)
                 } else {
                     RootTabView()
                         .environmentObject(container)
+                        .environmentObject(shabbat)
                         .fullScreenCover(isPresented: Binding(
                             get: { !onboardingCompleted },
                             set: { onboardingCompleted = !$0 }
@@ -46,6 +59,10 @@ struct TehilimApp: App {
                 }
             }
             .animation(.easeInOut(duration: 0.45), value: showSplash)
+            .animation(.easeInOut(duration: 0.45), value: shabbat.isBlocking)
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { shabbat.refresh() }
+            }
             // V1.10.7 — `preferredColorScheme` PROMU sur le ZStack pour
             // que la SplashView respecte aussi la préférence de thème de
             // l'app (avant : `preferredColorScheme` était seulement sur

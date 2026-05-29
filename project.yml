@@ -34,8 +34,8 @@ targets:
         CODE_SIGN_ENTITLEMENTS: ios/Tehilim/Tehilim.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.david.tehilim
         PRODUCT_NAME: Tehilim
-        CURRENT_PROJECT_VERSION: "30"
-        MARKETING_VERSION: "1.11.0"
+        CURRENT_PROJECT_VERSION: "31"
+        MARKETING_VERSION: "1.12.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -58,6 +58,8 @@ targets:
       - path: ios/Tehilim/Core/Services/HebrewDateFormatter.swift
       # V2.1.b — partage du swizzle Bundle pour i18n du widget.
       - path: ios/Tehilim/Core/Services/LocalizedBundle.swift
+      # Mode Chabbat — calcul partagé (coucher du soleil + fenêtre Chabbat).
+      - path: ios/Tehilim/Core/Services/ShabbatCalculator.swift
       # JSONs embarqués dans le widget pour fonctionnement autonome.
       - path: data
         buildPhase: resources
@@ -69,8 +71,8 @@ targets:
         CODE_SIGN_ENTITLEMENTS: ios/TehilimWidget/TehilimWidget.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.david.tehilim.widget
         PRODUCT_NAME: TehilimWidget
-        CURRENT_PROJECT_VERSION: "30"
-        MARKETING_VERSION: "1.11.0"
+        CURRENT_PROJECT_VERSION: "31"
+        MARKETING_VERSION: "1.12.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: NFQ2Q87CV9

@@ -168,6 +168,10 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             item { NotificationsSettingsSection(prefs) }
 
             item { HorizontalDivider() }
+            item { SectionHeader(stringResource(R.string.shabbat_section_title)) }
+            item { ShabbatSettingsSection(prefs) }
+
+            item { HorizontalDivider() }
             item { SectionHeader(stringResource(R.string.section_accessibility)) }
             item {
                 androidx.compose.material3.TextButton(

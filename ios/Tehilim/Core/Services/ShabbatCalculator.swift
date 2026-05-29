@@ -81,8 +81,6 @@ enum ShabbatCalculator {
             }
         } else if weekday == 7 { // samedi
             if let saturday = dateOnly(now, cal: cal),
-               let friday = cal.date(byAdding: .day, value: -1, to: saturday),
-               let candle = candleLighting(on: friday, coordinate: coordinate, cal: cal),
                let havdalah = havdalah(on: saturday, coordinate: coordinate, cal: cal) {
                 if now <= havdalah {
                     return ShabbatState(isShabbat: true, endsAt: havdalah, nextStartsAt: nil)
@@ -180,7 +178,7 @@ enum ShabbatCalculator {
         // Sunset → H = acos(cosH)
         let H = rad2deg(acos(cosH)) / 15.0
         let T = H + RA - (0.06571 * t) - 6.622
-        var UT = mod(T - lngHour, 24.0)
+        let UT = mod(T - lngHour, 24.0)
 
         // Construit l'instant : UTC du jour (year,month,day) à UT heures.
         let hour = Int(floor(UT))
@@ -208,7 +206,6 @@ enum ShabbatCalculator {
                 return c
             }
         }
-        _ = UT
         return candidate
     }
 }

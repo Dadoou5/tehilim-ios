@@ -217,7 +217,7 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.12.0 (build 31) · Android build 19
+## 📋 What's New / Nouveautés — V1.12.0 (build 32) · Android build 19
 
 > Texte « What's New » à coller dans App Store Connect
 > → onglet **Version 1.12.0** → champ **« Nouveautés in this Version »**.

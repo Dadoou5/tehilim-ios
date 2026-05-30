@@ -38,7 +38,14 @@ class TehilimApplication : Application() {
         val tag = when (savedLang) {
             AppLanguage.FR -> "fr"
             AppLanguage.EN -> "en"
-            AppLanguage.SYSTEM -> ""
+            // SYSTEM : suit la langue de l'appareil si fr/en (tag vide = pas
+            // d'override). Pour toute autre langue système, l'app n'étant
+            // traduite qu'en fr/en, on force l'**anglais** (et non le repli
+            // par défaut sur les ressources `values/` qui sont en français).
+            AppLanguage.SYSTEM -> {
+                val sys = systemLanguage()
+                if (sys == "fr" || sys == "en") "" else "en"
+            }
         }
         // V1.3.11 — sur API 33+ on bypass AppCompat et on tape LocaleManager
         // directement (AppCompat ne persiste pas sur Android 16/SDK 37).
@@ -56,6 +63,23 @@ class TehilimApplication : Application() {
                 LocaleListCompat.forLanguageTags(tag)
             }
             AppCompatDelegate.setApplicationLocales(locales)
+        }
+    }
+
+    /**
+     * Langue de l'**appareil** (et non l'override per-app), pour décider du
+     * repli en mode SYSTEM. On lit les locales système (LocaleManager API 33+,
+     * sinon la config système) afin que la décision reste stable même après
+     * qu'on a posé un override "en".
+     */
+    private fun systemLanguage(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val lm = getSystemService(LocaleManager::class.java)
+            val list = lm?.systemLocales
+            if (list == null || list.isEmpty) "en" else list[0].language
+        } else {
+            val cfg = android.content.res.Resources.getSystem().configuration
+            if (cfg.locales.isEmpty) "en" else cfg.locales[0].language
         }
     }
 }

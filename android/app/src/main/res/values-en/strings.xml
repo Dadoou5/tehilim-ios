@@ -274,9 +274,10 @@
 
     <!-- Shabbat mode -->
     <string name="shabbat_chalom_latin">Chabbat Chalom</string>
+    <string name="shabbat_starts_label">Start of Shabbat</string>
     <string name="shabbat_ends_label">End of Shabbat</string>
     <string name="shabbat_ends_short">Ends · %1$s</string>
-    <string name="shabbat_end_hint">Time computed from your location (nightfall).</string>
+    <string name="shabbat_end_hint">Times computed from your location (candles: sunset − 18 min · end: nightfall, 3 stars).</string>
     <string name="shabbat_continue_anyway">Continue anyway</string>
     <string name="shabbat_section_title">Shabbat mode</string>
     <string name="shabbat_enable">Enable Shabbat mode</string>

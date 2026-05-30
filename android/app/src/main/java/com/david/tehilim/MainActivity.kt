@@ -145,6 +145,7 @@ class MainActivity : ComponentActivity() {
                 when {
                     !splashDone -> SplashScreen(onFinished = { splashDone = true })
                     shabbat.isBlocking -> com.david.tehilim.features.shabbat.ChabbatChalomScreen(
+                        startsAt = shabbat.startsAt,
                         endsAt = shabbat.endsAt,
                         onContinue = shabbat.onContinue
                     )

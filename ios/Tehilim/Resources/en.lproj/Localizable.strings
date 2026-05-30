@@ -63,7 +63,15 @@
 "Mode" = "Mode";
 "Cycle mensuel" = "Monthly cycle";
 "Jour de la semaine" = "Day of week";
+"Cycle mensuel — jour %d" = "Monthly cycle — day %d";
+"Personnalisé (V2)" = "Custom (V2)";
 "Rappel quotidien" = "Daily reminder";
+
+/* Mode Chabbat */
+"Début du Chabbat" = "Start of Shabbat";
+"Fin du Chabbat" = "End of Shabbat";
+"Horaires calculés selon ta position (bougies : coucher − 18 min · fin : sortie des étoiles)." = "Times computed from your location (candles: sunset − 18 min · end: nightfall, 3 stars).";
+"Continuer quand même" = "Continue anyway";
 "Me notifier chaque jour" = "Remind me every day";
 "Heure du rappel" = "Reminder time";
 "Mode de lecture" = "Reading mode";

@@ -274,9 +274,10 @@
 
     <!-- Mode Chabbat -->
     <string name="shabbat_chalom_latin">Chabbat Chalom</string>
+    <string name="shabbat_starts_label">Début du Chabbat</string>
     <string name="shabbat_ends_label">Fin du Chabbat</string>
     <string name="shabbat_ends_short">Fin · %1$s</string>
-    <string name="shabbat_end_hint">Horaire calculé selon ta position (sortie des étoiles).</string>
+    <string name="shabbat_end_hint">Horaires calculés selon ta position (bougies : coucher − 18 min · fin : sortie des étoiles).</string>
     <string name="shabbat_continue_anyway">Continuer quand même</string>
     <string name="shabbat_section_title">Mode Chabbat</string>
     <string name="shabbat_enable">Activer le mode Chabbat</string>

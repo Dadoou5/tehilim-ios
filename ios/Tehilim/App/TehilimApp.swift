@@ -41,6 +41,7 @@ struct TehilimApp: App {
                     // Mode Chabbat : l'app est inaccessible, l'écran de
                     // démarrage laisse place à « Chabbat Chalom ».
                     ChabbatChalomView(
+                        startsAt: shabbat.state.startedAt,
                         endsAt: shabbat.state.endsAt,
                         onContinue: { shabbat.continueAnyway() }
                     )

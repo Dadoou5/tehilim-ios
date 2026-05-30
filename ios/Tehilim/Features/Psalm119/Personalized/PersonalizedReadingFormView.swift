@@ -406,7 +406,10 @@ private struct LabeledRow<Content: View>: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Text(label)
+            // `label` est une String → `Text(label)` serait VERBATIM (non
+            // localisé). On l'enrobe en LocalizedStringKey pour que le swizzle
+            // le résolve (clés « Prénom », « Prénom de la mère » dans en.lproj).
+            Text(LocalizedStringKey(label))
                 .foregroundStyle(.primary)
             Spacer()
             content

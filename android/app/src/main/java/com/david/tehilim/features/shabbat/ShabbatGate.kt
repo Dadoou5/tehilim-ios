@@ -25,6 +25,7 @@ import java.util.Date
 /** État résolu du mode Chabbat pour piloter l'UI. */
 data class ShabbatGate(
     val isBlocking: Boolean,
+    val startsAt: Date?,
     val endsAt: Date?,
     val onContinue: () -> Unit
 )
@@ -86,6 +87,7 @@ fun rememberShabbatGate(container: AppContainer): ShabbatGate {
 
     return ShabbatGate(
         isBlocking = enabled && state.isShabbat && !overridden,
+        startsAt = state.startedAt,
         endsAt = state.endsAt,
         onContinue = { overridden = true }
     )

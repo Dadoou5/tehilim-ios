@@ -47,6 +47,8 @@
 "Mode" = "Mode";
 "Cycle mensuel" = "Cycle mensuel";
 "Jour de la semaine" = "Jour de la semaine";
+"Cycle mensuel — jour %d" = "Cycle mensuel — jour %d";
+"Personnalisé (V2)" = "Personnalisé (V2)";
 "Rappel quotidien" = "Rappel quotidien";
 "Accessibilité" = "Accessibilité";
 "À propos" = "À propos";

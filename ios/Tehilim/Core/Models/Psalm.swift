@@ -67,12 +67,16 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    /// Code BCP-47 actif (résout `.system` à la langue iOS courante, fallback "fr").
+    /// Code BCP-47 actif. Pour `.system`, suit la langue de l'appareil si
+    /// c'est le français ou l'anglais ; pour toute autre langue système
+    /// (l'app n'est traduite qu'en fr/en), l'**anglais** est la valeur par
+    /// défaut (et non le français).
     var activeCode: String {
         switch self {
         case .system:
-            let pref = Locale.preferredLanguages.first ?? "fr"
-            return String(pref.split(separator: "-").first ?? "fr")
+            let pref = Locale.preferredLanguages.first ?? "en"
+            let code = String(pref.split(separator: "-").first ?? "en")
+            return (code == "fr" || code == "en") ? code : "en"
         case .fr: return "fr"
         case .en: return "en"
         }

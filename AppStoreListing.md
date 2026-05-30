@@ -217,13 +217,19 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.12.0 (build 32) · Android build 19
+## 📋 What's New / Nouveautés — V1.12.0 (build 33) · Android build 20
 
 > Texte « What's New » à coller dans App Store Connect
 > → onglet **Version 1.12.0** → champ **« Nouveautés in this Version »**.
 > Limite Apple : 4 000 caractères par locale.
 >
-> Sur Google Play : **Play Console → Version → Notes de version** (build 19).
+> Sur Google Play : **Play Console → Version → Notes de version** (build 20).
+>
+> Builds 33/20 : raffinements depuis la première soumission 1.12.0 — fin de
+> Chabbat = sortie des étoiles (Tzeit 8,5°, défaut Hebcal) selon la position,
+> écran Chabbat affichant début + fin, traduction anglaise complète (labels
+> Lelouy Nichmat, sous-titre « Aujourd'hui »), repli anglais si la langue
+> système n'est ni fr ni en, et champ hébreu aligné à droite sur Android.
 >
 > ⚠️ Note review : la V1.12.0 demande la localisation (« pendant l'utilisation »)
 > pour calculer le coucher du soleil. C'est optionnel (repli sur une ville) et

@@ -86,7 +86,12 @@ android {
         //            coucher +42 min) calculés selon la position (GPS coarse,
         //            repli ville) via ShabbatCalculator (NOAA). Échappatoire
         //            « continuer quand même ». Réglage on/off + choix ville.
-        versionCode = 19
+        // Build 20 : raffinements i18n + Chabbat. Fin de Chabbat = sortie des
+        //            étoiles (Tzeit 8,5°, défaut Hebcal) selon la position
+        //            (repli coucher+72 min aux hautes latitudes). Écran Chabbat
+        //            affiche début ET fin. Repli anglais si langue système ≠
+        //            fr/en. Champ hébreu Lelouy Nichmat aligné à droite.
+        versionCode = 20
         versionName = "1.0.0"
 
         // Tests

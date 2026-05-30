@@ -76,11 +76,13 @@ struct DailyView: View {
         case .monthly:
             var cal = Calendar(identifier: .hebrew)
             cal.timeZone = .current
-            return "Cycle mensuel — jour \(cal.component(.day, from: Date()))"
+            // V1.12 — passait par un littéral français → jamais traduit en
+            // anglais. On passe par L() + String(format:) pour suivre la langue.
+            return String(format: L("Cycle mensuel — jour %d"), cal.component(.day, from: Date()))
         case .weekly:
-            return "Jour de la semaine"
+            return L("Jour de la semaine")
         case .custom:
-            return "Personnalisé (V2)"
+            return L("Personnalisé (V2)")
         }
     }
 }

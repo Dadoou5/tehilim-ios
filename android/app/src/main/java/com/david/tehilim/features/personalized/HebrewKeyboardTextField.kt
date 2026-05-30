@@ -100,7 +100,11 @@ fun HebrewKeyboardTextField(
                     // Apparence : aligné à droite (RTL), pas de background natif,
                     // taille raisonnable.
                     background = null
-                    gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                    // V1.12 — `Gravity.RIGHT` ABSOLU (et non `Gravity.END`, qui
+                    // se résout à GAUCHE quand la direction de layout résolue est
+                    // RTL) : le champ ET le curseur restent ancrés à droite pour
+                    // la saisie hébraïque, y compris champ vide.
+                    gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
                     setTextColor(onSurface.toArgb())
                     setHintTextColor(onSurfaceVariant.toArgb())

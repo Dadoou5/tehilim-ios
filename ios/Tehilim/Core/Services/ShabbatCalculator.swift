@@ -20,9 +20,18 @@ struct ShabbatState: Equatable {
     let isShabbat: Bool
     /// Fin de Chabbat (Havdala) si `isShabbat`, sinon nil.
     let endsAt: Date?
+    /// Début du Chabbat en cours (allumage des bougies) si `isShabbat`.
+    let startedAt: Date?
     /// Début du prochain Chabbat (allumage des bougies) si on n'est PAS en
     /// Chabbat — permet d'afficher « Prochain Chabbat … » hors période.
     let nextStartsAt: Date?
+
+    init(isShabbat: Bool, endsAt: Date? = nil, startedAt: Date? = nil, nextStartsAt: Date? = nil) {
+        self.isShabbat = isShabbat
+        self.endsAt = endsAt
+        self.startedAt = startedAt
+        self.nextStartsAt = nextStartsAt
+    }
 }
 
 /// Calcul du coucher du soleil (algorithme NOAA / Almanac) et de la fenêtre de
@@ -30,13 +39,18 @@ struct ShabbatState: Equatable {
 ///
 /// Règles retenues (cf. décision produit) :
 /// - Début : vendredi, coucher du soleil − 18 min (allumage des bougies).
-/// - Fin   : samedi, coucher du soleil + 42 min (sortie des étoiles / Havdala).
+/// - Fin   : samedi, sortie des étoiles (Tzeit) = soleil à 8,5° sous l'horizon
+///   (défaut Hebcal « 3 étoiles moyennes »), calculée selon la position.
 enum ShabbatCalculator {
 
     /// Offset allumage des bougies avant le coucher (minutes).
     static let candleLightingOffsetMinutes = 18.0
-    /// Offset Havdala après le coucher (minutes).
-    static let havdalahOffsetMinutes = 42.0
+    /// Havdala = sortie des étoiles : angle de dépression solaire standard
+    /// (8,5°, défaut Hebcal). Dépend de la position et de la date.
+    static let havdalahDepressionDegrees = 8.5
+    /// Repli quand le soleil n'atteint pas 8,5° sous l'horizon (hautes
+    /// latitudes en été) : coucher + 72 min.
+    static let havdalahFallbackOffsetMinutes = 72.0
 
     /// Liste de villes pour le repli sans GPS (id stable, ne pas renommer).
     static let cities: [ShabbatCity] = [
@@ -75,15 +89,18 @@ enum ShabbatCalculator {
                let candle = candleLighting(on: friday, coordinate: coordinate, cal: cal),
                let havdalah = havdalah(on: saturday, coordinate: coordinate, cal: cal) {
                 if now >= candle {
-                    return ShabbatState(isShabbat: true, endsAt: havdalah, nextStartsAt: nil)
+                    return ShabbatState(isShabbat: true, endsAt: havdalah, startedAt: candle)
                 }
-                return ShabbatState(isShabbat: false, endsAt: nil, nextStartsAt: candle)
+                return ShabbatState(isShabbat: false, nextStartsAt: candle)
             }
         } else if weekday == 7 { // samedi
             if let saturday = dateOnly(now, cal: cal),
+               let friday = cal.date(byAdding: .day, value: -1, to: saturday),
                let havdalah = havdalah(on: saturday, coordinate: coordinate, cal: cal) {
                 if now <= havdalah {
-                    return ShabbatState(isShabbat: true, endsAt: havdalah, nextStartsAt: nil)
+                    // startedAt = allumage des bougies de la veille (vendredi).
+                    let candle = candleLighting(on: friday, coordinate: coordinate, cal: cal)
+                    return ShabbatState(isShabbat: true, endsAt: havdalah, startedAt: candle)
                 }
             }
         }
@@ -116,8 +133,15 @@ enum ShabbatCalculator {
 
     private static func havdalah(on saturday: Date, coordinate: GeoCoordinate,
                                  cal: Calendar) -> Date? {
+        // Sortie des étoiles : soleil à 8,5° sous l'horizon (zénith 98,5°).
+        if let tzeit = eveningEvent(on: saturday, coordinate: coordinate, cal: cal,
+                                    zenith: 90.0 + havdalahDepressionDegrees) {
+            return tzeit
+        }
+        // Repli (le soleil ne descend pas jusqu'à 8,5° près du solstice à
+        // haute latitude) : coucher + 72 min.
         guard let s = sunset(on: saturday, coordinate: coordinate, cal: cal) else { return nil }
-        return s.addingTimeInterval(havdalahOffsetMinutes * 60)
+        return s.addingTimeInterval(havdalahFallbackOffsetMinutes * 60)
     }
 
     private static func dateOnly(_ date: Date, cal: Calendar) -> Date? {
@@ -130,11 +154,19 @@ enum ShabbatCalculator {
     /// la position donnée. Retourne l'instant absolu (Date), ou nil aux
     /// latitudes polaires où le soleil ne se couche pas ce jour-là.
     static func sunset(on day: Date, coordinate: GeoCoordinate, cal: Calendar) -> Date? {
+        // Coucher du soleil = zénith officiel 90°50' (réfraction + rayon).
+        eveningEvent(on: day, coordinate: coordinate, cal: cal, zenith: 90.833)
+    }
+
+    /// Événement solaire du soir pour un `zenith` donné (90,833 = coucher ;
+    /// > 90 = crépuscule / sortie des étoiles selon l'angle de dépression).
+    static func eveningEvent(on day: Date, coordinate: GeoCoordinate, cal: Calendar,
+                             zenith: Double) -> Date? {
         let comps = cal.dateComponents([.year, .month, .day], from: day)
         guard let year = comps.year, let month = comps.month, let dayNum = comps.day else { return nil }
         return sunsetUTC(year: year, month: month, day: dayNum,
                          latitude: coordinate.latitude, longitude: coordinate.longitude,
-                         timeZone: cal.timeZone)
+                         timeZone: cal.timeZone, zenith: zenith)
     }
 
     private static func deg2rad(_ d: Double) -> Double { d * .pi / 180 }
@@ -144,7 +176,7 @@ enum ShabbatCalculator {
     /// Algorithme « Sunrise/Sunset » de l'Almanac (NOAA), précision ~1 min.
     private static func sunsetUTC(year: Int, month: Int, day: Int,
                                   latitude: Double, longitude: Double,
-                                  timeZone: TimeZone) -> Date? {
+                                  timeZone: TimeZone, zenith: Double = 90.833) -> Date? {
         // 1. Jour de l'année
         let N1 = floor(275.0 * Double(month) / 9.0)
         let N2 = floor((Double(month) + 9.0) / 12.0)
@@ -170,8 +202,8 @@ enum ShabbatCalculator {
         // Déclinaison
         let sinDec = 0.39782 * sin(deg2rad(L))
         let cosDec = cos(asin(sinDec))
-        // Angle horaire (zénith officiel 90°50')
-        let zenith = 90.833
+        // Angle horaire — `zenith` passé en paramètre (90,833 = coucher,
+        // 98,5 = sortie des étoiles à 8,5°).
         let cosH = (cos(deg2rad(zenith)) - (sinDec * sin(deg2rad(latitude)))) /
                    (cosDec * cos(deg2rad(latitude)))
         if cosH > 1 || cosH < -1 { return nil } // pas de coucher (polaire)

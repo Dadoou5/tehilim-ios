@@ -22,7 +22,9 @@ data class ShabbatCity(val id: String, val nameFR: String, val coordinate: GeoCo
 data class ShabbatState(
     val isShabbat: Boolean,
     val endsAt: Date?,
-    val nextStartsAt: Date?
+    val nextStartsAt: Date?,
+    /** Début du Chabbat en cours (allumage des bougies) si `isShabbat`. */
+    val startedAt: Date? = null
 )
 
 /**
@@ -32,12 +34,17 @@ data class ShabbatState(
  * Chabbat. Pur (aucune dépendance Android) → partageable app ↔ widget Glance.
  *
  * - Début : vendredi, coucher du soleil − 18 min (allumage des bougies).
- * - Fin   : samedi, coucher du soleil + 42 min (sortie des étoiles / Havdala).
+ * - Fin   : samedi, sortie des étoiles (Tzeit) = soleil à 8,5° sous l'horizon
+ *   (défaut Hebcal « 3 étoiles moyennes »), calculée selon la position.
  */
 object ShabbatCalculator {
 
     const val CANDLE_LIGHTING_OFFSET_MIN = 18.0
-    const val HAVDALAH_OFFSET_MIN = 42.0
+    /** Havdala = sortie des étoiles : angle de dépression solaire standard
+     *  (8,5°, défaut Hebcal). Dépend de la position et de la date. */
+    const val HAVDALAH_DEPRESSION_DEG = 8.5
+    /** Repli quand le soleil n'atteint pas 8,5° (hautes latitudes en été). */
+    const val HAVDALAH_FALLBACK_OFFSET_MIN = 72.0
 
     val cities: List<ShabbatCity> = listOf(
         ShabbatCity("jerusalem", "Jérusalem", GeoCoordinate(31.7683, 35.2137)),
@@ -75,7 +82,7 @@ object ShabbatCalculator {
             val candle = candleLighting(friday, coordinate, timeZone)
             val havdalah = havdalah(saturday, coordinate, timeZone)
             if (candle != null && havdalah != null) {
-                return if (!now.before(candle)) ShabbatState(true, havdalah, null)
+                return if (!now.before(candle)) ShabbatState(true, havdalah, null, startedAt = candle)
                 else ShabbatState(false, null, candle)
             }
         } else if (weekday == Calendar.SATURDAY) {
@@ -84,7 +91,7 @@ object ShabbatCalculator {
             val candle = candleLighting(friday, coordinate, timeZone)
             val havdalah = havdalah(saturday, coordinate, timeZone)
             if (candle != null && havdalah != null && !now.after(havdalah)) {
-                return ShabbatState(true, havdalah, null)
+                return ShabbatState(true, havdalah, null, startedAt = candle)
             }
         }
         return ShabbatState(false, null, nextCandleLighting(now, coordinate, timeZone))
@@ -109,8 +116,12 @@ object ShabbatCalculator {
     }
 
     private fun havdalah(saturday: Date, coordinate: GeoCoordinate, tz: TimeZone): Date? {
+        // Sortie des étoiles : soleil à 8,5° sous l'horizon (zénith 98,5°).
+        eveningEvent(saturday, coordinate, tz, 90.0 + HAVDALAH_DEPRESSION_DEG)?.let { return it }
+        // Repli (le soleil ne descend pas à 8,5° près du solstice à haute
+        // latitude) : coucher + 72 min.
         val s = sunset(saturday, coordinate, tz) ?: return null
-        return Date(s.time + (HAVDALAH_OFFSET_MIN * 60_000).toLong())
+        return Date(s.time + (HAVDALAH_FALLBACK_OFFSET_MIN * 60_000).toLong())
     }
 
     private fun startOfDay(date: Date, tz: TimeZone): Date {
@@ -129,7 +140,14 @@ object ShabbatCalculator {
 
     // MARK: - Coucher du soleil (NOAA / Almanac)
 
-    fun sunset(day: Date, coordinate: GeoCoordinate, tz: TimeZone): Date? {
+    fun sunset(day: Date, coordinate: GeoCoordinate, tz: TimeZone): Date? =
+        eveningEvent(day, coordinate, tz, 90.833)
+
+    /**
+     * Événement solaire du soir pour un `zenith` donné (90,833 = coucher ;
+     * > 90 = crépuscule / sortie des étoiles selon l'angle de dépression).
+     */
+    fun eveningEvent(day: Date, coordinate: GeoCoordinate, tz: TimeZone, zenith: Double): Date? {
         val cal = GregorianCalendar(tz).apply { time = day }
         return sunsetUTC(
             cal.get(Calendar.YEAR),
@@ -137,7 +155,8 @@ object ShabbatCalculator {
             cal.get(Calendar.DAY_OF_MONTH),
             coordinate.latitude,
             coordinate.longitude,
-            tz
+            tz,
+            zenith
         )
     }
 
@@ -147,7 +166,7 @@ object ShabbatCalculator {
 
     private fun sunsetUTC(
         year: Int, month: Int, day: Int,
-        latitude: Double, longitude: Double, timeZone: TimeZone
+        latitude: Double, longitude: Double, timeZone: TimeZone, zenith: Double = 90.833
     ): Date? {
         val n1 = floor(275.0 * month / 9.0)
         val n2 = floor((month + 9.0) / 12.0)
@@ -166,7 +185,7 @@ object ShabbatCalculator {
         ra = (ra + (lQuadrant - raQuadrant)) / 15.0
         val sinDec = 0.39782 * sin(deg2rad(l))
         val cosDec = cos(asin(sinDec))
-        val zenith = 90.833
+        // `zenith` passé en paramètre (90,833 = coucher, 98,5 = tzeit à 8,5°).
         val cosH = (cos(deg2rad(zenith)) - (sinDec * sin(deg2rad(latitude)))) /
             (cosDec * cos(deg2rad(latitude)))
         if (cosH > 1 || cosH < -1) return null

@@ -5,6 +5,8 @@ import SwiftUI
 /// l'heure de fin de Chabbat calculée selon la position, une bougie animée, et
 /// un bouton discret « Continuer quand même » (échappatoire de session).
 struct ChabbatChalomView: View {
+    /// Début de Chabbat (allumage des bougies). Optionnel.
+    let startsAt: Date?
     /// Fin de Chabbat (Havdala). Optionnel : si nil, on n'affiche pas l'heure.
     let endsAt: Date?
     /// Action déclenchée par « Continuer quand même ».
@@ -59,21 +61,20 @@ struct ChabbatChalomView: View {
                     .opacity(visibleLatin ? 1 : 0)
                     .offset(y: visibleLatin ? 0 : 14)
 
-                // Heure de fin de Chabbat
-                if let endsAt {
-                    VStack(spacing: 6) {
-                        Text("Fin du Chabbat")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                            .textCase(.uppercase)
-                        Text(endLabel(endsAt))
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(.primary)
-                            .multilineTextAlignment(.center)
-                        Text("Horaire calculé selon ta position (sortie des étoiles).")
+                // Horaires de début et de fin de Chabbat
+                if startsAt != nil || endsAt != nil {
+                    VStack(spacing: 10) {
+                        if let startsAt {
+                            timeRow(title: "Début du Chabbat", date: startsAt)
+                        }
+                        if let endsAt {
+                            timeRow(title: "Fin du Chabbat", date: endsAt)
+                        }
+                        Text("Horaires calculés selon ta position (bougies : coucher − 18 min · fin : sortie des étoiles).")
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                             .multilineTextAlignment(.center)
+                            .padding(.top, 2)
                     }
                     .padding(.top, 8)
                     .opacity(visibleInfo ? 1 : 0)
@@ -97,8 +98,27 @@ struct ChabbatChalomView: View {
             .padding(.horizontal, 24)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Chabbat Chalom" + (endsAt != nil ? ". Fin du Chabbat \(endLabel(endsAt!))" : ""))
+        .accessibilityLabel(
+            "Chabbat Chalom"
+            + (startsAt != nil ? ". Début du Chabbat \(endLabel(startsAt!))" : "")
+            + (endsAt != nil ? ". Fin du Chabbat \(endLabel(endsAt!))" : "")
+        )
         .onAppear { animateIn() }
+    }
+
+    /// Ligne « LIBELLÉ : date · heure ».
+    @ViewBuilder
+    private func timeRow(title: LocalizedStringKey, date: Date) -> some View {
+        VStack(spacing: 2) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+            Text(endLabel(date))
+                .font(.headline)
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+        }
     }
 
     /// Ex. « samedi 31 mai · 22:14 ».
@@ -119,5 +139,9 @@ struct ChabbatChalomView: View {
 }
 
 #Preview {
-    ChabbatChalomView(endsAt: Date().addingTimeInterval(3600 * 5), onContinue: {})
+    ChabbatChalomView(
+        startsAt: Date().addingTimeInterval(-3600 * 19),
+        endsAt: Date().addingTimeInterval(3600 * 5),
+        onContinue: {}
+    )
 }

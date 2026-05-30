@@ -67,7 +67,12 @@ private final class LocalizedBundle: Bundle, @unchecked Sendable {
         switch raw {
         case "fr": return "fr"
         case "en": return "en"
-        default:   return nil
+        default:
+            // `.system` : suit l'appareil si fr, sinon anglais (l'app n'est
+            // traduite qu'en fr/en → tout système non-fr bascule en anglais).
+            let pref = Locale.preferredLanguages.first ?? "en"
+            let code = String(pref.split(separator: "-").first ?? "en")
+            return code == "fr" ? "fr" : "en"
         }
     }
 }

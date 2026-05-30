@@ -55,7 +55,7 @@ import java.util.Locale
  * quand même ».
  */
 @Composable
-fun ChabbatChalomScreen(endsAt: Date?, onContinue: () -> Unit) {
+fun ChabbatChalomScreen(startsAt: Date?, endsAt: Date?, onContinue: () -> Unit) {
     val accent = MaterialTheme.colorScheme.primary
     val bg = MaterialTheme.colorScheme.background
     val bgElevated = MaterialTheme.colorScheme.surface
@@ -135,24 +135,27 @@ fun ChabbatChalomScreen(endsAt: Date?, onContinue: () -> Unit) {
                 )
             )
 
-            if (endsAt != null) {
+            if (startsAt != null || endsAt != null) {
                 Spacer(Modifier.height(24.dp))
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Text(
-                        stringResource(R.string.shabbat_ends_label).uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = visibleInfo.value)
-                    )
-                    Text(
-                        endLabel(endsAt),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = visibleInfo.value),
-                        textAlign = TextAlign.Center
-                    )
+                    if (startsAt != null) {
+                        TimeRow(
+                            title = stringResource(R.string.shabbat_starts_label),
+                            value = endLabel(startsAt),
+                            alpha = visibleInfo.value
+                        )
+                    }
+                    if (endsAt != null) {
+                        TimeRow(
+                            title = stringResource(R.string.shabbat_ends_label),
+                            value = endLabel(endsAt),
+                            alpha = visibleInfo.value
+                        )
+                    }
                     Text(
                         stringResource(R.string.shabbat_end_hint),
                         style = MaterialTheme.typography.labelSmall,
@@ -177,6 +180,23 @@ fun ChabbatChalomScreen(endsAt: Date?, onContinue: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun TimeRow(title: String, value: String, alpha: Float) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            title.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha)
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
+            textAlign = TextAlign.Center
+        )
     }
 }
 

@@ -19,14 +19,14 @@ Psaumes en hébreu et français
 
 ### Texte promotionnel (170 car. max — peut être mis à jour sans review)
 ```
-Lis les 150 Tehilim en hébreu vocalisé avec téamim, traduction française et phonétique sépharade. Tehilim du jour, prières, favoris et widget intégrés.
+Les 150 Tehilim en hébreu vocalisé, traductions FR/EN et phonétique. Tehilim du jour, Lelouy Nichmat & azcara, mode Chabbat, widget — hors-ligne, sans pub.
 ```
 
 ### Description (4 000 car. max)
 ```
-Tehilim — l'application complète pour lire les 150 Psaumes du roi David, sur iPhone.
+Tehilim — l'application complète pour lire les 150 Psaumes du roi David, sur iPhone et iPad.
 
-Conçue pour la lecture quotidienne comme pour l'étude approfondie, Tehilim réunit le texte hébreu vocalisé avec téamim, une traduction française de référence et une phonétique sépharade dans une interface claire, sobre et entièrement accessible.
+Conçue pour la lecture quotidienne comme pour l'étude approfondie, Tehilim réunit le texte hébreu vocalisé avec téamim, des traductions française et anglaise de référence et une phonétique sépharade dans une interface claire, sobre et entièrement accessible.
 
 — LE CORPUS COMPLET —
 • Les 150 Tehilim, 2 527 versets
@@ -40,6 +40,18 @@ Conçue pour la lecture quotidienne comme pour l'étude approfondie, Tehilim ré
 • Lecture par jour de la semaine
 • Rappels de notification personnalisables
 • Reprise automatique à la dernière lecture
+
+— LELOUY NICHMAT & COMMÉMORATION —
+• Lecture personnalisée pour l'élévation de l'âme d'un défunt : la séquence reprend les lettres de son prénom, du lien (בן/בת), du prénom de sa mère, puis נשמה
+• Calcul automatique de la prochaine azcara à partir de la date du décès, selon les règles traditionnelles (Adar / Adar II, Heshvan, Kislev…)
+• Rappels 7 jours avant et le jour même
+• Partage par SMS, WhatsApp… — le destinataire importe la prière dans l'app en un tap
+• Modification à tout moment et synchronisation privée via iCloud entre tes appareils
+
+— MODE CHABBAT —
+• Pendant Chabbat, l'app et le widget laissent place à un écran « Chabbat Chalom » apaisant
+• Heures d'entrée (allumage des bougies) et de sortie (sortie des étoiles) calculées selon ta position et la date
+• Activable / désactivable, avec une option « continuer quand même »
 
 — PARCOURS THÉMATIQUES —
 • 18 « Cas de la vie » : santé, parnassa, mariage, deuil, voyage, examens…
@@ -55,6 +67,7 @@ Conçue pour la lecture quotidienne comme pour l'étude approfondie, Tehilim ré
 • Police Ezra SIL SR optimisée pour les téamim
 • 5 tailles de texte indépendantes (hébreu et traduction)
 • Numérotation hébraïque ou numérique
+• Interface bilingue français / anglais (ou selon ton appareil)
 • Mode clair / sombre / système
 • Texte hébreu justifié à droite (disposition traditionnelle)
 • Date hébraïque affichée en permanence
@@ -69,16 +82,19 @@ Conçue pour la lecture quotidienne comme pour l'étude approfondie, Tehilim ré
 • Recherche par numéro (arabe ou hébreu) ou par mot-clé
 • Partage stylisé de versets en image
 
+— iPAD —
+• Mise en page optimisée : barre latérale et lecture parallèle hébreu / traduction en paysage
+
 — ACCESSIBILITÉ —
 • Conforme RGAA / WCAG 2.1 AA
 • Compatible VoiceOver et Dynamic Type
 • Contrastes optimisés, réduction des animations
 
 — RESPECT DE TA VIE PRIVÉE —
-• Aucune collecte de données personnelles
-• Aucun compte, aucune connexion requise
-• Fonctionne entièrement hors-ligne après installation
-• Aucun tracker, aucune publicité
+• Aucune donnée personnelle collectée, aucun compte, aucune publicité, aucun tracker
+• Ta position (mode Chabbat) sert uniquement au calcul des horaires sur l'appareil — jamais transmise ni stockée
+• Tes prières sauvegardées se synchronisent en privé via iCloud (ton compte Apple)
+• Lecture des Tehilim entièrement hors-ligne
 
 Tehilim est une application gratuite, sans achat intégré, sans publicité. Elle est dédiée לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
 
@@ -90,9 +106,9 @@ Sources :
 
 ### Mots-clés (100 car. max, séparés par virgule sans espace)
 ```
-tehilim,psaumes,psalms,torah,hebrew,prière,juif,judaisme,david,sephardi,nahman,siddour
+tehilim,psaumes,psalms,torah,hebrew,prière,juif,david,nahman,azcara,chabbat,yahrzeit,siddour
 ```
-> 88 caractères — il reste de la marge. Variante anglaise : `tehillim,psalms,jewish,prayer,bible,torah,nahman,jps,hebrew,siddur,kabbalah,david`
+> ~92 caractères. Variante anglaise ci-dessous (section EN).
 
 ### Catégorie principale
 ```
@@ -126,14 +142,14 @@ Psalms in Hebrew & English
 
 ### Promotional text (170 chars)
 ```
-Read the 150 Tehilim in pointed Hebrew with cantillation marks, English translation and Sephardic transliteration. Daily psalms, prayers, favorites and widget.
+The 150 Tehilim in pointed Hebrew, EN/FR translations and transliteration. Daily psalms, Lelouy Nichmat & azcara, Shabbat mode, widget — offline, no ads.
 ```
 
 ### Description (4 000 chars)
 ```
-Tehilim — the complete app for reading the 150 Psalms of King David, on iPhone.
+Tehilim — the complete app for reading the 150 Psalms of King David, on iPhone and iPad.
 
-Designed for daily reading as well as in-depth study, Tehilim brings together the pointed Hebrew text with cantillation marks (te'amim), a trusted English translation, and a Sephardic transliteration in a clean, calm and fully accessible interface.
+Designed for daily reading as well as in-depth study, Tehilim brings together the pointed Hebrew text with cantillation marks (te'amim), trusted English and French translations, and a Sephardic transliteration in a clean, calm and fully accessible interface.
 
 — THE FULL CORPUS —
 • All 150 Tehilim, 2,527 verses
@@ -147,6 +163,18 @@ Designed for daily reading as well as in-depth study, Tehilim brings together th
 • Day-of-the-week reading
 • Customizable notification reminders
 • Auto-resume from your last reading
+
+— LELOUY NICHMAT & REMEMBRANCE —
+• A personalized reading for the elevation of a departed soul: the sequence uses the letters of their first name, the relationship (בן/בת), the mother's first name, then נשמה
+• Automatic calculation of the next azcara (yahrzeit) from the date of death, following traditional rules (Adar / Adar II, Heshvan, Kislev…)
+• Reminders 7 days before and on the day itself
+• Share via SMS, WhatsApp… — the recipient imports the prayer into the app in one tap
+• Edit anytime, with private iCloud sync across your devices
+
+— SHABBAT MODE —
+• During Shabbat, the app and widget give way to a peaceful "Chabbat Chalom" screen
+• Start (candle lighting) and end (nightfall) times computed from your location and the date
+• Can be turned on or off, with a "continue anyway" option
 
 — THEMATIC PATHS —
 • 18 "Life Situations": health, livelihood, marriage, mourning, travel, exams…
@@ -162,6 +190,7 @@ Designed for daily reading as well as in-depth study, Tehilim brings together th
 • Ezra SIL SR font, optimized for te'amim
 • 5 independent text sizes (Hebrew and translation)
 • Hebrew or numeric verse numbering
+• Bilingual French / English interface (or follow your device)
 • Light / dark / system theme
 • Hebrew text right-justified (traditional layout)
 • Hebrew date always visible
@@ -176,16 +205,19 @@ Designed for daily reading as well as in-depth study, Tehilim brings together th
 • Search by number (Arabic or Hebrew) or keyword
 • Beautiful image-style verse sharing
 
+— iPAD —
+• Optimized layout: sidebar and side-by-side Hebrew / translation reading in landscape
+
 — ACCESSIBILITY —
 • WCAG 2.1 AA compliant
 • Full VoiceOver and Dynamic Type support
 • Optimized contrasts, reduced motion
 
 — PRIVACY-FIRST —
-• No personal data collected
-• No account, no sign-in required
-• Fully offline after install
-• No trackers, no ads
+• No personal data collected, no account, no ads, no trackers
+• Your location (Shabbat mode) is only used to compute times on-device — never transmitted or stored
+• Your saved prayers sync privately via iCloud (your Apple account)
+• Tehilim reading works fully offline
 
 Tehilim is free, with no in-app purchases and no advertising. It is dedicated לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
 
@@ -197,7 +229,7 @@ Sources:
 
 ### Keywords (100 chars)
 ```
-tehillim,psalms,jewish,prayer,bible,torah,nahman,jps,hebrew,siddur,kabbalah,david
+tehillim,psalms,jewish,prayer,torah,nahman,hebrew,siddur,david,azcara,yahrzeit,shabbat,havdalah
 ```
 
 ### Primary category

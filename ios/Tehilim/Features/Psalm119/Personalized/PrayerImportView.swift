@@ -60,7 +60,7 @@ struct PrayerImportView: View {
                                 .accessibilityHidden(true)
                             Text("Prochaine azcara")
                             Spacer()
-                            Text("\(next.formatted(date: .abbreviated, time: .omitted))*")
+                            Text("\(next.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(AppLocale.locale)))*")
                                 .fontWeight(.medium)
                                 .foregroundStyle(Color.accentMain)
                         }

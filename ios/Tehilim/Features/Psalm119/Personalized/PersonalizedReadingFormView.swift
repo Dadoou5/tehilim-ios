@@ -184,7 +184,7 @@ struct PersonalizedReadingFormView: View {
                                 .foregroundStyle(.secondary)
                             Spacer()
                             // Astérisque expliqué dans le footer de section.
-                            Text("\(next.formatted(date: .abbreviated, time: .omitted))*")
+                            Text("\(next.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(AppLocale.locale)))*")
                                 .foregroundStyle(Color.accentMain)
                         }
                     }

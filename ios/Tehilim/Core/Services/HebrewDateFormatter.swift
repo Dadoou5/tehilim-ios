@@ -19,10 +19,13 @@ enum HebrewDateFormatter {
         case "fr": return Locale(identifier: "fr_FR")
         case "en": return Locale(identifier: "en_US")
         default:
-            // .system : suit la locale iOS, fallback FR si exotique.
-            let sys = Locale.current
-            let code = sys.language.languageCode?.identifier ?? "fr"
-            return (code == "en" || code == "fr") ? sys : Locale(identifier: "fr_FR")
+            // .system : on lit `Locale.preferredLanguages` (live) et NON
+            // `Locale.current` (instantané figé qui reste sur l'ancienne langue
+            // après une bascule à chaud → jour de la semaine en anglais alors
+            // que le système est en français). Français si l'appareil est fr,
+            // anglais sinon.
+            let pref = Locale.preferredLanguages.first ?? "fr"
+            return pref.hasPrefix("fr") ? Locale(identifier: "fr_FR") : Locale(identifier: "en_US")
         }
     }
 

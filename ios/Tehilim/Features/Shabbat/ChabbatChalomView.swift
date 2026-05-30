@@ -123,9 +123,9 @@ struct ChabbatChalomView: View {
 
     /// Ex. « samedi 31 mai · 22:14 ».
     private func endLabel(_ date: Date) -> String {
-        date.formatted(.dateTime.weekday(.wide).day().month(.wide)) +
+        date.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(AppLocale.locale)) +
         " · " +
-        date.formatted(.dateTime.hour().minute())
+        date.formatted(.dateTime.hour().minute().locale(AppLocale.locale))
     }
 
     private func animateIn() {

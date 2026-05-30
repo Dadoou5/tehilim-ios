@@ -122,7 +122,7 @@ struct SavedPrayersListView: View {
                 HStack(spacing: 8) {
                     Text("\(intent.generatedLetters.count) lettres")
                     Text("·")
-                    Text(intent.createdAt.formatted(date: .abbreviated, time: .omitted))
+                    Text(intent.createdAt.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(AppLocale.locale)))
                     if let last = intent.lastReadIndex {
                         Text("·")
                         Text("lue jusqu'à \(last + 1)")
@@ -143,7 +143,7 @@ struct SavedPrayersListView: View {
                             .font(.caption2)
                         Text("Prochaine azcara")
                         Text(":")
-                        Text("\(next.formatted(date: .abbreviated, time: .omitted))*")
+                        Text("\(next.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(AppLocale.locale)))*")
                             .fontWeight(.medium)
                     }
                     .font(.caption)

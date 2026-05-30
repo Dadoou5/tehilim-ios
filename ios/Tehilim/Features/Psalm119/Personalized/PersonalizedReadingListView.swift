@@ -57,7 +57,7 @@ struct PersonalizedReadingListView: View {
                                 .textCase(.uppercase)
                             // Astérisque rappelle que le Hebrew day commence
                             // au coucher du soleil de la veille civile.
-                            Text("\(next.formatted(date: .complete, time: .omitted))*")
+                            Text("\(next.formatted(Date.FormatStyle(date: .complete, time: .omitted).locale(AppLocale.locale)))*")
                                 .font(.headline)
                         }
                         Spacer()
@@ -89,7 +89,7 @@ struct PersonalizedReadingListView: View {
                                      : "Le jour même")
                                     .font(.subheadline.weight(.medium))
                                 Text(reminder.triggerDate.formatted(
-                                    date: .abbreviated, time: .shortened))
+                                    Date.FormatStyle(date: .abbreviated, time: .shortened).locale(AppLocale.locale)))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }

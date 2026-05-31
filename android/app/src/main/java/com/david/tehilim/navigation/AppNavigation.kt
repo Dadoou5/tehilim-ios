@@ -85,13 +85,12 @@ fun AppNavigation(container: AppContainer) {
 
     LaunchedEffect(activity?.intent) {
         val data = activity?.intent?.data
-        // 1) Prière partagée — traitée au cold-start ET via onNewIntent.
-        //    (Contrairement aux deep links de navigation, pas de skip de la
-        //    1ʳᵉ invocation : `tehilim://prayer` n'est routé par aucun
-        //    navDeepLink, donc aucun risque de double-routing de back stack.)
+        // 1) Prière partagée — schéma custom `tehilim://prayer` OU App Link
+        //    `https://dadoou5.github.io/p/…`. Traitée au cold-start ET via
+        //    onNewIntent. Aucun navDeepLink ne route ces liens → pas de risque
+        //    de double-routing de back stack.
         if (data != null &&
-            data.scheme == com.david.tehilim.core.service.PrayerShareLink.SCHEME &&
-            data.host == com.david.tehilim.core.service.PrayerShareLink.HOST
+            com.david.tehilim.core.service.PrayerShareLink.isPrayerLink(data)
         ) {
             val uriStr = data.toString()
             if (uriStr != lastHandledPrayerUri) {

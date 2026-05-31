@@ -63,6 +63,16 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="tehilim" />
             </intent-filter>
+            <!-- App Link vérifié : lien de partage de prière https://dadoou5.github.io/p/…
+                 Vérifié via /.well-known/assetlinks.json → ouvre l'app directement. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="dadoou5.github.io"
+                      android:pathPrefix="/p/" />
+            </intent-filter>
         </activity>
 
     </application>

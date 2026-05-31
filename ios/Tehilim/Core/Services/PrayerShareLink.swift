@@ -21,6 +21,11 @@ enum PrayerShareLink {
     /// déjà partagés.
     static let version = "1"
 
+    /// Page de redirection https (GitHub Pages) — un lien `https://` est
+    /// cliquable dans Mail / WhatsApp / SMS (contrairement à `tehilim://`).
+    /// La page lit les mêmes paramètres et rouvre `tehilim://prayer?...`.
+    static let webBaseURL = "https://dadoou5.github.io/p/"
+
     /// `yyyy-MM-dd` en calendrier grégorien + locale POSIX : format stable,
     /// identique côté Android, indépendant de la locale de l'appareil.
     private static let dateFormatter: DateFormatter = {
@@ -34,11 +39,10 @@ enum PrayerShareLink {
 
     // MARK: - Encodage
 
-    /// Construit l'URL `tehilim://prayer?...` représentant l'intent.
+    /// Construit le lien de partage `https://…/p/?...` (page de redirection)
+    /// représentant l'intent. Cliquable dans tous les messageries.
     static func url(for intent: SavedPrayerIntent) -> URL? {
-        var comps = URLComponents()
-        comps.scheme = scheme
-        comps.host = host
+        guard var comps = URLComponents(string: webBaseURL) else { return nil }
         var items: [URLQueryItem] = [
             URLQueryItem(name: "v", value: version),
             URLQueryItem(name: "type", value: intent.prayerType.rawValue),
@@ -84,10 +88,18 @@ enum PrayerShareLink {
         }
     }
 
-    /// Parse une URL `tehilim://prayer?...`. Retourne nil si le lien n'est
-    /// pas une prière valide (champs requis manquants ou invalides).
+    /// True si l'URL est un lien de prière géré : schéma custom
+    /// `tehilim://prayer` OU Universal Link `https://…/p/…`.
+    static func isPrayerLink(_ url: URL) -> Bool {
+        if url.scheme == scheme && url.host == host { return true }
+        if url.scheme == "https" && url.path.hasPrefix("/p/") { return true }
+        return false
+    }
+
+    /// Parse un lien de prière (`tehilim://prayer?...` ou `https://…/p/?...`).
+    /// Retourne nil si les champs requis sont manquants ou invalides.
     static func payload(from url: URL) -> Payload? {
-        guard url.scheme == scheme, url.host == host,
+        guard isPrayerLink(url),
               let comps = URLComponents(url: url, resolvingAgainstBaseURL: false)
         else { return nil }
 

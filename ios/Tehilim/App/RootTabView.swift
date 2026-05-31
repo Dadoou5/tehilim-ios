@@ -52,6 +52,11 @@ struct RootTabView: View {
             }
         }
         .onOpenURL { url in handleDeepLink(url) }
+        // Universal Link https (lien de partage tapé dans Mail/WhatsApp) :
+        // ouvre l'app directement sur l'aperçu d'import.
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            if let url = activity.webpageURL { handleDeepLink(url) }
+        }
         // Import d'une prière partagée : aperçu + confirmation avant ajout.
         .sheet(item: $pendingImport) { payload in
             PrayerImportView(payload: payload)
@@ -61,12 +66,13 @@ struct RootTabView: View {
     }
 
     private func handleDeepLink(_ url: URL) {
-        guard url.scheme == "tehilim" else { return }
-        // tehilim://prayer?... → import d'une prière partagée (SMS/WhatsApp).
-        if url.host == "prayer" {
+        // Lien de prière — schéma custom `tehilim://prayer` OU Universal Link
+        // `https://…/p/…`. Présente l'aperçu d'import.
+        if PrayerShareLink.isPrayerLink(url) {
             pendingImport = PrayerShareLink.payload(from: url)
             return
         }
+        guard url.scheme == "tehilim" else { return }
         // tehilim://<host> → onglet correspondant, pile vide
         switch url.host {
         case "daily":     router.go(.daily, resetPath: true)

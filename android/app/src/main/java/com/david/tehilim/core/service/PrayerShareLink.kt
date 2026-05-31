@@ -29,15 +29,19 @@ object PrayerShareLink {
     const val HOST = "prayer"
     const val VERSION = "1"
 
+    /** Page de redirection https (GitHub Pages) — un lien https est cliquable
+     *  dans Mail / WhatsApp / SMS (contrairement à tehilim://). La page rouvre
+     *  ensuite tehilim://prayer?... avec les mêmes paramètres. */
+    const val WEB_BASE_URL = "https://dadoou5.github.io/p/"
+
     /** `yyyy-MM-dd` / locale US : format stable, identique à iOS. */
     private fun dateFormat() = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     // MARK: - Encodage
 
     fun uri(intent: SavedPrayerIntent): Uri {
-        val builder = Uri.Builder()
-            .scheme(SCHEME)
-            .authority(HOST)
+        // Lien de partage = page de redirection https (cliquable partout).
+        val builder = Uri.parse(WEB_BASE_URL).buildUpon()
             .appendQueryParameter("v", VERSION)
             .appendQueryParameter("type", intent.prayerType.wire)
             .appendQueryParameter("name", intent.relativeFirstName)
@@ -69,9 +73,16 @@ object PrayerShareLink {
             get() = "$relativeFirstName ${relationType.hebrew} $motherFirstName"
     }
 
-    /** Parse `tehilim://prayer?...` ; null si le lien n'est pas valide. */
+    /** True si l'URI est un lien de prière géré : schéma custom
+     *  `tehilim://prayer` OU App Link `https://…/p/…`. */
+    fun isPrayerLink(uri: Uri): Boolean {
+        if (uri.scheme == SCHEME && uri.host == HOST) return true
+        return uri.scheme == "https" && (uri.path?.startsWith("/p/") == true)
+    }
+
+    /** Parse un lien de prière (`tehilim://prayer?...` ou `https://…/p/?...`). */
     fun payload(uri: Uri): Payload? {
-        if (uri.scheme != SCHEME || uri.host != HOST) return null
+        if (!isPrayerLink(uri)) return null
         val type = uri.getQueryParameter("type")?.let { prayerTypeFromWire(it) } ?: return null
         val rel = uri.getQueryParameter("rel")?.let { relationFromWire(it) } ?: return null
         val name = uri.getQueryParameter("name")?.trim()?.takeIf { it.isNotEmpty() } ?: return null

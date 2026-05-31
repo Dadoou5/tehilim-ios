@@ -64,6 +64,14 @@ struct TehilimApp: App {
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active { shabbat.refresh() }
             }
+            // Liens de prière captés AU NIVEAU DE L'APP (ZStack toujours monté,
+            // même pendant le splash) → évite de perdre le lien au cold-start.
+            // Le payload est stocké dans le container ; RootTabView présente
+            // l'aperçu d'import dès qu'il apparaît.
+            .onOpenURL { url in handleIncomingURL(url) }
+            .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                if let url = activity.webpageURL { handleIncomingURL(url) }
+            }
             // V1.10.7 — `preferredColorScheme` PROMU sur le ZStack pour
             // que la SplashView respecte aussi la préférence de thème de
             // l'app (avant : `preferredColorScheme` était seulement sur
@@ -81,6 +89,15 @@ struct TehilimApp: App {
                     showSplash = false
                 }
             }
+        }
+    }
+
+    /// Capte les liens de prière (custom scheme ou Universal Link) et stocke
+    /// le payload dans le container. Les liens d'onglet `tehilim://<host>`
+    /// restent gérés par `RootTabView` (déjà monté quand l'app est chaude).
+    private func handleIncomingURL(_ url: URL) {
+        if PrayerShareLink.isPrayerLink(url) {
+            container.pendingPrayerImport = PrayerShareLink.payload(from: url)
         }
     }
 

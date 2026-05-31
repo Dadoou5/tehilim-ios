@@ -12,10 +12,6 @@ struct RootTabView: View {
     @State private var lifeCasesPath = NavigationPath()
     @State private var settingsPath = NavigationPath()
 
-    /// Prière reçue via lien `tehilim://prayer` en attente de confirmation
-    /// d'import. Non-nil → présente la feuille d'aperçu `PrayerImportView`.
-    @State private var pendingImport: PrayerShareLink.Payload?
-
     var body: some View {
         TabView(selection: tabBinding) {
             HomeView(path: $homePath)
@@ -52,13 +48,12 @@ struct RootTabView: View {
             }
         }
         .onOpenURL { url in handleDeepLink(url) }
-        // Universal Link https (lien de partage tapé dans Mail/WhatsApp) :
-        // ouvre l'app directement sur l'aperçu d'import.
-        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
-            if let url = activity.webpageURL { handleDeepLink(url) }
-        }
-        // Import d'une prière partagée : aperçu + confirmation avant ajout.
-        .sheet(item: $pendingImport) { payload in
+        // Import d'une prière partagée : l'aperçu est piloté par le container
+        // (le lien est capté au niveau de l'App, même au cold-start).
+        .sheet(item: Binding(
+            get: { container.pendingPrayerImport },
+            set: { container.pendingPrayerImport = $0 }
+        )) { payload in
             PrayerImportView(payload: payload)
                 .environmentObject(container)
                 .environmentObject(container.savedPrayers)
@@ -66,12 +61,9 @@ struct RootTabView: View {
     }
 
     private func handleDeepLink(_ url: URL) {
-        // Lien de prière — schéma custom `tehilim://prayer` OU Universal Link
-        // `https://…/p/…`. Présente l'aperçu d'import.
-        if PrayerShareLink.isPrayerLink(url) {
-            pendingImport = PrayerShareLink.payload(from: url)
-            return
-        }
+        // Les liens de prière sont gérés au niveau de l'App (cf. handleIncomingURL)
+        // pour survivre au cold-start — ici on ne traite que les onglets.
+        if PrayerShareLink.isPrayerLink(url) { return }
         guard url.scheme == "tehilim" else { return }
         // tehilim://<host> → onglet correspondant, pile vide
         switch url.host {

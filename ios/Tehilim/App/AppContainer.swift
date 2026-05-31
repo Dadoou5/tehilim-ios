@@ -15,6 +15,12 @@ final class AppContainer: ObservableObject {
     let savedPrayers: SavedPrayerStore
     let preferences: Preferences
 
+    /// Prière reçue via lien partagé (`tehilim://prayer` ou Universal Link),
+    /// en attente d'aperçu d'import. Capté au niveau de l'App (toujours monté,
+    /// même pendant le splash) pour ne pas perdre le lien au cold-start, puis
+    /// présenté par `RootTabView` dès qu'il apparaît.
+    @Published var pendingPrayerImport: PrayerShareLink.Payload?
+
     init(
         contentLoader: ContentLoading = BundledContentLoader()
     ) {

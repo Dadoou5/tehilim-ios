@@ -7,10 +7,11 @@ struct LifeCaseDetailView: View {
 
     @State private var presentedPrayer: Prayer.Kind? = nil
 
-    /// Sur iPad : grille de 3 colonnes pour les Tehilim. Sur iPhone : liste verticale.
+    /// Tehilim : liste verticale (1 colonne) sur iPhone ; grille adaptative sur
+    /// iPad qui suit la largeur réelle → 3 colonnes en portrait, 5 en paysage.
+    /// (compactMin > toute largeur iPhone ⇒ 1 colonne sur iPhone.)
     private var psalmGridColumns: [GridItem] {
-        let count = hSize == .regular ? 3 : 1
-        return Array(repeating: GridItem(.flexible(), spacing: 12), count: count)
+        AdaptiveLayout.adaptiveColumns(for: hSize, compactMin: 2000, regularMin: 200, spacing: 12)
     }
 
     var body: some View {
@@ -39,7 +40,7 @@ struct LifeCaseDetailView: View {
             }
             .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
             .padding(.vertical, 16)
-            .readingWidth()
+            .readingWidth(maxWidth: AdaptiveLayout.dashboardMaxWidth)
         }
         .background(Color.bgPrimary)
         .navigationTitle(c.localizedTitle)

@@ -20,18 +20,27 @@ struct ShabbatState: Equatable {
     let isShabbat: Bool
     /// Fin de Chabbat (Havdala) si `isShabbat`, sinon nil.
     let endsAt: Date?
-    /// Début du Chabbat en cours (allumage des bougies) si `isShabbat`.
+    /// Début du Chabbat (allumage des bougies) — renseigné en Chabbat ET en
+    /// pré-Chabbat (pour afficher l'horaire d'entrée à l'avance).
     let startedAt: Date?
-    /// Début du prochain Chabbat (allumage des bougies) si on n'est PAS en
-    /// Chabbat — permet d'afficher « Prochain Chabbat … » hors période.
+    /// Pré-Chabbat : on est dans l'heure qui précède l'entrée. L'écran s'affiche
+    /// à l'avance (horaires d'entrée + sortie), sans que Chabbat ait commencé.
+    let isPreShabbat: Bool
+    /// Prochaine apparition de l'écran (= entrée − 1 h) si on n'est ni en
+    /// Chabbat ni en pré-Chabbat — sert à planifier le réveil.
     let nextStartsAt: Date?
 
-    init(isShabbat: Bool, endsAt: Date? = nil, startedAt: Date? = nil, nextStartsAt: Date? = nil) {
+    init(isShabbat: Bool, endsAt: Date? = nil, startedAt: Date? = nil,
+         isPreShabbat: Bool = false, nextStartsAt: Date? = nil) {
         self.isShabbat = isShabbat
         self.endsAt = endsAt
         self.startedAt = startedAt
+        self.isPreShabbat = isPreShabbat
         self.nextStartsAt = nextStartsAt
     }
+
+    /// True si l'écran « Chabbat Chalom » doit s'afficher (pré-Chabbat ou Chabbat).
+    var shouldDisplay: Bool { isShabbat || isPreShabbat }
 }
 
 /// Calcul du coucher du soleil (algorithme NOAA / Almanac) et de la fenêtre de
@@ -51,6 +60,9 @@ enum ShabbatCalculator {
     /// Repli quand le soleil n'atteint pas 8,5° sous l'horizon (hautes
     /// latitudes en été) : coucher + 72 min.
     static let havdalahFallbackOffsetMinutes = 72.0
+    /// L'écran s'affiche dès 1 h avant l'entrée (pré-Chabbat) pour informer
+    /// l'utilisateur des horaires d'entrée et de sortie.
+    static let preShabbatLeadSeconds: TimeInterval = 3600
 
     /// Liste de villes pour le repli sans GPS (id stable, ne pas renommer).
     static let cities: [ShabbatCity] = [
@@ -82,7 +94,8 @@ enum ShabbatCalculator {
 
         let weekday = cal.component(.weekday, from: now) // 1=dim … 6=ven, 7=sam
 
-        // Fenêtre Chabbat active = [bougies(vendredi), havdala(samedi)].
+        // Fenêtre d'affichage = [entrée − 1 h, havdala]. Bloquant à partir de
+        // l'entrée (bougies) ; informatif (pré-Chabbat) dans l'heure avant.
         if weekday == 6 { // vendredi
             if let friday = dateOnly(now, cal: cal),
                let saturday = cal.date(byAdding: .day, value: 1, to: friday),
@@ -91,7 +104,12 @@ enum ShabbatCalculator {
                 if now >= candle {
                     return ShabbatState(isShabbat: true, endsAt: havdalah, startedAt: candle)
                 }
-                return ShabbatState(isShabbat: false, nextStartsAt: candle)
+                let preStart = candle.addingTimeInterval(-preShabbatLeadSeconds)
+                if now >= preStart {
+                    return ShabbatState(isShabbat: false, endsAt: havdalah,
+                                        startedAt: candle, isPreShabbat: true)
+                }
+                return ShabbatState(isShabbat: false, nextStartsAt: preStart)
             }
         } else if weekday == 7 { // samedi
             if let saturday = dateOnly(now, cal: cal),
@@ -105,9 +123,10 @@ enum ShabbatCalculator {
             }
         }
 
-        // Hors Chabbat : calcule le prochain allumage des bougies (prochain vendredi).
+        // Hors fenêtre : prochaine apparition de l'écran = entrée − 1 h.
         let next = nextCandleLighting(after: now, coordinate: coordinate, cal: cal)
-        return ShabbatState(isShabbat: false, endsAt: nil, nextStartsAt: next)
+        return ShabbatState(isShabbat: false,
+                            nextStartsAt: next?.addingTimeInterval(-preShabbatLeadSeconds))
     }
 
     private static func nextCandleLighting(after now: Date, coordinate: GeoCoordinate,

@@ -23,9 +23,15 @@ data class ShabbatState(
     val isShabbat: Boolean,
     val endsAt: Date?,
     val nextStartsAt: Date?,
-    /** Début du Chabbat en cours (allumage des bougies) si `isShabbat`. */
-    val startedAt: Date? = null
-)
+    /** Début du Chabbat (allumage des bougies) — renseigné en Chabbat ET en
+     *  pré-Chabbat (pour afficher l'horaire d'entrée à l'avance). */
+    val startedAt: Date? = null,
+    /** Pré-Chabbat : dans l'heure qui précède l'entrée (écran informatif). */
+    val isPreShabbat: Boolean = false
+) {
+    /** True si l'écran « Chabbat Chalom » doit s'afficher. */
+    val shouldDisplay: Boolean get() = isShabbat || isPreShabbat
+}
 
 /**
  * Mirror Android du ShabbatCalculator.swift.
@@ -45,6 +51,8 @@ object ShabbatCalculator {
     const val HAVDALAH_DEPRESSION_DEG = 8.5
     /** Repli quand le soleil n'atteint pas 8,5° (hautes latitudes en été). */
     const val HAVDALAH_FALLBACK_OFFSET_MIN = 72.0
+    /** L'écran s'affiche dès 1 h avant l'entrée (pré-Chabbat). */
+    const val PRE_SHABBAT_LEAD_MS = 3_600_000L
 
     val cities: List<ShabbatCity> = listOf(
         ShabbatCity("jerusalem", "Jérusalem", GeoCoordinate(31.7683, 35.2137)),
@@ -82,8 +90,12 @@ object ShabbatCalculator {
             val candle = candleLighting(friday, coordinate, timeZone)
             val havdalah = havdalah(saturday, coordinate, timeZone)
             if (candle != null && havdalah != null) {
-                return if (!now.before(candle)) ShabbatState(true, havdalah, null, startedAt = candle)
-                else ShabbatState(false, null, candle)
+                if (!now.before(candle)) return ShabbatState(true, havdalah, null, startedAt = candle)
+                val preStart = Date(candle.time - PRE_SHABBAT_LEAD_MS)
+                if (!now.before(preStart)) {
+                    return ShabbatState(false, havdalah, null, startedAt = candle, isPreShabbat = true)
+                }
+                return ShabbatState(false, null, preStart)
             }
         } else if (weekday == Calendar.SATURDAY) {
             val saturday = startOfDay(now, timeZone)
@@ -94,7 +106,8 @@ object ShabbatCalculator {
                 return ShabbatState(true, havdalah, null, startedAt = candle)
             }
         }
-        return ShabbatState(false, null, nextCandleLighting(now, coordinate, timeZone))
+        val next = nextCandleLighting(now, coordinate, timeZone)
+        return ShabbatState(false, null, next?.let { Date(it.time - PRE_SHABBAT_LEAD_MS) })
     }
 
     private fun nextCandleLighting(now: Date, coordinate: GeoCoordinate, tz: TimeZone): Date? {

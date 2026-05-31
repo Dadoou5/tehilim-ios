@@ -98,7 +98,10 @@ android {
         // Build 22 : message de partage enrichi (date de décès + prochaine
         //            azcara, dans la langue de l'expéditeur) + aperçu de lien
         //            avec l'icône de l'app (Open Graph côté page de redirection).
-        versionCode = 22
+        // Build 23 : écran « Chabbat Chalom » affiché dès 1 h avant l'entrée
+        //            (pré-Chabbat) pour informer des horaires d'entrée/sortie ;
+        //            re-blocage à l'entrée réelle même si « continuer » avant.
+        versionCode = 23
         versionName = "1.0.0"
 
         // Tests

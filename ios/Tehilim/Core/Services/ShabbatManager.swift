@@ -25,10 +25,16 @@ final class ShabbatManager: NSObject, ObservableObject {
     private var timer: Timer?
 
     /// True quand l'app doit afficher l'écran Chabbat Chalom (mode activé +
-    /// en Chabbat + pas d'override de session).
+    /// en Chabbat OU pré-Chabbat + pas d'override de session).
     var isBlocking: Bool {
-        preferences.shabbatModeEnabled && state.isShabbat && !overriddenThisSession
+        preferences.shabbatModeEnabled && state.shouldDisplay && !overriddenThisSession
     }
+
+    /// Phase courante — sert à réinitialiser l'override au changement de phase
+    /// (ex. l'utilisateur fait « continuer » en pré-Chabbat → l'écran doit
+    /// réapparaître à l'entrée réelle de Chabbat).
+    private enum Phase { case none, pre, shabbat }
+    private var lastPhase: Phase = .none
 
     init(preferences: Preferences) {
         self.preferences = preferences
@@ -85,8 +91,14 @@ final class ShabbatManager: NSObject, ObservableObject {
         }
         let s = ShabbatCalculator.state(now: Date(), coordinate: coord)
         state = s
-        // Chabbat terminé → on réarme l'override pour le prochain Chabbat.
-        if !s.isShabbat { overriddenThisSession = false }
+        // Au changement de phase (aucune → pré → Chabbat → aucune), on réarme
+        // l'override : « continuer » en pré-Chabbat ne dispense pas du blocage
+        // à l'entrée réelle, et tout se réinitialise après la sortie.
+        let phase: Phase = s.isShabbat ? .shabbat : (s.isPreShabbat ? .pre : .none)
+        if phase != lastPhase {
+            overriddenThisSession = false
+            lastPhase = phase
+        }
         writeToAppGroup(coord: coord)
         scheduleReevaluation(for: s)
     }
@@ -103,7 +115,9 @@ final class ShabbatManager: NSObject, ObservableObject {
     /// allumage des bougies) pour rafraîchir l'écran sans intervention.
     private func scheduleReevaluation(for s: ShabbatState) {
         timer?.invalidate()
-        let fire = s.isShabbat ? s.endsAt : s.nextStartsAt
+        // En affichage (pré-Chabbat/Chabbat) → réveil à la havdala ; sinon →
+        // à la prochaine apparition de l'écran (entrée − 1 h).
+        let fire = s.shouldDisplay ? s.endsAt : s.nextStartsAt
         guard let fire else { return }
         let interval = max(30, fire.timeIntervalSinceNow + 2)
         // Cap à ~6h pour éviter un timer trop long invalidé en arrière-plan ;

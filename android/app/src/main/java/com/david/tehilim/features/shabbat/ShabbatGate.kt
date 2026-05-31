@@ -82,11 +82,14 @@ fun rememberShabbatGate(container: AppContainer): ShabbatGate {
         else ShabbatCalculator.state(Date(), coord)
     }
 
-    // Réarme l'override à la sortie de Chabbat.
-    LaunchedEffect(state.isShabbat) { if (!state.isShabbat) overridden = false }
+    // Réarme l'override à chaque CHANGEMENT de phase (aucune → pré → Chabbat
+    // → aucune) : « continuer » en pré-Chabbat ne dispense pas du blocage à
+    // l'entrée réelle, et tout se réinitialise après la sortie.
+    val phase = if (state.isShabbat) 2 else if (state.isPreShabbat) 1 else 0
+    LaunchedEffect(phase) { overridden = false }
 
     return ShabbatGate(
-        isBlocking = enabled && state.isShabbat && !overridden,
+        isBlocking = enabled && state.shouldDisplay && !overridden,
         startsAt = state.startedAt,
         endsAt = state.endsAt,
         onContinue = { overridden = true }

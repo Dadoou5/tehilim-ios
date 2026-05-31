@@ -105,7 +105,7 @@ class DailyVerseWidget : GlanceAppWidget() {
 
         provideContent {
             GlanceTheme {
-                if (shabbatState.isShabbat) {
+                if (shabbatState.shouldDisplay) {
                     ShabbatWidgetContent(shabbatState.endsAt)
                 } else {
                     WidgetContent(

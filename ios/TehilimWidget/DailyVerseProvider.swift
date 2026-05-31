@@ -56,7 +56,7 @@ struct DailyVerseProvider: TimelineProvider {
         // Rafraîchit à la prochaine bascule Chabbat (fin de Chabbat ou prochain
         // allumage des bougies) si connue, sinon au prochain minuit.
         let shabbatState = readShabbatState(now: now)
-        let nextSwitch = shabbatState.isShabbat ? shabbatState.endsAt : shabbatState.nextStartsAt
+        let nextSwitch = shabbatState.shouldDisplay ? shabbatState.endsAt : shabbatState.nextStartsAt
         let midnight = cal.startOfDay(for: now.addingTimeInterval(60 * 60 * 24))
         let nextRefresh: Date = {
             guard let nextSwitch, nextSwitch > now else { return midnight }
@@ -85,7 +85,7 @@ struct DailyVerseProvider: TimelineProvider {
     private func currentEntry(now: Date) -> DailyVerseEntry {
         // Mode Chabbat prioritaire : on masque le contenu du jour.
         let shabbat = readShabbatState(now: now)
-        if shabbat.isShabbat {
+        if shabbat.shouldDisplay {
             return DailyVerseEntry(
                 date: now,
                 todayPsalms: [],

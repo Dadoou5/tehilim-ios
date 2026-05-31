@@ -24,8 +24,23 @@ struct PsalmDetailView: View {
             && prefs.textMode == .hebrew
     }
 
+    /// Lecture en **deux colonnes** (façon Tehilim imprimé) : activée sur iPad
+    /// suffisamment large quand on lit un **texte seul** (hébreu seul ou
+    /// phonétique seul, traduction masquée) — là où une colonne unique laissait
+    /// d'immenses marges vides en paysage. Exclut le mode parallèle (hébreu +
+    /// traduction) qui occupe déjà la largeur. Seuil sur le nombre de versets
+    /// pour éviter de scinder un psaume très court.
+    private var twoColumnText: Bool {
+        hSize == .regular
+            && containerWidth >= AdaptiveLayout.sideBySideMinWidth
+            && !sideBySide
+            && !showFR
+    }
+
     private var maxContentWidth: CGFloat {
-        sideBySide ? AdaptiveLayout.sideBySideMaxWidth : AdaptiveLayout.readingMaxWidth
+        (sideBySide || twoColumnText)
+            ? AdaptiveLayout.sideBySideMaxWidth
+            : AdaptiveLayout.readingMaxWidth
     }
 
     var body: some View {
@@ -67,20 +82,14 @@ struct PsalmDetailView: View {
                         .accessibilityAddTraits(.isHeader)
                 }
                 Divider().padding(.horizontal, 16)
-                ForEach(psalm.verses) { verse in
-                    VerseRowView(
-                        verse: verse,
-                        showTranslation: showFR,
-                        textMode: prefs.textMode,
-                        textSizeHebrew: prefs.textSizeHebrew,
-                        textSizeFR: prefs.textSizeFR,
-                        numberStyle: prefs.verseNumberStyle,
-                        translationLang: prefs.appLanguage.translation,
-                        parentPsalm: psalm,
-                        sideBySideTranslation: sideBySide
-                    )
-                    .padding(.horizontal, 16)
-                    Divider().padding(.horizontal, 16).opacity(0.3)
+                if twoColumnText && psalm.verses.count >= 6 {
+                    twoColumnVerses(psalm: psalm)
+                } else {
+                    ForEach(psalm.verses) { verse in
+                        verseRow(verse, psalm: psalm)
+                            .padding(.horizontal, 16)
+                        Divider().padding(.horizontal, 16).opacity(0.3)
+                    }
                 }
                 navigation(prev: n.prev, next: n.next)
                     .padding(.vertical, 24)
@@ -107,6 +116,56 @@ struct PsalmDetailView: View {
             prefs.lastReadPsalmId = psalm.id
             if let firstVerse = psalm.verses.first { prefs.lastReadVerseId = firstVerse.id }
         }
+    }
+
+    /// Une ligne de verset (facteur commun mono-colonne / deux-colonnes).
+    @ViewBuilder
+    private func verseRow(_ verse: Verse, psalm: Psalm) -> some View {
+        VerseRowView(
+            verse: verse,
+            showTranslation: showFR,
+            textMode: prefs.textMode,
+            textSizeHebrew: prefs.textSizeHebrew,
+            textSizeFR: prefs.textSizeFR,
+            numberStyle: prefs.verseNumberStyle,
+            translationLang: prefs.appLanguage.translation,
+            parentPsalm: psalm,
+            sideBySideTranslation: sideBySide
+        )
+    }
+
+    /// Lecture en deux colonnes (texte seul, iPad large). Les versets sont
+    /// répartis en deux moitiés de comptage égal qui se lisent **de haut en
+    /// bas** : colonne A puis colonne B. L'ordre visuel des colonnes respecte
+    /// le sens de lecture — pour l'hébreu (RTL) la 1ʳᵉ moitié est à **droite**,
+    /// pour la phonétique (LTR) à **gauche**.
+    @ViewBuilder
+    private func twoColumnVerses(psalm: Psalm) -> some View {
+        let verses = psalm.verses
+        let mid = (verses.count + 1) / 2
+        let firstHalf = Array(verses[..<mid])
+        let secondHalf = Array(verses[mid...])
+        let isHebrew = prefs.textMode == .hebrew
+
+        HStack(alignment: .top, spacing: 28) {
+            // Colonne de gauche : 2ᵉ moitié en hébreu, 1ʳᵉ moitié en phonétique.
+            verseColumn(isHebrew ? secondHalf : firstHalf, psalm: psalm)
+            Divider()
+            // Colonne de droite : 1ʳᵉ moitié en hébreu (lue en premier), 2ᵉ en phonétique.
+            verseColumn(isHebrew ? firstHalf : secondHalf, psalm: psalm)
+        }
+        .padding(.horizontal, 16)
+    }
+
+    @ViewBuilder
+    private func verseColumn(_ verses: [Verse], psalm: Psalm) -> some View {
+        LazyVStack(alignment: prefs.textMode == .hebrew ? .trailing : .leading, spacing: 0) {
+            ForEach(verses) { verse in
+                verseRow(verse, psalm: psalm)
+                Divider().opacity(0.3)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     /// Barre d'action inline visible sur iPad — duplique le toggle du toolbar

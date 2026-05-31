@@ -7,11 +7,12 @@ struct LifeCasesListView: View {
     @EnvironmentObject private var container: AppContainer
     @Environment(\.horizontalSizeClass) private var hSize
 
+    /// Grille adaptative : 2 colonnes sur iPhone, et autant que la largeur le
+    /// permet sur iPad (3 en portrait, 4 en paysage) — sans coder l'orientation.
+    /// regularMin à 240 : ≤254 garantit 3 colonnes en portrait iPad (786pt de
+    /// contenu) ; 4 colonnes en paysage (≈1100pt).
     private var columns: [GridItem] {
-        Array(
-            repeating: GridItem(.flexible(), spacing: 12),
-            count: AdaptiveLayout.lifeCaseColumnCount(for: hSize)
-        )
+        AdaptiveLayout.adaptiveColumns(for: hSize, compactMin: 160, regularMin: 240)
     }
 
     var body: some View {
@@ -31,7 +32,7 @@ struct LifeCasesListView: View {
                     }
                     .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
                     .padding(.vertical, 16)
-                    .readingWidth()
+                    .readingWidth(maxWidth: AdaptiveLayout.dashboardMaxWidth)
                 }
                 .background(Color.bgPrimary)
             }

@@ -24,11 +24,18 @@ struct HomeView: View {
     @State private var searchPresented = false
     @State private var presentedPrayer: Prayer.Kind? = nil
 
+    /// Grille « Explorer » adaptative : 2 colonnes sur iPhone, et autant que la
+    /// largeur le permet sur iPad (3 en portrait, 5–6 en paysage).
     private var exploreColumns: [GridItem] {
-        Array(
-            repeating: GridItem(.flexible(), spacing: 12),
-            count: AdaptiveLayout.exploreColumnCount(for: hSize)
-        )
+        AdaptiveLayout.adaptiveColumns(for: hSize, compactMin: 150, regularMin: 190)
+    }
+
+    /// Raccourcis Favoris / Tehilim du jour : empilés sur iPhone (compactMin
+    /// > toute largeur iPhone → 1 colonne), côte-à-côte sur iPad. regularMin à
+    /// 380 → exactement 2 colonnes en portrait ET paysage iPad (on n'a que 2
+    /// items : un minimum plus bas créerait une 3ᵉ colonne vide en paysage).
+    private var shortcutColumns: [GridItem] {
+        AdaptiveLayout.adaptiveColumns(for: hSize, compactMin: 2000, regularMin: 380, spacing: 16)
     }
 
     var body: some View {
@@ -46,21 +53,29 @@ struct HomeView: View {
                         .buttonStyle(.plain)
                     }
 
-                    SectionHeader(title: "Mes favoris")
-                    Button {
-                        router.go(.psalms, psalmsSegment: 2, resetPath: true)
-                    } label: {
-                        FavoritesShortcutCard(count: favorites.ids.count)
-                    }
-                    .buttonStyle(.plain)
+                    // Favoris + Tehilim du jour : empilés sur iPhone, côte-à-côte
+                    // sur iPad (paysage surtout) pour exploiter la largeur.
+                    LazyVGrid(columns: shortcutColumns, alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            SectionHeader(title: "Mes favoris")
+                            Button {
+                                router.go(.psalms, psalmsSegment: 2, resetPath: true)
+                            } label: {
+                                FavoritesShortcutCard(count: favorites.ids.count)
+                            }
+                            .buttonStyle(.plain)
+                        }
 
-                    SectionHeader(title: "Tehilim du jour", subtitle: dailyMode.label)
-                    Button {
-                        router.go(.daily, resetPath: true)
-                    } label: {
-                        DailySummaryCard(psalmIds: todayPsalms)
+                        VStack(alignment: .leading, spacing: 8) {
+                            SectionHeader(title: "Tehilim du jour", subtitle: dailyMode.label)
+                            Button {
+                                router.go(.daily, resetPath: true)
+                            } label: {
+                                DailySummaryCard(psalmIds: todayPsalms)
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
-                    .buttonStyle(.plain)
 
                     SectionHeader(title: "Explorer")
                     LazyVGrid(columns: exploreColumns, spacing: 12) {
@@ -87,7 +102,7 @@ struct HomeView: View {
                 }
                 .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
                 .padding(.vertical, 16)
-                .readingWidth()
+                .readingWidth(maxWidth: AdaptiveLayout.dashboardMaxWidth)
             }
             .background(Color.bgPrimary)
             .navigationTitle("Tehilim")
@@ -184,7 +199,7 @@ private struct FavoritesShortcutCard: View {
             Image(systemName: "chevron.right").foregroundStyle(.tertiary)
         }
         .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(Color.bgSurface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .accessibilityElement(children: .ignore)
@@ -225,7 +240,7 @@ private struct DailySummaryCard: View {
             }
         }
         .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .appCard()
     }
 }

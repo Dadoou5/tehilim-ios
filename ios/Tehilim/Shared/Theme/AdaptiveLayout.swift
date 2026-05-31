@@ -40,6 +40,30 @@ enum AdaptiveLayout {
         sizeClass == .regular ? 3 : 2
     }
 
+    /// Largeur maximale d'un **tableau de bord de cartes** (accueil, Cas de la
+    /// vie). Bien plus large que `readingMaxWidth` (700, dédié au texte) : ces
+    /// écrans sont des grilles de cartes, pas des colonnes de lecture — les
+    /// brider à 700pt laisse d'énormes marges vides sur iPad, surtout en
+    /// paysage. 1100pt exploite la largeur tout en gardant une marge douce sur
+    /// 12,9" (1366pt en paysage).
+    static let dashboardMaxWidth: CGFloat = 1100
+
+    /// Colonnes **adaptatives** : SwiftUI ajuste seul le nombre de colonnes à
+    /// la largeur réellement disponible → davantage de colonnes en paysage,
+    /// moins en portrait, sans coder l'orientation. Le minimum par item dépend
+    /// de la classe de taille (items compacts sur iPhone, plus larges sur iPad).
+    /// - Parameter compactMin : largeur mini d'un item sur iPhone (compact).
+    /// - Parameter regularMin : largeur mini d'un item sur iPad (regular).
+    static func adaptiveColumns(
+        for sizeClass: UserInterfaceSizeClass?,
+        compactMin: CGFloat,
+        regularMin: CGFloat,
+        spacing: CGFloat = 12
+    ) -> [GridItem] {
+        let minWidth = sizeClass == .regular ? regularMin : compactMin
+        return [GridItem(.adaptive(minimum: minWidth), spacing: spacing)]
+    }
+
     /// Largeur minimale d'un container pour activer le mode lecture parallèle
     /// (hébreu et traduction côte-à-côte).
     /// 900pt → confortable pour 2 colonnes de ~430pt chacune.

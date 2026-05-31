@@ -43,6 +43,15 @@ class FavoritesStore(private val context: Context) {
         scope.launch { persist(next) }
     }
 
+    /** Retire un favori (ex. depuis la liste, sans ouvrir le Tehilim). No-op si absent. */
+    fun remove(id: Int) {
+        val current = _ids.value
+        if (!current.contains(id)) return
+        val next = current - id
+        _ids.value = next
+        scope.launch { persist(next) }
+    }
+
     fun contains(id: Int): Boolean = _ids.value.contains(id)
 
     val sortedIds: List<Int> get() = _ids.value.sorted()

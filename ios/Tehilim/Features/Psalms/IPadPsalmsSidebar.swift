@@ -117,6 +117,14 @@ struct IPadPsalmsSidebar: View {
                         if let p = container.psalmRepository.psalm(id: id) {
                             psalmRow(p)
                                 .tag(id)
+                                // Swipe → retire le favori sans ouvrir le Tehilim.
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        favorites.remove(id)
+                                    } label: {
+                                        Label("Retirer", systemImage: "heart.slash")
+                                    }
+                                }
                         }
                     }
                 }

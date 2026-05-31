@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.PlayCircle
@@ -108,14 +109,24 @@ fun FavoritesScreen(container: AppContainer, navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 4.dp, bottom = 4.dp, end = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 stringResource(R.string.label_psalm_with_hebrew, p.id, p.hebrewNumber),
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.weight(1f)
                             )
+                            // Cœur rempli → taper retire le favori sans ouvrir
+                            // le Tehilim (le clic du bouton ne propage pas au card).
+                            IconButton(onClick = { container.favorites.remove(id) }) {
+                                Icon(
+                                    Icons.Filled.Favorite,
+                                    contentDescription = stringResource(R.string.cd_remove_favorite),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                             Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null)
                         }
                     }

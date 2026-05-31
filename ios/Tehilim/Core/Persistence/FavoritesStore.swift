@@ -33,6 +33,13 @@ final class FavoritesStore: ObservableObject {
         save()
     }
 
+    /// Retire un favori (ex. swipe-to-delete depuis la liste). No-op si absent.
+    func remove(_ id: Int) {
+        guard ids.contains(id) else { return }
+        ids.remove(id)
+        save()
+    }
+
     func contains(_ id: Int) -> Bool { ids.contains(id) }
 
     var sortedIds: [Int] { ids.sorted() }

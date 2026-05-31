@@ -32,8 +32,19 @@ struct FavoritesListView: View {
                                 NavigationLink(destination: PsalmDetailView(psalmId: id, siblings: favorites.sortedIds)) {
                                     Text("Tehilim \(p.id) · \(p.hebrewNumber)")
                                 }
+                                // Swipe → « Retirer » : supprime le favori sans
+                                // ouvrir le Tehilim. Le swipe-to-delete natif
+                                // (onDelete) marche aussi via le bouton Modifier.
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        favorites.remove(id)
+                                    } label: {
+                                        Label("Retirer", systemImage: "heart.slash")
+                                    }
+                                }
                             }
                         }
+                        .onDelete(perform: deleteFavorites)
                     }
 
                     Section {
@@ -46,10 +57,27 @@ struct FavoritesListView: View {
                 }
                 .listStyle(.insetGrouped)
                 .appBackground()
+                // Bouton « Modifier » : rend la suppression découvrable (les
+                // nouveaux users ne pensent pas spontanément au swipe). Pattern
+                // natif iOS, aligné sur l'écran « Mes prières ».
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        EditButton()
+                    }
+                }
                 .sheet(item: $presentedPrayer) { kind in
                     PrayerView(prayer: Prayer.of(kind))
                 }
             }
+        }
+    }
+
+    /// Mappe les offsets de `ForEach(favorites.sortedIds)` vers les ids à
+    /// retirer (le store n'est pas indexé par position).
+    private func deleteFavorites(at offsets: IndexSet) {
+        let ids = favorites.sortedIds
+        for index in offsets where ids.indices.contains(index) {
+            favorites.remove(ids[index])
         }
     }
 }

@@ -12,6 +12,13 @@ struct RootTabView: View {
     @State private var lifeCasesPath = NavigationPath()
     @State private var settingsPath = NavigationPath()
 
+    /// Miroir LOCAL de `container.pendingPrayerImport`. Indispensable :
+    /// `.sheet(item:)` lié à une valeur déjà non-nil AVANT l'apparition de la
+    /// vue (cold-start) ne se présente pas de façon fiable. En passant par un
+    /// `@State` mis à jour via `.onReceive`/`.onAppear`, le changement survient
+    /// pendant que la vue est vivante → la feuille se présente à coup sûr.
+    @State private var importPayload: PrayerShareLink.Payload?
+
     var body: some View {
         TabView(selection: tabBinding) {
             HomeView(path: $homePath)
@@ -50,11 +57,20 @@ struct RootTabView: View {
         // NB : plus de `.onOpenURL` ici — tous les liens sont gérés au niveau
         // App (TehilimApp.handleIncomingURL), source unique, pour survivre au
         // cold-start et éviter le conflit de plusieurs gestionnaires.
-        // Import d'une prière partagée : l'aperçu est piloté par le container.
-        .sheet(item: Binding(
-            get: { container.pendingPrayerImport },
-            set: { container.pendingPrayerImport = $0 }
-        )) { payload in
+        // On reflète la valeur du container dans un @State local (cf. plus haut)
+        // pour une présentation fiable, y compris quand elle est posée avant
+        // l'apparition de la vue.
+        .onReceive(container.$pendingPrayerImport) { payload in
+            if importPayload?.id != payload?.id { importPayload = payload }
+        }
+        .onAppear {
+            if container.pendingPrayerImport != nil {
+                importPayload = container.pendingPrayerImport
+            }
+        }
+        .sheet(item: $importPayload, onDismiss: {
+            container.pendingPrayerImport = nil
+        }) { payload in
             PrayerImportView(payload: payload)
                 .environmentObject(container)
                 .environmentObject(container.savedPrayers)

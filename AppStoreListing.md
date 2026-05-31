@@ -249,7 +249,7 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.12.0 (build 39) · Android build 23
+## 📋 What's New / Nouveautés — V1.12.0 (build 40) · Android build 23
 
 > Builds 35/21 : le **lien de partage d'une prière** est désormais cliquable
 > dans Mail / WhatsApp / SMS (URL https) et ouvre l'app directement

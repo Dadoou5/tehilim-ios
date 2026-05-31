@@ -47,9 +47,10 @@ struct RootTabView: View {
                 applyPendingRoute()
             }
         }
-        .onOpenURL { url in handleDeepLink(url) }
-        // Import d'une prière partagée : l'aperçu est piloté par le container
-        // (le lien est capté au niveau de l'App, même au cold-start).
+        // NB : plus de `.onOpenURL` ici — tous les liens sont gérés au niveau
+        // App (TehilimApp.handleIncomingURL), source unique, pour survivre au
+        // cold-start et éviter le conflit de plusieurs gestionnaires.
+        // Import d'une prière partagée : l'aperçu est piloté par le container.
         .sheet(item: Binding(
             get: { container.pendingPrayerImport },
             set: { container.pendingPrayerImport = $0 }
@@ -57,22 +58,6 @@ struct RootTabView: View {
             PrayerImportView(payload: payload)
                 .environmentObject(container)
                 .environmentObject(container.savedPrayers)
-        }
-    }
-
-    private func handleDeepLink(_ url: URL) {
-        // Les liens de prière sont gérés au niveau de l'App (cf. handleIncomingURL)
-        // pour survivre au cold-start — ici on ne traite que les onglets.
-        if PrayerShareLink.isPrayerLink(url) { return }
-        guard url.scheme == "tehilim" else { return }
-        // tehilim://<host> → onglet correspondant, pile vide
-        switch url.host {
-        case "daily":     router.go(.daily, resetPath: true)
-        case "lifecases": router.go(.lifeCases, resetPath: true)
-        case "psalms":    router.go(.psalms, resetPath: true)
-        case "settings":  router.go(.settings, resetPath: true)
-        case "home":      router.go(.home, resetPath: true)
-        default: break
         }
     }
 

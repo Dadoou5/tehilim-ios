@@ -49,6 +49,10 @@ final class ShabbatManager: NSObject, ObservableObject {
     /// Lève le blocage pour la session courante.
     func continueAnyway() { overriddenThisSession = true }
 
+    /// Une seule demande de localisation par session (évite de re-demander à
+    /// chaque retour au premier plan).
+    private var didRequestLocation = false
+
     /// Recalcule l'état — à appeler à l'apparition et au retour au premier plan.
     func refresh() {
         if preferences.shabbatModeEnabled { requestLocationIfNeeded() }
@@ -58,11 +62,22 @@ final class ShabbatManager: NSObject, ObservableObject {
     // MARK: - Localisation
 
     private func requestLocationIfNeeded() {
+        guard !didRequestLocation else { return }
         switch locationManager.authorizationStatus {
-        case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways:
+            didRequestLocation = true
             locationManager.requestLocation()
+        case .notDetermined:
+            didRequestLocation = true
+            // **Différé** : l'alerte système de localisation, présentée
+            // immédiatement au lancement, EMPÊCHE la feuille d'import de
+            // prière de s'afficher (iOS interdit deux présentations
+            // simultanées). On laisse donc l'app se poser (~3,5 s) : une
+            // éventuelle feuille d'import apparaît d'abord, puis l'alerte se
+            // présente par-dessus. Le repli ville assure le calcul entre-temps.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) { [weak self] in
+                self?.locationManager.requestWhenInUseAuthorization()
+            }
         default:
             break // refusé/restreint → repli ville
         }

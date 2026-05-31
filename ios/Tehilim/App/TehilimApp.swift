@@ -92,12 +92,25 @@ struct TehilimApp: App {
         }
     }
 
-    /// Capte les liens de prière (custom scheme ou Universal Link) et stocke
-    /// le payload dans le container. Les liens d'onglet `tehilim://<host>`
-    /// restent gérés par `RootTabView` (déjà monté quand l'app est chaude).
+    /// **Unique** point d'entrée des liens (custom scheme + Universal Link),
+    /// au niveau App pour survivre au cold-start ET éviter le conflit de
+    /// plusieurs `.onOpenURL` (SwiftUI n'en appelle qu'un).
+    /// - Prière → stockée dans le container (RootTabView présente l'aperçu).
+    /// - Onglet `tehilim://<host>` → via `NotificationManager.pendingRoute`,
+    ///   consommé par `RootTabView.applyPendingRoute` (appear + onChange).
     private func handleIncomingURL(_ url: URL) {
         if PrayerShareLink.isPrayerLink(url) {
             container.pendingPrayerImport = PrayerShareLink.payload(from: url)
+            return
+        }
+        guard url.scheme == "tehilim" else { return }
+        switch url.host {
+        case "daily":     NotificationManager.shared.pendingRoute = .daily
+        case "lifecases": NotificationManager.shared.pendingRoute = .lifeCases
+        case "psalms":    NotificationManager.shared.pendingRoute = .psalms
+        case "settings":  NotificationManager.shared.pendingRoute = .settings
+        case "home":      NotificationManager.shared.pendingRoute = .home
+        default: break
         }
     }
 

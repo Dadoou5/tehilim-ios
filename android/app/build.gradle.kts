@@ -91,7 +91,11 @@ android {
         //            (repli coucher+72 min aux hautes latitudes). Écran Chabbat
         //            affiche début ET fin. Repli anglais si langue système ≠
         //            fr/en. Champ hébreu Lelouy Nichmat aligné à droite.
-        versionCode = 20
+        // Build 21 : lien de partage de prière cliquable partout (Mail/WhatsApp)
+        //            via une URL https (page de redirection GitHub Pages) +
+        //            App Link vérifié (assetlinks.json, autoVerify) →
+        //            https://dadoou5.github.io/p/… ouvre l'app directement.
+        versionCode = 21
         versionName = "1.0.0"
 
         // Tests

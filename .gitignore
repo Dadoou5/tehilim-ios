@@ -64,3 +64,8 @@ android/app/src/main/assets/data/
 android/app/src/main/res/font/ezra_sil_sr.ttf
 # V1.4 — Gradle wrapper committé pour build CLI sans Android Studio
 # (CI futurs, nouveau clone). Pratique standard Android.
+
+# Captures pour les stores (non versionnées)
+android/playstore-screenshots/
+ios/appstore-screenshots-en/
+ios/appstore-screenshots-*/

@@ -17,7 +17,16 @@ struct PersonalizedReadingListView: View {
 
     /// V1.10.7 — Diagnostic : liste des rappels d'azcara actuellement
     /// programmés pour cet intent. Chargée via `.task` à l'apparition.
+    /// Sert à substituer la date de déclenchement réelle dans l'affichage.
     @State private var pendingReminders: [PendingMemorialReminder] = []
+
+    /// Élément d'affichage de rappel (dérivé de la config, enrichi de la date
+    /// réelle si la notif système est connue).
+    private struct ReminderDisplay: Identifiable {
+        let id = UUID()
+        let kind: PendingMemorialReminder.Kind
+        let date: Date
+    }
 
     /// Présente le formulaire en mode édition.
     @State private var showingEdit = false
@@ -71,13 +80,37 @@ struct PersonalizedReadingListView: View {
                 }
             }
 
-            // V1.10.7 — Diagnostic : liste les rappels d'azcara programmés
-            // pour cet intent. Permet à l'utilisateur de vérifier que les
-            // notifs sont bien posées (le scheduling iOS étant invisible
-            // sinon, hors device Settings).
-            if !pendingReminders.isEmpty {
-                Section {
-                    ForEach(pendingReminders) { reminder in
+            // V1.12.x — Section « Rappels » TOUJOURS affichée. La source de
+            // vérité est la configuration de l'intent (remindersEnabled +
+            // toggles + date du décès), pas la file de notifs système : cette
+            // dernière peut être vide (permission refusée, dates passées,
+            // scheduling pas encore exécuté) → la section disparaissait alors
+            // que l'utilisateur avait bien activé des rappels. On affiche
+            // désormais les rappels configurés, et un état explicite « Aucun
+            // rappel » sinon. Quand la notif système réelle est connue, on
+            // préfère sa date de déclenchement (plus précise).
+            Section {
+                if configuredReminders.isEmpty {
+                    HStack(spacing: 14) {
+                        Image(systemName: "bell.slash")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Aucun rappel")
+                                .font(.subheadline.weight(.medium))
+                            Text(current.civilDateOfDeath == nil
+                                 ? "Renseigne une date du décès pour activer les rappels d'azcara."
+                                 : "Active les rappels depuis « Modifier ».")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 2)
+                    .accessibilityElement(children: .combine)
+                } else {
+                    ForEach(configuredReminders) { reminder in
                         HStack(spacing: 14) {
                             Image(systemName: "bell.fill")
                                 .font(.body)
@@ -88,7 +121,7 @@ struct PersonalizedReadingListView: View {
                                      ? "7 jours avant"
                                      : "Le jour même")
                                     .font(.subheadline.weight(.medium))
-                                Text(reminder.triggerDate.formatted(
+                                Text(reminder.date.formatted(
                                     Date.FormatStyle(date: .abbreviated, time: .shortened).locale(AppLocale.locale)))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -96,10 +129,11 @@ struct PersonalizedReadingListView: View {
                             Spacer()
                         }
                         .padding(.vertical, 2)
+                        .accessibilityElement(children: .combine)
                     }
-                } header: {
-                    Text("Rappels programmés")
                 }
+            } header: {
+                Text("Rappels")
             }
 
             // Liste des lettres numérotée
@@ -281,6 +315,36 @@ struct PersonalizedReadingListView: View {
     }
 
     // MARK: - Helpers
+
+    /// V1.12.x — Rappels à afficher, dérivés de la **configuration** de la
+    /// prière (et non de la file de notifs système, qui peut être vide même
+    /// quand l'utilisateur a activé les rappels). Si la notif système réelle
+    /// est connue (`pendingReminders`), on substitue sa date de déclenchement
+    /// — plus précise que la date recalculée.
+    private var configuredReminders: [ReminderDisplay] {
+        guard current.remindersEnabled,
+              let death = current.civilDateOfDeath,
+              let nextAzcara = MemorialCalculator.nextYahrzeit(deathCivil: death)
+        else { return [] }
+
+        let cal = Calendar.current
+        var out: [ReminderDisplay] = []
+
+        if current.notifySevenDaysBefore,
+           let computed = cal.date(byAdding: .day, value: -7, to: nextAzcara) {
+            let real = pendingReminders.first { $0.kind == .sevenDays }?.triggerDate
+            out.append(ReminderDisplay(kind: .sevenDays, date: real ?? computed))
+        }
+        if current.notifySameDay {
+            var dc = cal.dateComponents([.year, .month, .day], from: nextAzcara)
+            dc.hour = 9
+            if let computed = cal.date(from: dc) {
+                let real = pendingReminders.first { $0.kind == .sameDay }?.triggerDate
+                out.append(ReminderDisplay(kind: .sameDay, date: real ?? computed))
+            }
+        }
+        return out.sorted { $0.date < $1.date }
+    }
 
     /// Récupère le `lastReadIndex` à jour depuis le store (l'intent local peut être périmé).
     private var currentLastIndex: Int? {

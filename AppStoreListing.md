@@ -249,7 +249,13 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.12.0 (build 41) · Android build 23
+## 📋 What's New / Nouveautés — V1.12.1 (build 42) · Android build 24
+
+> Builds 42/24 (correctif) : sur le **détail d'une prière**, la section
+> « Rappels » est désormais **toujours visible** — elle liste les rappels
+> d'azcara configurés (7 jours avant / le jour même) ou affiche un état
+> explicite « Aucun rappel » avec la marche à suivre, au lieu de disparaître
+> silencieusement quand aucune notification n'était encore planifiée.
 
 > Builds 35/21 : le **lien de partage d'une prière** est désormais cliquable
 > dans Mail / WhatsApp / SMS (URL https) et ouvre l'app directement

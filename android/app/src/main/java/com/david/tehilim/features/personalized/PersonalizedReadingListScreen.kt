@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.NotificationsOff
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.LocalFireDepartment
@@ -56,6 +57,13 @@ import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
 
+/** Élément d'affichage d'un rappel d'azcara (dérivé de la config, enrichi de
+ *  la date réelle si la notif système est connue). */
+private data class ReminderDisplay(
+    val kind: PendingMemorialReminder.Kind,
+    val dateMillis: Long
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, navController: NavController) {
@@ -80,6 +88,51 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
         // programmés » se masque alors qu'on vient juste de les poser).
         kotlinx.coroutines.delay(200L)
         pendingReminders = NotificationScheduler.pendingMemorial(context, intent.id)
+    }
+
+    // V1.12.x — Rappels à afficher, dérivés de la CONFIGURATION de la prière
+    // (et non de la file WorkManager, qui peut revenir vide même quand des
+    // rappels sont activés → la section disparaissait à tort). Si la notif
+    // système réelle est connue (`pendingReminders`), on substitue sa date de
+    // déclenchement. Calculé dans le scope @Composable pour que la lecture de
+    // `pendingReminders` déclenche bien la recomposition.
+    val deathMillisForReminders = intent.civilDateOfDeathEpochMillis
+    val todayEpochDayForReminders = java.time.LocalDate.now().toEpochDay()
+    val configuredReminders: List<ReminderDisplay> = remember(
+        intent.remindersEnabled,
+        intent.notifySevenDaysBefore,
+        intent.notifySameDay,
+        deathMillisForReminders,
+        todayEpochDayForReminders,
+        pendingReminders
+    ) {
+        if (!intent.remindersEnabled || deathMillisForReminders == null) {
+            emptyList()
+        } else {
+            val next = MemorialCalculator.nextYahrzeit(Date(deathMillisForReminders))
+            if (next == null) emptyList()
+            else buildList {
+                if (intent.notifySevenDaysBefore) {
+                    val computed = next.time - 7L * 24 * 60 * 60 * 1000
+                    val real = pendingReminders.firstOrNull {
+                        it.kind == PendingMemorialReminder.Kind.SevenDays && it.triggerEpochMillis > 0
+                    }?.triggerEpochMillis
+                    add(ReminderDisplay(PendingMemorialReminder.Kind.SevenDays, real ?: computed))
+                }
+                if (intent.notifySameDay) {
+                    val cal = java.util.Calendar.getInstance().apply {
+                        time = next
+                        set(java.util.Calendar.HOUR_OF_DAY, 9)
+                        set(java.util.Calendar.MINUTE, 0)
+                        set(java.util.Calendar.SECOND, 0)
+                    }
+                    val real = pendingReminders.firstOrNull {
+                        it.kind == PendingMemorialReminder.Kind.SameDay && it.triggerEpochMillis > 0
+                    }?.triggerEpochMillis
+                    add(ReminderDisplay(PendingMemorialReminder.Kind.SameDay, real ?: cal.timeInMillis))
+                }
+            }.sortedBy { it.dateMillis }
+        }
     }
 
     Scaffold(
@@ -219,20 +272,52 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                 }
             }
 
-            // V1.4 — Section diagnostic : rappels d'azcara plannifiés
-            // (= WorkRequest ENQUEUED). Permet de vérifier visuellement
-            // que les notifs sont bien posées sans devoir attendre le
-            // déclenchement réel.
-            if (pendingReminders.isNotEmpty()) {
+            // V1.12.x — Section « Rappels » TOUJOURS affichée. Source de
+            // vérité = la config de la prière (cf. `configuredReminders`).
+            // Affiche les rappels configurés, ou un état explicite « Aucun
+            // rappel » sinon — la section ne disparaît plus quand WorkManager
+            // renvoie une file vide.
+            item {
+                Text(
+                    stringResource(R.string.memorial_reminders),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            if (configuredReminders.isEmpty()) {
                 item {
-                    Text(
-                        stringResource(R.string.memorial_scheduled_reminders),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
+                    AppCard(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                Icons.Outlined.NotificationsOff,
+                                null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    stringResource(R.string.memorial_no_reminder),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    stringResource(
+                                        if (deathMillisForReminders == null)
+                                            R.string.memorial_no_reminder_no_date
+                                        else R.string.memorial_no_reminder_disabled
+                                    ),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
-                items(pendingReminders) { reminder ->
+            } else {
+                items(configuredReminders) { reminder ->
                     val dateFmt = remember {
                         DateFormat.getDateTimeInstance(
                             DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault()
@@ -258,13 +343,11 @@ fun PersonalizedReadingListScreen(container: AppContainer, intentId: String, nav
                                     ),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
-                                if (reminder.triggerEpochMillis > 0) {
-                                    Text(
-                                        dateFmt.format(Date(reminder.triggerEpochMillis)),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
+                                Text(
+                                    dateFmt.format(Date(reminder.dateMillis)),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                         }
                     }

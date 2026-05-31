@@ -258,6 +258,10 @@
     <string name="confirm_delete_prayer_body">Cette action est irréversible. Les rappels associés seront aussi annulés.</string>
     <string name="cd_delete_prayer">Supprimer la prière</string>
     <string name="memorial_scheduled_reminders">Rappels programmés</string>
+    <string name="memorial_reminders">Rappels</string>
+    <string name="memorial_no_reminder">Aucun rappel</string>
+    <string name="memorial_no_reminder_no_date">Renseigne une date du décès pour activer les rappels d\'azcara.</string>
+    <string name="memorial_no_reminder_disabled">Active les rappels depuis « Modifier ».</string>
 
     <!-- Partage / import d'une prière (lien tehilim://prayer) -->
     <string name="action_share_prayer">Partager la prière</string>

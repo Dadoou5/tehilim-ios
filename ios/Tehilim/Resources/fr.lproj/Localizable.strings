@@ -189,3 +189,7 @@
 "Azcara de %@ dans %lld jours." = "Azcara de %@ dans %lld jours.";
 "* commence la veille au soir" = "* commence la veille au soir";
 "Rappels programmés" = "Rappels programmés";
+"Rappels" = "Rappels";
+"Aucun rappel" = "Aucun rappel";
+"Renseigne une date du décès pour activer les rappels d'azcara." = "Renseigne une date du décès pour activer les rappels d'azcara.";
+"Active les rappels depuis « Modifier »." = "Active les rappels depuis « Modifier ».";

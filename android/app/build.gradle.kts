@@ -101,7 +101,9 @@ android {
         // Build 23 : écran « Chabbat Chalom » affiché dès 1 h avant l'entrée
         //            (pré-Chabbat) pour informer des horaires d'entrée/sortie ;
         //            re-blocage à l'entrée réelle même si « continuer » avant.
-        versionCode = 23
+        // Build 24 : détail de prière — section « Rappels » toujours affichée
+        //            (état « Aucun rappel » explicite) ; robustesse import liens.
+        versionCode = 24
         versionName = "1.0.0"
 
         // Tests

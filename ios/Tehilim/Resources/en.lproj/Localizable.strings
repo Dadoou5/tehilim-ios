@@ -329,3 +329,7 @@
 "Azcara de %@ dans %lld jours." = "Azcara of %@ in %lld days.";
 "* commence la veille au soir" = "* begins the previous evening";
 "Rappels programmés" = "Scheduled reminders";
+"Rappels" = "Reminders";
+"Aucun rappel" = "No reminder";
+"Renseigne une date du décès pour activer les rappels d'azcara." = "Add a date of death to enable azcara reminders.";
+"Active les rappels depuis « Modifier »." = "Enable reminders from “Edit”.";

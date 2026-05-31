@@ -262,6 +262,8 @@
     <!-- Partage / import d'une prière (lien tehilim://prayer) -->
     <string name="action_share_prayer">Partager la prière</string>
     <string name="share_prayer_intro">Ouvre cette prière dans Tehilim :</string>
+    <string name="share_date_of_death">Date de décès : %1$s</string>
+    <string name="share_next_azcara">Prochaine azcara : %1$s (commence la veille au soir)</string>
     <string name="import_prayer_title">Importer cette prière ?</string>
     <string name="import_prayer_already">Cette prière est déjà dans Mes prières.</string>
     <string name="action_import">Importer</string>

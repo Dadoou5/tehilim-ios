@@ -53,11 +53,22 @@ object PrayerShareLink {
         return builder.build()
     }
 
-    /** Message texte prêt à partager (SMS / WhatsApp) : description + lien. */
+    /** Message texte prêt à partager (SMS / WhatsApp) : description, date du
+     *  décès + prochaine azcara (langue de l'app), puis le lien d'import. */
     fun shareMessage(context: Context, intent: SavedPrayerIntent): String {
         val link = uri(intent).toString()
         val intro = context.getString(R.string.share_prayer_intro)
-        return "${intent.prayerType.saveActionTitle} — ${intent.hebrewSubject}\n\n$intro\n$link"
+        val df = java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, Locale.getDefault())
+        val sb = StringBuilder()
+        sb.append("${intent.prayerType.saveActionTitle} — ${intent.hebrewSubject}")
+        intent.civilDateOfDeathEpochMillis?.let { millis ->
+            sb.append("\n").append(context.getString(R.string.share_date_of_death, df.format(Date(millis))))
+            MemorialCalculator.nextYahrzeit(Date(millis))?.let { next ->
+                sb.append("\n").append(context.getString(R.string.share_next_azcara, df.format(next)))
+            }
+        }
+        sb.append("\n\n").append(intro).append("\n").append(link)
+        return sb.toString()
     }
 
     // MARK: - Décodage

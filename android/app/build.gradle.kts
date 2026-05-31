@@ -95,7 +95,10 @@ android {
         //            via une URL https (page de redirection GitHub Pages) +
         //            App Link vérifié (assetlinks.json, autoVerify) →
         //            https://dadoou5.github.io/p/… ouvre l'app directement.
-        versionCode = 21
+        // Build 22 : message de partage enrichi (date de décès + prochaine
+        //            azcara, dans la langue de l'expéditeur) + aperçu de lien
+        //            avec l'icône de l'app (Open Graph côté page de redirection).
+        versionCode = 22
         versionName = "1.0.0"
 
         // Tests

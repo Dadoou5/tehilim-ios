@@ -57,18 +57,28 @@ enum PrayerShareLink {
         return comps.url
     }
 
-    /// Message texte prêt à partager (SMS / WhatsApp) : description lisible
-    /// + lien d'import. Taper le lien ouvre l'app et propose l'import.
+    /// Message texte prêt à partager (SMS / WhatsApp) : description lisible,
+    /// date du décès + prochaine azcara (dans la langue de l'expéditeur),
+    /// puis le lien d'import. Taper le lien ouvre l'app et propose l'import.
     static func shareMessage(for intent: SavedPrayerIntent) -> String {
-        let subject = intent.hebrewSubject
-        let kind = intent.prayerType.saveActionTitle
+        let fr = AppLocale.code != "en"
         let link = url(for: intent)?.absoluteString ?? ""
-        return """
-        \(kind) — \(subject)
+        let df = DateFormatter()
+        df.locale = AppLocale.locale
+        df.dateStyle = .long
 
-        Ouvre cette prière dans Tehilim :
-        \(link)
-        """
+        var lines: [String] = ["\(intent.prayerType.saveActionTitle) — \(intent.hebrewSubject)"]
+        if let death = intent.civilDateOfDeath {
+            lines.append((fr ? "Date de décès : " : "Date of death: ") + df.string(from: death))
+            if let next = MemorialCalculator.nextYahrzeit(deathCivil: death) {
+                lines.append((fr ? "Prochaine azcara : " : "Next azcara: ") + df.string(from: next)
+                             + (fr ? " (commence la veille au soir)" : " (begins the previous evening)"))
+            }
+        }
+        lines.append("")
+        lines.append(fr ? "Ouvre cette prière dans Tehilim :" : "Open this prayer in Tehilim:")
+        lines.append(link)
+        return lines.joined(separator: "\n")
     }
 
     // MARK: - Décodage

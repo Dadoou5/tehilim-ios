@@ -262,6 +262,8 @@
     <!-- Share / import a prayer (tehilim://prayer link) -->
     <string name="action_share_prayer">Share prayer</string>
     <string name="share_prayer_intro">Open this prayer in Tehilim:</string>
+    <string name="share_date_of_death">Date of death: %1$s</string>
+    <string name="share_next_azcara">Next azcara: %1$s (begins the previous evening)</string>
     <string name="import_prayer_title">Import this prayer?</string>
     <string name="import_prayer_already">This prayer is already in My prayers.</string>
     <string name="action_import">Import</string>

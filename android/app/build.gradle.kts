@@ -103,7 +103,9 @@ android {
         //            re-blocage à l'entrée réelle même si « continuer » avant.
         // Build 24 : détail de prière — section « Rappels » toujours affichée
         //            (état « Aucun rappel » explicite) ; robustesse import liens.
-        versionCode = 24
+        // Build 25 : retrait d'un favori directement depuis la liste (bouton
+        //            cœur), sans ouvrir le Tehilim.
+        versionCode = 25
         versionName = "1.0.0"
 
         // Tests

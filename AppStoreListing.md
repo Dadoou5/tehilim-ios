@@ -249,13 +249,19 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.12.1 (build 42) · Android build 24
+## 📋 What's New / Nouveautés — V1.12.1 (build 43) · Android build 25
 
-> Builds 42/24 (correctif) : sur le **détail d'une prière**, la section
-> « Rappels » est désormais **toujours visible** — elle liste les rappels
-> d'azcara configurés (7 jours avant / le jour même) ou affiche un état
-> explicite « Aucun rappel » avec la marche à suivre, au lieu de disparaître
-> silencieusement quand aucune notification n'était encore planifiée.
+> Builds 43/25 :
+> • **Favoris** — retire un Tehilim de tes favoris directement depuis la liste
+>   (swipe « Retirer » + bouton Modifier sur iOS ; bouton cœur sur Android),
+>   sans avoir à ouvrir chaque Tehilim.
+> • **iPad paysage** — meilleure exploitation de l'écran : Accueil et Cas de la
+>   vie en grilles plus larges, détail d'un cas en colonnes, et **lecture d'un
+>   texte seul (hébreu ou phonétique) sur deux colonnes** façon Tehilim imprimé.
+> • **Rappels** — sur le détail d'une prière, la section « Rappels » est
+>   désormais **toujours visible** : rappels d'azcara configurés (7 jours avant /
+>   le jour même) ou état explicite « Aucun rappel », au lieu de disparaître
+>   silencieusement.
 
 > Builds 35/21 : le **lien de partage d'une prière** est désormais cliquable
 > dans Mail / WhatsApp / SMS (URL https) et ouvre l'app directement

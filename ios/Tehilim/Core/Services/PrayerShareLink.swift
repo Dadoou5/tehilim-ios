@@ -102,7 +102,9 @@ enum PrayerShareLink {
     /// `tehilim://prayer` OU Universal Link `https://…/p/…`.
     static func isPrayerLink(_ url: URL) -> Bool {
         if url.scheme == scheme && url.host == host { return true }
-        if url.scheme == "https" && url.path.hasPrefix("/p/") { return true }
+        // `URL.path` retire le « / » final : `https://…/p/?...` donne « /p ».
+        // On accepte donc « /p » exact ET « /p/… », sans matcher « /privacy ».
+        if url.scheme == "https" && (url.path == "/p" || url.path.hasPrefix("/p/")) { return true }
         return false
     }
 

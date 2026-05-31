@@ -88,7 +88,10 @@ object PrayerShareLink {
      *  `tehilim://prayer` OU App Link `https://…/p/…`. */
     fun isPrayerLink(uri: Uri): Boolean {
         if (uri.scheme == SCHEME && uri.host == HOST) return true
-        return uri.scheme == "https" && (uri.path?.startsWith("/p/") == true)
+        // Accepte « /p » exact ET « /p/… » (selon que le « / » final est
+        // conservé ou non), sans matcher « /privacy ».
+        val p = uri.path
+        return uri.scheme == "https" && (p == "/p" || p?.startsWith("/p/") == true)
     }
 
     /** Parse un lien de prière (`tehilim://prayer?...` ou `https://…/p/?...`). */

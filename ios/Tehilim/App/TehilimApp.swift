@@ -1,7 +1,31 @@
 import SwiftUI
+import UIKit
+
+/// `AppDelegate` minimal : capte les **Universal Links** (`https://…/p/…`) de
+/// façon fiable, y compris au cold-start — là où `.onContinueUserActivity`
+/// SwiftUI est notoirement défaillant (l'app s'ouvre mais le lien n'est jamais
+/// livré). C'est ce qui faisait que les liens `https` n'importaient pas alors
+/// que les `tehilim://` (via `.onOpenURL`) fonctionnaient.
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     continue userActivity: NSUserActivity,
+                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let url = userActivity.webpageURL else { return false }
+        AppContainer.shared.routeIncomingURL(url)
+        return true
+    }
+
+    func application(_ app: UIApplication, open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        AppContainer.shared.routeIncomingURL(url)
+        return true
+    }
+}
 
 @main
 struct TehilimApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var container = AppContainer.shared
     /// Mode Chabbat — pilote l'écran bloquant. Initialisé avec les prefs du
     /// container (singleton) → instance stable pour la session.
@@ -92,26 +116,11 @@ struct TehilimApp: App {
         }
     }
 
-    /// **Unique** point d'entrée des liens (custom scheme + Universal Link),
-    /// au niveau App pour survivre au cold-start ET éviter le conflit de
-    /// plusieurs `.onOpenURL` (SwiftUI n'en appelle qu'un).
-    /// - Prière → stockée dans le container (RootTabView présente l'aperçu).
-    /// - Onglet `tehilim://<host>` → via `NotificationManager.pendingRoute`,
-    ///   consommé par `RootTabView.applyPendingRoute` (appear + onChange).
+    /// Relais SwiftUI vers le routage unique du container. L'`AppDelegate`
+    /// couvre les Universal Links au cold-start ; ces hooks couvrent le reste
+    /// (custom scheme, et UL à chaud) — `routeIncomingURL` est idempotent.
     private func handleIncomingURL(_ url: URL) {
-        if PrayerShareLink.isPrayerLink(url) {
-            container.pendingPrayerImport = PrayerShareLink.payload(from: url)
-            return
-        }
-        guard url.scheme == "tehilim" else { return }
-        switch url.host {
-        case "daily":     NotificationManager.shared.pendingRoute = .daily
-        case "lifecases": NotificationManager.shared.pendingRoute = .lifeCases
-        case "psalms":    NotificationManager.shared.pendingRoute = .psalms
-        case "settings":  NotificationManager.shared.pendingRoute = .settings
-        case "home":      NotificationManager.shared.pendingRoute = .home
-        default: break
-        }
+        container.routeIncomingURL(url)
     }
 
     // MARK: - Language

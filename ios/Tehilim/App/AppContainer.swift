@@ -21,6 +21,28 @@ final class AppContainer: ObservableObject {
     /// présenté par `RootTabView` dès qu'il apparaît.
     @Published var pendingPrayerImport: PrayerShareLink.Payload?
 
+    /// **Point d'entrée unique** de tous les liens entrants (custom scheme,
+    /// Universal Link), appelé par `.onOpenURL`, `.onContinueUserActivity` ET
+    /// l'`AppDelegate` (qui capte les Universal Links de façon fiable, y
+    /// compris au cold-start). Toujours exécuté sur le main thread.
+    func routeIncomingURL(_ url: URL) {
+        Task { @MainActor in
+            if PrayerShareLink.isPrayerLink(url) {
+                self.pendingPrayerImport = PrayerShareLink.payload(from: url)
+                return
+            }
+            guard url.scheme == "tehilim" else { return }
+            switch url.host {
+            case "daily":     NotificationManager.shared.pendingRoute = .daily
+            case "lifecases": NotificationManager.shared.pendingRoute = .lifeCases
+            case "psalms":    NotificationManager.shared.pendingRoute = .psalms
+            case "settings":  NotificationManager.shared.pendingRoute = .settings
+            case "home":      NotificationManager.shared.pendingRoute = .home
+            default: break
+            }
+        }
+    }
+
     init(
         contentLoader: ContentLoading = BundledContentLoader()
     ) {

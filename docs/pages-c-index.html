@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  À COPIER dans le repo Pages `dadoou5.github.io` sous /c/index.html
+  Page de redirection pour les liens de CHAÎNE DE TEHILIM :
+  https://dadoou5.github.io/c/?id=<chainId>  →  tehilim://chain?id=<chainId>
+  Repli : stores App Store / Play Store si l'app n'est pas installée.
+  Calquée sur /p/index.html (import de prière).
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chaîne de Tehilim</title>
+  <!-- Open Graph : aperçu du lien dans WhatsApp -->
+  <meta property="og:title" content="Chaîne de Tehilim">
+  <meta property="og:description" content="Rejoins la chaîne et choisis les Tehilim que tu liras.">
+  <meta property="og:image" content="https://dadoou5.github.io/p/icon.png">
+  <meta property="og:type" content="website">
+  <!-- Smart App Banner iOS -->
+  <meta name="apple-itunes-app" content="app-id=6768043533">
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+         background:#f7f6f2;color:#1c1c1e;display:flex;min-height:100vh;margin:0;
+         align-items:center;justify-content:center;text-align:center;padding:24px}
+    .card{max-width:420px}
+    h1{font-size:1.4rem;margin:.2rem 0}
+    p{color:#555;line-height:1.5}
+    a.btn{display:inline-block;margin-top:14px;padding:12px 22px;border-radius:12px;
+          background:#2b59c3;color:#fff;text-decoration:none;font-weight:600}
+    .stores{margin-top:18px;font-size:.9rem}
+    .stores a{color:#2b59c3;text-decoration:none;margin:0 8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>📿 Chaîne de Tehilim</h1>
+    <p id="msg">Ouverture de l'application Tehilim…</p>
+    <a class="btn" id="openBtn" href="#">Ouvrir dans Tehilim</a>
+    <div class="stores">
+      <a href="https://apps.apple.com/app/id6768043533">App Store</a>·
+      <a href="https://play.google.com/store/apps/details?id=app.tehilim">Google Play</a>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get('id');
+      var appUrl = 'tehilim://chain' + (id ? ('?id=' + encodeURIComponent(id)) : '');
+      document.getElementById('openBtn').setAttribute('href', appUrl);
+      // Tentative d'ouverture automatique de l'app.
+      if (id) { setTimeout(function () { location.href = appUrl; }, 250); }
+      else { document.getElementById('msg').textContent =
+        "Lien de chaîne invalide (identifiant manquant)."; }
+    })();
+  </script>
+</body>
+</html>

@@ -14,3 +14,13 @@ xcodegen generate
 
 echo "✓ Projet généré"
 ls -la Tehilim.xcodeproj
+
+# Résolution des packages SPM (Firebase) AVANT l'étape d'archive : Xcode Cloud
+# désactive la résolution auto pendant l'archive et exige un Package.resolved.
+# Comme le .xcodeproj est généré (gitignoré), on le produit ici.
+echo "→ Résolution des dépendances SPM (Firebase)"
+xcodebuild -resolvePackageDependencies \
+  -project Tehilim.xcodeproj \
+  -scheme Tehilim
+echo "✓ Package.resolved généré"
+ls -la Tehilim.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/ 2>/dev/null || true

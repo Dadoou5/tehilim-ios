@@ -117,7 +117,8 @@ android {
         //            réserver des Tehilim (verrous), compte rendu WhatsApp.
         // Build 27 : optimisation quota Firestore — état des attributions en doc
         //            unique (board) + écoute coupée en arrière-plan.
-        versionCode = 27
+        // Build 28 : re-build (versionCode requis par le Play Store).
+        versionCode = 28
         versionName = "1.0.0"
 
         // Tests

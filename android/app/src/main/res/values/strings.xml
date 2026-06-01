@@ -264,6 +264,7 @@
     <string name="memorial_no_reminder_disabled">Active les rappels depuis « Modifier ».</string>
 
     <!-- Chaîne de Tehilim (partage du lien) -->
+    <string name="explore_chain">Chaîne de Tehilim</string>
     <string name="chain_share_prefix">Chaîne de Tehilim — </string>
     <string name="chain_share_cta">Rejoins la chaîne et choisis les Tehilim que tu liras :</string>
 

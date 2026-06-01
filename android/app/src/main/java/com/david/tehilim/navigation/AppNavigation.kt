@@ -99,6 +99,16 @@ fun AppNavigation(container: AppContainer) {
             }
             return@LaunchedEffect
         }
+        // 1bis) Chaîne de Tehilim — `tehilim://chain?id=…` OU App Link `…/c/?id=…`.
+        if (data != null && com.david.tehilim.core.service.ChainShareLink.isChainLink(data)) {
+            val uriStr = data.toString()
+            val cid = com.david.tehilim.core.service.ChainShareLink.chainId(data)
+            if (cid != null && uriStr != lastHandledPrayerUri) {
+                lastHandledPrayerUri = uriStr
+                navController.navigate(Routes.chainDetail(cid))
+            }
+            return@LaunchedEffect
+        }
         // 2) Deep links de navigation (widget/notif) — skip la 1ʳᵉ invocation.
         if (!initialIntentSeen) {
             initialIntentSeen = true
@@ -379,6 +389,29 @@ fun AppNavigation(container: AppContainer) {
             ) {
                 val id = it.arguments?.getString("intentId") ?: ""
                 PersonalizedReadingListScreen(container = container, intentId = id, navController = navController)
+            }
+
+            // Chaîne de Tehilim
+            composable(Routes.CHAIN_LIST) {
+                com.david.tehilim.features.chains.MyChainsScreen(container = container, navController = navController)
+            }
+            composable(Routes.CHAIN_CREATE) {
+                com.david.tehilim.features.chains.CreateChainScreen(
+                    container = container,
+                    onBack = { navController.popBackStack() },
+                    onCreated = { id ->
+                        navController.navigate(Routes.chainDetail(id)) {
+                            popUpTo(Routes.CHAIN_CREATE) { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable(
+                Routes.CHAIN_DETAIL,
+                arguments = listOf(navArgument("chainId") { type = NavType.StringType })
+            ) {
+                val id = it.arguments?.getString("chainId") ?: ""
+                com.david.tehilim.features.chains.ChainDetailScreen(container = container, chainId = id, navController = navController)
             }
         }
     }

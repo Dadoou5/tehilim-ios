@@ -264,6 +264,7 @@
     <string name="memorial_no_reminder_disabled">Enable reminders from “Edit”.</string>
 
     <!-- Tehilim chain (share link) -->
+    <string name="explore_chain">Tehilim chain</string>
     <string name="chain_share_prefix">Tehilim chain — </string>
     <string name="chain_share_cta">Join the chain and pick the Tehilim you\'ll read:</string>
 

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.AutoStories
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.TextFields
@@ -229,6 +230,7 @@ private fun exploreCards(
     ExploreCardSpec(Icons.AutoMirrored.Outlined.MenuBook, stringResource(R.string.explore_5_books)) { nav.switchTopLevel(TopLevelDestination.Psalms.route) },
     ExploreCardSpec(Icons.Outlined.Favorite, stringResource(R.string.explore_life_cases)) { nav.switchTopLevel(TopLevelDestination.LifeCases.route) },
     ExploreCardSpec(Icons.Outlined.TextFields, stringResource(R.string.explore_119_alphabeta)) { nav.navigate(Routes.PSALM_119_HOME) },
+    ExploreCardSpec(Icons.Outlined.Link, stringResource(R.string.explore_chain)) { nav.navigate(Routes.CHAIN_LIST) },
     // V1.2.12 — « Tous » de l'accueil ouvre l'onglet Tehilim directement sur
     // son segment "Tous" (segment=1) — plus de doublon avec PsalmListScreen.
     ExploreCardSpec(Icons.Outlined.AutoStories, stringResource(R.string.explore_all_1_150)) {

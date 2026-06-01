@@ -54,4 +54,10 @@ object Routes {
     const val SAVED_PRAYERS = "personalized/saved"
     const val PERSONALIZED_LIST = "personalized/list/{intentId}"
     fun personalizedList(intentId: String) = "personalized/list/$intentId"
+
+    // Chaîne de Tehilim
+    const val CHAIN_LIST = "chains"
+    const val CHAIN_CREATE = "chains/create"
+    const val CHAIN_DETAIL = "chains/detail/{chainId}"
+    fun chainDetail(chainId: String) = "chains/detail/$chainId"
 }

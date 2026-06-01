@@ -1,0 +1,372 @@
+package com.david.tehilim.features.chains
+
+import android.content.Intent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.david.tehilim.AppContainer
+import com.david.tehilim.core.model.ChainAssignment
+import com.david.tehilim.core.model.TehilimChain
+import com.david.tehilim.core.service.ChainShareLink
+import com.david.tehilim.navigation.Routes
+import com.david.tehilim.ui.components.AppCard
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.util.Date
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChainDetailScreen(container: AppContainer, chainId: String, navController: NavController) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val chain by remember(chainId) { container.chains.chainFlow(chainId) }.collectAsState(initial = null)
+    val participants by remember(chainId) { container.chains.participantsFlow(chainId) }.collectAsState(initial = emptyList())
+    val assignments by remember(chainId) { container.chains.assignmentsFlow(chainId) }.collectAsState(initial = emptyMap())
+    val uid = container.chains.currentUid
+
+    var nowTick by remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) { while (true) { delay(1000); nowTick = System.currentTimeMillis() } }
+    LaunchedEffect(chainId) { container.chainArchive.remember(chainId) }
+
+    var showJoin by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    val isParticipant = uid != null && participants.any { it.uid == uid }
+    val isCreator = uid != null && chain?.creatorUid == uid
+    val myName = participants.firstOrNull { it.uid == uid }?.name ?: "—"
+    val myIds = assignments.values.filter { it.uid == uid }.map { it.psalmId }.sorted()
+    val open = chain?.isSelectionOpen(nowTick) ?: false
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Chaîne de Tehilim", maxLines = 1) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                    }
+                },
+                actions = {
+                    chain?.let { c ->
+                        IconButton(onClick = { shareText(context, ChainShareLink.shareMessage(context, c)) }) {
+                            Icon(Icons.Outlined.Share, "Partager")
+                        }
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        val c = chain
+        if (c == null) {
+            Column(Modifier.fillMaxSize().padding(padding), Arrangement.Center, Alignment.CenterHorizontally) {
+                Text("Chargement…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            return@Scaffold
+        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 64.dp),
+            modifier = Modifier.fillMaxSize().padding(padding),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            fun fullSpan(content: @Composable () -> Unit) {
+                item(span = { GridItemSpan(maxLineSpan) }) { content() }
+            }
+
+            fullSpan { HeaderCard(c) }
+            fullSpan { CountdownCard(c, open, nowTick) }
+            fullSpan { ParticipantsCard(participants.size, participants.joinToString(" · ") { it.name }) }
+            fullSpan { ProgressCard(assignments.size) }
+
+            if (!isParticipant) {
+                fullSpan {
+                    Button(onClick = { showJoin = true }, modifier = Modifier.fillMaxWidth()) {
+                        Text("Rejoindre la chaîne")
+                    }
+                }
+            } else {
+                fullSpan {
+                    Text(
+                        if (open) "Touche un numéro libre pour t'y engager ; un de tes numéros pour le libérer."
+                        else "Sélection close. Touche un de tes Tehilim pour le lire.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+                // Grille 150
+                itemsIndexed((1..TehilimChain.TOTAL_PSALMS).toList()) { _, psalmId ->
+                    val a = assignments[psalmId]
+                    val mine = a != null && a.uid == uid
+                    val takenByOther = a != null && !mine
+                    PsalmCell(psalmId, a?.name, mine, takenByOther, enabled = !(open && takenByOther)) {
+                        if (open) {
+                            if (takenByOther) return@PsalmCell
+                            scope.launch {
+                                try {
+                                    if (mine) container.chains.deselect(chainId, psalmId)
+                                    else container.chains.select(chainId, psalmId, myName)
+                                } catch (e: Exception) { error = "Ce Tehilim vient d'être pris." }
+                            }
+                        } else {
+                            navController.navigate(Routes.psalmDetail(psalmId, myIds))
+                        }
+                    }
+                }
+
+                if (isCreator) {
+                    fullSpan { CreatorControls(c, assignments, open, container, chainId, context) { error = it } }
+                }
+            }
+
+            error?.let { fullSpan { Text(it, color = MaterialTheme.colorScheme.error) } }
+        }
+    }
+
+    if (showJoin) {
+        var nameInput by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showJoin = false },
+            title = { Text("Rejoindre la chaîne") },
+            text = {
+                Column {
+                    Text("Ton nom sera visible par tous les participants.")
+                    OutlinedTextField(
+                        value = nameInput, onValueChange = { nameInput = it },
+                        label = { Text("Ton nom") }, singleLine = true,
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = nameInput.isNotBlank(),
+                    onClick = {
+                        val n = nameInput.trim()
+                        showJoin = false
+                        scope.launch { runCatching { container.chains.join(chainId, n) } }
+                    }
+                ) { Text("Rejoindre") }
+            },
+            dismissButton = { TextButton(onClick = { showJoin = false }) { Text("Annuler") } }
+        )
+    }
+}
+
+@Composable
+private fun HeaderCard(c: TehilimChain) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(intentionLabel(c.intentionType), style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary)
+            Text(c.subjectLine, style = MaterialTheme.typography.titleLarge)
+            Text("Créée par ${c.creatorName}", style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun CountdownCard(c: TehilimChain, open: Boolean, now: Long) {
+    val df = remember { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT) }
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(
+                if (open) "Fin de la sélection dans"
+                else if (c.distributed) "Distribuée · lecture jusqu'au" else "Sélection close · lecture jusqu'au",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                if (open) remaining(c.selectionDeadlineMillis - now) else df.format(Date(c.readingDeadlineMillis)),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+
+@Composable
+private fun ParticipantsCard(count: Int, names: String) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                Text("Participants", style = MaterialTheme.typography.titleSmall)
+                Text("$count", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+            }
+            if (names.isNotBlank()) {
+                Text(names, style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProgressCard(assigned: Int) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+                Text("Avancement", style = MaterialTheme.typography.titleSmall)
+                Text("$assigned/${TehilimChain.TOTAL_PSALMS}", style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            LinearProgressIndicator(
+                progress = { assigned.toFloat() / TehilimChain.TOTAL_PSALMS },
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PsalmCell(
+    id: Int, name: String?, mine: Boolean, takenByOther: Boolean, enabled: Boolean, onClick: () -> Unit
+) {
+    val bg = when {
+        mine -> MaterialTheme.colorScheme.primary
+        takenByOther -> MaterialTheme.colorScheme.surfaceVariant
+        else -> MaterialTheme.colorScheme.surface
+    }
+    val fg = if (mine) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    Surface(
+        onClick = onClick, enabled = enabled, color = bg, shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.fillMaxWidth().height(46.dp)
+    ) {
+        Column(Modifier.padding(2.dp), Arrangement.Center, Alignment.CenterHorizontally) {
+            Text("$id", style = MaterialTheme.typography.labelLarge, color = fg)
+            if (name != null) {
+                Text(name, style = MaterialTheme.typography.labelSmall, maxLines = 1,
+                    color = if (mine) fg else MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CreatorControls(
+    c: TehilimChain, assignments: Map<Int, ChainAssignment>, open: Boolean,
+    container: AppContainer, chainId: String, context: android.content.Context,
+    onError: (String) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    val assigned = assignments.size
+    Column(Modifier.fillMaxWidth().padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Maître de la chaîne", style = MaterialTheme.typography.titleSmall)
+        if (open && assigned < TehilimChain.TOTAL_PSALMS) {
+            OutlinedButton(
+                onClick = {
+                    scope.launch {
+                        runCatching { container.chains.assignRemaining(chainId, c.creatorName) }
+                            .onFailure { onError("Attribution impossible.") }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("M'attribuer les ${TehilimChain.TOTAL_PSALMS - assigned} restants") }
+        }
+        if (open && !c.distributed) {
+            Button(
+                onClick = {
+                    scope.launch {
+                        runCatching { container.chains.distribute(chainId) }
+                        // Archive locale du compte rendu (conservée après TTL cloud).
+                        container.chainArchive.saveArchive(
+                            com.david.tehilim.core.persistence.ChainArchiveSnapshot(
+                                id = c.id, name = c.name, intentionWire = c.intentionType.wire,
+                                detail = c.intentionDetail, creatorName = c.creatorName,
+                                readingDeadlineMillis = c.readingDeadlineMillis,
+                                archivedAtMillis = System.currentTimeMillis(),
+                                assignments = assignments.mapKeys { it.key.toString() }.mapValues { it.value.name }
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Clôturer et distribuer") }
+        }
+        OutlinedButton(
+            onClick = { shareText(context, reportText(c, assignments)) },
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Partager le compte rendu") }
+    }
+}
+
+// MARK: - Helpers
+
+private fun remaining(ms: Long): String {
+    val secs = (ms / 1000).coerceAtLeast(0)
+    val d = secs / 86400; val h = (secs % 86400) / 3600; val m = (secs % 3600) / 60; val s = secs % 60
+    return when {
+        d > 0 -> "$d j $h h"
+        h > 0 -> "$h h $m min"
+        m > 0 -> "$m min $s s"
+        else -> "$s s"
+    }
+}
+
+private fun shareText(context: android.content.Context, text: String) {
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"; putExtra(Intent.EXTRA_TEXT, text)
+    }
+    context.startActivity(Intent.createChooser(intent, null))
+}
+
+/** Compte rendu groupé par participant — partageable WhatsApp. */
+private fun reportText(c: TehilimChain, assignments: Map<Int, ChainAssignment>): String {
+    val byUid = LinkedHashMap<String, Pair<String, MutableList<Int>>>()
+    for ((psalmId, a) in assignments) {
+        byUid.getOrPut(a.uid) { a.name to mutableListOf() }.second.add(psalmId)
+    }
+    val sb = StringBuilder("Chaîne de Tehilim — ${c.subjectLine}\n")
+    byUid.values.sortedBy { it.first }.forEach { (name, ids) ->
+        sb.append("\n• $name : ${ids.sorted().joinToString(", ")}")
+    }
+    val assigned = assignments.size
+    if (assigned < TehilimChain.TOTAL_PSALMS) {
+        sb.append("\n\nRestants : ${TehilimChain.TOTAL_PSALMS - assigned} Tehilim non attribués.")
+    }
+    return sb.toString()
+}

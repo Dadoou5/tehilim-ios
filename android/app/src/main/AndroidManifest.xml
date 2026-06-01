@@ -72,6 +72,10 @@
                 <data android:scheme="https"
                       android:host="dadoou5.github.io"
                       android:pathPrefix="/p/" />
+                <!-- Chaîne de Tehilim : https://dadoou5.github.io/c/?id=… -->
+                <data android:scheme="https"
+                      android:host="dadoou5.github.io"
+                      android:pathPrefix="/c/" />
             </intent-filter>
         </activity>
 

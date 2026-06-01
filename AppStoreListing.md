@@ -249,7 +249,49 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.12.1 (build 43) · Android build 25
+## 📋 What's New / Nouveautés — V1.13.0 (build 44) · Android build 26
+
+> Nouveauté majeure : **la Chaîne de Tehilim** — lecture collective en temps réel.
+
+### 🇫🇷 — App Store / Play (grand public)
+```
+Nouveau : la Chaîne de Tehilim 📿
+
+Crée une chaîne de lecture collective pour une intention (Lelouy Nichmat, Refoua Chelema, ou pour la réussite d'un proche / d'Am Israël), puis partage le lien sur WhatsApp.
+
+• Chacun rejoint en un tap et choisit les Tehilim qu'il s'engage à lire.
+• En temps réel : nombre de participants, Tehilim déjà pris (avec le nom à côté), avancement de la chaîne.
+• Un Tehilim choisi est verrouillé : pas de doublon.
+• Tu fixes une durée de sélection et une date de fin de lecture ; ensuite la chaîne passe en lecture seule.
+• Le créateur peut attribuer les Tehilim restants et partager le compte rendu final sur WhatsApp (ex. « David : 1 à 20 »).
+
+Disponible en français et en anglais, optimisé iPhone et iPad.
+```
+
+### 🇬🇧 — App Store / Play (general public)
+```
+New: the Tehilim Chain 📿
+
+Create a group reading for an intention (Lelouy Nichmat, Refoua Chelema, or for the success of a loved one / Am Israel), then share the link on WhatsApp.
+
+• Everyone joins in one tap and picks the Tehilim they commit to read.
+• In real time: number of participants, Tehilim already taken (with the reader's name), overall progress.
+• A chosen Tehilim is locked — no duplicates.
+• You set a selection window and a reading deadline; the chain then becomes read-only.
+• The creator can assign the remaining Tehilim and share the final summary on WhatsApp (e.g. "David: 1 to 20").
+
+Available in French and English, optimized for iPhone and iPad.
+```
+
+> ⚠️ Note review : cette version ajoute une fonctionnalité collaborative en ligne
+> (Firebase Firestore). Identité = compte anonyme par appareil + un prénom saisi,
+> visible des participants. Aucune donnée personnelle sensible ; les chaînes sont
+> supprimées automatiquement après la lecture (TTL). Connexion réseau requise pour
+> cette fonctionnalité uniquement — le reste de l'app fonctionne hors-ligne.
+
+---
+
+## 📋 Archive — Nouveautés V1.12.1 (build 43) · Android build 25
 
 > Builds 43/25 :
 > • **Favoris** — retire un Tehilim de tes favoris directement depuis la liste

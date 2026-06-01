@@ -112,7 +112,10 @@ android {
         //            (état « Aucun rappel » explicite) ; robustesse import liens.
         // Build 25 : retrait d'un favori directement depuis la liste (bouton
         //            cœur), sans ouvrir le Tehilim.
-        versionCode = 25
+        // Build 26 : « Chaîne de Tehilim » — lecture collective temps réel
+        //            (Firebase Firestore) : créer/partager une chaîne, rejoindre,
+        //            réserver des Tehilim (verrous), compte rendu WhatsApp.
+        versionCode = 26
         versionName = "1.0.0"
 
         // Tests

@@ -263,6 +263,10 @@
     <string name="memorial_no_reminder_no_date">Renseigne une date du décès pour activer les rappels d\'azcara.</string>
     <string name="memorial_no_reminder_disabled">Active les rappels depuis « Modifier ».</string>
 
+    <!-- Chaîne de Tehilim (partage du lien) -->
+    <string name="chain_share_prefix">Chaîne de Tehilim — </string>
+    <string name="chain_share_cta">Rejoins la chaîne et choisis les Tehilim que tu liras :</string>
+
     <!-- Partage / import d'une prière (lien tehilim://prayer) -->
     <string name="action_share_prayer">Partager la prière</string>
     <string name="share_prayer_intro">Ouvre cette prière dans Tehilim :</string>

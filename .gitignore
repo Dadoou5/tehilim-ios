@@ -69,3 +69,7 @@ android/app/src/main/res/font/ezra_sil_sr.ttf
 android/playstore-screenshots/
 ios/appstore-screenshots-en/
 ios/appstore-screenshots-*/
+
+# Config Firebase (secrets, non versionnés — feature « Chaîne de Tehilim »)
+ios/Tehilim/Resources/GoogleService-Info.plist
+android/app/google-services.json

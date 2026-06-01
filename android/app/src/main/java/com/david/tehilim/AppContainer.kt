@@ -1,9 +1,11 @@
 package com.david.tehilim
 
 import android.content.Context
+import com.david.tehilim.core.persistence.ChainArchiveStore
 import com.david.tehilim.core.persistence.FavoritesStore
 import com.david.tehilim.core.persistence.Preferences
 import com.david.tehilim.core.persistence.SavedPrayerStore
+import com.david.tehilim.core.service.ChainService
 import com.david.tehilim.core.service.ContentLoader
 import com.david.tehilim.core.service.DailyEngine
 import com.david.tehilim.core.service.LifeCaseRepository
@@ -26,6 +28,10 @@ class AppContainer(context: Context) {
     val preferences: Preferences = Preferences(context)
     val favorites: FavoritesStore = FavoritesStore(context)
     val savedPrayers: SavedPrayerStore = SavedPrayerStore(context)
+
+    // Feature « Chaîne de Tehilim » — accès Firestore + archive locale.
+    val chains: ChainService = ChainService(context.applicationContext)
+    val chainArchive: ChainArchiveStore = ChainArchiveStore(context.applicationContext)
 
     val psalmRepository: PsalmRepository
     val lifeCaseRepository: LifeCaseRepository

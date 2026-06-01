@@ -15,11 +15,19 @@ final class AppContainer: ObservableObject {
     let savedPrayers: SavedPrayerStore
     let preferences: Preferences
 
+    /// Feature « Chaîne de Tehilim » : accès Firestore + archive locale.
+    let chains = ChainService()
+    let chainArchive = ChainArchiveStore()
+
     /// Prière reçue via lien partagé (`tehilim://prayer` ou Universal Link),
     /// en attente d'aperçu d'import. Capté au niveau de l'App (toujours monté,
     /// même pendant le splash) pour ne pas perdre le lien au cold-start, puis
     /// présenté par `RootTabView` dès qu'il apparaît.
     @Published var pendingPrayerImport: PrayerShareLink.Payload?
+
+    /// Chaîne reçue via lien partagé (`tehilim://chain?id=…` ou Universal Link
+    /// `/c/?id=…`), en attente d'ouverture. Présentée par `RootTabView`.
+    @Published var pendingChainOpen: String?
 
     /// **Point d'entrée unique** de tous les liens entrants (custom scheme,
     /// Universal Link), appelé par `.onOpenURL`, `.onContinueUserActivity` ET
@@ -29,6 +37,10 @@ final class AppContainer: ObservableObject {
         Task { @MainActor in
             if PrayerShareLink.isPrayerLink(url) {
                 self.pendingPrayerImport = PrayerShareLink.payload(from: url)
+                return
+            }
+            if ChainShareLink.isChainLink(url) {
+                self.pendingChainOpen = ChainShareLink.chainId(from: url)
                 return
             }
             guard url.scheme == "tehilim" else { return }

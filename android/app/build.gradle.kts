@@ -241,6 +241,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
+    // .await() sur les Task Firestore/Auth.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 
     // Glance — widget Compose-like
     // V1.4 build 16 — bump Glance 1.1.0 → 1.1.1 :

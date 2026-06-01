@@ -7,7 +7,12 @@ private struct PsalmNav: Identifiable, Hashable { let id: Int }
 struct ChainDetailView: View {
     @EnvironmentObject private var container: AppContainer
     let chainId: String
+    /// Non nil quand la vue est présentée modalement (ouverture via lien) →
+    /// affiche un bouton « Fermer ». Nil quand poussée dans une NavigationStack
+    /// (le bouton retour natif suffit).
+    var onClose: (() -> Void)? = nil
 
+    @Environment(\.horizontalSizeClass) private var hSize
     @StateObject private var session: ChainSession
     @State private var showJoin = false
     @State private var reading: PsalmNav?
@@ -15,8 +20,9 @@ struct ChainDetailView: View {
     @State private var errorMessage: String?
     @State private var working = false
 
-    init(chainId: String) {
+    init(chainId: String, onClose: (() -> Void)? = nil) {
         self.chainId = chainId
+        self.onClose = onClose
         _session = StateObject(wrappedValue: ChainSession(chainId: chainId))
     }
 
@@ -38,6 +44,11 @@ struct ChainDetailView: View {
         .navigationTitle("Chaîne de Tehilim")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if let onClose {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Fermer") { onClose() }
+                }
+            }
             if let chain = session.chain {
                 ToolbarItem(placement: .topBarTrailing) {
                     ShareLink(item: ChainShareLink.shareMessage(for: chain)) {
@@ -89,7 +100,7 @@ struct ChainDetailView: View {
                     Text(errorMessage).foregroundStyle(.red).font(.callout)
                 }
             }
-            .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: nil))
+            .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
             .padding(.vertical, 16)
             .readingWidth(maxWidth: AdaptiveLayout.dashboardMaxWidth)
         }

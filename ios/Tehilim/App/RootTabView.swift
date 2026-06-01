@@ -89,12 +89,19 @@ struct RootTabView: View {
         .onAppear {
             if let id = container.pendingChainOpen { chainOpen = ChainOpenBox(id: id) }
         }
-        .sheet(item: $chainOpen, onDismiss: {
+        // Plein écran (et non sheet) → sur iPad la grille des 150 exploite toute
+        // la largeur en paysage (un sheet iPad est une carte centrée étroite).
+        .fullScreenCover(item: $chainOpen, onDismiss: {
             container.pendingChainOpen = nil
         }) { box in
-            NavigationStack { ChainDetailView(chainId: box.id) }
-                .environmentObject(container)
-                .environmentObject(container.chainArchive)
+            NavigationStack {
+                ChainDetailView(chainId: box.id, onClose: {
+                    chainOpen = nil
+                    container.pendingChainOpen = nil
+                })
+            }
+            .environmentObject(container)
+            .environmentObject(container.chainArchive)
         }
     }
 

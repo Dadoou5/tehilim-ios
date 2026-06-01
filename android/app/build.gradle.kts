@@ -8,6 +8,13 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+// Firebase (feature « Chaîne de Tehilim ») : on applique le plugin
+// google-services UNIQUEMENT si google-services.json est présent, pour que les
+// builds restent verts sur un clone sans la config (CI, contributeur externe).
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 // V1.4 — credentials du keystore release lus depuis `keystore.properties`
 // (non commité, voir .gitignore). Si absent (CI ou nouveau clone), la
 // signature de release est désactivée — ne pas uploader sur le Play Store
@@ -179,6 +186,14 @@ android {
 }
 
 dependencies {
+    // Firebase (Firestore) + WorkManager : conflit Guava. Le stub
+    // 'com.google.guava:listenablefuture' (tiré transitivement) masque la vraie
+    // classe ListenableFuture attendue par WorkManager (NotificationScheduler),
+    // et le Guava complet de Firestore n'est que transitif (absent du classpath
+    // de COMPILATION de l'app). On ajoute donc Guava en dépendance DIRECTE : il
+    // fournit ListenableFuture et évince le stub via résolution de capacité.
+    implementation("com.google.guava:guava:33.3.1-android")
+
     // Compose BOM — version unique pour tout l'écosystème Compose
     val composeBom = platform("androidx.compose:compose-bom:2024.09.03")
     implementation(composeBom)
@@ -219,6 +234,13 @@ dependencies {
 
     // WorkManager — notifications quotidiennes
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Firebase (feature « Chaîne de Tehilim ») — Firestore temps réel + auth anonyme.
+    // BOM = versions alignées. Compile même sans google-services.json ; l'init
+    // runtime est gardée (cf. TehilimApplication).
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-auth")
 
     // Glance — widget Compose-like
     // V1.4 build 16 — bump Glance 1.1.0 → 1.1.1 :

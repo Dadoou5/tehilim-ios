@@ -7,6 +7,8 @@ import android.os.LocaleList
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.david.tehilim.core.model.AppLanguage
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -30,6 +32,11 @@ class TehilimApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(applicationContext)
+
+        // Feature « Chaîne de Tehilim » : connexion anonyme Firebase (uid stable
+        // par appareil). Gardée : si google-services.json était absent au build,
+        // aucun FirebaseApp par défaut n'existe → on ne fait rien (reste local).
+        maybeSignInAnonymously()
 
         // Applique la locale sauvegardée AVANT que la moindre Activity n'attache
         // sa configuration. Lecture synchrone du DataStore via runBlocking : le
@@ -63,6 +70,15 @@ class TehilimApplication : Application() {
                 LocaleListCompat.forLanguageTags(tag)
             }
             AppCompatDelegate.setApplicationLocales(locales)
+        }
+    }
+
+    /** Connexion anonyme si Firebase est configuré et qu'on n'est pas déjà connecté. */
+    private fun maybeSignInAnonymously() {
+        if (FirebaseApp.getApps(this).isEmpty()) return   // pas de config → no-op
+        val auth = FirebaseAuth.getInstance()
+        if (auth.currentUser == null) {
+            auth.signInAnonymously()
         }
     }
 

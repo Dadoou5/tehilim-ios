@@ -29,10 +29,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.annotation.StringRes
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.ChainIntention
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -60,16 +63,17 @@ fun CreateChainScreen(
 
     val durations = listOf(1, 3, 6, 12, 24, 48, 72)
     val df = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
+    val errCreate = stringResource(R.string.chain_create_error)
     val canCreate = name.isNotBlank() && creatorName.isNotBlank() &&
         readingDeadline > System.currentTimeMillis() + selectionHours * 3600_000L && !creating
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nouvelle chaîne") },
+                title = { Text(stringResource(R.string.chain_new)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 }
             )
@@ -85,17 +89,17 @@ fun CreateChainScreen(
         ) {
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                label = { Text("Nom de la chaîne") },
+                label = { Text(stringResource(R.string.chain_name)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth()
             )
 
-            Text("Intention", style = androidx.compose.material3.MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.chain_intention), style = androidx.compose.material3.MaterialTheme.typography.labelLarge)
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 ChainIntention.entries.forEach { kind ->
                     FilterChip(
                         selected = intention == kind,
                         onClick = { intention = kind },
-                        label = { Text(intentionLabel(kind)) },
+                        label = { Text(stringResource(intentionLabel(kind))) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -103,11 +107,11 @@ fun CreateChainScreen(
 
             OutlinedTextField(
                 value = detail, onValueChange = { detail = it },
-                label = { Text(detailPlaceholder(intention)) },
+                label = { Text(stringResource(detailPlaceholder(intention))) },
                 singleLine = true, modifier = Modifier.fillMaxWidth()
             )
 
-            Text("Durée de sélection", style = androidx.compose.material3.MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.chain_selection_duration), style = androidx.compose.material3.MaterialTheme.typography.labelLarge)
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 durations.forEach { h ->
                     FilterChip(
@@ -119,12 +123,12 @@ fun CreateChainScreen(
             }
 
             OutlinedButton(onClick = { showDatePicker = true }, modifier = Modifier.fillMaxWidth()) {
-                Text("Fin de lecture : ${df.format(Date(readingDeadline))}")
+                Text(stringResource(R.string.chain_reading_end_prefix, df.format(Date(readingDeadline))))
             }
 
             OutlinedTextField(
                 value = creatorName, onValueChange = { creatorName = it },
-                label = { Text("Ton nom (visible de tous)") },
+                label = { Text(stringResource(R.string.chain_your_name_all)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth()
             )
 
@@ -146,7 +150,7 @@ fun CreateChainScreen(
                             container.chainArchive.remember(id)
                             onCreated(id)
                         } catch (e: Exception) {
-                            error = "Création impossible. Vérifie ta connexion."
+                            error = errCreate
                         } finally {
                             creating = false
                         }
@@ -154,10 +158,10 @@ fun CreateChainScreen(
                 },
                 enabled = canCreate,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Créer la chaîne") }
+            ) { Text(stringResource(R.string.chain_create_button)) }
 
             Text(
-                "Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture.",
+                stringResource(R.string.chain_consent),
                 style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start
@@ -173,21 +177,23 @@ fun CreateChainScreen(
                 TextButton(onClick = {
                     state.selectedDateMillis?.let { readingDeadline = it }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text(stringResource(R.string.action_ok)) }
             },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Annuler") } }
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.action_cancel)) } }
         ) { DatePicker(state = state) }
     }
 }
 
-internal fun intentionLabel(kind: ChainIntention): String = when (kind) {
-    ChainIntention.LELOUY -> "Lelouy Nichmat"
-    ChainIntention.REFOUA -> "Refoua Chelema"
-    ChainIntention.REUSSITE -> "Pour la réussite de"
+@StringRes
+internal fun intentionLabel(kind: ChainIntention): Int = when (kind) {
+    ChainIntention.LELOUY -> R.string.chain_intention_lelouy
+    ChainIntention.REFOUA -> R.string.chain_intention_refoua
+    ChainIntention.REUSSITE -> R.string.chain_intention_reussite
 }
 
-private fun detailPlaceholder(kind: ChainIntention): String = when (kind) {
-    ChainIntention.LELOUY -> "Prénom du défunt"
-    ChainIntention.REFOUA -> "Prénom du malade"
-    ChainIntention.REUSSITE -> "Am Israël, un proche…"
+@StringRes
+private fun detailPlaceholder(kind: ChainIntention): Int = when (kind) {
+    ChainIntention.LELOUY -> R.string.chain_detail_deceased
+    ChainIntention.REFOUA -> R.string.chain_detail_sick
+    ChainIntention.REUSSITE -> R.string.chain_detail_success
 }

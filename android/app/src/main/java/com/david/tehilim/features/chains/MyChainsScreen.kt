@@ -25,9 +25,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.persistence.ChainArchiveSnapshot
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
@@ -42,15 +44,15 @@ fun MyChainsScreen(container: AppContainer, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Chaînes de Tehilim") },
+                title = { Text(stringResource(R.string.chain_list_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Routes.CHAIN_CREATE) }) {
-                        Icon(Icons.Outlined.Add, "Créer une chaîne")
+                        Icon(Icons.Outlined.Add, stringResource(R.string.chain_create))
                     }
                 }
             )
@@ -59,7 +61,7 @@ fun MyChainsScreen(container: AppContainer, navController: NavController) {
         if (!container.chains.isAvailable) {
             Column(Modifier.fillMaxSize().padding(padding).padding(32.dp),
                 Arrangement.Center, androidx.compose.ui.Alignment.CenterHorizontally) {
-                Text("Service indisponible sur cette build.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.chain_service_unavailable), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             return@Scaffold
         }
@@ -71,32 +73,32 @@ fun MyChainsScreen(container: AppContainer, navController: NavController) {
             item {
                 AppCard(onClick = { navController.navigate(Routes.CHAIN_CREATE) }, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp)) {
-                        Text("Créer une chaîne", style = MaterialTheme.typography.titleMedium)
-                        Text("Partage le lien sur WhatsApp : chacun choisit les Tehilim qu'il lira, en temps réel.",
+                        Text(stringResource(R.string.chain_create), style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.chain_create_blurb),
                             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
 
             if (known.isNotEmpty()) {
-                item { Text("Mes chaînes", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp)) }
+                item { Text(stringResource(R.string.chain_my_chains), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp)) }
                 items(known) { id ->
                     val title by produceState<String?>(initialValue = null, id) {
                         value = runCatching { container.chains.fetchChain(id)?.subjectLine }.getOrNull()
                     }
                     AppCard(onClick = { navController.navigate(Routes.chainDetail(id)) }, modifier = Modifier.fillMaxWidth()) {
-                        Text(title ?: "Chaîne…", modifier = Modifier.padding(16.dp))
+                        Text(title ?: stringResource(R.string.chain_loading), modifier = Modifier.padding(16.dp))
                     }
                 }
             }
 
             if (archives.isNotEmpty()) {
-                item { Text("Comptes rendus", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp)) }
+                item { Text(stringResource(R.string.chain_summaries), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp)) }
                 items(archives) { snap ->
                     AppCard(onClick = { shareArchive(context, snap) }, modifier = Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(16.dp)) {
                             Text(snap.subjectLine, style = MaterialTheme.typography.titleSmall)
-                            Text("Touche pour partager le compte rendu",
+                            Text(stringResource(R.string.chain_tap_to_share),
                                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -109,7 +111,7 @@ fun MyChainsScreen(container: AppContainer, navController: NavController) {
 private fun shareArchive(context: android.content.Context, snap: ChainArchiveSnapshot) {
     val byName = LinkedHashMap<String, MutableList<Int>>()
     snap.assignments.forEach { (k, name) -> byName.getOrPut(name) { mutableListOf() }.add(k.toIntOrNull() ?: 0) }
-    val sb = StringBuilder("Chaîne de Tehilim — ${snap.subjectLine}\n")
+    val sb = StringBuilder(context.getString(R.string.chain_share_prefix) + snap.subjectLine + "\n")
     byName.toSortedMap().forEach { (name, ids) -> sb.append("\n• $name : ${ids.sorted().joinToString(", ")}") }
     val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, sb.toString()) }
     context.startActivity(Intent.createChooser(intent, null))

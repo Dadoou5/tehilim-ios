@@ -87,7 +87,8 @@ struct MyChainsView: View {
     private func archiveReport(_ snap: ChainArchiveSnapshot) -> String {
         var byName: [String: [Int]] = [:]
         for (k, name) in snap.assignments { byName[name, default: []].append(Int(k) ?? 0) }
-        var lines = ["Chaîne de Tehilim — \(snap.subjectLine)", ""]
+        let prefix = AppLocale.code == "en" ? "Tehilim chain — " : "Chaîne de Tehilim — "
+        var lines = [prefix + snap.subjectLine, ""]
         for (name, ids) in byName.sorted(by: { $0.key < $1.key }) {
             lines.append("• \(name) : \(ids.sorted().map(String.init).joined(separator: ", "))")
         }
@@ -102,10 +103,15 @@ private struct ChainKnownRow: View {
     @State private var title: String?
     @State private var loaded = false
 
+    private var placeholder: String {
+        let en = AppLocale.code == "en"
+        return loaded ? (en ? "Chain closed" : "Chaîne clôturée") : (en ? "Loading…" : "Chargement…")
+    }
+
     var body: some View {
         HStack {
             Image(systemName: "link").foregroundStyle(Color.accentMain)
-            Text(title ?? (loaded ? "Chaîne clôturée" : "Chargement…"))
+            Text(title ?? placeholder)
                 .foregroundStyle(title == nil && loaded ? .secondary : .primary)
         }
         .task(id: chainId) {

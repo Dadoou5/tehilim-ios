@@ -281,7 +281,8 @@ struct ChainDetailView: View {
     private func remaining(until date: Date) -> String {
         let secs = max(0, Int(date.timeIntervalSince(nowTick)))
         let d = secs / 86400, h = (secs % 86400) / 3600, m = (secs % 3600) / 60, s = secs % 60
-        if d > 0 { return "\(d) j \(h) h" }
+        let dU = AppLocale.code == "en" ? "d" : "j"
+        if d > 0 { return "\(d) \(dU) \(h) h" }
         if h > 0 { return "\(h) h \(m) min" }
         if m > 0 { return "\(m) min \(s) s" }
         return "\(s) s"
@@ -293,15 +294,18 @@ struct ChainDetailView: View {
         for (psalmId, a) in session.assignments {
             byUid[a.uid, default: (a.name, [])].ids.append(psalmId)
         }
-        var lines = ["Chaîne de Tehilim — \(chain.subjectLine)", ""]
+        let en = AppLocale.code == "en"
+        var lines = [(en ? "Tehilim chain — " : "Chaîne de Tehilim — ") + chain.subjectLine, ""]
         for entry in byUid.values.sorted(by: { $0.name < $1.name }) {
             let nums = entry.ids.sorted().map(String.init).joined(separator: ", ")
             lines.append("• \(entry.name) : \(nums)")
         }
         let assigned = session.assignedCount
         if assigned < TehilimChain.totalPsalms {
+            let left = TehilimChain.totalPsalms - assigned
             lines.append("")
-            lines.append("Restants : \(TehilimChain.totalPsalms - assigned) Tehilim non attribués.")
+            lines.append(en ? "Remaining: \(left) unassigned Tehilim."
+                            : "Restants : \(left) Tehilim non attribués.")
         }
         return lines.joined(separator: "\n")
     }

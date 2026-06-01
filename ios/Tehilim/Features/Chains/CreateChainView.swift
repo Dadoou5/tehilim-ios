@@ -38,7 +38,7 @@ struct CreateChainView: View {
                             Text(LocalizedStringKey(kind.titleKey)).tag(kind)
                         }
                     }
-                    TextField(detailPlaceholder, text: $detail)
+                    TextField(LocalizedStringKey(detailPlaceholder), text: $detail)
                 } header: {
                     Text("Intention")
                 } footer: {

@@ -40,11 +40,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
+import com.david.tehilim.R
 import com.david.tehilim.core.model.ChainAssignment
 import com.david.tehilim.core.model.TehilimChain
 import com.david.tehilim.core.service.ChainShareLink
@@ -72,6 +75,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
 
     var showJoin by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    val errTaken = stringResource(R.string.chain_error_taken)
 
     val isParticipant = uid != null && participants.any { it.uid == uid }
     val isCreator = uid != null && chain?.creatorUid == uid
@@ -82,16 +86,16 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Chaîne de Tehilim", maxLines = 1) },
+                title = { Text(stringResource(R.string.chain_title), maxLines = 1) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Retour")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
                     }
                 },
                 actions = {
                     chain?.let { c ->
                         IconButton(onClick = { shareText(context, ChainShareLink.shareMessage(context, c)) }) {
-                            Icon(Icons.Outlined.Share, "Partager")
+                            Icon(Icons.Outlined.Share, stringResource(R.string.chain_share_action))
                         }
                     }
                 }
@@ -101,15 +105,18 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
         val c = chain
         if (c == null) {
             Column(Modifier.fillMaxSize().padding(padding), Arrangement.Center, Alignment.CenterHorizontally) {
-                Text("Chargement…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.chain_loading), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             return@Scaffold
         }
 
+        // Finition tablette : on centre + plafonne le contenu à ~1100dp sur
+        // grand écran (pleine largeur sur téléphone) via un padding latéral.
+        val sidePad = (((LocalConfiguration.current.screenWidthDp - 1100) / 2).coerceAtLeast(16)).dp
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 64.dp),
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(start = sidePad, end = sidePad, top = 16.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -125,14 +132,14 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
             if (!isParticipant) {
                 fullSpan {
                     Button(onClick = { showJoin = true }, modifier = Modifier.fillMaxWidth()) {
-                        Text("Rejoindre la chaîne")
+                        Text(stringResource(R.string.chain_join_chain))
                     }
                 }
             } else {
                 fullSpan {
                     Text(
-                        if (open) "Touche un numéro libre pour t'y engager ; un de tes numéros pour le libérer."
-                        else "Sélection close. Touche un de tes Tehilim pour le lire.",
+                        if (open) stringResource(R.string.chain_select_hint_open)
+                        else stringResource(R.string.chain_select_hint_locked),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -150,7 +157,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                                 try {
                                     if (mine) container.chains.deselect(chainId, psalmId)
                                     else container.chains.select(chainId, psalmId, myName)
-                                } catch (e: Exception) { error = "Ce Tehilim vient d'être pris." }
+                                } catch (e: Exception) { error = errTaken }
                             }
                         } else {
                             navController.navigate(Routes.psalmDetail(psalmId, myIds))
@@ -171,13 +178,13 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
         var nameInput by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { showJoin = false },
-            title = { Text("Rejoindre la chaîne") },
+            title = { Text(stringResource(R.string.chain_join_chain)) },
             text = {
                 Column {
-                    Text("Ton nom sera visible par tous les participants.")
+                    Text(stringResource(R.string.chain_name_visible_note))
                     OutlinedTextField(
                         value = nameInput, onValueChange = { nameInput = it },
-                        label = { Text("Ton nom") }, singleLine = true,
+                        label = { Text(stringResource(R.string.chain_your_name)) }, singleLine = true,
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                     )
                 }
@@ -190,9 +197,9 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                         showJoin = false
                         scope.launch { runCatching { container.chains.join(chainId, n) } }
                     }
-                ) { Text("Rejoindre") }
+                ) { Text(stringResource(R.string.chain_join)) }
             },
-            dismissButton = { TextButton(onClick = { showJoin = false }) { Text("Annuler") } }
+            dismissButton = { TextButton(onClick = { showJoin = false }) { Text(stringResource(R.string.action_cancel)) } }
         )
     }
 }
@@ -201,10 +208,10 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
 private fun HeaderCard(c: TehilimChain) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(intentionLabel(c.intentionType), style = MaterialTheme.typography.labelMedium,
+            Text(stringResource(intentionLabel(c.intentionType)), style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary)
             Text(c.subjectLine, style = MaterialTheme.typography.titleLarge)
-            Text("Créée par ${c.creatorName}", style = MaterialTheme.typography.bodySmall,
+            Text(stringResource(R.string.chain_created_by, c.creatorName), style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
@@ -216,8 +223,8 @@ private fun CountdownCard(c: TehilimChain, open: Boolean, now: Long) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                if (open) "Fin de la sélection dans"
-                else if (c.distributed) "Distribuée · lecture jusqu'au" else "Sélection close · lecture jusqu'au",
+                if (open) stringResource(R.string.chain_countdown_selection)
+                else if (c.distributed) stringResource(R.string.chain_countdown_distributed) else stringResource(R.string.chain_countdown_closed),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -234,7 +241,7 @@ private fun ParticipantsCard(count: Int, names: String) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                Text("Participants", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.chain_participants), style = MaterialTheme.typography.titleSmall)
                 Text("$count", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
             }
             if (names.isNotBlank()) {
@@ -250,7 +257,7 @@ private fun ProgressCard(assigned: Int) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                Text("Avancement", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.chain_progress), style = MaterialTheme.typography.titleSmall)
                 Text("$assigned/${TehilimChain.TOTAL_PSALMS}", style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -295,7 +302,7 @@ private fun CreatorControls(
     val scope = rememberCoroutineScope()
     val assigned = assignments.size
     Column(Modifier.fillMaxWidth().padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Maître de la chaîne", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.chain_owner), style = MaterialTheme.typography.titleSmall)
         if (open && assigned < TehilimChain.TOTAL_PSALMS) {
             OutlinedButton(
                 onClick = {
@@ -305,7 +312,7 @@ private fun CreatorControls(
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("M'attribuer les ${TehilimChain.TOTAL_PSALMS - assigned} restants") }
+            ) { Text(stringResource(R.string.chain_assign_remaining, TehilimChain.TOTAL_PSALMS - assigned)) }
         }
         if (open && !c.distributed) {
             Button(
@@ -325,12 +332,12 @@ private fun CreatorControls(
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Clôturer et distribuer") }
+            ) { Text(stringResource(R.string.chain_close_distribute)) }
         }
         OutlinedButton(
-            onClick = { shareText(context, reportText(c, assignments)) },
+            onClick = { shareText(context, reportText(context, c, assignments)) },
             modifier = Modifier.fillMaxWidth()
-        ) { Text("Partager le compte rendu") }
+        ) { Text(stringResource(R.string.chain_share_report)) }
     }
 }
 
@@ -355,18 +362,18 @@ private fun shareText(context: android.content.Context, text: String) {
 }
 
 /** Compte rendu groupé par participant — partageable WhatsApp. */
-private fun reportText(c: TehilimChain, assignments: Map<Int, ChainAssignment>): String {
+private fun reportText(context: android.content.Context, c: TehilimChain, assignments: Map<Int, ChainAssignment>): String {
     val byUid = LinkedHashMap<String, Pair<String, MutableList<Int>>>()
     for ((psalmId, a) in assignments) {
         byUid.getOrPut(a.uid) { a.name to mutableListOf() }.second.add(psalmId)
     }
-    val sb = StringBuilder("Chaîne de Tehilim — ${c.subjectLine}\n")
+    val sb = StringBuilder(context.getString(R.string.chain_share_prefix) + c.subjectLine + "\n")
     byUid.values.sortedBy { it.first }.forEach { (name, ids) ->
         sb.append("\n• $name : ${ids.sorted().joinToString(", ")}")
     }
     val assigned = assignments.size
     if (assigned < TehilimChain.TOTAL_PSALMS) {
-        sb.append("\n\nRestants : ${TehilimChain.TOTAL_PSALMS - assigned} Tehilim non attribués.")
+        sb.append("\n\n" + context.getString(R.string.chain_report_remaining, TehilimChain.TOTAL_PSALMS - assigned))
     }
     return sb.toString()
 }

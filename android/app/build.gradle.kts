@@ -115,7 +115,9 @@ android {
         // Build 26 : « Chaîne de Tehilim » — lecture collective temps réel
         //            (Firebase Firestore) : créer/partager une chaîne, rejoindre,
         //            réserver des Tehilim (verrous), compte rendu WhatsApp.
-        versionCode = 26
+        // Build 27 : optimisation quota Firestore — état des attributions en doc
+        //            unique (board) + écoute coupée en arrière-plan.
+        versionCode = 27
         versionName = "1.0.0"
 
         // Tests

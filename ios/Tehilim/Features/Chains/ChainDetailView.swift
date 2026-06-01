@@ -13,6 +13,7 @@ struct ChainDetailView: View {
     var onClose: (() -> Void)? = nil
 
     @Environment(\.horizontalSizeClass) private var hSize
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var session: ChainSession
     @State private var showJoin = false
     @State private var reading: PsalmNav?
@@ -59,6 +60,11 @@ struct ChainDetailView: View {
         }
         .onReceive(timer) { nowTick = $0 }
         .onAppear { container.chainArchive.remember(chainId) }
+        // Économie de quota : on coupe l'écoute Firestore en arrière-plan et on
+        // la reprend au premier plan.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { session.start() } else { session.stop() }
+        }
         .sheet(isPresented: $showJoin) {
             JoinChainSheet { name in Task { await join(name) } }
         }

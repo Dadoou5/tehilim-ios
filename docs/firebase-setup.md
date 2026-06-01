@@ -59,20 +59,18 @@ service cloud.firestore {
         allow create, update, delete: if signedIn() && uid == request.auth.uid;
       }
 
-      match /assignments/{psalmId} {
+      // Optimisation quota : l'état des attributions tient dans UN doc
+      // `state/board` (map des 150 cases) au lieu de 150 docs.
+      match /state/{doc} {
         allow read: if signedIn();
-        // Réserver un Tehilim : seulement pour soi, chaîne non distribuée et
-        // fenêtre de sélection ouverte (create échoue nativement si déjà pris).
-        allow create: if signedIn()
-          && request.resource.data.uid == request.auth.uid
-          && ( chain().creatorUid == request.auth.uid
-               || (!chain().distributed && chain().selectionDeadline > request.time) );
-        // Libérer/réattribuer : le propriétaire (avant verrouillage) ou le créateur.
-        allow update, delete: if signedIn() && (
+        // Écriture autorisée au créateur, ou à tout participant pendant la
+        // fenêtre de sélection (chaîne non distribuée). La logique « ne prendre
+        // que des cases libres / ne libérer que les siennes » est appliquée
+        // côté client par transaction (Firestore ne sait pas valider par clé de
+        // map). Compromis assumé : app non-sensible, partage entre proches.
+        allow create, update: if signedIn() && (
           chain().creatorUid == request.auth.uid
-          || ( resource.data.uid == request.auth.uid
-               && !chain().distributed
-               && chain().selectionDeadline > request.time )
+          || (!chain().distributed && chain().selectionDeadline > request.time)
         );
       }
     }

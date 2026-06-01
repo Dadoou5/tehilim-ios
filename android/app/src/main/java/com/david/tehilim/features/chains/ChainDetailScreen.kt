@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,9 +65,9 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val chain by remember(chainId) { container.chains.chainFlow(chainId) }.collectAsState(initial = null)
-    val participants by remember(chainId) { container.chains.participantsFlow(chainId) }.collectAsState(initial = emptyList())
-    val assignments by remember(chainId) { container.chains.assignmentsFlow(chainId) }.collectAsState(initial = emptyMap())
+    val chain by remember(chainId) { container.chains.chainFlow(chainId) }.collectAsStateWithLifecycle(initialValue = null)
+    val participants by remember(chainId) { container.chains.participantsFlow(chainId) }.collectAsStateWithLifecycle(initialValue = emptyList())
+    val assignments by remember(chainId) { container.chains.boardFlow(chainId) }.collectAsStateWithLifecycle(initialValue = emptyMap())
     val uid = container.chains.currentUid
 
     var nowTick by remember { mutableStateOf(System.currentTimeMillis()) }

@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -18,14 +19,14 @@ import kotlinx.coroutines.tasks.await
 import java.util.Date
 
 /**
- * Couche d'accès Firestore pour la « Chaîne de Tehilim » (mirror Android de
- * ChainService.swift). Écritures via méthodes suspend ; lectures temps réel
- * via Flows (callbackFlow autour de addSnapshotListener). Identité = uid
- * anonyme Firebase.
+ * Couche Firestore « Chaîne de Tehilim » (mirror Android).
+ *
+ * Optimisation quota : l'état des attributions tient dans **un seul document**
+ * `chains/{id}/state/board` (champ map `a` = psalmId → {u,n,c}) → charger la
+ * grille = 1 lecture au lieu de 150. Verrou atomique via transaction.
  */
 class ChainService(private val appContext: Context) {
 
-    /** Firebase configuré ? (false si google-services.json absent au build.) */
     val isAvailable: Boolean
         get() = FirebaseApp.getApps(appContext).isNotEmpty()
 
@@ -78,43 +79,53 @@ class ChainService(private val appContext: Context) {
             .await()
     }
 
-    /** Réserve un Tehilim (transaction : échoue si déjà pris). */
+    @Suppress("UNCHECKED_CAST")
+    private fun boardMap(snap: DocumentSnapshot): MutableMap<String, Map<String, Any>> =
+        ((snap.get(B_MAP) as? Map<String, Map<String, Any>>) ?: emptyMap()).toMutableMap()
+
+    /** Réserve un Tehilim (transaction sur le doc board ; échoue si déjà pris). */
     suspend fun select(chainId: String, psalmId: Int, name: String) {
         val uid = ensureSignedIn()
-        val ref = assignmentRef(chainId, psalmId)
+        val ref = boardRef(chainId)
         db.runTransaction { txn ->
-            val snap = txn.get(ref)
-            if (snap.exists()) {
-                throw FirebaseFirestoreException(
-                    "Tehilim déjà pris", FirebaseFirestoreException.Code.ABORTED
-                )
+            val a = boardMap(txn.get(ref))
+            if (a.containsKey(psalmId.toString())) {
+                throw FirebaseFirestoreException("Tehilim déjà pris", FirebaseFirestoreException.Code.ABORTED)
             }
-            txn.set(ref, mapOf(
-                F_UID to uid, F_NAME to name, F_BY_CREATOR to false, F_ASSIGNED_AT to Date()
-            ))
+            a[psalmId.toString()] = mapOf(B_U to uid, B_N to name, B_C to false)
+            txn.set(ref, mapOf(B_MAP to a), SetOptions.merge())
             null
         }.await()
     }
 
     suspend fun deselect(chainId: String, psalmId: Int) {
-        ensureSignedIn()
-        assignmentRef(chainId, psalmId).delete().await()
+        val uid = ensureSignedIn()
+        val ref = boardRef(chainId)
+        db.runTransaction { txn ->
+            val a = boardMap(txn.get(ref))
+            val entry = a[psalmId.toString()]
+            if (entry != null && entry[B_U] == uid) {
+                a.remove(psalmId.toString())
+                txn.set(ref, mapOf(B_MAP to a), SetOptions.merge())
+            }
+            null
+        }.await()
     }
 
     /** (Créateur) attribue tous les Tehilim restants à lui-même. */
     suspend fun assignRemaining(chainId: String, name: String) {
         val uid = ensureSignedIn()
-        val col = db.collection(CHAINS).document(chainId).collection(ASSIGNMENTS)
-        val taken = col.get().await().documents.mapNotNull { it.id.toIntOrNull() }.toSet()
-        val batch = db.batch()
-        for (p in 1..TehilimChain.TOTAL_PSALMS) {
-            if (p !in taken) {
-                batch.set(col.document(p.toString()), mapOf(
-                    F_UID to uid, F_NAME to name, F_BY_CREATOR to true, F_ASSIGNED_AT to Date()
-                ))
+        val ref = boardRef(chainId)
+        db.runTransaction { txn ->
+            val a = boardMap(txn.get(ref))
+            for (p in 1..TehilimChain.TOTAL_PSALMS) {
+                if (!a.containsKey(p.toString())) {
+                    a[p.toString()] = mapOf(B_U to uid, B_N to name, B_C to true)
+                }
             }
-        }
-        batch.commit().await()
+            txn.set(ref, mapOf(B_MAP to a), SetOptions.merge())
+            null
+        }.await()
     }
 
     suspend fun distribute(chainId: String) {
@@ -122,11 +133,13 @@ class ChainService(private val appContext: Context) {
         db.collection(CHAINS).document(chainId).update(F_DISTRIBUTED, true).await()
     }
 
+    private fun boardRef(chainId: String) =
+        db.collection(CHAINS).document(chainId).collection(STATE).document(BOARD)
+
+    // MARK: - Lecture ponctuelle
+
     suspend fun fetchChain(id: String): TehilimChain? =
         chainFrom(db.collection(CHAINS).document(id).get().await())
-
-    private fun assignmentRef(chainId: String, psalmId: Int) =
-        db.collection(CHAINS).document(chainId).collection(ASSIGNMENTS).document(psalmId.toString())
 
     // MARK: - Flows temps réel
 
@@ -146,13 +159,9 @@ class ChainService(private val appContext: Context) {
         awaitClose { reg.remove() }
     }
 
-    fun assignmentsFlow(chainId: String): Flow<Map<Int, ChainAssignment>> = callbackFlow {
-        val reg = db.collection(CHAINS).document(chainId).collection(ASSIGNMENTS)
-            .addSnapshotListener { snap, _ ->
-                val map = snap?.documents?.mapNotNull { assignmentFrom(it) }
-                    ?.associateBy { it.psalmId } ?: emptyMap()
-                trySend(map)
-            }
+    /** Écoute le doc board unique → map psalmId → attribution. */
+    fun boardFlow(chainId: String): Flow<Map<Int, ChainAssignment>> = callbackFlow {
+        val reg = boardRef(chainId).addSnapshotListener { snap, _ -> trySend(boardFrom(snap)) }
         awaitClose { reg.remove() }
     }
 
@@ -191,22 +200,32 @@ class ChainService(private val appContext: Context) {
         )
     }
 
-    private fun assignmentFrom(snap: DocumentSnapshot): ChainAssignment? {
-        val psalmId = snap.id.toIntOrNull() ?: return null
-        val uid = snap.getString(F_UID) ?: return null
-        return ChainAssignment(
-            psalmId = psalmId,
-            uid = uid,
-            name = snap.getString(F_NAME) ?: "—",
-            byCreator = snap.getBoolean(F_BY_CREATOR) ?: false,
-            assignedAtMillis = millis(snap, F_ASSIGNED_AT)
-        )
+    @Suppress("UNCHECKED_CAST")
+    private fun boardFrom(snap: DocumentSnapshot?): Map<Int, ChainAssignment> {
+        val map = (snap?.get(B_MAP) as? Map<String, Map<String, Any>>) ?: return emptyMap()
+        val out = HashMap<Int, ChainAssignment>()
+        for ((k, v) in map) {
+            val pid = k.toIntOrNull() ?: continue
+            val uid = v[B_U] as? String ?: continue
+            out[pid] = ChainAssignment(
+                psalmId = pid, uid = uid,
+                name = v[B_N] as? String ?: "—",
+                byCreator = v[B_C] as? Boolean ?: false,
+                assignedAtMillis = 0L
+            )
+        }
+        return out
     }
 
     companion object {
         const val CHAINS = "chains"
         const val PARTICIPANTS = "participants"
-        const val ASSIGNMENTS = "assignments"
+        const val STATE = "state"
+        const val BOARD = "board"
+        const val B_MAP = "a"
+        const val B_U = "u"
+        const val B_N = "n"
+        const val B_C = "c"
         const val F_NAME = "name"
         const val F_INTENTION_TYPE = "intentionType"
         const val F_INTENTION_DETAIL = "intentionDetail"
@@ -219,9 +238,6 @@ class ChainService(private val appContext: Context) {
         const val F_EXPIRES_AT = "expiresAt"
         const val F_IS_CREATOR = "isCreator"
         const val F_JOINED_AT = "joinedAt"
-        const val F_UID = "uid"
-        const val F_BY_CREATOR = "byCreator"
-        const val F_ASSIGNED_AT = "assignedAt"
         const val EXPIRY_GRACE_MILLIS = 7L * 24 * 3600 * 1000
     }
 }

@@ -5,36 +5,34 @@ import FirebaseAuth
 
 /// Couche d'accès Firestore pour la feature « Chaîne de Tehilim ».
 ///
-/// Toutes les écritures passent par ici. Les lectures **temps réel** sont
-/// fournies par `ChainSession` (un `ObservableObject` par chaîne ouverte).
-/// L'identité est l'**uid anonyme** Firebase (stable par appareil).
+/// **Optimisation quota** : l'état des attributions est stocké dans **un seul
+/// document** `chains/{id}/state/board` (champ map `a` = psalmId → {u,n,c})
+/// plutôt qu'en 150 docs. Charger la grille = **1 lecture** au lieu de 150
+/// (crucial quand un lien WhatsApp est ouvert par des dizaines de personnes).
+/// Le verrou reste atomique via une **transaction** sur ce doc unique.
 final class ChainService {
 
-    /// Firebase est-il configuré ? (false si `GoogleService-Info.plist` absent →
-    /// la feature reste masquée, l'app fonctionne 100 % en local.)
     static var isAvailable: Bool { FirebaseApp.app() != nil }
 
     private var db: Firestore { Firestore.firestore() }
 
-    // Noms de champs Firestore — centralisés pour cohérence iOS/Android.
     enum K {
         static let chains = "chains"
         static let participants = "participants"
-        static let assignments = "assignments"
+        static let state = "state", board = "board"
+        // Clés courtes dans la map du board (limite la taille du doc).
+        static let bMap = "a", bU = "u", bN = "n", bC = "c"
         static let name = "name", intentionType = "intentionType", intentionDetail = "intentionDetail"
         static let creatorUid = "creatorUid", creatorName = "creatorName"
         static let createdAt = "createdAt", selectionDeadline = "selectionDeadline"
         static let readingDeadline = "readingDeadline", distributed = "distributed", expiresAt = "expiresAt"
         static let isCreator = "isCreator", joinedAt = "joinedAt"
-        static let uid = "uid", byCreator = "byCreator", assignedAt = "assignedAt"
     }
 
-    /// Marge ajoutée à la fin de lecture avant suppression cloud (TTL).
     static let expiryGraceSeconds: TimeInterval = 7 * 24 * 3600
 
     var currentUid: String? { Auth.auth().currentUser?.uid }
 
-    /// Retourne l'uid courant, en se connectant anonymement si besoin.
     @discardableResult
     func ensureSignedIn() async throws -> String {
         if let uid = Auth.auth().currentUser?.uid { return uid }
@@ -44,7 +42,6 @@ final class ChainService {
 
     // MARK: - Écritures
 
-    /// Crée une chaîne (le créateur devient participant). Retourne l'id.
     func createChain(
         name: String,
         intention: ChainIntention,
@@ -75,7 +72,6 @@ final class ChainService {
         return chainRef.documentID
     }
 
-    /// Rejoint une chaîne (crée/maj le participant pour l'uid courant).
     func join(chainId: String, name: String) async throws {
         let uid = try await ensureSignedIn()
         try await db.collection(K.chains).document(chainId)
@@ -83,78 +79,86 @@ final class ChainService {
             .setData([K.name: name, K.isCreator: false, K.joinedAt: Date()], merge: true)
     }
 
-    /// Réserve un Tehilim (transaction : échoue si déjà pris). `name` dénormalisé.
+    /// Réserve un Tehilim (transaction sur le doc board : échoue si déjà pris).
     func select(chainId: String, psalmId: Int, name: String) async throws {
         let uid = try await ensureSignedIn()
-        let ref = assignmentRef(chainId: chainId, psalmId: psalmId)
+        let ref = boardRef(chainId)
         _ = try await db.runTransaction { txn, errorPtr -> Any? in
             let snap: DocumentSnapshot
             do { snap = try txn.getDocument(ref) }
             catch { errorPtr?.pointee = error as NSError; return nil }
-            if snap.exists {
-                errorPtr?.pointee = NSError(
-                    domain: "ChainService", code: 409,
-                    userInfo: [NSLocalizedDescriptionKey: "Tehilim déjà pris"]
-                )
+            var a = (snap.data()?[K.bMap] as? [String: [String: Any]]) ?? [:]
+            if a["\(psalmId)"] != nil {
+                errorPtr?.pointee = NSError(domain: "ChainService", code: 409,
+                    userInfo: [NSLocalizedDescriptionKey: "Tehilim déjà pris"])
                 return nil
             }
-            txn.setData([
-                K.uid: uid, K.name: name, K.byCreator: false, K.assignedAt: Date()
-            ], forDocument: ref)
+            a["\(psalmId)"] = [K.bU: uid, K.bN: name, K.bC: false]
+            txn.setData([K.bMap: a], forDocument: ref, merge: true)
             return nil
         }
     }
 
-    /// Libère un Tehilim que l'on a soi-même réservé (ou créateur, via règles).
+    /// Libère un Tehilim réservé par soi-même.
     func deselect(chainId: String, psalmId: Int) async throws {
-        try await ensureSignedIn()
-        try await assignmentRef(chainId: chainId, psalmId: psalmId).delete()
+        let uid = try await ensureSignedIn()
+        let ref = boardRef(chainId)
+        _ = try await db.runTransaction { txn, errorPtr -> Any? in
+            let snap: DocumentSnapshot
+            do { snap = try txn.getDocument(ref) }
+            catch { errorPtr?.pointee = error as NSError; return nil }
+            var a = (snap.data()?[K.bMap] as? [String: [String: Any]]) ?? [:]
+            if let entry = a["\(psalmId)"], (entry[K.bU] as? String) == uid {
+                a.removeValue(forKey: "\(psalmId)")
+                txn.setData([K.bMap: a], forDocument: ref, merge: true)
+            }
+            return nil
+        }
     }
 
     /// (Créateur) Attribue tous les Tehilim restants à lui-même.
     func assignRemaining(chainId: String, name: String) async throws {
         let uid = try await ensureSignedIn()
-        let col = db.collection(K.chains).document(chainId).collection(K.assignments)
-        let existing = try await col.getDocuments()
-        let taken = Set(existing.documents.compactMap { Int($0.documentID) })
-        let batch = db.batch()
-        for p in 1...TehilimChain.totalPsalms where !taken.contains(p) {
-            batch.setData(
-                [K.uid: uid, K.name: name, K.byCreator: true, K.assignedAt: Date()],
-                forDocument: col.document("\(p)")
-            )
+        let ref = boardRef(chainId)
+        _ = try await db.runTransaction { txn, errorPtr -> Any? in
+            let snap: DocumentSnapshot
+            do { snap = try txn.getDocument(ref) }
+            catch { errorPtr?.pointee = error as NSError; return nil }
+            var a = (snap.data()?[K.bMap] as? [String: [String: Any]]) ?? [:]
+            for p in 1...TehilimChain.totalPsalms where a["\(p)"] == nil {
+                a["\(p)"] = [K.bU: uid, K.bN: name, K.bC: true]
+            }
+            txn.setData([K.bMap: a], forDocument: ref, merge: true)
+            return nil
         }
-        try await batch.commit()
     }
 
-    /// (Créateur) Marque la chaîne distribuée → verrouille la sélection.
     func distribute(chainId: String) async throws {
         try await ensureSignedIn()
         try await db.collection(K.chains).document(chainId)
             .updateData([K.distributed: true])
     }
 
-    private func assignmentRef(chainId: String, psalmId: Int) -> DocumentReference {
-        db.collection(K.chains).document(chainId)
-            .collection(K.assignments).document("\(psalmId)")
+    private func boardRef(_ chainId: String) -> DocumentReference {
+        db.collection(K.chains).document(chainId).collection(K.state).document(K.board)
     }
 
     // MARK: - Lecture ponctuelle
 
-    /// Charge une chaîne une fois (utilisé à l'ouverture par lien avant la session live).
     func fetchChain(id: String) async throws -> TehilimChain? {
         let doc = try await db.collection(K.chains).document(id).getDocument()
         return Self.chain(from: doc)
     }
 
+    func fetchBoard(chainId: String) async throws -> [Int: ChainAssignment] {
+        let snap = try await boardRef(chainId).getDocument()
+        return Self.board(from: snap)
+    }
+
     // MARK: - Session temps réel
 
-    /// Crée une session live (3 listeners) pour une chaîne. À retenir par la vue
-    /// via `@StateObject` ; les listeners se détachent au `deinit`.
     @MainActor
-    func session(chainId: String) -> ChainSession {
-        ChainSession(chainId: chainId)
-    }
+    func session(chainId: String) -> ChainSession { ChainSession(chainId: chainId) }
 
     // MARK: - Mapping Firestore → modèles
 
@@ -190,46 +194,53 @@ final class ChainService {
         )
     }
 
-    static func assignment(from doc: DocumentSnapshot) -> ChainAssignment? {
-        guard let d = doc.data(), let uid = d[K.uid] as? String else { return nil }
-        return ChainAssignment(
-            id: doc.documentID,
-            uid: uid,
-            name: d[K.name] as? String ?? "—",
-            byCreator: d[K.byCreator] as? Bool ?? false,
-            assignedAt: (d[K.assignedAt] as? Timestamp)?.dateValue() ?? Date()
-        )
+    /// Décode la map du doc board → dictionnaire psalmId → attribution.
+    static func board(from snap: DocumentSnapshot) -> [Int: ChainAssignment] {
+        guard let map = snap.data()?[K.bMap] as? [String: [String: Any]] else { return [:] }
+        var out: [Int: ChainAssignment] = [:]
+        for (key, v) in map {
+            guard let pid = Int(key), let uid = v[K.bU] as? String else { continue }
+            out[pid] = ChainAssignment(
+                id: key, uid: uid,
+                name: v[K.bN] as? String ?? "—",
+                byCreator: v[K.bC] as? Bool ?? false,
+                assignedAt: Date()
+            )
+        }
+        return out
     }
 }
 
-/// Session temps réel d'**une** chaîne ouverte : écoute le doc chaîne + les
-/// participants + les attributions, et republie en `@Published` pour SwiftUI.
+/// Session temps réel d'**une** chaîne : écoute le doc chaîne + participants +
+/// le doc board (attributions). `start()/stop()` permettent de couper l'écoute
+/// en arrière-plan (économie de quota) et de la reprendre au premier plan.
 @MainActor
 final class ChainSession: ObservableObject {
     @Published private(set) var chain: TehilimChain?
     @Published private(set) var participants: [ChainParticipant] = []
-    /// psalmId (1..150) → attribution.
     @Published private(set) var assignments: [Int: ChainAssignment] = [:]
     @Published private(set) var loadError: String?
 
     let chainId: String
-    /// Lu dynamiquement : la connexion anonyme peut se terminer après l'init.
     var currentUid: String? { Auth.auth().currentUser?.uid }
 
     private var listeners: [ListenerRegistration] = []
 
     init(chainId: String) {
         self.chainId = chainId
+        start()
+    }
+
+    /// Attache les 3 listeners (idempotent).
+    func start() {
+        guard listeners.isEmpty else { return }
         let db = Firestore.firestore()
         let chainRef = db.collection(ChainService.K.chains).document(chainId)
 
         listeners.append(chainRef.addSnapshotListener { [weak self] snap, _ in
             guard let self, let snap else { return }
-            if let c = ChainService.chain(from: snap) {
-                self.chain = c
-            } else if !snap.exists {
-                self.loadError = "introuvable"
-            }
+            if let c = ChainService.chain(from: snap) { self.chain = c }
+            else if !snap.exists { self.loadError = "introuvable" }
         })
 
         listeners.append(chainRef.collection(ChainService.K.participants)
@@ -240,20 +251,22 @@ final class ChainSession: ObservableObject {
                     .sorted { $0.joinedAt < $1.joinedAt }
             })
 
-        listeners.append(chainRef.collection(ChainService.K.assignments)
+        listeners.append(chainRef.collection(ChainService.K.state).document(ChainService.K.board)
             .addSnapshotListener { [weak self] snap, _ in
                 guard let self, let snap else { return }
-                var map: [Int: ChainAssignment] = [:]
-                for doc in snap.documents {
-                    if let a = ChainService.assignment(from: doc) { map[a.psalmId] = a }
-                }
-                self.assignments = map
+                self.assignments = ChainService.board(from: snap)
             })
+    }
+
+    /// Détache les listeners (arrière-plan / écran fermé) → plus aucune lecture.
+    func stop() {
+        listeners.forEach { $0.remove() }
+        listeners.removeAll()
     }
 
     deinit { listeners.forEach { $0.remove() } }
 
-    // MARK: - Dérivés pour l'UI
+    // MARK: - Dérivés pour l'UI (inchangés)
 
     var assignedCount: Int { assignments.count }
     var progress: Double { Double(assignedCount) / Double(TehilimChain.totalPsalms) }
@@ -267,7 +280,6 @@ final class ChainSession: ObservableObject {
         guard let uid = currentUid, let chain else { return false }
         return chain.creatorUid == uid
     }
-    /// Numéros des Tehilim réservés par l'utilisateur courant.
     var myPsalmIds: [Int] {
         guard let uid = currentUid else { return [] }
         return assignments.values.filter { $0.uid == uid }.map(\.psalmId).sorted()

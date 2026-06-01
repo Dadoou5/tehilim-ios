@@ -88,6 +88,9 @@ struct HomeView: View {
                         NavigationLink(destination: Psalm119HomeView()) {
                             ExploreCard(symbol: "textformat", title: "119 - AlphaBeta")
                         }
+                        NavigationLink(destination: MyChainsView()) {
+                            ExploreCard(symbol: "link", title: "Chaîne de Tehilim")
+                        }
                         Button { router.go(.psalms, psalmsSegment: 1, resetPath: true) } label: {
                             ExploreCard(symbol: "list.bullet", title: "Tous (1–150)")
                         }

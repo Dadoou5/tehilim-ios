@@ -1,5 +1,8 @@
 import SwiftUI
 
+/// Boîte Identifiable pour piloter la présentation `.sheet(item:)` d'une chaîne.
+private struct ChainOpenBox: Identifiable { let id: String }
+
 struct RootTabView: View {
     @EnvironmentObject private var container: AppContainer
     @StateObject private var router = TabRouter()
@@ -18,6 +21,8 @@ struct RootTabView: View {
     /// `@State` mis à jour via `.onReceive`/`.onAppear`, le changement survient
     /// pendant que la vue est vivante → la feuille se présente à coup sûr.
     @State private var importPayload: PrayerShareLink.Payload?
+    /// Chaîne à ouvrir via lien (`/c/?id=…`), miroir de `container.pendingChainOpen`.
+    @State private var chainOpen: ChainOpenBox?
 
     var body: some View {
         TabView(selection: tabBinding) {
@@ -45,6 +50,7 @@ struct RootTabView: View {
         .environmentObject(router)
         .environmentObject(container.favorites)
         .environmentObject(container.savedPrayers)
+        .environmentObject(container.chainArchive)
         .onAppear { applyPendingRoute() }
         .onChange(of: notifications.pendingRoute) { _, _ in applyPendingRoute() }
         .onChange(of: router.pendingPathReset) { _, target in applyPathReset(target) }
@@ -74,6 +80,21 @@ struct RootTabView: View {
             PrayerImportView(payload: payload)
                 .environmentObject(container)
                 .environmentObject(container.savedPrayers)
+        }
+        // Ouverture d'une chaîne via lien (`/c/?id=…`) — présentée en sheet avec
+        // sa propre NavigationStack (la lecture d'un Tehilim s'y empile).
+        .onReceive(container.$pendingChainOpen) { id in
+            if let id { chainOpen = ChainOpenBox(id: id) }
+        }
+        .onAppear {
+            if let id = container.pendingChainOpen { chainOpen = ChainOpenBox(id: id) }
+        }
+        .sheet(item: $chainOpen, onDismiss: {
+            container.pendingChainOpen = nil
+        }) { box in
+            NavigationStack { ChainDetailView(chainId: box.id) }
+                .environmentObject(container)
+                .environmentObject(container.chainArchive)
         }
     }
 

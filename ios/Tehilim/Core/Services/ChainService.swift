@@ -153,7 +153,7 @@ final class ChainService {
     /// via `@StateObject` ; les listeners se détachent au `deinit`.
     @MainActor
     func session(chainId: String) -> ChainSession {
-        ChainSession(chainId: chainId, db: db, currentUid: currentUid)
+        ChainSession(chainId: chainId)
     }
 
     // MARK: - Mapping Firestore → modèles
@@ -213,13 +213,14 @@ final class ChainSession: ObservableObject {
     @Published private(set) var loadError: String?
 
     let chainId: String
-    let currentUid: String?
+    /// Lu dynamiquement : la connexion anonyme peut se terminer après l'init.
+    var currentUid: String? { Auth.auth().currentUser?.uid }
 
     private var listeners: [ListenerRegistration] = []
 
-    init(chainId: String, db: Firestore, currentUid: String?) {
+    init(chainId: String) {
         self.chainId = chainId
-        self.currentUid = currentUid
+        let db = Firestore.firestore()
         let chainRef = db.collection(ChainService.K.chains).document(chainId)
 
         listeners.append(chainRef.addSnapshotListener { [weak self] snap, _ in

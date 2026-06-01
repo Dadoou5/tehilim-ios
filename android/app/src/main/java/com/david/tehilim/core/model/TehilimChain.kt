@@ -55,6 +55,21 @@ data class TehilimChain(
     companion object {
         /** Le livre entier. */
         const val TOTAL_PSALMS = 150
+
+        /** Compresse une liste de numéros en plages pour le compte rendu :
+         *  [1,2,3,5,8,9] → « 1 à 3, 5, 8 à 9 ». `sep` = « à »/« to ». */
+        fun compressRanges(ids: List<Int>, sep: String): String {
+            val s = ids.sorted()
+            if (s.isEmpty()) return ""
+            val parts = mutableListOf<String>()
+            var start = s.first(); var prev = s.first()
+            fun flush() { parts.add(if (start == prev) "$start" else "$start $sep $prev") }
+            for (n in s.drop(1)) {
+                if (n == prev + 1) prev = n else { flush(); start = n; prev = n }
+            }
+            flush()
+            return parts.joinToString(", ")
+        }
     }
 }
 

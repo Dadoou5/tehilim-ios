@@ -309,6 +309,7 @@
     <string name="chain_create_error">Couldn\'t create. Check your connection.</string>
     <string name="chain_report_remaining">Remaining: %1$d unassigned Tehilim.</string>
     <string name="chain_error_taken">This Tehilim was just taken.</string>
+    <string name="chain_range_to">to</string>
     <string name="chain_share_action">Share</string>
 
     <!-- Share / import a prayer (tehilim://prayer link) -->

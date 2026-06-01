@@ -87,10 +87,11 @@ struct MyChainsView: View {
     private func archiveReport(_ snap: ChainArchiveSnapshot) -> String {
         var byName: [String: [Int]] = [:]
         for (k, name) in snap.assignments { byName[name, default: []].append(Int(k) ?? 0) }
-        let prefix = AppLocale.code == "en" ? "Tehilim chain — " : "Chaîne de Tehilim — "
+        let en = AppLocale.code == "en"
+        let prefix = en ? "Tehilim chain — " : "Chaîne de Tehilim — "
         var lines = [prefix + snap.subjectLine, ""]
         for (name, ids) in byName.sorted(by: { $0.key < $1.key }) {
-            lines.append("• \(name) : \(ids.sorted().map(String.init).joined(separator: ", "))")
+            lines.append("• \(name) : \(TehilimChain.compressRanges(ids, separator: en ? "to" : "à"))")
         }
         return lines.joined(separator: "\n")
     }

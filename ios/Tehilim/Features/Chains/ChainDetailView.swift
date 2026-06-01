@@ -297,7 +297,7 @@ struct ChainDetailView: View {
         let en = AppLocale.code == "en"
         var lines = [(en ? "Tehilim chain — " : "Chaîne de Tehilim — ") + chain.subjectLine, ""]
         for entry in byUid.values.sorted(by: { $0.name < $1.name }) {
-            let nums = entry.ids.sorted().map(String.init).joined(separator: ", ")
+            let nums = TehilimChain.compressRanges(entry.ids, separator: en ? "to" : "à")
             lines.append("• \(entry.name) : \(nums)")
         }
         let assigned = session.assignedCount

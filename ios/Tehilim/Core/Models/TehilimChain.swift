@@ -43,6 +43,21 @@ struct TehilimChain: Identifiable, Codable, Equatable {
     /// Nombre total de Tehilim d'une chaîne — le livre entier.
     static let totalPsalms = 150
 
+    /// Compresse une liste de numéros en **plages** lisibles pour le compte
+    /// rendu : `[1,2,3,5,8,9]` → « 1 à 3, 5, 8 à 9 ». `separator` = « à »/« to ».
+    static func compressRanges(_ ids: [Int], separator: String) -> String {
+        let s = ids.sorted()
+        guard let first = s.first else { return "" }
+        var parts: [String] = []
+        var start = first, prev = first
+        func flush() { parts.append(start == prev ? "\(start)" : "\(start) \(separator) \(prev)") }
+        for n in s.dropFirst() {
+            if n == prev + 1 { prev = n } else { flush(); start = n; prev = n }
+        }
+        flush()
+        return parts.joined(separator: ", ")
+    }
+
     let id: String
     var name: String
     var intentionType: ChainIntention

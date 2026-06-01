@@ -112,7 +112,8 @@ private fun shareArchive(context: android.content.Context, snap: ChainArchiveSna
     val byName = LinkedHashMap<String, MutableList<Int>>()
     snap.assignments.forEach { (k, name) -> byName.getOrPut(name) { mutableListOf() }.add(k.toIntOrNull() ?: 0) }
     val sb = StringBuilder(context.getString(R.string.chain_share_prefix) + snap.subjectLine + "\n")
-    byName.toSortedMap().forEach { (name, ids) -> sb.append("\n• $name : ${ids.sorted().joinToString(", ")}") }
+    val sep = context.getString(R.string.chain_range_to)
+    byName.toSortedMap().forEach { (name, ids) -> sb.append("\n• $name : ${com.david.tehilim.core.model.TehilimChain.compressRanges(ids, sep)}") }
     val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, sb.toString()) }
     context.startActivity(Intent.createChooser(intent, null))
 }

@@ -368,8 +368,9 @@ private fun reportText(context: android.content.Context, c: TehilimChain, assign
         byUid.getOrPut(a.uid) { a.name to mutableListOf() }.second.add(psalmId)
     }
     val sb = StringBuilder(context.getString(R.string.chain_share_prefix) + c.subjectLine + "\n")
+    val sep = context.getString(R.string.chain_range_to)
     byUid.values.sortedBy { it.first }.forEach { (name, ids) ->
-        sb.append("\n• $name : ${ids.sorted().joinToString(", ")}")
+        sb.append("\n• $name : ${TehilimChain.compressRanges(ids, sep)}")
     }
     val assigned = assignments.size
     if (assigned < TehilimChain.TOTAL_PSALMS) {

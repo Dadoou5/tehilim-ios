@@ -309,6 +309,7 @@
     <string name="chain_create_error">Création impossible. Vérifie ta connexion.</string>
     <string name="chain_report_remaining">Restants : %1$d Tehilim non attribués.</string>
     <string name="chain_error_taken">Ce Tehilim vient d\'être pris.</string>
+    <string name="chain_reading_end_label">Fin de lecture</string>
     <string name="chain_range_to">à</string>
     <string name="chain_share_action">Partager</string>
 

@@ -203,7 +203,8 @@ struct ChainDetailView: View {
                 currentUid: session.currentUid,
                 selectionOpen: open,
                 onToggle: { id in Task { await toggle(id) } },
-                onRead: { id in reading = PsalmNav(id: id) }
+                onRead: { id in reading = PsalmNav(id: id) },
+                minutesFor: { container.psalmRepository.psalm(id: $0)?.estimatedReadingMinutes ?? 1 }
             )
         }
     }

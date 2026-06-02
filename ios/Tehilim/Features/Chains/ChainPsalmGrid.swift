@@ -11,6 +11,9 @@ struct ChainPsalmGrid: View {
     let onToggle: (Int) -> Void
     /// Action de lecture (phase verrouillée) — ouvre le Tehilim.
     let onRead: (Int) -> Void
+    /// Temps de lecture estimé (min) par numéro de Tehilim — affiché sur les
+    /// cases libres (remplacé par le nom dès qu'un Tehilim est réservé).
+    let minutesFor: (Int) -> Int
 
     @Environment(\.horizontalSizeClass) private var hSize
 
@@ -45,11 +48,17 @@ struct ChainPsalmGrid: View {
                     .font(.callout.weight(.semibold))
                     .foregroundStyle(isMine ? Color.white : .primary)
                 if let assignment {
+                    // Pris → le nom remplace le temps de lecture.
                     Text(assignment.name)
                         .font(.system(size: 9))
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .foregroundStyle(isMine ? Color.white.opacity(0.9) : .secondary)
+                } else {
+                    // Libre → temps de lecture estimé.
+                    Text("~\(minutesFor(id)) min")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.tertiary)
                 }
             }
             .frame(maxWidth: .infinity)

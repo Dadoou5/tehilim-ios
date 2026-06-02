@@ -81,6 +81,17 @@ struct PsalmDetailView: View {
                         .padding(.vertical, 12)
                         .accessibilityAddTraits(.isHeader)
                 }
+                // Temps de lecture approximatif.
+                HStack(spacing: 5) {
+                    Image(systemName: "clock")
+                    Text("~\(psalm.estimatedReadingMinutes) min")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 6)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Temps de lecture environ \(psalm.estimatedReadingMinutes) minutes")
                 Divider().padding(.horizontal, 16)
                 if twoColumnText && psalm.verses.count >= 6 {
                     twoColumnVerses(psalm: psalm)

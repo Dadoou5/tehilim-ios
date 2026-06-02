@@ -151,7 +151,8 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                     val a = assignments[psalmId]
                     val mine = a != null && a.uid == uid
                     val takenByOther = a != null && !mine
-                    PsalmCell(psalmId, a?.name, mine, takenByOther, enabled = !(open && takenByOther)) {
+                    val minutes = container.psalmRepository.psalm(psalmId)?.estimatedReadingMinutes ?: 1
+                    PsalmCell(psalmId, a?.name, minutes, mine, takenByOther, enabled = !(open && takenByOther)) {
                         if (open) {
                             if (takenByOther) return@PsalmCell
                             scope.launch {
@@ -272,7 +273,8 @@ private fun ProgressCard(assigned: Int) {
 
 @Composable
 private fun PsalmCell(
-    id: Int, name: String?, mine: Boolean, takenByOther: Boolean, enabled: Boolean, onClick: () -> Unit
+    id: Int, name: String?, minutes: Int, mine: Boolean, takenByOther: Boolean,
+    enabled: Boolean, onClick: () -> Unit
 ) {
     val bg = when {
         mine -> MaterialTheme.colorScheme.primary
@@ -286,9 +288,13 @@ private fun PsalmCell(
     ) {
         Column(Modifier.padding(2.dp), Arrangement.Center, Alignment.CenterHorizontally) {
             Text("$id", style = MaterialTheme.typography.labelLarge, color = fg)
+            // Pris → le nom remplace le temps de lecture ; libre → « ~X min ».
             if (name != null) {
                 Text(name, style = MaterialTheme.typography.labelSmall, maxLines = 1,
                     color = if (mine) fg else MaterialTheme.colorScheme.onSurfaceVariant)
+            } else {
+                Text("~$minutes min", style = MaterialTheme.typography.labelSmall, maxLines = 1,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

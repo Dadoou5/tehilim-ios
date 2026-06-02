@@ -16,6 +16,13 @@ data class Psalm(
     val hebrewTitle: String? = null,
     val verses: List<Verse> = emptyList()
 ) {
+    /** Temps de lecture approximatif (min), ~110 mots hébreux/min. Min 1. */
+    val estimatedReadingMinutes: Int
+        get() {
+            val words = verses.sumOf { v -> v.hebrew.split(Regex("\\s+")).count { it.isNotBlank() } }
+            return maxOf(1, Math.round(words / 110.0).toInt())
+        }
+
     companion object {
         /// Mêmes ranges que iOS — répartition canonique des 150 Tehilim en 5 livres.
         val bookRanges: Map<Int, IntRange> = mapOf(

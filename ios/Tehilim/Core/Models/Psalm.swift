@@ -32,6 +32,16 @@ struct Verse: Codable, Identifiable, Hashable {
 }
 
 extension Psalm {
+    /// Temps de lecture **approximatif** en minutes, estimé à partir du nombre
+    /// de mots hébreux (~110 mots/min, lecture dévotionnelle vocalisée).
+    /// Minimum 1 min. Indication, pas une mesure exacte.
+    var estimatedReadingMinutes: Int {
+        let words = verses.reduce(0) { acc, v in
+            acc + v.hebrew.split(whereSeparator: { $0.isWhitespace }).count
+        }
+        return max(1, Int((Double(words) / 110.0).rounded()))
+    }
+
     static let bookRanges: [Int: ClosedRange<Int>] = [
         1: 1...41,
         2: 42...72,

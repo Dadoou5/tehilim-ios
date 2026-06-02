@@ -5,7 +5,8 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.1.10" apply false
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.10" apply false
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10" apply false
-    // Feature « Chaîne de Tehilim » : Supabase (supabase-kt + Ktor, depuis
-    // mavenCentral) → aucun plugin Gradle à appliquer (contrairement à
-    // l'ancien google-services de Firebase).
+    // Base de données : Supabase (aucun plugin Gradle). FCM (messagerie push,
+    // notifications de chaîne) réintroduit le plugin google-services, appliqué
+    // conditionnellement dans :app si google-services.json est présent.
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }

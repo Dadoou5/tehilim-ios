@@ -12,5 +12,10 @@
     <array>
         <string>applinks:dadoou5.github.io</string>
     </array>
+    <!-- Notifications push de chaîne. « development » pour les builds Xcode/dev
+         (token sandbox → APNS_HOST=api.sandbox.push.apple.com côté Edge
+         Function). Pour l'App Store, Xcode bascule en « production ». -->
+    <key>aps-environment</key>
+    <string>development</string>
 </dict>
 </plist>

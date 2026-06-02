@@ -137,6 +137,18 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         c.from(CHAINS).delete { filter { eq("id", chainId) } }
     }
 
+    /** Enregistre / met à jour le token push de cet appareil (notifs de chaîne). */
+    suspend fun registerDeviceToken(token: String, platform: String = "android", locale: String) {
+        val c = client ?: return
+        val uid = runCatching { ensureSignedIn() }.getOrNull() ?: return
+        runCatching {
+            c.from("device_tokens").upsert(
+                DeviceTokenRow(token = token, uid = uid, platform = platform,
+                               locale = if (locale == "en") "en" else "fr")
+            ) { onConflict = "token" }
+        }
+    }
+
     // MARK: - Lectures ponctuelles
 
     suspend fun fetchChain(id: String): TehilimChain? {
@@ -298,6 +310,14 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         val uid: String,
         val name: String,
         @SerialName("by_creator") val byCreator: Boolean
+    )
+
+    @Serializable
+    private data class DeviceTokenRow(
+        val token: String,
+        val uid: String,
+        val platform: String,
+        val locale: String
     )
 
     companion object {

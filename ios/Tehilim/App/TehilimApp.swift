@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import UserNotifications
 
 /// `AppDelegate` minimal : capte les **Universal Links** (`https://…/p/…`) de
 /// façon fiable, y compris au cold-start — là où `.onContinueUserActivity`
@@ -32,6 +33,33 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                      options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         AppContainer.shared.routeIncomingURL(url)
         return true
+    }
+
+    // Notifications push de chaîne : le token APNs arrive ici → envoyé à Supabase.
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let hex = deviceToken.map { String(format: "%02x", $0) }.joined()
+        Task { await ChainService().registerDeviceToken(hex, locale: AppLocale.code) }
+    }
+
+    func application(_ application: UIApplication,
+                     didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        #if DEBUG
+        print("Push registration failed: \(error)")
+        #endif
+    }
+}
+
+/// Demande l'autorisation de notifications puis enregistre l'appareil auprès
+/// d'APNs (le token est livré à `AppDelegate`, qui l'envoie à Supabase). Appelé
+/// à l'ouverture d'une chaîne — seuls les participants sont concernés.
+enum PushRegistrar {
+    static func request() {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            guard granted else { return }
+            DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
+        }
     }
 }
 

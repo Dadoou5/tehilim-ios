@@ -1,6 +1,12 @@
 package com.david.tehilim.features.chains
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -95,6 +101,20 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     var nowTick by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while (true) { delay(1000); nowTick = System.currentTimeMillis() } }
     LaunchedEffect(chainId) { container.chainArchive.remember(chainId) }
+
+    // Notifs push (participants) : demande la permission (Android 13+) puis
+    // enregistre le token FCM. Contextuel — seuls ceux qui ouvrent une chaîne.
+    val pushPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        com.david.tehilim.core.service.PushRegistrar.registerToken(context, container)
+    }
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            pushPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            com.david.tehilim.core.service.PushRegistrar.registerToken(context, container)
+        }
+    }
 
     var showJoin by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }

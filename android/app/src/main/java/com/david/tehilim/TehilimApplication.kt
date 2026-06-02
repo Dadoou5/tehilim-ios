@@ -2,6 +2,8 @@ package com.david.tehilim
 
 import android.app.Application
 import android.app.LocaleManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.os.Build
 import android.os.LocaleList
 import androidx.appcompat.app.AppCompatDelegate
@@ -40,6 +42,7 @@ class TehilimApplication : Application() {
         // par appareil, session persistée par le SDK). No-op si la config
         // Supabase est absente → l'app reste 100 % locale.
         maybeSignInAnonymously()
+        ensureChainNotificationChannel()
 
         // Applique la locale sauvegardée AVANT que la moindre Activity n'attache
         // sa configuration. Lecture synchrone du DataStore via runBlocking : le
@@ -82,6 +85,18 @@ class TehilimApplication : Application() {
         if (client.auth.currentUserOrNull() != null) return
         CoroutineScope(Dispatchers.IO).launch {
             runCatching { client.auth.signInAnonymously() }
+        }
+    }
+
+    /** Canal de notification pour les push de chaîne (FCM en arrière-plan, Android 8+). */
+    private fun ensureChainNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val mgr = getSystemService(NotificationManager::class.java)
+            if (mgr?.getNotificationChannel("tehilim_chain") == null) {
+                mgr?.createNotificationChannel(
+                    NotificationChannel("tehilim_chain", "Chaînes de Tehilim", NotificationManager.IMPORTANCE_DEFAULT)
+                )
+            }
         }
     }
 

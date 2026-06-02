@@ -128,6 +128,17 @@ final class ChainService {
         try await client.from(K.chains).delete().eq("id", value: chainId).execute()
     }
 
+    /// Enregistre / met à jour le token push de cet appareil (notifications de
+    /// chaîne aux participants). Silencieux si non configuré.
+    func registerDeviceToken(_ token: String, platform: String = "ios", locale: String) async {
+        guard let client else { return }
+        guard let uid = try? await ensureSignedIn() else { return }
+        try? await client.from("device_tokens")
+            .upsert(DeviceTokenRow(token: token, uid: uid, platform: platform, locale: locale),
+                    onConflict: "token")
+            .execute()
+    }
+
     // MARK: - Lectures ponctuelles
 
     func fetchChain(id: String) async throws -> TehilimChain? {
@@ -218,6 +229,12 @@ final class ChainService {
     }
     private struct DistributeUpdate: Encodable, Sendable {
         let distributed: Bool
+    }
+    private struct DeviceTokenRow: Encodable, Sendable {
+        let token: String
+        let uid: String
+        let platform: String
+        let locale: String
     }
 
     // MARK: - Mapping DTO → modèles applicatifs (inchangés)

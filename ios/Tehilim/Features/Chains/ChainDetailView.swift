@@ -62,7 +62,10 @@ struct ChainDetailView: View {
             }
         }
         .onReceive(timer) { nowTick = $0 }
-        .onAppear { container.chainArchive.remember(chainId) }
+        .onAppear {
+            container.chainArchive.remember(chainId)
+            PushRegistrar.request()   // notifs push (participants) — demande contextuelle
+        }
         // Économie de ressources : on coupe l'écoute Realtime (Supabase) en
         // arrière-plan et on la reprend au premier plan.
         .onChange(of: scenePhase) { _, phase in

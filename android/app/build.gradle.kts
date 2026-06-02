@@ -16,6 +16,13 @@ val supabaseProperties = Properties().apply {
     if (f.exists()) load(FileInputStream(f))
 }
 
+// FCM (messagerie push — notifications de chaîne) : applique google-services
+// UNIQUEMENT si google-services.json est présent → build vert sans config
+// (l'init FCM est gardée au runtime). La base de données reste Supabase.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 // V1.4 — credentials du keystore release lus depuis `keystore.properties`
 // (non commité, voir .gitignore). Si absent (CI ou nouveau clone), la
 // signature de release est désactivée — ne pas uploader sur le Play Store
@@ -258,6 +265,13 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("io.ktor:ktor-client-okhttp:3.0.2")
+
+    // FCM — notifications push de chaîne (messagerie uniquement ; la base reste
+    // Supabase). Compile sans google-services.json ; init gardée au runtime.
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-messaging")
+    // Guava complet : évince le stub listenablefuture (conflit play-services ↔ WorkManager).
+    implementation("com.google.guava:guava:33.3.1-android")
 
     // Glance — widget Compose-like
     // V1.4 build 16 — bump Glance 1.1.0 → 1.1.1 :

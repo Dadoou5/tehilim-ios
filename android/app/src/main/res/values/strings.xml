@@ -287,6 +287,9 @@
     <string name="chain_assign_remaining">M\'attribuer les %1$d restants</string>
     <string name="chain_close_distribute">Clôturer et distribuer</string>
     <string name="chain_share_report">Partager le compte rendu</string>
+    <string name="chain_delete">Supprimer la chaîne</string>
+    <string name="chain_delete_confirm_title">Supprimer la chaîne ?</string>
+    <string name="chain_delete_confirm_msg">La chaîne sera définitivement supprimée pour tous les participants. Action irréversible.</string>
     <string name="chain_created_by">Créée par %1$s</string>
     <string name="chain_my_chains">Mes chaînes</string>
     <string name="chain_summaries">Comptes rendus</string>

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 private struct PsalmNav: Identifiable, Hashable { let id: Int }
 
@@ -14,8 +15,10 @@ struct ChainDetailView: View {
 
     @Environment(\.horizontalSizeClass) private var hSize
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var session: ChainSession
     @State private var showJoin = false
+    @State private var showDeleteConfirm = false
     @State private var reading: PsalmNav?
     @State private var nowTick = Date()
     @State private var errorMessage: String?
@@ -70,6 +73,12 @@ struct ChainDetailView: View {
         }
         .navigationDestination(item: $reading) { nav in
             PsalmDetailView(psalmId: nav.id, siblings: session.myPsalmIds)
+        }
+        .alert("Supprimer la chaîne ?", isPresented: $showDeleteConfirm) {
+            Button("Annuler", role: .cancel) {}
+            Button("Supprimer", role: .destructive) { Task { await deleteChain() } }
+        } message: {
+            Text("La chaîne sera définitivement supprimée pour tous les participants. Action irréversible.")
         }
     }
 
@@ -239,6 +248,14 @@ struct ChainDetailView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
+
+            Button(role: .destructive) {
+                showDeleteConfirm = true
+            } label: {
+                Label("Supprimer la chaîne", systemImage: "trash")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
         }
         .disabled(working)
     }
@@ -252,16 +269,26 @@ struct ChainDetailView: View {
 
     private func toggle(_ id: Int) async {
         errorMessage = nil
-        let mine = session.assignments[id]?.uid == session.currentUid
-        do {
-            if mine {
-                try await container.chains.deselect(chainId: chainId, psalmId: id)
-            } else if session.assignments[id] == nil {
-                let myName = myDisplayName()
-                try await container.chains.select(chainId: chainId, psalmId: id, name: myName)
+        guard let uid = session.currentUid else { return }
+        let mine = session.assignments[id]?.uid == uid
+        // Retour haptique immédiat + mise à jour optimiste : la grille réagit
+        // instantanément, le serveur (et le realtime) réconcilient ensuite.
+        UISelectionFeedbackGenerator().selectionChanged()
+        if mine {
+            withAnimation(.easeOut(duration: 0.15)) { session.optimisticDeselect(id) }
+            do { try await container.chains.deselect(chainId: chainId, psalmId: id) }
+            catch {
+                await session.refreshAssignments()
+                errorMessage = "Impossible de libérer ce Tehilim."
             }
-        } catch {
-            errorMessage = "Ce Tehilim vient d'être pris."
+        } else if session.assignments[id] == nil {
+            let myName = myDisplayName()
+            withAnimation(.easeOut(duration: 0.15)) { session.optimisticSelect(id, uid: uid, name: myName) }
+            do { try await container.chains.select(chainId: chainId, psalmId: id, name: myName) }
+            catch {
+                await session.refreshAssignments()
+                errorMessage = "Ce Tehilim vient d'être pris."
+            }
         }
     }
 
@@ -277,6 +304,15 @@ struct ChainDetailView: View {
             try await container.chains.distribute(chainId: chainId)
             saveArchive(chain)
         } catch { errorMessage = "Distribution impossible." }
+    }
+
+    private func deleteChain() async {
+        working = true; defer { working = false }
+        do {
+            try await container.chains.deleteChain(chainId: chainId)
+            container.chainArchive.forget(chainId)
+            if let onClose { onClose() } else { dismiss() }
+        } catch { errorMessage = "Suppression impossible." }
     }
 
     // MARK: - Helpers

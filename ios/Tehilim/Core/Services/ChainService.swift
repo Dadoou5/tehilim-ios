@@ -120,6 +120,14 @@ final class ChainService {
             .execute()
     }
 
+    /// (Créateur) supprime définitivement la chaîne (cascade → participants +
+    /// attributions). La RLS n'autorise que le créateur.
+    func deleteChain(chainId: String) async throws {
+        guard let client else { throw ChainError.notConfigured }
+        _ = try await ensureSignedIn()
+        try await client.from(K.chains).delete().eq("id", value: chainId).execute()
+    }
+
     // MARK: - Lectures ponctuelles
 
     func fetchChain(id: String) async throws -> TehilimChain? {
@@ -401,6 +409,20 @@ final class ChainSession: ObservableObject {
             self.assignments = map
         }
     }
+
+    // MARK: - Mise à jour optimiste (UI instantanée, réconciliée par le realtime)
+
+    /// Affiche immédiatement la case comme « à moi » avant la confirmation serveur.
+    func optimisticSelect(_ psalmId: Int, uid: String, name: String) {
+        assignments[psalmId] = ChainAssignment(
+            id: String(psalmId), uid: uid, name: name, byCreator: false, assignedAt: Date())
+    }
+    /// Libère immédiatement la case en local.
+    func optimisticDeselect(_ psalmId: Int) {
+        assignments.removeValue(forKey: psalmId)
+    }
+    /// Recharge les attributions (réconciliation après échec d'une action optimiste).
+    func refreshAssignments() async { await reloadAssignments() }
 
     // MARK: - Dérivés pour l'UI (inchangés)
 

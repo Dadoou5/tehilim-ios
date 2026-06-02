@@ -287,6 +287,9 @@
     <string name="chain_assign_remaining">Assign me the %1$d remaining</string>
     <string name="chain_close_distribute">Close and distribute</string>
     <string name="chain_share_report">Share the summary</string>
+    <string name="chain_delete">Delete chain</string>
+    <string name="chain_delete_confirm_title">Delete chain?</string>
+    <string name="chain_delete_confirm_msg">The chain will be permanently deleted for all participants. This cannot be undone.</string>
     <string name="chain_created_by">Created by %1$s</string>
     <string name="chain_my_chains">My chains</string>
     <string name="chain_summaries">Summaries</string>

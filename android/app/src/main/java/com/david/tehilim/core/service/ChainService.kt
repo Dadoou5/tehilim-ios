@@ -130,6 +130,13 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         }
     }
 
+    /** (Créateur) supprime définitivement la chaîne (cascade → participants + attributions). */
+    suspend fun deleteChain(chainId: String) {
+        val c = client ?: error("Supabase non configuré")
+        ensureSignedIn()
+        c.from(CHAINS).delete { filter { eq("id", chainId) } }
+    }
+
     // MARK: - Lectures ponctuelles
 
     suspend fun fetchChain(id: String): TehilimChain? {

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,11 +67,30 @@ import java.util.Date
 fun ChainDetailScreen(container: AppContainer, chainId: String, navController: NavController) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val view = LocalView.current
 
     val chain by remember(chainId) { container.chains.chainFlow(chainId) }.collectAsStateWithLifecycle(initialValue = null)
     val participants by remember(chainId) { container.chains.participantsFlow(chainId) }.collectAsStateWithLifecycle(initialValue = emptyList())
     val assignments by remember(chainId) { container.chains.boardFlow(chainId) }.collectAsStateWithLifecycle(initialValue = emptyMap())
     val uid = container.chains.currentUid
+
+    // UI optimiste : overlay local par-dessus la vérité realtime → le tap réagit
+    // instantanément (clé absente = pas d'override ; valeur null = retrait ;
+    // valeur = ajout perso). Réconcilié dès que le realtime confirme l'état.
+    val optimistic = remember(chainId) { mutableStateMapOf<Int, ChainAssignment?>() }
+    LaunchedEffect(assignments) {
+        optimistic.keys.toList().forEach { k ->
+            val want = optimistic[k]
+            val truth = assignments[k]
+            val settled = if (want == null) truth == null else (truth != null && truth.uid == want.uid)
+            if (settled) optimistic.remove(k)
+        }
+    }
+    val effectiveAssignments: Map<Int, ChainAssignment> = remember(assignments, optimistic.toMap()) {
+        val m = assignments.toMutableMap()
+        optimistic.forEach { (k, v) -> if (v == null) m.remove(k) else m[k] = v }
+        m
+    }
 
     var nowTick by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while (true) { delay(1000); nowTick = System.currentTimeMillis() } }
@@ -81,7 +103,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     val isParticipant = uid != null && participants.any { it.uid == uid }
     val isCreator = uid != null && chain?.creatorUid == uid
     val myName = participants.firstOrNull { it.uid == uid }?.name ?: "—"
-    val myIds = assignments.values.filter { it.uid == uid }.map { it.psalmId }.sorted()
+    val myIds = effectiveAssignments.values.filter { it.uid == uid }.map { it.psalmId }.sorted()
     val open = chain?.isSelectionOpen(nowTick) ?: false
 
     Scaffold(
@@ -128,7 +150,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
             fullSpan { HeaderCard(c) }
             fullSpan { CountdownCard(c, open, nowTick) }
             fullSpan { ParticipantsCard(participants.size, participants.joinToString(" · ") { it.name }) }
-            fullSpan { ProgressCard(assignments.size) }
+            fullSpan { ProgressCard(effectiveAssignments.size) }
 
             if (!isParticipant) {
                 fullSpan {
@@ -148,18 +170,28 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                 }
                 // Grille 150
                 itemsIndexed((1..TehilimChain.TOTAL_PSALMS).toList()) { _, psalmId ->
-                    val a = assignments[psalmId]
+                    val a = effectiveAssignments[psalmId]
                     val mine = a != null && a.uid == uid
                     val takenByOther = a != null && !mine
                     val minutes = container.psalmRepository.psalm(psalmId)?.estimatedReadingMinutes ?: 1
                     PsalmCell(psalmId, a?.name, minutes, mine, takenByOther, enabled = !(open && takenByOther)) {
                         if (open) {
                             if (takenByOther) return@PsalmCell
-                            scope.launch {
-                                try {
-                                    if (mine) container.chains.deselect(chainId, psalmId)
-                                    else container.chains.select(chainId, psalmId, myName)
-                                } catch (e: Exception) { error = errTaken }
+                            // Retour haptique + mise à jour optimiste : la case
+                            // change tout de suite, le serveur réconcilie ensuite.
+                            view.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
+                            if (mine) {
+                                optimistic[psalmId] = null
+                                scope.launch {
+                                    runCatching { container.chains.deselect(chainId, psalmId) }
+                                        .onFailure { optimistic.remove(psalmId); error = errTaken }
+                                }
+                            } else {
+                                optimistic[psalmId] = ChainAssignment(psalmId, uid ?: "", myName, false, System.currentTimeMillis())
+                                scope.launch {
+                                    runCatching { container.chains.select(chainId, psalmId, myName) }
+                                        .onFailure { optimistic.remove(psalmId); error = errTaken }
+                                }
                             }
                         } else {
                             navController.navigate(Routes.psalmDetail(psalmId, myIds))
@@ -168,7 +200,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                 }
 
                 if (isCreator) {
-                    fullSpan { CreatorControls(c, assignments, open, container, chainId, context) { error = it } }
+                    fullSpan { CreatorControls(c, effectiveAssignments, open, container, chainId, context, navController) { error = it } }
                 }
             }
 
@@ -304,6 +336,7 @@ private fun PsalmCell(
 private fun CreatorControls(
     c: TehilimChain, assignments: Map<Int, ChainAssignment>, open: Boolean,
     container: AppContainer, chainId: String, context: android.content.Context,
+    navController: NavController,
     onError: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -345,6 +378,35 @@ private fun CreatorControls(
             onClick = { shareText(context, reportText(context, c, assignments)) },
             modifier = Modifier.fillMaxWidth()
         ) { Text(stringResource(R.string.chain_share_report)) }
+
+        var showDelete by remember { mutableStateOf(false) }
+        OutlinedButton(
+            onClick = { showDelete = true },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+        ) { Text(stringResource(R.string.chain_delete)) }
+
+        if (showDelete) {
+            AlertDialog(
+                onDismissRequest = { showDelete = false },
+                title = { Text(stringResource(R.string.chain_delete_confirm_title)) },
+                text = { Text(stringResource(R.string.chain_delete_confirm_msg)) },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDelete = false
+                        scope.launch {
+                            runCatching { container.chains.deleteChain(chainId) }
+                                .onSuccess {
+                                    container.chainArchive.forget(chainId)
+                                    navController.popBackStack()
+                                }
+                                .onFailure { onError("Suppression impossible.") }
+                        }
+                    }) { Text(stringResource(R.string.chain_delete)) }
+                },
+                dismissButton = { TextButton(onClick = { showDelete = false }) { Text(stringResource(R.string.action_cancel)) } }
+            )
+        }
     }
 }
 

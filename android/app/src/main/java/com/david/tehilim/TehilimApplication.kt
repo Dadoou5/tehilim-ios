@@ -7,9 +7,12 @@ import android.os.LocaleList
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.david.tehilim.core.model.AppLanguage
-import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
+import com.david.tehilim.core.service.SupabaseClientProvider
+import io.github.jan.supabase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -33,9 +36,9 @@ class TehilimApplication : Application() {
         super.onCreate()
         container = AppContainer(applicationContext)
 
-        // Feature « Chaîne de Tehilim » : connexion anonyme Firebase (uid stable
-        // par appareil). Gardée : si google-services.json était absent au build,
-        // aucun FirebaseApp par défaut n'existe → on ne fait rien (reste local).
+        // Feature « Chaîne de Tehilim » : connexion anonyme Supabase (uid stable
+        // par appareil, session persistée par le SDK). No-op si la config
+        // Supabase est absente → l'app reste 100 % locale.
         maybeSignInAnonymously()
 
         // Applique la locale sauvegardée AVANT que la moindre Activity n'attache
@@ -73,12 +76,12 @@ class TehilimApplication : Application() {
         }
     }
 
-    /** Connexion anonyme si Firebase est configuré et qu'on n'est pas déjà connecté. */
+    /** Connexion anonyme si Supabase est configuré et qu'on n'est pas déjà connecté. */
     private fun maybeSignInAnonymously() {
-        if (FirebaseApp.getApps(this).isEmpty()) return   // pas de config → no-op
-        val auth = FirebaseAuth.getInstance()
-        if (auth.currentUser == null) {
-            auth.signInAnonymously()
+        val client = SupabaseClientProvider.client ?: return   // pas de config → no-op
+        if (client.auth.currentUserOrNull() != null) return
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching { client.auth.signInAnonymously() }
         }
     }
 

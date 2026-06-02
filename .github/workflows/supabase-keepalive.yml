@@ -1,0 +1,65 @@
+name: Supabase keep-alive + cleanup
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Le free tier Supabase met un projet EN PAUSE après ~7 jours d'inactivité
+# (aucune requête). Ce cron quotidien appelle l'RPC `cleanup_expired_chains`,
+# ce qui d'une pierre deux coups :
+#   1. garde le projet ACTIF — toute requête réinitialise le compteur 7 jours ;
+#   2. supprime les chaînes expirées (`expires_at < now()`) → remplace le TTL
+#      Firestore qu'on avait avec Firebase.
+#
+# La fonction est SECURITY DEFINER mais ne touche QUE des données déjà expirées,
+# donc l'appel avec la simple clé `anon` (publique) est sûr et idempotent.
+#
+# ⚠️ Notes GitHub Actions :
+#   • les `schedule` ne s'exécutent QUE sur la branche par défaut (main) ;
+#   • un schedule est désactivé après 60 jours SANS activité sur le dépôt
+#     (un commit/push le réarme) ;
+#   • l'heure de cron n'est pas garantie à la minute (file d'attente GitHub).
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: "17 6 * * *"      # tous les jours ~06:17 UTC (heure creuse)
+  workflow_dispatch: {}        # bouton « Run workflow » pour tester à la demande
+
+# Empêche deux exécutions simultanées (manuel + planifié).
+concurrency:
+  group: supabase-keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: cleanup_expired_chains (keep-alive + purge TTL)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "::error::Secrets manquants. Définis SUPABASE_URL et SUPABASE_ANON_KEY"
+            echo "::error::dans Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          url="${SUPABASE_URL%/}/rest/v1/rpc/cleanup_expired_chains"
+          echo "POST $url"
+
+          http_code=$(curl -sS -o /tmp/resp.txt -w "%{http_code}" \
+            -X POST "$url" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+
+          body="$(cat /tmp/resp.txt || true)"
+          echo "HTTP ${http_code} — réponse : ${body}"
+
+          if [ "${http_code}" -lt 200 ] || [ "${http_code}" -ge 300 ]; then
+            echo "::error::Échec de l'appel RPC (HTTP ${http_code})."
+            exit 1
+          fi
+          echo "✅ Keep-alive OK — ${body} chaîne(s) expirée(s) supprimée(s)."

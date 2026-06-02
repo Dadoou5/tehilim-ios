@@ -5,39 +5,54 @@ import com.david.tehilim.core.model.ChainAssignment
 import com.david.tehilim.core.model.ChainIntention
 import com.david.tehilim.core.model.ChainParticipant
 import com.david.tehilim.core.model.TehilimChain
-import com.google.firebase.FirebaseApp
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.SetOptions
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Order
+import io.github.jan.supabase.postgrest.query.filter.FilterOperator
+import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.postgresChangeFlow
+import io.github.jan.supabase.realtime.realtime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
-import java.util.Date
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 /**
- * Couche Firestore « Chaîne de Tehilim » (mirror Android).
+ * Couche d'accès **Supabase** (Postgres + Realtime + auth anonyme) — mirror
+ * Android. Remplace Firebase Firestore.
  *
- * Optimisation quota : l'état des attributions tient dans **un seul document**
- * `chains/{id}/state/board` (champ map `a` = psalmId → {u,n,c}) → charger la
- * grille = 1 lecture au lieu de 150. Verrou atomique via transaction.
+ * Modèle **relationnel** : une ligne par attribution dans `chain_assignments`,
+ * dont la **clé primaire `(chain_id, psalm_id)`** fait office de **verrou
+ * exclusif** « 1 lecteur / Tehilim » (un INSERT en double échoue ⇒ « déjà
+ * pris », atomiquement). La propriété est imposée **côté serveur** par la RLS.
+ *
+ * L'API publique (suspend funcs + `chainFlow` / `participantsFlow` /
+ * `boardFlow`) est **identique** à la version Firebase : la couche UI (Compose)
+ * est inchangée. `context` est conservé pour la signature mais inutilisé (le
+ * client est global, cf. [SupabaseClientProvider]).
  */
-class ChainService(private val appContext: Context) {
+class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
 
-    val isAvailable: Boolean
-        get() = FirebaseApp.getApps(appContext).isNotEmpty()
+    private val client get() = SupabaseClientProvider.client
 
-    private val db: FirebaseFirestore get() = FirebaseFirestore.getInstance()
-    private val auth: FirebaseAuth get() = FirebaseAuth.getInstance()
+    val isAvailable: Boolean get() = client != null
 
-    val currentUid: String? get() = auth.currentUser?.uid
+    val currentUid: String? get() = client?.auth?.currentUserOrNull()?.id?.lowercase()
 
     suspend fun ensureSignedIn(): String {
-        auth.currentUser?.uid?.let { return it }
-        return auth.signInAnonymously().await().user!!.uid
+        val c = client ?: error("Supabase non configuré")
+        c.auth.currentUserOrNull()?.let { return it.id.lowercase() }
+        c.auth.signInAnonymously()
+        return c.auth.currentUserOrNull()?.id?.lowercase() ?: error("Auth anonyme indisponible")
     }
 
     // MARK: - Écritures
@@ -50,194 +65,238 @@ class ChainService(private val appContext: Context) {
         readingDeadlineMillis: Long,
         creatorName: String
     ): String {
-        val uid = ensureSignedIn()
+        val c = client ?: error("Supabase non configuré")
+        ensureSignedIn()
         val now = System.currentTimeMillis()
-        val chainRef = db.collection(CHAINS).document()
-        val data = mapOf(
-            F_NAME to name,
-            F_INTENTION_TYPE to intention.wire,
-            F_INTENTION_DETAIL to detail,
-            F_CREATOR_UID to uid,
-            F_CREATOR_NAME to creatorName,
-            F_CREATED_AT to Date(now),
-            F_SELECTION_DEADLINE to Date(now + selectionDurationMillis),
-            F_READING_DEADLINE to Date(readingDeadlineMillis),
-            F_DISTRIBUTED to false,
-            F_EXPIRES_AT to Date(readingDeadlineMillis + EXPIRY_GRACE_MILLIS)
-        )
-        chainRef.set(data).await()
-        chainRef.collection(PARTICIPANTS).document(uid).set(
-            mapOf(F_NAME to creatorName, F_IS_CREATOR to true, F_JOINED_AT to Date(now))
-        ).await()
-        return chainRef.id
+        // RPC atomique : crée la chaîne + le créateur-participant, renvoie l'id.
+        // (supabase-kt 3.0.x : rpc prend un JsonObject de paramètres.)
+        val params = buildJsonObject {
+            put("p_name", name)
+            put("p_intention_type", intention.wire)
+            put("p_intention_detail", detail)
+            put("p_creator_name", creatorName)
+            put("p_selection_deadline", iso(now + selectionDurationMillis))
+            put("p_reading_deadline", iso(readingDeadlineMillis))
+            put("p_expires_at", iso(readingDeadlineMillis + EXPIRY_GRACE_MILLIS))
+        }
+        return c.postgrest.rpc("create_chain", params).decodeAs<String>()
     }
 
     suspend fun join(chainId: String, name: String) {
+        val c = client ?: error("Supabase non configuré")
         val uid = ensureSignedIn()
-        db.collection(CHAINS).document(chainId).collection(PARTICIPANTS).document(uid)
-            .set(mapOf(F_NAME to name, F_IS_CREATOR to false, F_JOINED_AT to Date()))
-            .await()
+        c.from(PARTICIPANTS).upsert(
+            ParticipantUpsert(chainId = chainId, uid = uid, name = name, isCreator = false)
+        ) { onConflict = "chain_id,uid" }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun boardMap(snap: DocumentSnapshot): MutableMap<String, Map<String, Any>> =
-        ((snap.get(B_MAP) as? Map<String, Map<String, Any>>) ?: emptyMap()).toMutableMap()
-
-    /** Réserve un Tehilim (transaction sur le doc board ; échoue si déjà pris). */
+    /** Réserve un Tehilim. INSERT : échoue (violation de PK) s'il est déjà pris. */
     suspend fun select(chainId: String, psalmId: Int, name: String) {
+        val c = client ?: error("Supabase non configuré")
         val uid = ensureSignedIn()
-        val ref = boardRef(chainId)
-        db.runTransaction { txn ->
-            val a = boardMap(txn.get(ref))
-            if (a.containsKey(psalmId.toString())) {
-                throw FirebaseFirestoreException("Tehilim déjà pris", FirebaseFirestoreException.Code.ABORTED)
-            }
-            a[psalmId.toString()] = mapOf(B_U to uid, B_N to name, B_C to false)
-            txn.set(ref, mapOf(B_MAP to a), SetOptions.merge())
-            null
-        }.await()
+        c.from(ASSIGNMENTS).insert(
+            AssignmentInsert(chainId = chainId, psalmId = psalmId, uid = uid, name = name, byCreator = false)
+        )
     }
 
+    /** Libère un Tehilim réservé par soi-même (la RLS empêche de libérer celui d'autrui). */
     suspend fun deselect(chainId: String, psalmId: Int) {
+        val c = client ?: error("Supabase non configuré")
         val uid = ensureSignedIn()
-        val ref = boardRef(chainId)
-        db.runTransaction { txn ->
-            val a = boardMap(txn.get(ref))
-            val entry = a[psalmId.toString()]
-            if (entry != null && entry[B_U] == uid) {
-                a.remove(psalmId.toString())
-                txn.set(ref, mapOf(B_MAP to a), SetOptions.merge())
+        c.from(ASSIGNMENTS).delete {
+            filter {
+                eq("chain_id", chainId)
+                eq("psalm_id", psalmId)
+                eq("uid", uid)
             }
-            null
-        }.await()
+        }
     }
 
-    /** (Créateur) attribue tous les Tehilim restants à lui-même. */
+    /** (Créateur) attribue tous les Tehilim restants à lui-même (RPC, une requête). */
     suspend fun assignRemaining(chainId: String, name: String) {
-        val uid = ensureSignedIn()
-        val ref = boardRef(chainId)
-        db.runTransaction { txn ->
-            val a = boardMap(txn.get(ref))
-            for (p in 1..TehilimChain.TOTAL_PSALMS) {
-                if (!a.containsKey(p.toString())) {
-                    a[p.toString()] = mapOf(B_U to uid, B_N to name, B_C to true)
-                }
-            }
-            txn.set(ref, mapOf(B_MAP to a), SetOptions.merge())
-            null
-        }.await()
+        val c = client ?: error("Supabase non configuré")
+        ensureSignedIn()
+        c.postgrest.rpc("assign_remaining", buildJsonObject {
+            put("p_chain_id", chainId)
+            put("p_name", name)
+        })
     }
 
     suspend fun distribute(chainId: String) {
+        val c = client ?: error("Supabase non configuré")
         ensureSignedIn()
-        db.collection(CHAINS).document(chainId).update(F_DISTRIBUTED, true).await()
-    }
-
-    private fun boardRef(chainId: String) =
-        db.collection(CHAINS).document(chainId).collection(STATE).document(BOARD)
-
-    // MARK: - Lecture ponctuelle
-
-    suspend fun fetchChain(id: String): TehilimChain? =
-        chainFrom(db.collection(CHAINS).document(id).get().await())
-
-    // MARK: - Flows temps réel
-
-    fun chainFlow(chainId: String): Flow<TehilimChain?> = callbackFlow {
-        val reg = db.collection(CHAINS).document(chainId)
-            .addSnapshotListener { snap, _ -> trySend(snap?.let { chainFrom(it) }) }
-        awaitClose { reg.remove() }
-    }
-
-    fun participantsFlow(chainId: String): Flow<List<ChainParticipant>> = callbackFlow {
-        val reg = db.collection(CHAINS).document(chainId).collection(PARTICIPANTS)
-            .addSnapshotListener { snap, _ ->
-                val list = snap?.documents?.mapNotNull { participantFrom(it) }
-                    ?.sortedBy { it.joinedAtMillis } ?: emptyList()
-                trySend(list)
-            }
-        awaitClose { reg.remove() }
-    }
-
-    /** Écoute le doc board unique → map psalmId → attribution. */
-    fun boardFlow(chainId: String): Flow<Map<Int, ChainAssignment>> = callbackFlow {
-        val reg = boardRef(chainId).addSnapshotListener { snap, _ -> trySend(boardFrom(snap)) }
-        awaitClose { reg.remove() }
-    }
-
-    // MARK: - Mapping
-
-    private fun millis(snap: DocumentSnapshot, key: String): Long =
-        (snap.get(key) as? Timestamp)?.toDate()?.time ?: 0L
-
-    private fun chainFrom(snap: DocumentSnapshot): TehilimChain? {
-        if (!snap.exists()) return null
-        val name = snap.getString(F_NAME) ?: return null
-        val intention = ChainIntention.fromWire(snap.getString(F_INTENTION_TYPE)) ?: return null
-        val creatorUid = snap.getString(F_CREATOR_UID) ?: return null
-        return TehilimChain(
-            id = snap.id,
-            name = name,
-            intentionType = intention,
-            intentionDetail = snap.getString(F_INTENTION_DETAIL) ?: "",
-            creatorUid = creatorUid,
-            creatorName = snap.getString(F_CREATOR_NAME) ?: "",
-            createdAtMillis = millis(snap, F_CREATED_AT),
-            selectionDeadlineMillis = millis(snap, F_SELECTION_DEADLINE),
-            readingDeadlineMillis = millis(snap, F_READING_DEADLINE),
-            distributed = snap.getBoolean(F_DISTRIBUTED) ?: false,
-            expiresAtMillis = millis(snap, F_EXPIRES_AT)
-        )
-    }
-
-    private fun participantFrom(snap: DocumentSnapshot): ChainParticipant? {
-        if (!snap.exists()) return null
-        return ChainParticipant(
-            uid = snap.id,
-            name = snap.getString(F_NAME) ?: "—",
-            isCreator = snap.getBoolean(F_IS_CREATOR) ?: false,
-            joinedAtMillis = millis(snap, F_JOINED_AT)
-        )
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun boardFrom(snap: DocumentSnapshot?): Map<Int, ChainAssignment> {
-        val map = (snap?.get(B_MAP) as? Map<String, Map<String, Any>>) ?: return emptyMap()
-        val out = HashMap<Int, ChainAssignment>()
-        for ((k, v) in map) {
-            val pid = k.toIntOrNull() ?: continue
-            val uid = v[B_U] as? String ?: continue
-            out[pid] = ChainAssignment(
-                psalmId = pid, uid = uid,
-                name = v[B_N] as? String ?: "—",
-                byCreator = v[B_C] as? Boolean ?: false,
-                assignedAtMillis = 0L
-            )
+        c.from(CHAINS).update({ set("distributed", true) }) {
+            filter { eq("id", chainId) }
         }
-        return out
     }
+
+    // MARK: - Lectures ponctuelles
+
+    suspend fun fetchChain(id: String): TehilimChain? {
+        val c = client ?: return null
+        return c.from(CHAINS).select { filter { eq("id", id) } }
+            .decodeList<ChainRow>().firstOrNull()?.let(::toChain)
+    }
+
+    private suspend fun fetchParticipants(chainId: String): List<ChainParticipant> {
+        val c = client ?: return emptyList()
+        return c.from(PARTICIPANTS).select {
+            filter { eq("chain_id", chainId) }
+            order("joined_at", Order.ASCENDING)
+        }.decodeList<ParticipantRow>().map(::toParticipant)
+    }
+
+    private suspend fun fetchBoard(chainId: String): Map<Int, ChainAssignment> {
+        val c = client ?: return emptyMap()
+        return c.from(ASSIGNMENTS).select { filter { eq("chain_id", chainId) } }
+            .decodeList<AssignmentRow>().associate { it.psalmId to toAssignment(it) }
+    }
+
+    // MARK: - Flows temps réel (Supabase Realtime)
+    // Sur chaque évènement realtime de la table, on recharge la collection
+    // concernée (SELECT léger) : simple, robuste, adapté à l'échelle. Quand le
+    // collecteur s'arrête (écran fermé / arrière-plan via collectAsStateWith-
+    // Lifecycle), `awaitClose` se déclenche → on retire le canal (= écoute
+    // coupée, équivalent du start/stop iOS et de l'optimisation quota).
+
+    fun chainFlow(chainId: String): Flow<TehilimChain?> =
+        realtimeFlow(chainId, CHAINS, "id", null) { fetchChain(chainId) }
+
+    fun participantsFlow(chainId: String): Flow<List<ChainParticipant>> =
+        realtimeFlow(chainId, PARTICIPANTS, "chain_id", emptyList()) { fetchParticipants(chainId) }
+
+    fun boardFlow(chainId: String): Flow<Map<Int, ChainAssignment>> =
+        realtimeFlow(chainId, ASSIGNMENTS, "chain_id", emptyMap()) { fetchBoard(chainId) }
+
+    private fun <T> realtimeFlow(
+        chainId: String,
+        tableName: String,
+        filterColumn: String,
+        initial: T,
+        fetch: suspend () -> T
+    ): Flow<T> = callbackFlow {
+        val c = client
+        if (c == null) {
+            trySend(initial); close(); return@callbackFlow
+        }
+        val channel = c.channel("rt:$tableName:$chainId:${System.nanoTime()}")
+        val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = tableName
+            filter(filterColumn, FilterOperator.EQ, chainId)
+        }
+        val collectJob = launch {
+            changes.collect { runCatching { trySend(fetch()) } }
+        }
+        launch {
+            runCatching {
+                ensureSignedIn()
+                channel.subscribe()
+                trySend(fetch())   // état initial
+            }
+        }
+        awaitClose {
+            collectJob.cancel()
+            // Nettoyage sur un scope indépendant (le scope du flow se ferme).
+            CoroutineScope(Dispatchers.Default).launch {
+                runCatching { c.realtime.removeChannel(channel) }
+            }
+        }
+    }
+
+    // MARK: - Dates (Postgres timestamptz ↔ epochMillis)
+
+    private fun millis(s: String?): Long =
+        s?.let { runCatching { Instant.parse(it).toEpochMilliseconds() }.getOrNull() }
+            ?: System.currentTimeMillis()
+
+    private fun iso(millis: Long): String = Instant.fromEpochMilliseconds(millis).toString()
+
+    // MARK: - Mapping DTO → modèles applicatifs (inchangés)
+
+    private fun toChain(r: ChainRow) = TehilimChain(
+        id = r.id,
+        name = r.name,
+        intentionType = ChainIntention.fromWire(r.intentionType) ?: ChainIntention.REUSSITE,
+        intentionDetail = r.intentionDetail ?: "",
+        creatorUid = r.creatorUid.lowercase(),
+        creatorName = r.creatorName ?: "",
+        createdAtMillis = millis(r.createdAt),
+        selectionDeadlineMillis = millis(r.selectionDeadline),
+        readingDeadlineMillis = millis(r.readingDeadline),
+        distributed = r.distributed,
+        expiresAtMillis = millis(r.expiresAt)
+    )
+
+    private fun toParticipant(r: ParticipantRow) = ChainParticipant(
+        uid = r.uid.lowercase(),
+        name = r.name ?: "—",
+        isCreator = r.isCreator,
+        joinedAtMillis = millis(r.joinedAt)
+    )
+
+    private fun toAssignment(r: AssignmentRow) = ChainAssignment(
+        psalmId = r.psalmId,
+        uid = r.uid.lowercase(),
+        name = r.name ?: "—",
+        byCreator = r.byCreator,
+        assignedAtMillis = millis(r.assignedAt)
+    )
+
+    // MARK: - DTO (colonnes Postgres en snake_case)
+
+    @Serializable
+    private data class ChainRow(
+        val id: String,
+        val name: String,
+        @SerialName("intention_type") val intentionType: String,
+        @SerialName("intention_detail") val intentionDetail: String? = null,
+        @SerialName("creator_uid") val creatorUid: String,
+        @SerialName("creator_name") val creatorName: String? = null,
+        @SerialName("created_at") val createdAt: String? = null,
+        @SerialName("selection_deadline") val selectionDeadline: String? = null,
+        @SerialName("reading_deadline") val readingDeadline: String? = null,
+        val distributed: Boolean = false,
+        @SerialName("expires_at") val expiresAt: String? = null
+    )
+
+    @Serializable
+    private data class ParticipantRow(
+        val uid: String,
+        val name: String? = null,
+        @SerialName("is_creator") val isCreator: Boolean = false,
+        @SerialName("joined_at") val joinedAt: String? = null
+    )
+
+    @Serializable
+    private data class AssignmentRow(
+        @SerialName("psalm_id") val psalmId: Int,
+        val uid: String,
+        val name: String? = null,
+        @SerialName("by_creator") val byCreator: Boolean = false,
+        @SerialName("assigned_at") val assignedAt: String? = null
+    )
+
+    @Serializable
+    private data class ParticipantUpsert(
+        @SerialName("chain_id") val chainId: String,
+        val uid: String,
+        val name: String,
+        @SerialName("is_creator") val isCreator: Boolean
+    )
+
+    @Serializable
+    private data class AssignmentInsert(
+        @SerialName("chain_id") val chainId: String,
+        @SerialName("psalm_id") val psalmId: Int,
+        val uid: String,
+        val name: String,
+        @SerialName("by_creator") val byCreator: Boolean
+    )
 
     companion object {
         const val CHAINS = "chains"
-        const val PARTICIPANTS = "participants"
-        const val STATE = "state"
-        const val BOARD = "board"
-        const val B_MAP = "a"
-        const val B_U = "u"
-        const val B_N = "n"
-        const val B_C = "c"
-        const val F_NAME = "name"
-        const val F_INTENTION_TYPE = "intentionType"
-        const val F_INTENTION_DETAIL = "intentionDetail"
-        const val F_CREATOR_UID = "creatorUid"
-        const val F_CREATOR_NAME = "creatorName"
-        const val F_CREATED_AT = "createdAt"
-        const val F_SELECTION_DEADLINE = "selectionDeadline"
-        const val F_READING_DEADLINE = "readingDeadline"
-        const val F_DISTRIBUTED = "distributed"
-        const val F_EXPIRES_AT = "expiresAt"
-        const val F_IS_CREATOR = "isCreator"
-        const val F_JOINED_AT = "joinedAt"
+        const val PARTICIPANTS = "chain_participants"
+        const val ASSIGNMENTS = "chain_assignments"
         const val EXPIRY_GRACE_MILLIS = 7L * 24 * 3600 * 1000
     }
 }

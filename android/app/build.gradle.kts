@@ -8,11 +8,12 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
-// Firebase (feature « Chaîne de Tehilim ») : on applique le plugin
-// google-services UNIQUEMENT si google-services.json est présent, pour que les
-// builds restent verts sur un clone sans la config (CI, contributeur externe).
-if (file("google-services.json").exists()) {
-    apply(plugin = "com.google.gms.google-services")
+// Feature « Chaîne de Tehilim » : config Supabase lue depuis
+// `app/supabase.properties` (gitignoré) et exposée à l'app via BuildConfig.
+// Absente (CI, nouveau clone) → URL/clé vides → l'app reste 100 % locale.
+val supabaseProperties = Properties().apply {
+    val f = file("supabase.properties")
+    if (f.exists()) load(FileInputStream(f))
 }
 
 // V1.4 — credentials du keystore release lus depuis `keystore.properties`
@@ -123,6 +124,12 @@ android {
         versionCode = 29
         versionName = "1.0.0"
 
+        // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.
+        buildConfigField("String", "SUPABASE_URL",
+            "\"${supabaseProperties.getProperty("SUPABASE_URL", "")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY",
+            "\"${supabaseProperties.getProperty("SUPABASE_ANON_KEY", "")}\"")
+
         // Tests
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -194,13 +201,8 @@ android {
 }
 
 dependencies {
-    // Firebase (Firestore) + WorkManager : conflit Guava. Le stub
-    // 'com.google.guava:listenablefuture' (tiré transitivement) masque la vraie
-    // classe ListenableFuture attendue par WorkManager (NotificationScheduler),
-    // et le Guava complet de Firestore n'est que transitif (absent du classpath
-    // de COMPILATION de l'app). On ajoute donc Guava en dépendance DIRECTE : il
-    // fournit ListenableFuture et évince le stub via résolution de capacité.
-    implementation("com.google.guava:guava:33.3.1-android")
+    // (Aucun workaround Guava : il n'existait que pour le conflit
+    // Firestore↔WorkManager, disparu avec la migration vers Supabase.)
 
     // Compose BOM — version unique pour tout l'écosystème Compose
     val composeBom = platform("androidx.compose:compose-bom:2024.09.03")
@@ -229,7 +231,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // KotlinX DateTime (Hebrew calendar utilities)
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
@@ -243,14 +245,19 @@ dependencies {
     // WorkManager — notifications quotidiennes
     implementation("androidx.work:work-runtime-ktx:2.9.1")
 
-    // Firebase (feature « Chaîne de Tehilim ») — Firestore temps réel + auth anonyme.
-    // BOM = versions alignées. Compile même sans google-services.json ; l'init
-    // runtime est gardée (cf. TehilimApplication).
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-auth")
-    // .await() sur les Task Firestore/Auth.
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
+    // Supabase (feature « Chaîne de Tehilim ») — Postgres + Realtime + auth
+    // anonyme via supabase-kt + moteur Ktor (OkHttp). Depuis mavenCentral, aucun
+    // plugin Gradle. Compile sans config ; l'app reste locale si
+    // supabase.properties est absent (cf. SupabaseClientProvider).
+    // supabase-kt 3.0.3 : compilé avec Kotlin 2.1.0 (consommable par le 2.1.10
+    // du projet), et aligné sur coroutines 1.9.0 + kotlinx-datetime 0.6.1 — les
+    // versions DÉJÀ utilisées ici (aucune régression sur le calendrier hébraïque).
+    // Ktor 3.0.2 = celui qu'embarque supabase-kt 3.0.3 (moteur OkHttp assorti).
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.3"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.ktor:ktor-client-okhttp:3.0.2")
 
     // Glance — widget Compose-like
     // V1.4 build 16 — bump Glance 1.1.0 → 1.1.1 :
@@ -262,7 +269,7 @@ dependencies {
 
     // Tests
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

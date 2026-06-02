@@ -3,7 +3,7 @@ import Foundation
 /// Encodage / décodage du lien de partage d'une **chaîne de Tehilim**.
 ///
 /// Mirror de `PrayerShareLink`, mais le payload est minimal : seul l'**id de
-/// chaîne** circule (le reste est lu depuis Firestore à l'ouverture). Le lien
+/// chaîne** circule (le reste est lu depuis Supabase à l'ouverture). Le lien
 /// est une page de redirection `https://…/c/?id=…` (cliquable dans WhatsApp),
 /// qui rouvre `tehilim://chain?id=…`. Universal Link sur `/c/` (cf. AASA).
 enum ChainShareLink {

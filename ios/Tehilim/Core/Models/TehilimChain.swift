@@ -2,9 +2,9 @@ import Foundation
 
 /// Modèles de la feature « Chaîne de Tehilim » (lecture collective temps réel).
 ///
-/// Volontairement **sans dépendance Firebase** : ce sont de simples valeurs
-/// Codable. La (dé)sérialisation Firestore (Timestamp ↔ Date) est faite dans
-/// `ChainService`. Ainsi les modèles compilent même sans le SDK ni la config.
+/// Volontairement **sans dépendance backend** : ce sont de simples valeurs
+/// Codable. Le mapping vers Supabase (Postgres timestamptz ↔ Date, colonnes
+/// snake_case) est fait dans `ChainService`. Les modèles compilent sans le SDK.
 
 /// Type d'intention d'une chaîne.
 enum ChainIntention: String, Codable, CaseIterable, Identifiable {
@@ -68,7 +68,7 @@ struct TehilimChain: Identifiable, Codable, Equatable {
     var selectionDeadline: Date
     var readingDeadline: Date
     var distributed: Bool
-    /// Fin de lecture + marge → TTL Firestore (suppression cloud auto).
+    /// Fin de lecture + marge → champ `expires_at` (purge cloud par le cron).
     var expiresAt: Date
 
     /// Sujet lisible : « Lelouy Nichmat — David » / « Refoua Chelema — … ».
@@ -90,7 +90,7 @@ struct TehilimChain: Identifiable, Codable, Equatable {
 
 /// Un participant (document `chains/{id}/participants/{uid}`).
 struct ChainParticipant: Identifiable, Codable, Equatable {
-    /// `id` = uid anonyme Firebase.
+    /// `id` = uid anonyme Supabase (auth).
     let id: String
     var name: String
     var isCreator: Bool

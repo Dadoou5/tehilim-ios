@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MODÈLE — copier ce fichier en `Supabase-Info.plist` (même dossier) puis y
+  coller la clé « anon public » du projet Supabase. Le fichier réel est
+  gitignoré ; sans lui, l'app reste 100 % locale (feature chaîne désactivée).
+  La clé anon est publique par conception (protégée par la RLS Postgres).
+  Settings → API → Project URL / Project API keys → `anon` `public`.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>SUPABASE_URL</key>
+    <string>https://ymhbmhnuniaxhhsckdaq.supabase.co</string>
+    <key>SUPABASE_ANON_KEY</key>
+    <string>PASTE_YOUR_ANON_PUBLIC_KEY_HERE</string>
+</dict>
+</plist>

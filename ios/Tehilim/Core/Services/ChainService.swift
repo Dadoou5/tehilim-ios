@@ -1,43 +1,46 @@
 import Foundation
-import FirebaseCore
-import FirebaseFirestore
-import FirebaseAuth
+import Supabase
 
-/// Couche d'accès Firestore pour la feature « Chaîne de Tehilim ».
+/// Couche d'accès **Supabase** (Postgres + Realtime + Auth anonyme) pour la
+/// feature « Chaîne de Tehilim ».
 ///
-/// **Optimisation quota** : l'état des attributions est stocké dans **un seul
-/// document** `chains/{id}/state/board` (champ map `a` = psalmId → {u,n,c})
-/// plutôt qu'en 150 docs. Charger la grille = **1 lecture** au lieu de 150
-/// (crucial quand un lien WhatsApp est ouvert par des dizaines de personnes).
-/// Le verrou reste atomique via une **transaction** sur ce doc unique.
+/// Modèle **relationnel** (et non plus le « board » JSON unique de Firestore) :
+/// une ligne par attribution dans `chain_assignments`, dont la **clé primaire
+/// `(chain_id, psalm_id)`** fait office de **verrou exclusif** « 1 lecteur /
+/// Tehilim » — un INSERT en double échoue ⇒ « déjà pris », atomiquement, sans
+/// transaction applicative. La propriété (« je ne libère que MES cases ») est
+/// imposée **côté serveur** par la RLS Postgres.
+///
+/// L'API publique de ce service (et de `ChainSession`) est **identique** à la
+/// version Firebase précédente : la couche UI (SwiftUI) est inchangée.
 final class ChainService {
 
-    static var isAvailable: Bool { FirebaseApp.app() != nil }
+    static var isAvailable: Bool { SupabaseManager.shared.client != nil }
 
-    private var db: Firestore { Firestore.firestore() }
+    private var client: SupabaseClient? { SupabaseManager.shared.client }
 
-    enum K {
-        static let chains = "chains"
-        static let participants = "participants"
-        static let state = "state", board = "board"
-        // Clés courtes dans la map du board (limite la taille du doc).
-        static let bMap = "a", bU = "u", bN = "n", bC = "c"
-        static let name = "name", intentionType = "intentionType", intentionDetail = "intentionDetail"
-        static let creatorUid = "creatorUid", creatorName = "creatorName"
-        static let createdAt = "createdAt", selectionDeadline = "selectionDeadline"
-        static let readingDeadline = "readingDeadline", distributed = "distributed", expiresAt = "expiresAt"
-        static let isCreator = "isCreator", joinedAt = "joinedAt"
-    }
-
+    /// Fin de lecture + marge → champ `expires_at` (nettoyage cloud par le cron).
     static let expiryGraceSeconds: TimeInterval = 7 * 24 * 3600
 
-    var currentUid: String? { Auth.auth().currentUser?.uid }
+    enum ChainError: LocalizedError {
+        case notConfigured
+        var errorDescription: String? { "Chaîne indisponible (Supabase non configuré)." }
+    }
+
+    // MARK: - Auth anonyme
+
+    /// uid (uuid Postgres, minuscules) de l'utilisateur courant, ou `nil`.
+    var currentUid: String? {
+        client?.auth.currentUser?.id.uuidString.lowercased()
+    }
 
     @discardableResult
     func ensureSignedIn() async throws -> String {
-        if let uid = Auth.auth().currentUser?.uid { return uid }
-        let result = try await Auth.auth().signInAnonymously()
-        return result.user.uid
+        guard let client else { throw ChainError.notConfigured }
+        if let user = client.auth.currentUser { return user.id.uuidString.lowercased() }
+        _ = try await client.auth.signInAnonymously()
+        guard let user = client.auth.currentUser else { throw ChainError.notConfigured }
+        return user.id.uuidString.lowercased()
     }
 
     // MARK: - Écritures
@@ -50,170 +53,262 @@ final class ChainService {
         readingDeadline: Date,
         creatorName: String
     ) async throws -> String {
-        let uid = try await ensureSignedIn()
+        guard let client else { throw ChainError.notConfigured }
+        _ = try await ensureSignedIn()
         let now = Date()
-        let chainRef = db.collection(K.chains).document()
-        let data: [String: Any] = [
-            K.name: name,
-            K.intentionType: intention.rawValue,
-            K.intentionDetail: detail,
-            K.creatorUid: uid,
-            K.creatorName: creatorName,
-            K.createdAt: now,
-            K.selectionDeadline: now.addingTimeInterval(selectionDuration),
-            K.readingDeadline: readingDeadline,
-            K.distributed: false,
-            K.expiresAt: readingDeadline.addingTimeInterval(Self.expiryGraceSeconds)
-        ]
-        try await chainRef.setData(data)
-        try await chainRef.collection(K.participants).document(uid).setData([
-            K.name: creatorName, K.isCreator: true, K.joinedAt: now
-        ])
-        return chainRef.documentID
+        let params = CreateChainParams(
+            p_name: name,
+            p_intention_type: intention.rawValue,
+            p_intention_detail: detail,
+            p_creator_name: creatorName,
+            p_selection_deadline: Self.iso(now.addingTimeInterval(selectionDuration)),
+            p_reading_deadline: Self.iso(readingDeadline),
+            p_expires_at: Self.iso(readingDeadline.addingTimeInterval(Self.expiryGraceSeconds))
+        )
+        // RPC atomique : crée la chaîne + le créateur-participant, renvoie l'id.
+        let newId: String = try await client.rpc("create_chain", params: params).execute().value
+        return newId
     }
 
     func join(chainId: String, name: String) async throws {
+        guard let client else { throw ChainError.notConfigured }
         let uid = try await ensureSignedIn()
-        try await db.collection(K.chains).document(chainId)
-            .collection(K.participants).document(uid)
-            .setData([K.name: name, K.isCreator: false, K.joinedAt: Date()], merge: true)
+        try await client.from(K.participants)
+            .upsert(ParticipantUpsert(chain_id: chainId, uid: uid, name: name, is_creator: false),
+                    onConflict: "chain_id,uid")
+            .execute()
     }
 
-    /// Réserve un Tehilim (transaction sur le doc board : échoue si déjà pris).
+    /// Réserve un Tehilim. INSERT : échoue (violation de PK) s'il est déjà pris.
     func select(chainId: String, psalmId: Int, name: String) async throws {
+        guard let client else { throw ChainError.notConfigured }
         let uid = try await ensureSignedIn()
-        let ref = boardRef(chainId)
-        _ = try await db.runTransaction { txn, errorPtr -> Any? in
-            let snap: DocumentSnapshot
-            do { snap = try txn.getDocument(ref) }
-            catch { errorPtr?.pointee = error as NSError; return nil }
-            var a = (snap.data()?[K.bMap] as? [String: [String: Any]]) ?? [:]
-            if a["\(psalmId)"] != nil {
-                errorPtr?.pointee = NSError(domain: "ChainService", code: 409,
-                    userInfo: [NSLocalizedDescriptionKey: "Tehilim déjà pris"])
-                return nil
-            }
-            a["\(psalmId)"] = [K.bU: uid, K.bN: name, K.bC: false]
-            txn.setData([K.bMap: a], forDocument: ref, merge: true)
-            return nil
-        }
+        try await client.from(K.assignments)
+            .insert(AssignmentInsert(chain_id: chainId, psalm_id: psalmId,
+                                     uid: uid, name: name, by_creator: false))
+            .execute()
     }
 
-    /// Libère un Tehilim réservé par soi-même.
+    /// Libère un Tehilim réservé par soi-même (la RLS empêche de libérer celui
+    /// d'un autre ; le `.eq("uid")` est une ceinture-bretelles côté client).
     func deselect(chainId: String, psalmId: Int) async throws {
+        guard let client else { throw ChainError.notConfigured }
         let uid = try await ensureSignedIn()
-        let ref = boardRef(chainId)
-        _ = try await db.runTransaction { txn, errorPtr -> Any? in
-            let snap: DocumentSnapshot
-            do { snap = try txn.getDocument(ref) }
-            catch { errorPtr?.pointee = error as NSError; return nil }
-            var a = (snap.data()?[K.bMap] as? [String: [String: Any]]) ?? [:]
-            if let entry = a["\(psalmId)"], (entry[K.bU] as? String) == uid {
-                a.removeValue(forKey: "\(psalmId)")
-                txn.setData([K.bMap: a], forDocument: ref, merge: true)
-            }
-            return nil
-        }
+        try await client.from(K.assignments)
+            .delete()
+            .eq("chain_id", value: chainId)
+            .eq("psalm_id", value: psalmId)
+            .eq("uid", value: uid)
+            .execute()
     }
 
-    /// (Créateur) Attribue tous les Tehilim restants à lui-même.
+    /// (Créateur) attribue tous les Tehilim restants à lui-même (RPC, une requête).
     func assignRemaining(chainId: String, name: String) async throws {
-        let uid = try await ensureSignedIn()
-        let ref = boardRef(chainId)
-        _ = try await db.runTransaction { txn, errorPtr -> Any? in
-            let snap: DocumentSnapshot
-            do { snap = try txn.getDocument(ref) }
-            catch { errorPtr?.pointee = error as NSError; return nil }
-            var a = (snap.data()?[K.bMap] as? [String: [String: Any]]) ?? [:]
-            for p in 1...TehilimChain.totalPsalms where a["\(p)"] == nil {
-                a["\(p)"] = [K.bU: uid, K.bN: name, K.bC: true]
-            }
-            txn.setData([K.bMap: a], forDocument: ref, merge: true)
-            return nil
-        }
+        guard let client else { throw ChainError.notConfigured }
+        _ = try await ensureSignedIn()
+        try await client.rpc("assign_remaining",
+                             params: AssignRemainingParams(p_chain_id: chainId, p_name: name))
+            .execute()
     }
 
     func distribute(chainId: String) async throws {
-        try await ensureSignedIn()
-        try await db.collection(K.chains).document(chainId)
-            .updateData([K.distributed: true])
+        guard let client else { throw ChainError.notConfigured }
+        _ = try await ensureSignedIn()
+        try await client.from(K.chains)
+            .update(DistributeUpdate(distributed: true))
+            .eq("id", value: chainId)
+            .execute()
     }
 
-    private func boardRef(_ chainId: String) -> DocumentReference {
-        db.collection(K.chains).document(chainId).collection(K.state).document(K.board)
-    }
-
-    // MARK: - Lecture ponctuelle
+    // MARK: - Lectures ponctuelles
 
     func fetchChain(id: String) async throws -> TehilimChain? {
-        let doc = try await db.collection(K.chains).document(id).getDocument()
-        return Self.chain(from: doc)
+        guard let client else { return nil }
+        let rows: [ChainRow] = try await client.from(K.chains)
+            .select().eq("id", value: id).limit(1).execute().value
+        return rows.first.map(Self.chain(from:))
+    }
+
+    func fetchParticipants(chainId: String) async throws -> [ChainParticipant] {
+        guard let client else { return [] }
+        let rows: [ParticipantRow] = try await client.from(K.participants)
+            .select().eq("chain_id", value: chainId).order("joined_at").execute().value
+        return rows.map(Self.participant(from:))
     }
 
     func fetchBoard(chainId: String) async throws -> [Int: ChainAssignment] {
-        let snap = try await boardRef(chainId).getDocument()
-        return Self.board(from: snap)
-    }
-
-    // MARK: - Session temps réel
-
-    @MainActor
-    func session(chainId: String) -> ChainSession { ChainSession(chainId: chainId) }
-
-    // MARK: - Mapping Firestore → modèles
-
-    static func chain(from doc: DocumentSnapshot) -> TehilimChain? {
-        guard let d = doc.data(),
-              let name = d[K.name] as? String,
-              let intentionRaw = d[K.intentionType] as? String,
-              let intention = ChainIntention(rawValue: intentionRaw),
-              let creatorUid = d[K.creatorUid] as? String
-        else { return nil }
-        return TehilimChain(
-            id: doc.documentID,
-            name: name,
-            intentionType: intention,
-            intentionDetail: d[K.intentionDetail] as? String ?? "",
-            creatorUid: creatorUid,
-            creatorName: d[K.creatorName] as? String ?? "",
-            createdAt: (d[K.createdAt] as? Timestamp)?.dateValue() ?? Date(),
-            selectionDeadline: (d[K.selectionDeadline] as? Timestamp)?.dateValue() ?? Date(),
-            readingDeadline: (d[K.readingDeadline] as? Timestamp)?.dateValue() ?? Date(),
-            distributed: d[K.distributed] as? Bool ?? false,
-            expiresAt: (d[K.expiresAt] as? Timestamp)?.dateValue() ?? Date()
-        )
-    }
-
-    static func participant(from doc: DocumentSnapshot) -> ChainParticipant? {
-        guard let d = doc.data() else { return nil }
-        return ChainParticipant(
-            id: doc.documentID,
-            name: d[K.name] as? String ?? "—",
-            isCreator: d[K.isCreator] as? Bool ?? false,
-            joinedAt: (d[K.joinedAt] as? Timestamp)?.dateValue() ?? Date()
-        )
-    }
-
-    /// Décode la map du doc board → dictionnaire psalmId → attribution.
-    static func board(from snap: DocumentSnapshot) -> [Int: ChainAssignment] {
-        guard let map = snap.data()?[K.bMap] as? [String: [String: Any]] else { return [:] }
+        guard let client else { return [:] }
+        let rows: [AssignmentRow] = try await client.from(K.assignments)
+            .select().eq("chain_id", value: chainId).execute().value
         var out: [Int: ChainAssignment] = [:]
-        for (key, v) in map {
-            guard let pid = Int(key), let uid = v[K.bU] as? String else { continue }
-            out[pid] = ChainAssignment(
-                id: key, uid: uid,
-                name: v[K.bN] as? String ?? "—",
-                byCreator: v[K.bC] as? Bool ?? false,
-                assignedAt: Date()
-            )
-        }
+        for r in rows { out[r.psalm_id] = Self.assignment(from: r) }
         return out
+    }
+
+    // MARK: - Constantes de tables
+
+    enum K {
+        static let chains = "chains"
+        static let participants = "chain_participants"
+        static let assignments = "chain_assignments"
+    }
+
+    // MARK: - DTO (colonnes Postgres en snake_case)
+
+    private struct ChainRow: Decodable {
+        let id: String
+        let name: String
+        let intention_type: String
+        let intention_detail: String?
+        let creator_uid: String
+        let creator_name: String?
+        let created_at: String
+        let selection_deadline: String
+        let reading_deadline: String
+        let distributed: Bool
+        let expires_at: String
+    }
+    private struct ParticipantRow: Decodable {
+        let uid: String
+        let name: String?
+        let is_creator: Bool
+        let joined_at: String
+    }
+    private struct AssignmentRow: Decodable {
+        let psalm_id: Int
+        let uid: String
+        let name: String?
+        let by_creator: Bool
+        let assigned_at: String?
+    }
+
+    private struct CreateChainParams: Encodable, Sendable {
+        let p_name: String
+        let p_intention_type: String
+        let p_intention_detail: String
+        let p_creator_name: String
+        let p_selection_deadline: String
+        let p_reading_deadline: String
+        let p_expires_at: String
+    }
+    private struct AssignRemainingParams: Encodable, Sendable {
+        let p_chain_id: String
+        let p_name: String
+    }
+    private struct ParticipantUpsert: Encodable, Sendable {
+        let chain_id: String
+        let uid: String
+        let name: String
+        let is_creator: Bool
+    }
+    private struct AssignmentInsert: Encodable, Sendable {
+        let chain_id: String
+        let psalm_id: Int
+        let uid: String
+        let name: String
+        let by_creator: Bool
+    }
+    private struct DistributeUpdate: Encodable, Sendable {
+        let distributed: Bool
+    }
+
+    // MARK: - Mapping DTO → modèles applicatifs (inchangés)
+
+    private static func chain(from r: ChainRow) -> TehilimChain {
+        TehilimChain(
+            id: r.id,
+            name: r.name,
+            intentionType: ChainIntention(rawValue: r.intention_type) ?? .reussite,
+            intentionDetail: r.intention_detail ?? "",
+            creatorUid: r.creator_uid.lowercased(),
+            creatorName: r.creator_name ?? "",
+            createdAt: parseDate(r.created_at),
+            selectionDeadline: parseDate(r.selection_deadline),
+            readingDeadline: parseDate(r.reading_deadline),
+            distributed: r.distributed,
+            expiresAt: parseDate(r.expires_at)
+        )
+    }
+
+    private static func participant(from r: ParticipantRow) -> ChainParticipant {
+        ChainParticipant(
+            id: r.uid.lowercased(),
+            name: r.name ?? "—",
+            isCreator: r.is_creator,
+            joinedAt: parseDate(r.joined_at)
+        )
+    }
+
+    private static func assignment(from r: AssignmentRow) -> ChainAssignment {
+        ChainAssignment(
+            id: String(r.psalm_id),
+            uid: r.uid.lowercased(),
+            name: r.name ?? "—",
+            byCreator: r.by_creator,
+            assignedAt: parseDate(r.assigned_at)
+        )
+    }
+
+    // MARK: - Dates (Postgres timestamptz ↔ Date)
+
+    private static let isoFractional: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+    private static let isoPlain: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime]
+        return f
+    }()
+
+    /// Sérialise une `Date` en ISO8601 (UTC) pour Postgres.
+    static func iso(_ date: Date) -> String { isoFractional.string(from: date) }
+
+    /// Parse un timestamptz Postgres. Postgres peut renvoyer des microsecondes
+    /// (6 décimales) ; `ISO8601DateFormatter` n'en gère que 3 → on tronque la
+    /// fraction à 3 chiffres avant le parsing, avec repli sans fraction.
+    static func parseDate(_ s: String?) -> Date {
+        guard let s, !s.isEmpty else { return Date() }
+        let normalized = normalizeFraction(s)
+        return isoFractional.date(from: normalized)
+            ?? isoPlain.date(from: normalized)
+            ?? isoPlain.date(from: stripFraction(normalized))
+            ?? Date()
+    }
+
+    /// Tronque la partie fractionnaire des secondes à 3 chiffres (millisecondes).
+    private static func normalizeFraction(_ s: String) -> String {
+        guard let dot = s.firstIndex(of: ".") else { return s }
+        var i = s.index(after: dot)
+        var digits = 0
+        while i < s.endIndex, s[i].isNumber {
+            digits += 1; i = s.index(after: i)
+            if digits == 3 { break }
+        }
+        // Saute les chiffres surnuméraires (4ᵉ, 5ᵉ, 6ᵉ…) jusqu'au fuseau (+/-/Z).
+        var j = i
+        while j < s.endIndex, s[j].isNumber { j = s.index(after: j) }
+        return String(s[s.startIndex..<i]) + String(s[j..<s.endIndex])
+    }
+
+    /// Retire toute la fraction de secondes (`.123` → ``), repli ultime.
+    private static func stripFraction(_ s: String) -> String {
+        guard let dot = s.firstIndex(of: ".") else { return s }
+        var i = s.index(after: dot)
+        while i < s.endIndex, s[i].isNumber { i = s.index(after: i) }
+        return String(s[s.startIndex..<dot]) + String(s[i..<s.endIndex])
     }
 }
 
-/// Session temps réel d'**une** chaîne : écoute le doc chaîne + participants +
-/// le doc board (attributions). `start()/stop()` permettent de couper l'écoute
-/// en arrière-plan (économie de quota) et de la reprendre au premier plan.
+/// Session temps réel d'**une** chaîne : charge l'état (chaîne + participants +
+/// attributions) et écoute les changements via **Supabase Realtime** (Postgres
+/// changes). `start()/stop()` permettent de couper l'écoute en arrière-plan et
+/// de la reprendre au premier plan — API identique à la version Firebase.
+///
+/// Sur chaque évènement realtime d'une table, on **recharge** la collection
+/// concernée (SELECT léger ≤ 150 lignes) : simple et robuste, sans décodage de
+/// delta fragile, parfaitement adapté à l'échelle (partage entre proches).
 @MainActor
 final class ChainSession: ObservableObject {
     @Published private(set) var chain: TehilimChain?
@@ -222,49 +317,90 @@ final class ChainSession: ObservableObject {
     @Published private(set) var loadError: String?
 
     let chainId: String
-    var currentUid: String? { Auth.auth().currentUser?.uid }
+    private let service = ChainService()
+    private var channel: RealtimeChannelV2?
+    private var tasks: [Task<Void, Never>] = []
 
-    private var listeners: [ListenerRegistration] = []
+    var currentUid: String? { service.currentUid }
 
     init(chainId: String) {
         self.chainId = chainId
         start()
     }
 
-    /// Attache les 3 listeners (idempotent).
+    /// Charge l'état puis attache l'écoute realtime (idempotent).
     func start() {
-        guard listeners.isEmpty else { return }
-        let db = Firestore.firestore()
-        let chainRef = db.collection(ChainService.K.chains).document(chainId)
+        guard channel == nil, let client = SupabaseManager.shared.client else { return }
 
-        listeners.append(chainRef.addSnapshotListener { [weak self] snap, _ in
-            guard let self, let snap else { return }
-            if let c = ChainService.chain(from: snap) { self.chain = c }
-            else if !snap.exists { self.loadError = "introuvable" }
+        tasks.append(Task { [weak self] in await self?.reloadAll() })
+
+        let channel = client.realtimeV2.channel("chain:\(chainId)")
+        self.channel = channel
+
+        let chainChanges = channel.postgresChange(
+            AnyAction.self, schema: "public", table: "chains", filter: "id=eq.\(chainId)")
+        let partChanges = channel.postgresChange(
+            AnyAction.self, schema: "public", table: "chain_participants", filter: "chain_id=eq.\(chainId)")
+        let asgChanges = channel.postgresChange(
+            AnyAction.self, schema: "public", table: "chain_assignments", filter: "chain_id=eq.\(chainId)")
+
+        tasks.append(Task { await channel.subscribe() })
+        tasks.append(Task { [weak self] in
+            for await _ in chainChanges { await self?.reloadChain() }
         })
-
-        listeners.append(chainRef.collection(ChainService.K.participants)
-            .addSnapshotListener { [weak self] snap, _ in
-                guard let self, let snap else { return }
-                self.participants = snap.documents
-                    .compactMap { ChainService.participant(from: $0) }
-                    .sorted { $0.joinedAt < $1.joinedAt }
-            })
-
-        listeners.append(chainRef.collection(ChainService.K.state).document(ChainService.K.board)
-            .addSnapshotListener { [weak self] snap, _ in
-                guard let self, let snap else { return }
-                self.assignments = ChainService.board(from: snap)
-            })
+        tasks.append(Task { [weak self] in
+            for await _ in partChanges { await self?.reloadParticipants() }
+        })
+        tasks.append(Task { [weak self] in
+            for await _ in asgChanges { await self?.reloadAssignments() }
+        })
     }
 
-    /// Détache les listeners (arrière-plan / écran fermé) → plus aucune lecture.
+    /// Détache l'écoute (arrière-plan / écran fermé).
     func stop() {
-        listeners.forEach { $0.remove() }
-        listeners.removeAll()
+        tasks.forEach { $0.cancel() }
+        tasks.removeAll()
+        if let channel {
+            Task { await channel.unsubscribe() }
+        }
+        channel = nil
     }
 
-    deinit { listeners.forEach { $0.remove() } }
+    deinit {
+        tasks.forEach { $0.cancel() }
+    }
+
+    // MARK: - Chargements
+
+    private func reloadAll() async {
+        await reloadChain()
+        await reloadParticipants()
+        await reloadAssignments()
+    }
+
+    private func reloadChain() async {
+        do {
+            if let c = try await service.fetchChain(id: chainId) {
+                self.chain = c
+            } else {
+                self.loadError = "introuvable"
+            }
+        } catch {
+            // garde l'état courant
+        }
+    }
+
+    private func reloadParticipants() async {
+        if let list = try? await service.fetchParticipants(chainId: chainId) {
+            self.participants = list.sorted { $0.joinedAt < $1.joinedAt }
+        }
+    }
+
+    private func reloadAssignments() async {
+        if let map = try? await service.fetchBoard(chainId: chainId) {
+            self.assignments = map
+        }
+    }
 
     // MARK: - Dérivés pour l'UI (inchangés)
 

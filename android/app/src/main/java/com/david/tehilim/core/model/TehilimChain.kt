@@ -4,8 +4,8 @@ package com.david.tehilim.core.model
  * Modèles de la feature « Chaîne de Tehilim » (lecture collective temps réel).
  * Mirror Android de TehilimChain.swift.
  *
- * Sans dépendance Firebase : simples data classes. La (dé)sérialisation
- * Firestore (Timestamp ↔ epochMillis) est faite dans ChainService.
+ * Sans dépendance backend : simples data classes. Le mapping vers Supabase
+ * (Postgres timestamptz ↔ epochMillis, colonnes snake_case) est dans ChainService.
  */
 
 /** Type d'intention d'une chaîne (valeur « wire » identique à iOS rawValue). */

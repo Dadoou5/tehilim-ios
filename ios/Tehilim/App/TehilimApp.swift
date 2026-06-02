@@ -1,7 +1,5 @@
 import SwiftUI
 import UIKit
-import FirebaseCore
-import FirebaseAuth
 
 /// `AppDelegate` minimal : capte les **Universal Links** (`https://…/p/…`) de
 /// façon fiable, y compris au cold-start — là où `.onContinueUserActivity`
@@ -11,14 +9,12 @@ import FirebaseAuth
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        // Feature « Chaîne de Tehilim » : init Firebase UNIQUEMENT si la config
-        // est présente dans le bundle (sinon l'app reste 100 % locale). Connexion
-        // anonyme → uid stable par appareil (identifie créateur & verrous).
-        if Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil {
-            FirebaseApp.configure()
-            if Auth.auth().currentUser == nil {
-                Auth.auth().signInAnonymously(completion: nil)
-            }
+        // Feature « Chaîne de Tehilim » : init Supabase UNIQUEMENT si la config
+        // est présente (Supabase-Info.plist). Sinon l'app reste 100 % locale.
+        // Connexion anonyme → uid stable par appareil (identifie créateur &
+        // verrous). `SupabaseManager.shared.client` est `nil` sans config.
+        if SupabaseManager.shared.client != nil {
+            Task { try? await ChainService().ensureSignedIn() }
         }
         return true
     }

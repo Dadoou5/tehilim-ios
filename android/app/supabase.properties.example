@@ -1,0 +1,7 @@
+# MODÈLE — copier ce fichier en `supabase.properties` (même dossier) puis y
+# coller la clé « anon public » du projet Supabase. Le fichier réel est
+# gitignoré ; sans lui, l'app reste 100 % locale (feature chaîne désactivée).
+# La clé anon est publique par conception (protégée par la RLS Postgres).
+# Console Supabase → Settings → API → Project URL / Project API keys → anon public.
+SUPABASE_URL=https://ymhbmhnuniaxhhsckdaq.supabase.co
+SUPABASE_ANON_KEY=PASTE_YOUR_ANON_PUBLIC_KEY_HERE

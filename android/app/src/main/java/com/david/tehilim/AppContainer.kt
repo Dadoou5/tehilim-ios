@@ -29,7 +29,7 @@ class AppContainer(context: Context) {
     val favorites: FavoritesStore = FavoritesStore(context)
     val savedPrayers: SavedPrayerStore = SavedPrayerStore(context)
 
-    // Feature « Chaîne de Tehilim » — accès Firestore + archive locale.
+    // Feature « Chaîne de Tehilim » — accès Supabase + archive locale.
     val chains: ChainService = ChainService(context.applicationContext)
     val chainArchive: ChainArchiveStore = ChainArchiveStore(context.applicationContext)
 

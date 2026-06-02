@@ -13,11 +13,14 @@ settings:
     DEVELOPMENT_LANGUAGE: fr
     ENABLE_USER_SCRIPT_SANDBOXING: NO
 
-# Firebase (feature « Chaîne de Tehilim ») — Firestore temps réel + auth anonyme.
+# Supabase (feature « Chaîne de Tehilim ») — Postgres + Realtime + auth anonyme.
+# Remplace Firebase. Le produit umbrella `Supabase` ré-exporte Auth / PostgREST
+# / Realtime. Compile sans config ; l'app reste 100 % locale si le fichier
+# Supabase-Info.plist est absent du bundle.
 packages:
-  Firebase:
-    url: https://github.com/firebase/firebase-ios-sdk
-    from: "11.0.0"
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.0.0"
 
 targets:
   Tehilim:
@@ -27,16 +30,16 @@ targets:
       - path: ios/Tehilim
         excludes:
           - "Resources/Info.plist"
+          # Modèle de config (non embarqué) ; la vraie config est gitignorée.
+          - "Resources/Supabase-Info.example.plist"
       - path: data
         buildPhase: resources
         type: group
     dependencies:
       - target: TehilimWidget
         embed: true
-      - package: Firebase
-        product: FirebaseFirestore
-      - package: Firebase
-        product: FirebaseAuth
+      - package: Supabase
+        product: Supabase
     settings:
       base:
         INFOPLIST_FILE: ios/Tehilim/Resources/Info.plist

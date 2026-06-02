@@ -1,4 +1,9 @@
-# Configuration Firebase — feature « Chaîne de Tehilim »
+# Configuration Firebase — feature « Chaîne de Tehilim » (ARCHIVÉ)
+
+> ⚠️ **Obsolète sur `main`.** La feature a été **migrée vers Supabase** — voir
+> **[`supabase-setup.md`](./supabase-setup.md)**. Ce document ne concerne plus
+> que la **branche git `firebase`** (implémentation Firebase conservée pour
+> référence / repli). Sur `main`, Firebase n'est plus utilisé.
 
 Cette feature collaborative temps réel nécessite **Firebase Firestore** + **Auth anonyme**.
 Le code applicatif est prêt et **reste vert sans config** (le plugin Android google-services

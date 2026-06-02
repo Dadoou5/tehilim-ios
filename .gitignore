@@ -70,6 +70,9 @@ android/playstore-screenshots/
 ios/appstore-screenshots-en/
 ios/appstore-screenshots-*/
 
-# Config Firebase (secrets, non versionnés — feature « Chaîne de Tehilim »)
+# Config Supabase (clé anon — non versionnée par convention ; feature « Chaîne de Tehilim »)
+ios/Tehilim/Resources/Supabase-Info.plist
+android/app/supabase.properties
+# Ancienne config Firebase (conservée sur la branche `firebase`)
 ios/Tehilim/Resources/GoogleService-Info.plist
 android/app/google-services.json

@@ -8,7 +8,7 @@ import com.david.tehilim.core.model.TehilimChain
 /**
  * Encodage / décodage du lien de partage d'une **chaîne de Tehilim**.
  * Mirror de PrayerShareLink, mais le payload est minimal : seul l'**id de
- * chaîne** circule (le reste est lu depuis Firestore à l'ouverture).
+ * chaîne** circule (le reste est lu depuis Supabase à l'ouverture).
  *
  * Lien = page de redirection `https://…/c/?id=…` (cliquable WhatsApp) qui
  * rouvre `tehilim://chain?id=…`. App Link sur le host + pathPrefix `/c/`.

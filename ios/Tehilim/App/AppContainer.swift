@@ -15,7 +15,7 @@ final class AppContainer: ObservableObject {
     let savedPrayers: SavedPrayerStore
     let preferences: Preferences
 
-    /// Feature « Chaîne de Tehilim » : accès Firestore + archive locale.
+    /// Feature « Chaîne de Tehilim » : accès Supabase + archive locale.
     let chains = ChainService()
     let chainArchive = ChainArchiveStore()
 

@@ -118,7 +118,9 @@ android {
         // Build 27 : optimisation quota Firestore — état des attributions en doc
         //            unique (board) + écoute coupée en arrière-plan.
         // Build 28 : re-build (versionCode requis par le Play Store).
-        versionCode = 28
+        // Build 29 : redesign écran de création de chaîne + temps de lecture
+        //            estimé (détail Tehilim + cases de chaîne).
+        versionCode = 29
         versionName = "1.0.0"
 
         // Tests

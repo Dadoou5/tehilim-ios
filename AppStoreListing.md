@@ -249,7 +249,7 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.13.0 (build 45) · Android build 27
+## 📋 What's New / Nouveautés — V1.13.0 (build 46) · Android build 29
 
 > Nouveauté majeure : **la Chaîne de Tehilim** — lecture collective en temps réel.
 

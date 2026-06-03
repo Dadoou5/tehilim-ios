@@ -32,7 +32,19 @@ final class SupabaseManager {
 
     private init() {
         if let cfg = SupabaseConfig.load() {
-            client = SupabaseClient(supabaseURL: cfg.url, supabaseKey: cfg.anonKey)
+            // `emitLocalSessionAsInitialSession: true` → adopte le futur
+            // comportement de supabase-swift (cf. PR #822) et supprime le
+            // warning. Sans impact ici : on ne s'abonne pas à authStateChanges,
+            // on lit seulement `auth.currentUser` après une connexion anonyme.
+            client = SupabaseClient(
+                supabaseURL: cfg.url,
+                supabaseKey: cfg.anonKey,
+                options: SupabaseClientOptions(
+                    auth: SupabaseClientOptions.AuthOptions(
+                        emitLocalSessionAsInitialSession: true
+                    )
+                )
+            )
         } else {
             client = nil
         }

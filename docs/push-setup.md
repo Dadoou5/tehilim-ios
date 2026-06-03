@@ -32,8 +32,10 @@ Functions secrets), ajoute :
    - `APNS_KEY_ID` = l'ID de la clé
    - `APNS_TEAM_ID` = `NFQ2Q87CV9`
    - `APNS_BUNDLE_ID` = `com.david.tehilim`
-   - `APNS_HOST` = `api.sandbox.push.apple.com` pour les **builds Xcode/dev** ;
-     `api.push.apple.com` pour **TestFlight/App Store**.
+   - `APNS_HOST` = **optionnel**. La fonction tente production puis bascule
+     automatiquement sur sandbox (et inversement) selon le token → dev (Xcode) et
+     prod (App Store) marchent sans rien changer. Tu peux le laisser non défini,
+     ou forcer `api.sandbox.push.apple.com` / `api.push.apple.com`.
 4. L'entitlement `aps-environment` est `development` (déjà posé). Pour l'App Store,
    Xcode bascule en `production` via la capability Push.
 

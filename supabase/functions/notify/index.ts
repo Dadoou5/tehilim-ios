@@ -89,14 +89,25 @@ function messageFor(event: string, value: number | null, chainName: string, loca
 }
 
 async function sendAPNs(token: string, msg: { title: string; body: string }, jwt: string) {
-  const host = Deno.env.get("APNS_HOST") || "api.push.apple.com";
   const topic = Deno.env.get("APNS_BUNDLE_ID") || "";
-  const res = await fetch(`https://${host}/3/device/${token}`, {
-    method: "POST",
-    headers: { authorization: `bearer ${jwt}`, "apns-topic": topic, "apns-push-type": "alert" },
-    body: JSON.stringify({ aps: { alert: msg, sound: "default" } }),
-  });
-  if (res.status >= 300) console.error("APNs", res.status, await res.text());
+  // Hôte primaire = APNS_HOST (ou production par défaut). On bascule
+  // automatiquement sur l'autre environnement si le token n'y appartient pas
+  // (BadDeviceToken) → dev (sandbox) ET prod fonctionnent sans reconfigurer.
+  const primary = Deno.env.get("APNS_HOST") || "api.push.apple.com";
+  const fallback = primary.includes("sandbox") ? "api.push.apple.com" : "api.sandbox.push.apple.com";
+  const body = JSON.stringify({ aps: { alert: msg, sound: "default" } });
+  for (const host of [primary, fallback]) {
+    const res = await fetch(`https://${host}/3/device/${token}`, {
+      method: "POST",
+      headers: { authorization: `bearer ${jwt}`, "apns-topic": topic, "apns-push-type": "alert" },
+      body,
+    });
+    if (res.status < 300) return;
+    const txt = await res.text();
+    if (res.status === 400 && txt.includes("BadDeviceToken")) continue; // mauvais env → autre hôte
+    console.error("APNs", host, res.status, txt);
+    return;
+  }
 }
 
 async function sendFCM(token: string, msg: { title: string; body: string }, accessToken: string, projectId: string) {

@@ -54,6 +54,11 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: NFQ2Q87CV9
+      configs:
+        # Debug → entitlement push « development » (base). Release / App Store →
+        # « production » (api.push.apple.com), requis par l'App Store.
+        Release:
+          CODE_SIGN_ENTITLEMENTS: ios/Tehilim/Tehilim.Release.entitlements
 
   TehilimWidget:
     type: app-extension

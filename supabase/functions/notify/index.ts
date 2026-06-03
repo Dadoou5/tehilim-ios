@@ -88,14 +88,27 @@ function messageFor(event: string, value: number | null, chainName: string, loca
   };
 }
 
+// Supprime un token mort de la base (clé service role auto-injectée par Supabase).
+async function pruneToken(token: string) {
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return;
+  try {
+    await fetch(`${url}/rest/v1/device_tokens?token=eq.${encodeURIComponent(token)}`, {
+      method: "DELETE",
+      headers: { apikey: key, authorization: `Bearer ${key}` },
+    });
+  } catch (e) { console.error("prune failed", String(e)); }
+}
+
 async function sendAPNs(token: string, msg: { title: string; body: string }, jwt: string) {
   const topic = Deno.env.get("APNS_BUNDLE_ID") || "";
-  // Hôte primaire = APNS_HOST (ou production par défaut). On bascule
-  // automatiquement sur l'autre environnement si le token n'y appartient pas
-  // (BadDeviceToken) → dev (sandbox) ET prod fonctionnent sans reconfigurer.
+  // Bascule auto sandbox⇄production (token mauvais env). Si le token est mort sur
+  // les DEUX (BadDeviceToken / 410 Unregistered) → on le purge de la base.
   const primary = Deno.env.get("APNS_HOST") || "api.push.apple.com";
   const fallback = primary.includes("sandbox") ? "api.push.apple.com" : "api.sandbox.push.apple.com";
   const body = JSON.stringify({ aps: { alert: msg, sound: "default" } });
+  let dead = false;
   for (const host of [primary, fallback]) {
     const res = await fetch(`https://${host}/3/device/${token}`, {
       method: "POST",
@@ -104,10 +117,11 @@ async function sendAPNs(token: string, msg: { title: string; body: string }, jwt
     });
     if (res.status < 300) return;
     const txt = await res.text();
-    if (res.status === 400 && txt.includes("BadDeviceToken")) continue; // mauvais env → autre hôte
+    if (res.status === 410 || (res.status === 400 && txt.includes("BadDeviceToken"))) { dead = true; continue; }
     console.error("APNs", host, res.status, txt);
     return;
   }
+  if (dead) await pruneToken(token);
 }
 
 async function sendFCM(token: string, msg: { title: string; body: string }, accessToken: string, projectId: string) {
@@ -116,7 +130,10 @@ async function sendFCM(token: string, msg: { title: string; body: string }, acce
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
     body: JSON.stringify({ message: { token, notification: msg } }),
   });
-  if (res.status >= 300) console.error("FCM", res.status, await res.text());
+  if (res.status < 300) return;
+  const txt = await res.text();
+  console.error("FCM", res.status, txt);
+  if (res.status === 404 || txt.includes("UNREGISTERED")) await pruneToken(token);  // token mort → purge
 }
 
 Deno.serve(async (req: Request) => {

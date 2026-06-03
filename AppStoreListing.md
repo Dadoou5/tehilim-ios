@@ -41,6 +41,12 @@ Conçue pour la lecture quotidienne comme pour l'étude approfondie, Tehilim ré
 • Rappels de notification personnalisables
 • Reprise automatique à la dernière lecture
 
+— CHAÎNE DE TEHILIM (LECTURE COLLECTIVE) —
+• Crée une chaîne pour une intention (Lelouy Nichmat, Refoua Chelema, réussite) et invite par lien WhatsApp ou QR code
+• Chacun rejoint et choisit les Tehilim qu'il s'engage à lire — en temps réel, sans doublon
+• Grille regroupée par les 5 livres et filtrable ; vois qui lit quoi et l'avancement
+• Notifications de progression ; le créateur distribue les restants et partage le compte rendu
+
 — LELOUY NICHMAT & COMMÉMORATION —
 • Lecture personnalisée pour l'élévation de l'âme d'un défunt : la séquence reprend les lettres de son prénom, du lien (בן/בת), du prénom de sa mère, puis נשמה
 • Calcul automatique de la prochaine azcara à partir de la date du décès, selon les règles traditionnelles (Adar / Adar II, Heshvan, Kislev…)
@@ -91,7 +97,8 @@ Conçue pour la lecture quotidienne comme pour l'étude approfondie, Tehilim ré
 • Contrastes optimisés, réduction des animations
 
 — RESPECT DE TA VIE PRIVÉE —
-• Aucune donnée personnelle collectée, aucun compte, aucune publicité, aucun tracker
+• Aucun compte, aucune publicité, aucun tracker
+• Chaîne de Tehilim (optionnelle, en ligne) : seuls un prénom d'affichage et l'intention sont enregistrés, supprimés automatiquement après la lecture
 • Ta position (mode Chabbat) sert uniquement au calcul des horaires sur l'appareil — jamais transmise ni stockée
 • Tes prières sauvegardées se synchronisent en privé via iCloud (ton compte Apple)
 • Lecture des Tehilim entièrement hors-ligne
@@ -164,6 +171,12 @@ Designed for daily reading as well as in-depth study, Tehilim brings together th
 • Customizable notification reminders
 • Auto-resume from your last reading
 
+— TEHILIM CHAIN (GROUP READING) —
+• Create a chain for an intention (Lelouy Nichmat, Refoua Chelema, success) and invite by WhatsApp link or QR code
+• Everyone joins and picks the Tehilim they commit to read — in real time, no duplicates
+• Grid grouped by the 5 books and filterable; see who reads what and overall progress
+• Progress notifications; the creator assigns the rest and shares the summary
+
 — LELOUY NICHMAT & REMEMBRANCE —
 • A personalized reading for the elevation of a departed soul: the sequence uses the letters of their first name, the relationship (בן/בת), the mother's first name, then נשמה
 • Automatic calculation of the next azcara (yahrzeit) from the date of death, following traditional rules (Adar / Adar II, Heshvan, Kislev…)
@@ -214,7 +227,8 @@ Designed for daily reading as well as in-depth study, Tehilim brings together th
 • Optimized contrasts, reduced motion
 
 — PRIVACY-FIRST —
-• No personal data collected, no account, no ads, no trackers
+• No account, no ads, no trackers
+• Tehilim Chain (optional, online): only a display name and the intention are stored, deleted automatically after the reading
 • Your location (Shabbat mode) is only used to compute times on-device — never transmitted or stored
 • Your saved prayers sync privately via iCloud (your Apple account)
 • Tehilim reading works fully offline
@@ -249,45 +263,48 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.13.0 (build 46) · Android build 29
+## 📋 What's New / Nouveautés — V1.14.0 (build 48) · Android versionCode 31
 
-> Nouveauté majeure : **la Chaîne de Tehilim** — lecture collective en temps réel.
+> Nouveauté majeure : **la Chaîne de Tehilim** — lecture collective en temps réel, enrichie (invitation QR, notifications, grille par livres, répartition).
 
 ### 🇫🇷 — App Store / Play (grand public)
 ```
-Nouveau : la Chaîne de Tehilim 📿
+Nouveau : la Chaîne de Tehilim 📿 — lecture collective en temps réel.
 
-Crée une chaîne de lecture collective pour une intention (Lelouy Nichmat, Refoua Chelema, ou pour la réussite d'un proche / d'Am Israël), puis partage le lien sur WhatsApp.
+Crée une chaîne pour une intention (Lelouy Nichmat, Refoua Chelema, ou pour la réussite d'un proche / d'Am Israël), puis invite tes proches en un tap.
 
-• Chacun rejoint en un tap et choisit les Tehilim qu'il s'engage à lire.
-• En temps réel : nombre de participants, Tehilim déjà pris (avec le nom à côté), avancement de la chaîne.
-• Un Tehilim choisi est verrouillé : pas de doublon.
-• Tu fixes une durée de sélection et une date de fin de lecture ; ensuite la chaîne passe en lecture seule.
-• Le créateur peut attribuer les Tehilim restants et partager le compte rendu final sur WhatsApp (ex. « David : 1 à 20 »).
+• Invitation par lien WhatsApp ou QR code (en présentiel).
+• Chacun rejoint et choisit les Tehilim qu'il s'engage à lire — en temps réel, sans doublon.
+• Grille des 150 Tehilim regroupée par les 5 livres et filtrable (tous / libres / les miens).
+• Vois qui lit quoi et l'avancement ; notifications quand la chaîne se remplit, est distribuée ou complétée 🎉.
+• Tu peux quitter une chaîne ; le créateur peut l'éditer, retirer un participant, distribuer les restants et partager le compte rendu (ex. « David : 1 à 20 »).
+• Sélection plus fluide et lecture des Tehilim assignés directement dans l'app.
 
 Disponible en français et en anglais, optimisé iPhone et iPad.
 ```
 
 ### 🇬🇧 — App Store / Play (general public)
 ```
-New: the Tehilim Chain 📿
+New: the Tehilim Chain 📿 — real-time group reading.
 
-Create a group reading for an intention (Lelouy Nichmat, Refoua Chelema, or for the success of a loved one / Am Israel), then share the link on WhatsApp.
+Create a chain for an intention (Lelouy Nichmat, Refoua Chelema, or for the success of a loved one / Am Israel), then invite people in one tap.
 
-• Everyone joins in one tap and picks the Tehilim they commit to read.
-• In real time: number of participants, Tehilim already taken (with the reader's name), overall progress.
-• A chosen Tehilim is locked — no duplicates.
-• You set a selection window and a reading deadline; the chain then becomes read-only.
-• The creator can assign the remaining Tehilim and share the final summary on WhatsApp (e.g. "David: 1 to 20").
+• Invite via WhatsApp link or QR code (in person).
+• Everyone joins and picks the Tehilim they commit to read — in real time, no duplicates.
+• The 150 Tehilim grid grouped by the 5 books and filterable (all / free / mine).
+• See who reads what and overall progress; notifications when the chain fills up, is distributed or completed 🎉.
+• You can leave a chain; the creator can edit it, remove a participant, assign the remaining Tehilim and share the summary (e.g. "David: 1 to 20").
+• Smoother selection, and read your assigned Tehilim right in the app.
 
 Available in French and English, optimized for iPhone and iPad.
 ```
 
-> ⚠️ Note review : cette version ajoute une fonctionnalité collaborative en ligne
-> (Firebase Firestore). Identité = compte anonyme par appareil + un prénom saisi,
-> visible des participants. Aucune donnée personnelle sensible ; les chaînes sont
-> supprimées automatiquement après la lecture (TTL). Connexion réseau requise pour
-> cette fonctionnalité uniquement — le reste de l'app fonctionne hors-ligne.
+> ⚠️ Note review : la Chaîne de Tehilim est une fonctionnalité collaborative en
+> ligne (backend Supabase). Identité = compte anonyme par appareil + un prénom
+> d'affichage saisi, visible des participants. Aucune donnée personnelle sensible ;
+> les chaînes sont supprimées automatiquement après la lecture. Notifications push
+> aux participants (APNs/FCM). Connexion réseau requise pour cette fonctionnalité
+> uniquement — le reste de l'app fonctionne hors-ligne.
 
 ---
 

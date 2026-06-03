@@ -132,7 +132,10 @@ android {
         //            (participants : 70/80/90 %, distribution, suppression),
         //            suppression de chaîne par le créateur, sélection fluide
         //            (UI optimiste), i18n EN, auto-bascule APNs.
-        versionCode = 30
+        // Build 31 : chaîne v2 — invitation + QR code, filtres de grille (par
+        //            les 5 livres), répartition par personne, quitter / éditer /
+        //            retirer un participant, notifs 100 % + rappel 80 %.
+        versionCode = 31
         versionName = "1.0.0"
 
         // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.

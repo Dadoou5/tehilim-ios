@@ -277,6 +277,9 @@ dependencies {
     // Guava complet : évince le stub listenablefuture (conflit play-services ↔ WorkManager).
     implementation("com.google.guava:guava:33.3.1-android")
 
+    // QR code d'invitation de chaîne (partage en présentiel).
+    implementation("com.google.zxing:core:3.5.3")
+
     // Glance — widget Compose-like
     // V1.4 build 16 — bump Glance 1.1.0 → 1.1.1 :
     // Play Console flag « note cruciale » sur androidx.glance:glance-appwidget-proto

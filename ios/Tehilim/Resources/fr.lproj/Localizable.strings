@@ -281,3 +281,12 @@
 "Retrait impossible." = "Retrait impossible.";
 "· maître" = "· maître";
 "Retirer %@" = "Retirer %@";
+
+/* Chaîne — invitation + QR code */
+"Inviter" = "Inviter";
+"Inviter des participants" = "Inviter des participants";
+"Partager le lien" = "Partager le lien";
+"Copier le lien" = "Copier le lien";
+"Lien copié" = "Lien copié";
+"QR code d'invitation" = "QR code d'invitation";
+"Partage le QR code ou le lien — chacun rejoint la chaîne et choisit les Tehilim qu'il lira." = "Partage le QR code ou le lien — chacun rejoint la chaîne et choisit les Tehilim qu'il lira.";

@@ -20,6 +20,7 @@ struct ChainDetailView: View {
     @State private var showDeleteConfirm = false
     @State private var showLeaveConfirm = false
     @State private var showEdit = false
+    @State private var showInvite = false
     @State private var gridFilter: ChainGridFilter = .all
     @State private var reading: PsalmNav?
     @State private var nowTick = Date()
@@ -79,6 +80,11 @@ struct ChainDetailView: View {
                 CreateChainView(editing: chain) { _ in }
             }
         }
+        .sheet(isPresented: $showInvite) {
+            if let chain = session.chain {
+                ChainInviteSheet(chain: chain)
+            }
+        }
         .navigationDestination(item: $reading) { nav in
             PsalmDetailView(psalmId: nav.id, siblings: session.myPsalmIds)
         }
@@ -106,6 +112,11 @@ struct ChainDetailView: View {
                 headerCard(chain)
                 countdownCard(chain, open: open)
                 participantsCard
+                Button { showInvite = true } label: {
+                    Label("Inviter des participants", systemImage: "person.badge.plus")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered).tint(.accentMain).controlSize(.large)
                 progressCard
                 if session.assignedCount > 0 { breakdownCard }
 
@@ -201,6 +212,11 @@ struct ChainDetailView: View {
                 Label("Participants", systemImage: "person.2.fill").font(.subheadline.weight(.semibold))
                 Spacer()
                 Text("\(session.participants.count)").font(.headline).foregroundStyle(Color.accentMain)
+                Button { showInvite = true } label: {
+                    Image(systemName: "person.crop.circle.badge.plus").font(.title3)
+                }
+                .buttonStyle(.plain).foregroundStyle(Color.accentMain)
+                .accessibilityLabel("Inviter des participants")
             }
             if session.isCurrentUserCreator {
                 // Le créateur peut retirer un participant (libère ses cases).

@@ -309,6 +309,12 @@
     <string name="chain_selection_end">Fin de la sélection</string>
     <string name="chain_owner_tag">· maître</string>
     <string name="chain_remove_participant">Retirer %1$s</string>
+    <string name="chain_invite">Inviter</string>
+    <string name="chain_invite_participants">Inviter des participants</string>
+    <string name="chain_invite_blurb">Partage le QR code ou le lien — chacun rejoint la chaîne et choisit ses Tehilim.</string>
+    <string name="chain_invite_qr">QR code d\'invitation</string>
+    <string name="chain_share_link">Partager le lien</string>
+    <string name="chain_copy_link">Copier le lien</string>
     <string name="chain_created_by">Créée par %1$s</string>
     <string name="chain_my_chains">Mes chaînes</string>
     <string name="chain_summaries">Comptes rendus</string>

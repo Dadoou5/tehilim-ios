@@ -309,6 +309,12 @@
     <string name="chain_selection_end">Selection end</string>
     <string name="chain_owner_tag">· owner</string>
     <string name="chain_remove_participant">Remove %1$s</string>
+    <string name="chain_invite">Invite</string>
+    <string name="chain_invite_participants">Invite participants</string>
+    <string name="chain_invite_blurb">Share the QR code or link — everyone joins and picks their Tehilim.</string>
+    <string name="chain_invite_qr">Invitation QR code</string>
+    <string name="chain_share_link">Share the link</string>
+    <string name="chain_copy_link">Copy the link</string>
     <string name="chain_created_by">Created by %1$s</string>
     <string name="chain_my_chains">My chains</string>
     <string name="chain_summaries">Summaries</string>

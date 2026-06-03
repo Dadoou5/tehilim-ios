@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -26,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.PersonRemove
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
@@ -56,10 +59,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
@@ -150,6 +155,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
 
     var showJoin by remember { mutableStateOf(false) }
     var showLeave by remember { mutableStateOf(false) }
+    var showInvite by remember { mutableStateOf(false) }
     var editingChain by remember { mutableStateOf<TehilimChain?>(null) }
     var gridFilter by remember { mutableStateOf(GridFilter.ALL) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -208,6 +214,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                         participants = participants,
                         countFor = ::countFor,
                         isCreator = isCreator,
+                        onInvite = { showInvite = true },
                         onRemove = { pUid ->
                             scope.launch {
                                 runCatching { container.chains.removeParticipant(chainId, pUid) }
@@ -215,6 +222,12 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                             }
                         }
                     )
+                }
+                fullSpan {
+                    OutlinedButton(onClick = { showInvite = true }, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Outlined.PersonAdd, null, Modifier.size(18.dp))
+                        Text(stringResource(R.string.chain_invite_participants), modifier = Modifier.padding(start = 8.dp))
+                    }
                 }
                 fullSpan { ProgressCard(effectiveAssignments, participants) }
                 if (effectiveAssignments.isNotEmpty()) {
@@ -388,6 +401,62 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
             dismissButton = { TextButton(onClick = { showLeave = false }) { Text(stringResource(R.string.action_cancel)) } }
         )
     }
+
+    if (showInvite) {
+        chain?.let { c -> InviteDialog(c) { showInvite = false } }
+    }
+}
+
+@Composable
+private fun InviteDialog(chain: TehilimChain, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val link = remember(chain.id) { ChainShareLink.uri(chain.id).toString() }
+    val qr = remember(link) { generateQrBitmap(link) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_ok)) } },
+        title = { Text(stringResource(R.string.chain_invite)) },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(stringResource(R.string.chain_invite_blurb),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center)
+                qr?.let {
+                    Image(it.asImageBitmap(), stringResource(R.string.chain_invite_qr), Modifier.size(220.dp))
+                }
+                Text(link, style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+                Button(onClick = { shareText(context, ChainShareLink.shareMessage(context, chain)) },
+                    modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.chain_share_link))
+                }
+                OutlinedButton(onClick = {
+                    val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                    cm.setPrimaryClip(android.content.ClipData.newPlainText("link", link))
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.chain_copy_link))
+                }
+            }
+        }
+    )
+}
+
+private fun generateQrBitmap(content: String, size: Int = 600): android.graphics.Bitmap? {
+    return try {
+        val matrix = com.google.zxing.qrcode.QRCodeWriter()
+            .encode(content, com.google.zxing.BarcodeFormat.QR_CODE, size, size)
+        val bmp = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
+        val pixels = IntArray(size * size)
+        for (y in 0 until size) for (x in 0 until size) {
+            pixels[y * size + x] = if (matrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE
+        }
+        bmp.setPixels(pixels, 0, size, 0, 0, size, size)
+        bmp
+    } catch (e: Exception) { null }
 }
 
 @Composable
@@ -431,13 +500,20 @@ private fun ParticipantsCard(
     participants: List<ChainParticipant>,
     countFor: (String) -> Int,
     isCreator: Boolean,
+    onInvite: () -> Unit,
     onRemove: (String) -> Unit
 ) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
                 Text(stringResource(R.string.chain_participants), style = MaterialTheme.typography.titleSmall)
-                Text("${participants.size}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${participants.size}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    IconButton(onClick = onInvite) {
+                        Icon(Icons.Outlined.PersonAdd, stringResource(R.string.chain_invite),
+                            tint = MaterialTheme.colorScheme.primary)
+                    }
+                }
             }
             if (isCreator) {
                 participants.forEach { p ->

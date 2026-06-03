@@ -137,6 +137,41 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         c.from(CHAINS).delete { filter { eq("id", chainId) } }
     }
 
+    /** Un participant quitte la chaîne : libère ses Tehilim puis se retire. */
+    suspend fun leaveChain(chainId: String) {
+        val c = client ?: error("Supabase non configuré")
+        val uid = ensureSignedIn()
+        c.from(ASSIGNMENTS).delete { filter { eq("chain_id", chainId); eq("uid", uid) } }
+        c.from(PARTICIPANTS).delete { filter { eq("chain_id", chainId); eq("uid", uid) } }
+    }
+
+    /** (Créateur) édite la chaîne (avant distribution). RLS : réservé au créateur. */
+    suspend fun updateChain(
+        chainId: String, name: String, intention: ChainIntention, detail: String,
+        selectionDeadlineMillis: Long, readingDeadlineMillis: Long
+    ) {
+        val c = client ?: error("Supabase non configuré")
+        ensureSignedIn()
+        c.from(CHAINS).update({
+            set("name", name)
+            set("intention_type", intention.wire)
+            set("intention_detail", detail)
+            set("selection_deadline", iso(selectionDeadlineMillis))
+            set("reading_deadline", iso(readingDeadlineMillis))
+            set("expires_at", iso(readingDeadlineMillis + EXPIRY_GRACE_MILLIS))
+        }) { filter { eq("id", chainId) } }
+    }
+
+    /** (Créateur) retire un participant + libère ses cases (RPC). */
+    suspend fun removeParticipant(chainId: String, uid: String) {
+        val c = client ?: error("Supabase non configuré")
+        ensureSignedIn()
+        c.postgrest.rpc("remove_participant", buildJsonObject {
+            put("p_chain_id", chainId)
+            put("p_uid", uid)
+        })
+    }
+
     /** Enregistre / met à jour le token push de cet appareil (notifs de chaîne). */
     suspend fun registerDeviceToken(token: String, platform: String = "android", locale: String) {
         val c = client ?: return

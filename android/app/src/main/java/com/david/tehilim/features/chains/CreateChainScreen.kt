@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
@@ -57,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import com.david.tehilim.AppContainer
 import com.david.tehilim.R
 import com.david.tehilim.core.model.ChainIntention
+import com.david.tehilim.core.model.TehilimChain
 import com.david.tehilim.ui.components.AppCard
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -67,31 +67,42 @@ import java.util.Date
 fun CreateChainScreen(
     container: AppContainer,
     onBack: () -> Unit,
-    onCreated: (String) -> Unit
+    onCreated: (String) -> Unit,
+    editing: TehilimChain? = null
 ) {
     val scope = rememberCoroutineScope()
-    var name by remember { mutableStateOf("") }
-    var intention by remember { mutableStateOf(ChainIntention.LELOUY) }
-    var detail by remember { mutableStateOf("") }
-    var creatorName by remember { mutableStateOf("") }
+    val isEditing = editing != null
+
+    var name by remember { mutableStateOf(editing?.name ?: "") }
+    var intention by remember { mutableStateOf(editing?.intentionType ?: ChainIntention.LELOUY) }
+    var detail by remember { mutableStateOf(editing?.intentionDetail ?: "") }
+    var creatorName by remember { mutableStateOf(editing?.creatorName ?: "") }
     var selectionHours by remember { mutableStateOf(24) }
     var readingDeadline by remember {
-        mutableStateOf(System.currentTimeMillis() + 7L * 24 * 3600 * 1000)
+        mutableStateOf(editing?.readingDeadlineMillis ?: (System.currentTimeMillis() + 7L * 24 * 3600 * 1000))
+    }
+    var selectionDeadline by remember {
+        mutableStateOf(editing?.selectionDeadlineMillis ?: (System.currentTimeMillis() + 24L * 3600 * 1000))
     }
     var creating by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
-    var showDatePicker by remember { mutableStateOf(false) }
+    var showReadingPicker by remember { mutableStateOf(false) }
+    var showSelectionPicker by remember { mutableStateOf(false) }
 
     val durations = listOf(1, 3, 6, 12, 24, 48, 72)
     val df = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
     val errCreate = stringResource(R.string.chain_create_error)
-    val canCreate = name.isNotBlank() && creatorName.isNotBlank() &&
-        readingDeadline > System.currentTimeMillis() + selectionHours * 3600_000L && !creating
+    val canCreate = if (isEditing) {
+        name.isNotBlank() && readingDeadline > selectionDeadline && !creating
+    } else {
+        name.isNotBlank() && creatorName.isNotBlank() &&
+            readingDeadline > System.currentTimeMillis() + selectionHours * 3600_000L && !creating
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.chain_new)) },
+                title = { Text(stringResource(if (isEditing) R.string.chain_edit else R.string.chain_new)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, stringResource(R.string.cd_back))
@@ -108,24 +119,23 @@ fun CreateChainScreen(
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // ── Hero ──
-            Column(horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    Modifier.size(56.dp).background(
-                        MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Outlined.Link, null,
-                        tint = MaterialTheme.colorScheme.primary)
+            if (!isEditing) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        Modifier.size(56.dp).background(
+                            MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Outlined.Link, null, tint = MaterialTheme.colorScheme.primary)
+                    }
+                    Spacer(Modifier.size(8.dp))
+                    Text(stringResource(R.string.chain_create_blurb),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Spacer(Modifier.size(8.dp))
-                Text(stringResource(R.string.chain_create_blurb),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
-            // ── Intention ──
             SectionTitle(stringResource(R.string.chain_intention))
             AppCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
@@ -156,7 +166,6 @@ fun CreateChainScreen(
                 singleLine = true, modifier = Modifier.fillMaxWidth()
             )
 
-            // Aperçu live du sujet
             val subject = if (detail.isBlank()) stringResource(intentionLabel(intention))
                           else "${stringResource(intentionLabel(intention))} — ${detail.trim()}"
             Text(subject,
@@ -165,39 +174,35 @@ fun CreateChainScreen(
                 modifier = Modifier.fillMaxWidth())
 
             // ── Délais ──
-            SectionTitle(stringResource(R.string.chain_selection_duration))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                durations.forEach { h ->
-                    FilterChip(
-                        selected = selectionHours == h,
-                        onClick = { selectionHours = h },
-                        label = { Text(if (h < 24) "$h h" else "${h / 24} j") }
-                    )
+            if (isEditing) {
+                SectionTitle(stringResource(R.string.chain_selection_end))
+                AppCard(onClick = { showSelectionPicker = true }, modifier = Modifier.fillMaxWidth()) {
+                    DeadlineRow(label = stringResource(R.string.chain_selection_end), value = df.format(Date(selectionDeadline)))
                 }
-            }
-
-            AppCard(onClick = { showDatePicker = true }, modifier = Modifier.fillMaxWidth()) {
-                Row(Modifier.fillMaxWidth().padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Icon(Icons.Outlined.CalendarMonth, null,
-                        tint = MaterialTheme.colorScheme.primary)
-                    Column(Modifier.weight(1f)) {
-                        Text(stringResource(R.string.chain_reading_end_label),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(df.format(Date(readingDeadline)),
-                            style = MaterialTheme.typography.titleSmall)
+            } else {
+                SectionTitle(stringResource(R.string.chain_selection_duration))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    durations.forEach { h ->
+                        FilterChip(
+                            selected = selectionHours == h,
+                            onClick = { selectionHours = h },
+                            label = { Text(if (h < 24) "$h h" else "${h / 24} j") }
+                        )
                     }
                 }
             }
 
-            // ── Toi ──
-            OutlinedTextField(
-                value = creatorName, onValueChange = { creatorName = it },
-                label = { Text(stringResource(R.string.chain_your_name_all)) },
-                singleLine = true, modifier = Modifier.fillMaxWidth()
-            )
+            AppCard(onClick = { showReadingPicker = true }, modifier = Modifier.fillMaxWidth()) {
+                DeadlineRow(label = stringResource(R.string.chain_reading_end_label), value = df.format(Date(readingDeadline)))
+            }
+
+            if (!isEditing) {
+                OutlinedTextField(
+                    value = creatorName, onValueChange = { creatorName = it },
+                    label = { Text(stringResource(R.string.chain_your_name_all)) },
+                    singleLine = true, modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             error?.let {
                 Text(it, color = MaterialTheme.colorScheme.error,
@@ -209,16 +214,28 @@ fun CreateChainScreen(
                     creating = true; error = null
                     scope.launch {
                         try {
-                            val id = container.chains.createChain(
-                                name = name.trim(),
-                                intention = intention,
-                                detail = detail.trim(),
-                                selectionDurationMillis = selectionHours * 3600_000L,
-                                readingDeadlineMillis = readingDeadline,
-                                creatorName = creatorName.trim()
-                            )
-                            container.chainArchive.remember(id)
-                            onCreated(id)
+                            if (isEditing && editing != null) {
+                                container.chains.updateChain(
+                                    chainId = editing.id,
+                                    name = name.trim(),
+                                    intention = intention,
+                                    detail = detail.trim(),
+                                    selectionDeadlineMillis = selectionDeadline,
+                                    readingDeadlineMillis = readingDeadline
+                                )
+                                onCreated(editing.id)
+                            } else {
+                                val id = container.chains.createChain(
+                                    name = name.trim(),
+                                    intention = intention,
+                                    detail = detail.trim(),
+                                    selectionDurationMillis = selectionHours * 3600_000L,
+                                    readingDeadlineMillis = readingDeadline,
+                                    creatorName = creatorName.trim()
+                                )
+                                container.chainArchive.remember(id)
+                                onCreated(id)
+                            }
                         } catch (e: Exception) {
                             error = errCreate
                         } finally {
@@ -228,36 +245,64 @@ fun CreateChainScreen(
                 },
                 enabled = canCreate,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(stringResource(R.string.chain_create_button)) }
+            ) { Text(stringResource(if (isEditing) R.string.chain_save else R.string.chain_create_button)) }
 
-            // Note de consentement
-            Row(
-                Modifier.fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(Icons.Outlined.Info, null, Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(stringResource(R.string.chain_consent),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (!isEditing) {
+                Row(
+                    Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(Icons.Outlined.Info, null, Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.chain_consent),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         }
     }
 
-    if (showDatePicker) {
+    if (showReadingPicker) {
         val state = rememberDatePickerState(initialSelectedDateMillis = readingDeadline)
         DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
+            onDismissRequest = { showReadingPicker = false },
             confirmButton = {
                 TextButton(onClick = {
                     state.selectedDateMillis?.let { readingDeadline = it }
-                    showDatePicker = false
+                    showReadingPicker = false
                 }) { Text(stringResource(R.string.action_ok)) }
             },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(R.string.action_cancel)) } }
+            dismissButton = { TextButton(onClick = { showReadingPicker = false }) { Text(stringResource(R.string.action_cancel)) } }
         ) { DatePicker(state = state) }
+    }
+    if (showSelectionPicker) {
+        val state = rememberDatePickerState(initialSelectedDateMillis = selectionDeadline)
+        DatePickerDialog(
+            onDismissRequest = { showSelectionPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let { selectionDeadline = it }
+                    showSelectionPicker = false
+                }) { Text(stringResource(R.string.action_ok)) }
+            },
+            dismissButton = { TextButton(onClick = { showSelectionPicker = false }) { Text(stringResource(R.string.action_cancel)) } }
+        ) { DatePicker(state = state) }
+    }
+}
+
+@Composable
+private fun DeadlineRow(label: String, value: String) {
+    Row(Modifier.fillMaxWidth().padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Icon(Icons.Outlined.CalendarMonth, null, tint = MaterialTheme.colorScheme.primary)
+        Column(Modifier.padding(end = 8.dp)) {
+            Text(label, style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(value, style = MaterialTheme.typography.titleSmall)
+        }
     }
 }
 

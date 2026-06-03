@@ -22,6 +22,15 @@ enum class ChainIntention(val wire: String) {
 /** Phase courante, dérivée du temps + flag distributed. */
 enum class ChainPhase { SELECTING, LOCKED }
 
+/** Les 5 livres des Tehilim — repères de section dans la grille. */
+enum class TehilimBook(val range: IntRange) {
+    ONE(1..41), TWO(42..72), THREE(73..89), FOUR(90..106), FIVE(107..150);
+
+    companion object {
+        fun bookFor(psalm: Int): TehilimBook = entries.first { psalm in it.range }
+    }
+}
+
 /** Une chaîne (document `chains/{id}`). Dates en epochMillis. */
 data class TehilimChain(
     val id: String,

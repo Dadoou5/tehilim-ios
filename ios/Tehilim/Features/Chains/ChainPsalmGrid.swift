@@ -1,5 +1,18 @@
 import SwiftUI
 
+/// Filtre d'affichage de la grille.
+enum ChainGridFilter: String, CaseIterable, Identifiable {
+    case all, free, mine
+    var id: String { rawValue }
+    var titleKey: String {
+        switch self {
+        case .all:  return "Tous"
+        case .free: return "Libres"
+        case .mine: return "Les miens"
+        }
+    }
+}
+
 /// Grille des 150 Tehilim d'une chaîne. Chaque pavé : libre (sélectionnable),
 /// « à moi » (déselectionnable), ou pris par un autre (verrouillé, nom affiché).
 struct ChainPsalmGrid: View {
@@ -14,6 +27,8 @@ struct ChainPsalmGrid: View {
     /// Temps de lecture estimé (min) par numéro de Tehilim — affiché sur les
     /// cases libres (remplacé par le nom dès qu'un Tehilim est réservé).
     let minutesFor: (Int) -> Int
+    /// Filtre d'affichage (tous / libres / les miens).
+    var filter: ChainGridFilter = .all
 
     @Environment(\.horizontalSizeClass) private var hSize
 
@@ -22,10 +37,43 @@ struct ChainPsalmGrid: View {
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(1...TehilimChain.totalPsalms, id: \.self) { id in
-                cell(for: id)
+        VStack(alignment: .leading, spacing: 18) {
+            ForEach(TehilimBook.allCases) { book in
+                let ids = visibleIds(in: book)
+                if !ids.isEmpty {
+                    Text(LocalizedStringKey(book.titleKey))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.leading, 2)
+                    LazyVGrid(columns: columns, spacing: 8) {
+                        ForEach(ids, id: \.self) { id in cell(for: id) }
+                    }
+                }
             }
+            if TehilimBook.allCases.allSatisfy({ visibleIds(in: $0).isEmpty }) {
+                Text(LocalizedStringKey(emptyFilterText))
+                    .font(.callout).foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 24)
+            }
+        }
+    }
+
+    private func visibleIds(in book: TehilimBook) -> [Int] {
+        book.range.filter { id in
+            switch filter {
+            case .all:  return true
+            case .free: return assignments[id] == nil
+            case .mine: return assignments[id]?.uid == currentUid
+            }
+        }
+    }
+
+    private var emptyFilterText: String {
+        switch filter {
+        case .mine: return "Tu n'as pas encore réservé de Tehilim."
+        case .free: return "Tous les Tehilim sont pris 🎉"
+        case .all:  return ""
         }
     }
 

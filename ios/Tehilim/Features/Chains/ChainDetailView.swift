@@ -4,13 +4,12 @@ import UIKit
 private struct PsalmNav: Identifiable, Hashable { let id: Int }
 
 /// Détail temps réel d'une chaîne : participants, compte à rebours, grille de
-/// sélection 1→150 avec verrous, contrôles créateur, partage WhatsApp, lecture.
+/// sélection 1→150 (filtrable, par livres), contrôles créateur, partage, lecture.
 struct ChainDetailView: View {
     @EnvironmentObject private var container: AppContainer
     let chainId: String
     /// Non nil quand la vue est présentée modalement (ouverture via lien) →
-    /// affiche un bouton « Fermer ». Nil quand poussée dans une NavigationStack
-    /// (le bouton retour natif suffit).
+    /// affiche un bouton « Fermer ».
     var onClose: (() -> Void)? = nil
 
     @Environment(\.horizontalSizeClass) private var hSize
@@ -19,6 +18,9 @@ struct ChainDetailView: View {
     @StateObject private var session: ChainSession
     @State private var showJoin = false
     @State private var showDeleteConfirm = false
+    @State private var showLeaveConfirm = false
+    @State private var showEdit = false
+    @State private var gridFilter: ChainGridFilter = .all
     @State private var reading: PsalmNav?
     @State private var nowTick = Date()
     @State private var errorMessage: String?
@@ -40,8 +42,7 @@ struct ChainDetailView: View {
                 EmptyStateView(symbol: "link", title: "Chaîne introuvable",
                                message: "Ce lien n'est plus valable ou la chaîne a été clôturée.")
             } else {
-                ProgressView("Chargement…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                skeleton
             }
         }
         .background(Color.bgPrimary)
@@ -66,13 +67,17 @@ struct ChainDetailView: View {
             container.chainArchive.remember(chainId)
             PushRegistrar.request()   // notifs push (participants) — demande contextuelle
         }
-        // Économie de ressources : on coupe l'écoute Realtime (Supabase) en
-        // arrière-plan et on la reprend au premier plan.
+        // Économie de ressources : on coupe l'écoute Realtime en arrière-plan.
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { session.start() } else { session.stop() }
         }
         .sheet(isPresented: $showJoin) {
             JoinChainSheet { name in Task { await join(name) } }
+        }
+        .sheet(isPresented: $showEdit) {
+            if let chain = session.chain {
+                CreateChainView(editing: chain) { _ in }
+            }
         }
         .navigationDestination(item: $reading) { nav in
             PsalmDetailView(psalmId: nav.id, siblings: session.myPsalmIds)
@@ -82,6 +87,12 @@ struct ChainDetailView: View {
             Button("Supprimer", role: .destructive) { Task { await deleteChain() } }
         } message: {
             Text("La chaîne sera définitivement supprimée pour tous les participants. Action irréversible.")
+        }
+        .alert("Quitter la chaîne ?", isPresented: $showLeaveConfirm) {
+            Button("Annuler", role: .cancel) {}
+            Button("Quitter", role: .destructive) { Task { await leave() } }
+        } message: {
+            Text("Tes Tehilim seront libérés pour les autres participants.")
         }
     }
 
@@ -96,6 +107,7 @@ struct ChainDetailView: View {
                 countdownCard(chain, open: open)
                 participantsCard
                 progressCard
+                if session.assignedCount > 0 { breakdownCard }
 
                 if !session.isCurrentUserParticipant {
                     Button {
@@ -111,6 +123,14 @@ struct ChainDetailView: View {
                     selectionSection(chain, open: open)
                     if session.isCurrentUserCreator {
                         creatorSection(chain, open: open)
+                    } else {
+                        Button(role: .destructive) {
+                            showLeaveConfirm = true
+                        } label: {
+                            Label("Quitter la chaîne", systemImage: "rectangle.portrait.and.arrow.right")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
                     }
                 }
 
@@ -122,23 +142,34 @@ struct ChainDetailView: View {
             .padding(.vertical, 16)
             .readingWidth(maxWidth: AdaptiveLayout.dashboardMaxWidth)
         }
+        // Compteur + filtre « collants » en haut, pendant qu'on est participant.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if session.isCurrentUserParticipant { filterBar }
+        }
     }
+
+    // MARK: - Cartes
 
     @ViewBuilder
     private func headerCard(_ chain: TehilimChain) -> some View {
+        let tint = chain.intentionType.tint
         VStack(alignment: .leading, spacing: 8) {
             Label(LocalizedStringKey(chain.intentionType.titleKey), systemImage: chain.intentionType.symbol)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 10).padding(.vertical, 4)
-                .background(Color.accentMain, in: Capsule())
+                .background(tint, in: Capsule())
             Text(chain.subjectLine)
                 .font(.title2.weight(.semibold))
             Text("Créée par \(chain.creatorName)")
                 .font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16).appCard()
+        .padding(16)
+        .background(tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 3).fill(tint).frame(width: 4).padding(.vertical, 12)
+        }
     }
 
     @ViewBuilder
@@ -146,14 +177,16 @@ struct ChainDetailView: View {
         let deadline = open ? chain.selectionDeadline : chain.readingDeadline
         HStack(spacing: 14) {
             Image(systemName: open ? "timer" : "book")
-                .font(.title3).foregroundStyle(Color.accentMain)
+                .font(.title2).foregroundStyle(chain.intentionType.tint)
             VStack(alignment: .leading, spacing: 2) {
                 Text(open ? "Fin de la sélection dans" : (chain.distributed ? "Distribuée · lecture jusqu'au" : "Sélection close · lecture jusqu'au"))
                     .font(.caption).foregroundStyle(.secondary)
                 if open {
-                    Text(remaining(until: deadline)).font(.headline.monospacedDigit())
+                    Text(remaining(until: deadline))
+                        .font(.system(.title2, design: .rounded).weight(.bold).monospacedDigit())
                 } else {
-                    Text(deadline.formatted(date: .abbreviated, time: .shortened)).font(.headline)
+                    Text(deadline.formatted(date: .abbreviated, time: .shortened))
+                        .font(.headline)
                 }
             }
             Spacer()
@@ -169,27 +202,106 @@ struct ChainDetailView: View {
                 Spacer()
                 Text("\(session.participants.count)").font(.headline).foregroundStyle(Color.accentMain)
             }
-            if !session.participants.isEmpty {
+            if session.isCurrentUserCreator {
+                // Le créateur peut retirer un participant (libère ses cases).
+                ForEach(session.participants) { p in
+                    HStack {
+                        Text(p.name).font(.caption)
+                        if p.isCreator { Text("· maître").font(.caption2).foregroundStyle(.secondary) }
+                        Spacer()
+                        Text("\(count(for: p.id))").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                        if !p.isCreator {
+                            Button {
+                                Task { await removeParticipant(p.id) }
+                            } label: {
+                                Image(systemName: "person.fill.xmark").font(.caption)
+                            }
+                            .buttonStyle(.plain).foregroundStyle(.red)
+                            .accessibilityLabel("Retirer \(p.name)")
+                        }
+                    }
+                }
+            } else if !session.participants.isEmpty {
                 Text(session.participants.map(\.name).joined(separator: " · "))
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16).appCard()
+        .disabled(working)
     }
 
     @ViewBuilder
     private var progressCard: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("Avancement").font(.subheadline.weight(.semibold))
                 Spacer()
                 Text("\(session.assignedCount)/\(TehilimChain.totalPsalms)")
-                    .font(.subheadline.weight(.medium)).foregroundStyle(.secondary)
+                    .font(.subheadline.weight(.medium).monospacedDigit()).foregroundStyle(.secondary)
             }
-            ProgressView(value: session.progress).tint(.accentMain)
+            segmentedBar
         }
         .padding(16).appCard()
+    }
+
+    /// Barre segmentée par participant (qui a pris combien).
+    private var segmentedBar: some View {
+        let segs = participantSegments()
+        return GeometryReader { geo in
+            HStack(spacing: 1) {
+                ForEach(Array(segs.enumerated()), id: \.offset) { _, seg in
+                    Rectangle().fill(seg.color)
+                        .frame(width: max(2, geo.size.width * CGFloat(seg.count) / CGFloat(TehilimChain.totalPsalms)))
+                }
+                Spacer(minLength: 0)
+            }
+        }
+        .frame(height: 10)
+        .background(Color.bgSurface)
+        .clipShape(Capsule())
+    }
+
+    /// Répartition par personne (in-app, repliable).
+    @ViewBuilder
+    private var breakdownCard: some View {
+        DisclosureGroup {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(breakdown().enumerated()), id: \.offset) { _, row in
+                    HStack(alignment: .top, spacing: 8) {
+                        Text(row.name).font(.caption.weight(.medium))
+                        Spacer(minLength: 8)
+                        Text(row.ranges)
+                            .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
+            }
+            .padding(.top, 8)
+        } label: {
+            Label("Répartition par personne", systemImage: "list.bullet.rectangle")
+                .font(.subheadline.weight(.semibold))
+        }
+        .tint(.accentMain)
+        .padding(16).appCard()
+    }
+
+    /// Barre filtre + compteur (collante en haut de la grille).
+    private var filterBar: some View {
+        HStack(spacing: 12) {
+            Picker("", selection: $gridFilter) {
+                ForEach(ChainGridFilter.allCases) { f in
+                    Text(LocalizedStringKey(f.titleKey)).tag(f)
+                }
+            }
+            .pickerStyle(.segmented)
+            Text("\(session.assignedCount)/\(TehilimChain.totalPsalms)")
+                .font(.caption.weight(.semibold).monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
+        .padding(.vertical, 8)
+        .background(.bar)
     }
 
     @ViewBuilder
@@ -203,20 +315,17 @@ struct ChainDetailView: View {
                         .foregroundStyle(Color.accentMain)
                 }
             }
-            if open {
-                Text("Touche un numéro libre pour t'y engager. Touche un de tes numéros pour le libérer.")
-                    .font(.caption).foregroundStyle(.secondary)
-            } else {
-                Text("La sélection est close. Touche un de tes Tehilim pour le lire.")
-                    .font(.caption).foregroundStyle(.secondary)
-            }
+            Text(open ? "Touche un numéro libre pour t'y engager. Touche un de tes numéros pour le libérer."
+                      : "La sélection est close. Touche un de tes Tehilim pour le lire.")
+                .font(.caption).foregroundStyle(.secondary)
             ChainPsalmGrid(
                 assignments: session.assignments,
                 currentUid: session.currentUid,
                 selectionOpen: open,
                 onToggle: { id in Task { await toggle(id) } },
                 onRead: { id in reading = PsalmNav(id: id) },
-                minutesFor: { container.psalmRepository.psalm(id: $0)?.estimatedReadingMinutes ?? 1 }
+                minutesFor: { container.psalmRepository.psalm(id: $0)?.estimatedReadingMinutes ?? 1 },
+                filter: gridFilter
             )
         }
     }
@@ -226,6 +335,12 @@ struct ChainDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             Divider()
             Text("Maître de la chaîne").font(.headline)
+            if open && !chain.distributed {
+                Button { showEdit = true } label: {
+                    Label("Modifier la chaîne", systemImage: "pencil").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered).tint(.accentMain)
+            }
             if open && !session.isFullyAssigned {
                 Button {
                     Task { await assignRemaining(chain) }
@@ -245,7 +360,6 @@ struct ChainDetailView: View {
                 }
                 .buttonStyle(.borderedProminent).tint(.accentMain)
             }
-            // Compte rendu partageable (toujours dispo pour le créateur).
             ShareLink(item: reportText(chain)) {
                 Label("Partager le compte rendu", systemImage: "square.and.arrow.up.on.square")
                     .frame(maxWidth: .infinity)
@@ -263,6 +377,55 @@ struct ChainDetailView: View {
         .disabled(working)
     }
 
+    // MARK: - Skeleton de chargement
+
+    private var skeleton: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ForEach(0..<3, id: \.self) { _ in
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color.bgSurface).frame(height: 64)
+            }
+            LazyVGrid(columns: AdaptiveLayout.adaptiveColumns(for: hSize, compactMin: 58, regularMin: 80, spacing: 8), spacing: 8) {
+                ForEach(0..<36, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.bgSurface).frame(height: 44)
+                }
+            }
+        }
+        .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
+        .padding(.vertical, 16)
+        .redacted(reason: .placeholder)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .accessibilityLabel("Chargement…")
+    }
+
+    // MARK: - Données dérivées
+
+    private func count(for uid: String) -> Int {
+        session.assignments.values.reduce(0) { $0 + ($1.uid == uid ? 1 : 0) }
+    }
+
+    private func participantSegments() -> [(name: String, count: Int, color: Color)] {
+        let palette: [Color] = [.accentMain, .blue, .green, .orange, .purple, .pink, .teal, .indigo, .brown, .mint]
+        var out: [(String, Int, Color)] = []
+        for (i, p) in session.participants.enumerated() {
+            let c = count(for: p.id)
+            if c > 0 { out.append((p.name, c, palette[i % palette.count])) }
+        }
+        return out.map { (name: $0.0, count: $0.1, color: $0.2) }
+    }
+
+    private func breakdown() -> [(name: String, ranges: String)] {
+        var byUid: [String: (name: String, ids: [Int])] = [:]
+        for (psalmId, a) in session.assignments {
+            byUid[a.uid, default: (a.name, [])].ids.append(psalmId)
+        }
+        let en = AppLocale.code == "en"
+        return byUid.values.sorted { $0.name < $1.name }.map {
+            (name: $0.name, ranges: TehilimChain.compressRanges($0.ids, separator: en ? "to" : "à"))
+        }
+    }
+
     // MARK: - Actions
 
     private func join(_ name: String) async {
@@ -270,12 +433,25 @@ struct ChainDetailView: View {
         catch { errorMessage = "Impossible de rejoindre." }
     }
 
+    private func leave() async {
+        working = true; defer { working = false }
+        do {
+            try await container.chains.leaveChain(chainId: chainId)
+            container.chainArchive.forget(chainId)
+            if let onClose { onClose() } else { dismiss() }
+        } catch { errorMessage = "Impossible de quitter." }
+    }
+
+    private func removeParticipant(_ uid: String) async {
+        working = true; defer { working = false }
+        do { try await container.chains.removeParticipant(chainId: chainId, uid: uid) }
+        catch { errorMessage = "Retrait impossible." }
+    }
+
     private func toggle(_ id: Int) async {
         errorMessage = nil
         guard let uid = session.currentUid else { return }
         let mine = session.assignments[id]?.uid == uid
-        // Retour haptique immédiat + mise à jour optimiste : la grille réagit
-        // instantanément, le serveur (et le realtime) réconcilient ensuite.
         UISelectionFeedbackGenerator().selectionChanged()
         if mine {
             withAnimation(.easeOut(duration: 0.15)) { session.optimisticDeselect(id) }
@@ -364,5 +540,16 @@ struct ChainDetailView: View {
             detail: chain.intentionDetail, creatorName: chain.creatorName,
             readingDeadline: chain.readingDeadline, archivedAt: Date(), assignments: map
         ))
+    }
+}
+
+extension ChainIntention {
+    /// Teinte thématique de l'intention (en-tête + accents).
+    var tint: Color {
+        switch self {
+        case .lelouy:   return Color(red: 0.45, green: 0.42, blue: 0.70)  // violet — mémoire
+        case .refoua:   return Color(red: 0.82, green: 0.33, blue: 0.42)  // rose — guérison
+        case .reussite: return Color(red: 0.86, green: 0.62, blue: 0.18)  // doré — réussite
+        }
     }
 }

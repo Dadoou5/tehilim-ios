@@ -128,6 +128,38 @@ final class ChainService {
         try await client.from(K.chains).delete().eq("id", value: chainId).execute()
     }
 
+    /// Un participant quitte la chaîne : libère ses Tehilim puis se retire.
+    func leaveChain(chainId: String) async throws {
+        guard let client else { throw ChainError.notConfigured }
+        let uid = try await ensureSignedIn()
+        try await client.from(K.assignments).delete()
+            .eq("chain_id", value: chainId).eq("uid", value: uid).execute()
+        try await client.from(K.participants).delete()
+            .eq("chain_id", value: chainId).eq("uid", value: uid).execute()
+    }
+
+    /// (Créateur) édite la chaîne (avant distribution). RLS : réservé au créateur.
+    func updateChain(chainId: String, name: String, intention: ChainIntention, detail: String,
+                     selectionDeadline: Date, readingDeadline: Date) async throws {
+        guard let client else { throw ChainError.notConfigured }
+        _ = try await ensureSignedIn()
+        try await client.from(K.chains)
+            .update(ChainUpdate(
+                name: name, intention_type: intention.rawValue, intention_detail: detail,
+                selection_deadline: Self.iso(selectionDeadline),
+                reading_deadline: Self.iso(readingDeadline),
+                expires_at: Self.iso(readingDeadline.addingTimeInterval(Self.expiryGraceSeconds))))
+            .eq("id", value: chainId).execute()
+    }
+
+    /// (Créateur) retire un participant + libère ses cases (RPC).
+    func removeParticipant(chainId: String, uid: String) async throws {
+        guard let client else { throw ChainError.notConfigured }
+        _ = try await ensureSignedIn()
+        try await client.rpc("remove_participant",
+            params: RemoveParticipantParams(p_chain_id: chainId, p_uid: uid)).execute()
+    }
+
     /// Enregistre / met à jour le token push de cet appareil (notifications de
     /// chaîne aux participants). Silencieux si non configuré.
     func registerDeviceToken(_ token: String, platform: String = "ios", locale: String) async {
@@ -235,6 +267,18 @@ final class ChainService {
         let uid: String
         let platform: String
         let locale: String
+    }
+    private struct ChainUpdate: Encodable, Sendable {
+        let name: String
+        let intention_type: String
+        let intention_detail: String
+        let selection_deadline: String
+        let reading_deadline: String
+        let expires_at: String
+    }
+    private struct RemoveParticipantParams: Encodable, Sendable {
+        let p_chain_id: String
+        let p_uid: String
     }
 
     // MARK: - Mapping DTO → modèles applicatifs (inchangés)

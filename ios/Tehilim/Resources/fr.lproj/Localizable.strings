@@ -258,3 +258,26 @@
 "Distribution impossible." = "Distribution impossible.";
 "Suppression impossible." = "Suppression impossible.";
 "Création impossible. Vérifie ta connexion." = "Création impossible. Vérifie ta connexion.";
+
+/* Chaîne v2 — filtres, livres, quitter, édition, répartition */
+"Libres" = "Libres";
+"Les miens" = "Les miens";
+"Livre I" = "Livre I";
+"Livre II" = "Livre II";
+"Livre III" = "Livre III";
+"Livre IV" = "Livre IV";
+"Livre V" = "Livre V";
+"Tu n'as pas encore réservé de Tehilim." = "Tu n'as pas encore réservé de Tehilim.";
+"Tous les Tehilim sont pris 🎉" = "Tous les Tehilim sont pris 🎉";
+"Quitter la chaîne" = "Quitter la chaîne";
+"Quitter la chaîne ?" = "Quitter la chaîne ?";
+"Quitter" = "Quitter";
+"Tes Tehilim seront libérés pour les autres participants." = "Tes Tehilim seront libérés pour les autres participants.";
+"Modifier la chaîne" = "Modifier la chaîne";
+"Fin de la sélection" = "Fin de la sélection";
+"Enregistrement impossible." = "Enregistrement impossible.";
+"Répartition par personne" = "Répartition par personne";
+"Impossible de quitter." = "Impossible de quitter.";
+"Retrait impossible." = "Retrait impossible.";
+"· maître" = "· maître";
+"Retirer %@" = "Retirer %@";

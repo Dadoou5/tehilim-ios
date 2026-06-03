@@ -1,28 +1,51 @@
 import SwiftUI
 
-/// Formulaire de création d'une chaîne de Tehilim. Le clavier est le clavier
-/// **système** par défaut (émojis disponibles) — simple `TextField`.
+/// Formulaire de **création** ou d'**édition** d'une chaîne de Tehilim. Clavier
+/// système (émojis dispo). En édition, le créateur ajuste nom / intention /
+/// détail et les délais (avant distribution).
 struct CreateChainView: View {
     @EnvironmentObject private var container: AppContainer
     @Environment(\.dismiss) private var dismiss
 
     /// Appelé avec l'id de la chaîne créée → le parent ouvre le détail.
     let onCreated: (String) -> Void
+    /// Non nil = mode édition.
+    let editing: TehilimChain?
 
-    @State private var name: String = ""
-    @State private var intention: ChainIntention = .lelouy
-    @State private var detail: String = ""
-    @State private var selectionHours: Int = 24
-    @State private var readingDeadline: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
-    @State private var creatorName: String = ""
+    @State private var name: String
+    @State private var intention: ChainIntention
+    @State private var detail: String
+    @State private var selectionHours: Int
+    @State private var readingDeadline: Date
+    @State private var selectionDeadline: Date
+    @State private var creatorName: String
 
     @State private var isCreating = false
     @State private var errorMessage: String?
 
     private let durationChoices: [Int] = [1, 3, 6, 12, 24, 48, 72]
+    private var isEditing: Bool { editing != nil }
+
+    init(editing: TehilimChain? = nil, onCreated: @escaping (String) -> Void) {
+        self.editing = editing
+        self.onCreated = onCreated
+        _name = State(initialValue: editing?.name ?? "")
+        _intention = State(initialValue: editing?.intentionType ?? .lelouy)
+        _detail = State(initialValue: editing?.intentionDetail ?? "")
+        _selectionHours = State(initialValue: 24)
+        _readingDeadline = State(initialValue: editing?.readingDeadline
+            ?? Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date())
+        _selectionDeadline = State(initialValue: editing?.selectionDeadline
+            ?? Date().addingTimeInterval(24 * 3600))
+        _creatorName = State(initialValue: editing?.creatorName ?? "")
+    }
 
     private var canCreate: Bool {
-        !name.trimmingCharacters(in: .whitespaces).isEmpty
+        let nameOK = !name.trimmingCharacters(in: .whitespaces).isEmpty
+        if isEditing {
+            return nameOK && readingDeadline > selectionDeadline && !isCreating
+        }
+        return nameOK
             && !creatorName.trimmingCharacters(in: .whitespaces).isEmpty
             && readingDeadline > Date().addingTimeInterval(TimeInterval(selectionHours) * 3600)
             && !isCreating
@@ -46,9 +69,14 @@ struct CreateChainView: View {
                 }
 
                 Section {
-                    Picker("Durée de sélection", selection: $selectionHours) {
-                        ForEach(durationChoices, id: \.self) { h in
-                            Text(h < 24 ? "\(h) h" : "\(h / 24) j").tag(h)
+                    if isEditing {
+                        DatePicker("Fin de la sélection", selection: $selectionDeadline,
+                                   displayedComponents: [.date, .hourAndMinute])
+                    } else {
+                        Picker("Durée de sélection", selection: $selectionHours) {
+                            ForEach(durationChoices, id: \.self) { h in
+                                Text(h < 24 ? "\(h) h" : "\(h / 24) j").tag(h)
+                            }
                         }
                     }
                     DatePicker("Fin de lecture", selection: $readingDeadline,
@@ -59,12 +87,14 @@ struct CreateChainView: View {
                     Text("Pendant la sélection, chacun choisit ses Tehilim. Ensuite la chaîne passe en lecture seule jusqu'à la fin de lecture.")
                 }
 
-                Section {
-                    TextField("Ton nom (visible de tous)", text: $creatorName)
-                } header: {
-                    Text("Toi")
-                } footer: {
-                    Text("Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture.")
+                if !isEditing {
+                    Section {
+                        TextField("Ton nom (visible de tous)", text: $creatorName)
+                    } header: {
+                        Text("Toi")
+                    } footer: {
+                        Text("Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture.")
+                    }
                 }
 
                 if let errorMessage {
@@ -73,14 +103,14 @@ struct CreateChainView: View {
                     }
                 }
             }
-            .navigationTitle("Nouvelle chaîne")
+            .navigationTitle(isEditing ? "Modifier la chaîne" : "Nouvelle chaîne")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Annuler") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Créer") { Task { await create() } }
+                    Button(isEditing ? "Enregistrer" : "Créer") { Task { await save() } }
                         .disabled(!canCreate)
                 }
             }
@@ -98,25 +128,36 @@ struct CreateChainView: View {
         }
     }
 
-    private func create() async {
+    private func save() async {
         isCreating = true
         errorMessage = nil
         do {
-            let id = try await container.chains.createChain(
-                name: name.trimmingCharacters(in: .whitespaces),
-                intention: intention,
-                detail: detail.trimmingCharacters(in: .whitespaces),
-                selectionDuration: TimeInterval(selectionHours) * 3600,
-                readingDeadline: readingDeadline,
-                creatorName: creatorName.trimmingCharacters(in: .whitespaces)
-            )
-            container.chainArchive.remember(id)
-            isCreating = false
-            dismiss()
-            onCreated(id)
+            if let editing {
+                try await container.chains.updateChain(
+                    chainId: editing.id,
+                    name: name.trimmingCharacters(in: .whitespaces),
+                    intention: intention,
+                    detail: detail.trimmingCharacters(in: .whitespaces),
+                    selectionDeadline: selectionDeadline,
+                    readingDeadline: readingDeadline)
+                isCreating = false
+                dismiss()
+            } else {
+                let id = try await container.chains.createChain(
+                    name: name.trimmingCharacters(in: .whitespaces),
+                    intention: intention,
+                    detail: detail.trimmingCharacters(in: .whitespaces),
+                    selectionDuration: TimeInterval(selectionHours) * 3600,
+                    readingDeadline: readingDeadline,
+                    creatorName: creatorName.trimmingCharacters(in: .whitespaces))
+                container.chainArchive.remember(id)
+                isCreating = false
+                dismiss()
+                onCreated(id)
+            }
         } catch {
             isCreating = false
-            errorMessage = "Création impossible. Vérifie ta connexion."
+            errorMessage = isEditing ? "Enregistrement impossible." : "Création impossible. Vérifie ta connexion."
         }
     }
 }

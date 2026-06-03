@@ -398,3 +398,26 @@
 "Distribution impossible." = "Couldn't distribute.";
 "Suppression impossible." = "Couldn't delete.";
 "Création impossible. Vérifie ta connexion." = "Couldn't create. Check your connection.";
+
+/* Chaîne v2 — filtres, livres, quitter, édition, répartition */
+"Libres" = "Free";
+"Les miens" = "Mine";
+"Livre I" = "Book I";
+"Livre II" = "Book II";
+"Livre III" = "Book III";
+"Livre IV" = "Book IV";
+"Livre V" = "Book V";
+"Tu n'as pas encore réservé de Tehilim." = "You haven't reserved any Tehilim yet.";
+"Tous les Tehilim sont pris 🎉" = "All Tehilim are taken 🎉";
+"Quitter la chaîne" = "Leave the chain";
+"Quitter la chaîne ?" = "Leave the chain?";
+"Quitter" = "Leave";
+"Tes Tehilim seront libérés pour les autres participants." = "Your Tehilim will be released for the other participants.";
+"Modifier la chaîne" = "Edit chain";
+"Fin de la sélection" = "Selection end";
+"Enregistrement impossible." = "Couldn't save.";
+"Répartition par personne" = "Breakdown by person";
+"Impossible de quitter." = "Couldn't leave.";
+"Retrait impossible." = "Couldn't remove.";
+"· maître" = "· owner";
+"Retirer %@" = "Remove %@";

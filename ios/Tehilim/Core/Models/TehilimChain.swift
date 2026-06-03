@@ -32,6 +32,34 @@ enum ChainIntention: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+/// Les 5 livres des Tehilim — repères de section dans la grille.
+enum TehilimBook: Int, CaseIterable, Identifiable {
+    case one = 1, two, three, four, five
+    var id: Int { rawValue }
+    var range: ClosedRange<Int> {
+        switch self {
+        case .one:   return 1...41
+        case .two:   return 42...72
+        case .three: return 73...89
+        case .four:  return 90...106
+        case .five:  return 107...150
+        }
+    }
+    /// Libellé (clé = texte FR, traduite via .lproj).
+    var titleKey: String {
+        switch self {
+        case .one:   return "Livre I"
+        case .two:   return "Livre II"
+        case .three: return "Livre III"
+        case .four:  return "Livre IV"
+        case .five:  return "Livre V"
+        }
+    }
+    static func book(for psalm: Int) -> TehilimBook {
+        allCases.first { $0.range.contains(psalm) } ?? .one
+    }
+}
+
 /// Phase courante d'une chaîne, dérivée du temps + du flag `distributed`.
 enum ChainPhase {
     case selecting   // sélection ouverte

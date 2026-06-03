@@ -82,6 +82,18 @@ function messageFor(event: string, value: number | null, chainName: string, loca
       body: en ? `“${chainName}” has been distributed — happy reading` : `« ${chainName} » a été distribuée — bonne lecture`,
     };
   }
+  if (event === "complete") {
+    return {
+      title: en ? "Chain complete 🎉" : "Chaîne complétée 🎉",
+      body: en ? `“${chainName}” — all 150 Tehilim are assigned!` : `« ${chainName} » — les 150 Tehilim sont attribués !`,
+    };
+  }
+  if (event === "selection_reminder") {
+    return {
+      title: en ? "Selection closing soon" : "Sélection bientôt close",
+      body: en ? `“${chainName}”: ${value} Tehilim left to pick` : `« ${chainName} » : il reste ${value} Tehilim à prendre`,
+    };
+  }
   return {
     title: en ? "Chain deleted" : "Chaîne supprimée",
     body: en ? `“${chainName}” was deleted by its creator` : `« ${chainName} » a été supprimée par son créateur`,

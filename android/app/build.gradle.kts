@@ -128,7 +128,11 @@ android {
         // Build 28 : re-build (versionCode requis par le Play Store).
         // Build 29 : redesign écran de création de chaîne + temps de lecture
         //            estimé (détail Tehilim + cases de chaîne).
-        versionCode = 29
+        // Build 30 : migration backend Firebase → Supabase + notifications push
+        //            (participants : 70/80/90 %, distribution, suppression),
+        //            suppression de chaîne par le créateur, sélection fluide
+        //            (UI optimiste), i18n EN, auto-bascule APNs.
+        versionCode = 30
         versionName = "1.0.0"
 
         // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.

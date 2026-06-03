@@ -69,7 +69,7 @@ struct CreateChainView: View {
 
                 if let errorMessage {
                     Section {
-                        Text(errorMessage).foregroundStyle(.red).font(.callout)
+                        Text(LocalizedStringKey(errorMessage)).foregroundStyle(.red).font(.callout)
                     }
                 }
             }

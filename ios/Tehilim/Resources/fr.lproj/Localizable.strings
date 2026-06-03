@@ -242,3 +242,19 @@
 "Prénom du défunt" = "Prénom du défunt";
 "Prénom du malade" = "Prénom du malade";
 "Am Israël, un proche…" = "Am Israël, un proche…";
+
+/* Chaîne de Tehilim — suppression par le créateur */
+"Supprimer la chaîne" = "Supprimer la chaîne";
+"Supprimer la chaîne ?" = "Supprimer la chaîne ?";
+"Supprimer" = "Supprimer";
+"La chaîne sera définitivement supprimée pour tous les participants. Action irréversible." = "La chaîne sera définitivement supprimée pour tous les participants. Action irréversible.";
+
+/* Chaîne de Tehilim — chargement + messages d'erreur */
+"Chargement…" = "Chargement…";
+"Ce Tehilim vient d'être pris." = "Ce Tehilim vient d'être pris.";
+"Impossible de libérer ce Tehilim." = "Impossible de libérer ce Tehilim.";
+"Impossible de rejoindre." = "Impossible de rejoindre.";
+"Attribution impossible." = "Attribution impossible.";
+"Distribution impossible." = "Distribution impossible.";
+"Suppression impossible." = "Suppression impossible.";
+"Création impossible. Vérifie ta connexion." = "Création impossible. Vérifie ta connexion.";

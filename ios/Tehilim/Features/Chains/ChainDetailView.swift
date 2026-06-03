@@ -115,7 +115,7 @@ struct ChainDetailView: View {
                 }
 
                 if let errorMessage {
-                    Text(errorMessage).foregroundStyle(.red).font(.callout)
+                    Text(LocalizedStringKey(errorMessage)).foregroundStyle(.red).font(.callout)
                 }
             }
             .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))

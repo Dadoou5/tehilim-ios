@@ -3,6 +3,9 @@ import UIKit
 
 private struct PsalmNav: Identifiable, Hashable { let id: Int }
 
+/// Participant que le maître s'apprête à retirer (confirmation avant action).
+private struct PendingRemoval: Identifiable { let id: String; let name: String }
+
 /// Détail temps réel d'une chaîne : participants, compte à rebours, grille de
 /// sélection 1→150 (filtrable, par livres), contrôles créateur, partage, lecture.
 struct ChainDetailView: View {
@@ -26,6 +29,8 @@ struct ChainDetailView: View {
     @State private var nowTick = Date()
     @State private var errorMessage: String?
     @State private var working = false
+    /// Participant en attente de confirmation de retrait (maître).
+    @State private var participantToRemove: PendingRemoval?
 
     init(chainId: String, onClose: (() -> Void)? = nil) {
         self.chainId = chainId
@@ -99,6 +104,16 @@ struct ChainDetailView: View {
             Button("Quitter", role: .destructive) { Task { await leave() } }
         } message: {
             Text("Tes Tehilim seront libérés pour les autres participants.")
+        }
+        // Retrait d'un participant par le maître (pendant la sélection) — confirmation.
+        .alert("Retirer ce participant ?", isPresented: Binding(
+            get: { participantToRemove != nil },
+            set: { if !$0 { participantToRemove = nil } }
+        ), presenting: participantToRemove) { p in
+            Button("Annuler", role: .cancel) {}
+            Button("Retirer", role: .destructive) { Task { await removeParticipant(p.id) } }
+        } message: { p in
+            Text(String(format: String(localized: "Les Tehilim de %@ seront libérés et redeviendront disponibles. Cette personne sera retirée de la chaîne."), p.name))
         }
     }
 
@@ -226,9 +241,11 @@ struct ChainDetailView: View {
                         if p.isCreator { Text("· maître").font(.caption2).foregroundStyle(.secondary) }
                         Spacer()
                         Text("\(count(for: p.id))").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
-                        if !p.isCreator {
+                        // Une fois la chaîne distribuée, le maître ne peut plus
+                        // retirer un participant (lecture en cours, figée).
+                        if !p.isCreator && !(session.chain?.distributed ?? false) {
                             Button {
-                                Task { await removeParticipant(p.id) }
+                                participantToRemove = PendingRemoval(id: p.id, name: p.name)
                             } label: {
                                 Image(systemName: "person.fill.xmark").font(.caption)
                             }

@@ -309,6 +309,9 @@
     <string name="chain_selection_end">Selection end</string>
     <string name="chain_owner_tag">· owner</string>
     <string name="chain_remove_participant">Remove %1$s</string>
+    <string name="chain_remove_confirm_title">Remove this participant?</string>
+    <string name="chain_remove_confirm_msg">%1$s\'s Tehilim will be released and become available again. They will be removed from the chain.</string>
+    <string name="chain_remove_action">Remove</string>
     <string name="chain_invite">Invite</string>
     <string name="chain_invite_participants">Invite participants</string>
     <string name="chain_invite_blurb">Share the QR code or link — everyone joins and picks their Tehilim.</string>

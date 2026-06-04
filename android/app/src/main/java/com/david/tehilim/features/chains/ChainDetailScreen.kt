@@ -156,6 +156,8 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     var showJoin by remember { mutableStateOf(false) }
     var showLeave by remember { mutableStateOf(false) }
     var showInvite by remember { mutableStateOf(false) }
+    // Participant que le maître s'apprête à retirer (confirmation avant action).
+    var participantToRemove by remember { mutableStateOf<ChainParticipant?>(null) }
     var editingChain by remember { mutableStateOf<TehilimChain?>(null) }
     var gridFilter by remember { mutableStateOf(GridFilter.ALL) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -214,13 +216,10 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                         participants = participants,
                         countFor = ::countFor,
                         isCreator = isCreator,
+                        // Chaîne distribuée → lecture figée, plus de retrait possible.
+                        canRemove = !c.distributed,
                         onInvite = { showInvite = true },
-                        onRemove = { pUid ->
-                            scope.launch {
-                                runCatching { container.chains.removeParticipant(chainId, pUid) }
-                                    .onFailure { error = errTaken }
-                            }
-                        }
+                        onRemove = { p -> participantToRemove = p }
                     )
                 }
                 fullSpan {
@@ -405,6 +404,25 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     if (showInvite) {
         chain?.let { c -> InviteDialog(c) { showInvite = false } }
     }
+
+    // Confirmation de retrait d'un participant (maître, pendant la sélection).
+    participantToRemove?.let { p ->
+        AlertDialog(
+            onDismissRequest = { participantToRemove = null },
+            title = { Text(stringResource(R.string.chain_remove_confirm_title)) },
+            text = { Text(stringResource(R.string.chain_remove_confirm_msg, p.name)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    participantToRemove = null
+                    scope.launch {
+                        runCatching { container.chains.removeParticipant(chainId, p.uid) }
+                            .onFailure { error = errTaken }
+                    }
+                }) { Text(stringResource(R.string.chain_remove_action)) }
+            },
+            dismissButton = { TextButton(onClick = { participantToRemove = null }) { Text(stringResource(R.string.action_cancel)) } }
+        )
+    }
 }
 
 @Composable
@@ -500,8 +518,9 @@ private fun ParticipantsCard(
     participants: List<ChainParticipant>,
     countFor: (String) -> Int,
     isCreator: Boolean,
+    canRemove: Boolean,
     onInvite: () -> Unit,
-    onRemove: (String) -> Unit
+    onRemove: (ChainParticipant) -> Unit
 ) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
@@ -525,8 +544,8 @@ private fun ParticipantsCard(
                         }
                         Text("${countFor(p.uid)}", style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        if (!p.isCreator) {
-                            IconButton(onClick = { onRemove(p.uid) }) {
+                        if (!p.isCreator && canRemove) {
+                            IconButton(onClick = { onRemove(p) }) {
                                 Icon(Icons.Outlined.PersonRemove,
                                     stringResource(R.string.chain_remove_participant, p.name),
                                     tint = MaterialTheme.colorScheme.error)

@@ -281,6 +281,8 @@
 "Retrait impossible." = "Retrait impossible.";
 "· maître" = "· maître";
 "Retirer %@" = "Retirer %@";
+"Retirer ce participant ?" = "Retirer ce participant ?";
+"Les Tehilim de %@ seront libérés et redeviendront disponibles. Cette personne sera retirée de la chaîne." = "Les Tehilim de %@ seront libérés et redeviendront disponibles. Cette personne sera retirée de la chaîne.";
 
 /* Chaîne — invitation + QR code */
 "Inviter" = "Inviter";

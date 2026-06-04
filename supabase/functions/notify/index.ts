@@ -3,9 +3,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 // ============================================================================
 // Edge Function « notify » — envoie les notifications push aux participants.
 // Appelée par les triggers Postgres (pg_net) avec un secret partagé.
-// Corps reçu : { event, value, chainName, tokens: [{token, platform, locale}], delayMs? }
+// Corps reçu : { event, value, chainName, chainId?, tokens:[{token,platform,locale}], delayMs? }
 //   event ∈ 'threshold' (value=70|80|90) | 'complete' | 'distribute_prompt'
 //         | 'distributed' | 'selection_reminder' | 'deleted'
+//   chainId : relayé en clé custom APNs / data FCM → tap ouvre l'écran de la chaîne
 //   delayMs : attente avant envoi (ex. invitation à distribuer 3 s après le 100 %)
 // Secrets (Edge Function → Settings → Secrets) :
 //   NOTIFY_SHARED_SECRET, APNS_KEY_P8, APNS_KEY_ID, APNS_TEAM_ID,
@@ -121,13 +122,14 @@ async function pruneToken(token: string) {
   } catch (e) { console.error("prune failed", String(e)); }
 }
 
-async function sendAPNs(token: string, msg: { title: string; body: string }, jwt: string) {
+async function sendAPNs(token: string, msg: { title: string; body: string }, jwt: string, chainId: string | null) {
   const topic = Deno.env.get("APNS_BUNDLE_ID") || "";
   // Bascule auto sandbox⇄production (token mauvais env). Si le token est mort sur
   // les DEUX (BadDeviceToken / 410 Unregistered) → on le purge de la base.
   const primary = Deno.env.get("APNS_HOST") || "api.push.apple.com";
   const fallback = primary.includes("sandbox") ? "api.push.apple.com" : "api.sandbox.push.apple.com";
-  const body = JSON.stringify({ aps: { alert: msg, sound: "default" } });
+  // `chainId` en clé custom (sœur de `aps`) → lu au tap pour ouvrir la chaîne.
+  const body = JSON.stringify({ aps: { alert: msg, sound: "default" }, ...(chainId ? { chainId } : {}) });
   let dead = false;
   for (const host of [primary, fallback]) {
     const res = await fetch(`https://${host}/3/device/${token}`, {
@@ -144,11 +146,15 @@ async function sendAPNs(token: string, msg: { title: string; body: string }, jwt
   if (dead) await pruneToken(token);
 }
 
-async function sendFCM(token: string, msg: { title: string; body: string }, accessToken: string, projectId: string) {
+async function sendFCM(token: string, msg: { title: string; body: string }, accessToken: string, projectId: string, chainId: string | null) {
+  // `chainId` en `data` (valeurs FCM = strings) → livré dans les extras de
+  // l'Activity au tap (arrière-plan) / lu par onMessageReceived (premier plan).
+  const message: Record<string, unknown> = { token, notification: msg };
+  if (chainId) message.data = { chainId };
   const res = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
     method: "POST",
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ message: { token, notification: msg } }),
+    body: JSON.stringify({ message }),
   });
   if (res.status < 300) return;
   const txt = await res.text();
@@ -162,13 +168,13 @@ Deno.serve(async (req: Request) => {
     return new Response("unauthorized", { status: 401 });
   }
 
-  let payload: { event: string; value: number | null; chainName: string; tokens: Array<{ token: string; platform: string; locale: string }>; delayMs?: number };
+  let payload: { event: string; value: number | null; chainName: string; chainId?: string | null; tokens: Array<{ token: string; platform: string; locale: string }>; delayMs?: number };
   try {
     payload = await req.json();
   } catch {
     return new Response("bad request", { status: 400 });
   }
-  const { event, value, chainName, tokens, delayMs } = payload;
+  const { event, value, chainName, chainId, tokens, delayMs } = payload;
   if (!Array.isArray(tokens) || tokens.length === 0) {
     return new Response(JSON.stringify({ sent: 0 }), { headers: { "Content-Type": "application/json" } });
   }
@@ -192,14 +198,14 @@ Deno.serve(async (req: Request) => {
         const team = Deno.env.get("APNS_TEAM_ID");
         if (!p8 || !kid || !team) { console.warn("APNs not configured"); continue; }
         if (!apnsToken) apnsToken = await apnsJwt(p8, kid, team);
-        await sendAPNs(t.token, msg, apnsToken);
+        await sendAPNs(t.token, msg, apnsToken, chainId ?? null);
         sent++;
       } else if (t.platform === "android") {
         const saRaw = Deno.env.get("FCM_SERVICE_ACCOUNT");
         const proj = Deno.env.get("FCM_PROJECT_ID");
         if (!saRaw || !proj) { console.warn("FCM not configured"); continue; }
         if (!fcmToken) fcmToken = await fcmAccessToken(JSON.parse(saRaw));
-        await sendFCM(t.token, msg, fcmToken, proj);
+        await sendFCM(t.token, msg, fcmToken, proj, chainId ?? null);
         sent++;
       }
     } catch (e) {

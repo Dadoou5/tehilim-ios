@@ -2,9 +2,13 @@ package com.david.tehilim.core.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.david.tehilim.MainActivity
 import com.david.tehilim.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -35,10 +39,29 @@ class TehilimMessagingService : FirebaseMessagingService() {
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(n.title ?: getString(R.string.app_name))
             .setContentText(n.body ?: "")
+            .setContentIntent(contentIntent(message.data["chainId"]))
             .setAutoCancel(true)
             .build()
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
             .notify(System.currentTimeMillis().toInt(), notif)
+    }
+
+    /**
+     * Intent d'ouverture au tap. Si la notif porte un `chainId`, on ouvre
+     * directement l'écran de la chaîne via le deep link `tehilim://chain?id=…`
+     * (même chemin que les liens de partage / QR) ; sinon on ouvre l'app.
+     */
+    private fun contentIntent(chainId: String?): PendingIntent {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            val cid = chainId?.trim()
+            if (!cid.isNullOrEmpty()) {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse("tehilim://chain?id=$cid")
+            }
+        }
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        return PendingIntent.getActivity(this, (chainId ?: "").hashCode(), intent, flags)
     }
 
     private fun localeTag(): String =

@@ -246,9 +246,14 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
     ) {
         let userInfo = response.notification.request.content.userInfo
         let route = userInfo[Self.routeKey] as? String
-        Self.log.info("didReceive: route=\(route ?? "nil", privacy: .public)")
+        // Push de chaîne (APNs) : `chainId` en clé custom → ouvre l'écran chaîne.
+        let chainId = userInfo["chainId"] as? String
+        Self.log.info("didReceive: route=\(route ?? "nil", privacy: .public) chainId=\(chainId ?? "nil", privacy: .public)")
         Task { @MainActor in
-            if route == Self.routeDailyValue {
+            if let chainId, !chainId.isEmpty {
+                AppContainer.shared.pendingChainOpen = chainId
+                Self.log.info("pendingChainOpen set from push")
+            } else if route == Self.routeDailyValue {
                 self.pendingRoute = .daily
                 Self.log.info("pendingRoute set to .daily")
             }

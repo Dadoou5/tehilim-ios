@@ -4,6 +4,7 @@ import android.app.LocaleManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -87,13 +88,30 @@ class MainActivity : ComponentActivity() {
      */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        normalizeChainExtra(intent)
         setIntent(intent)
+    }
+
+    /**
+     * Push de chaîne tappé en arrière-plan : FCM lance l'Activity avec le
+     * `chainId` en EXTRA (pas en data). On le convertit en deep link
+     * `tehilim://chain?id=…` pour que `AppNavigation` route comme pour les
+     * liens de partage / QR. No-op si l'Intent porte déjà une data URI.
+     */
+    private fun normalizeChainExtra(intent: Intent?) {
+        if (intent == null || intent.data != null) return
+        val cid = intent.getStringExtra("chainId")?.trim()?.takeIf { it.isNotEmpty() } ?: return
+        intent.action = Intent.ACTION_VIEW
+        intent.data = Uri.parse("tehilim://chain?id=$cid")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Cold-start via tap d'un push de chaîne : `chainId` en extra → deep link.
+        normalizeChainExtra(intent)
 
         val container = (application as TehilimApplication).container
 

@@ -33,13 +33,12 @@ import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.PersonRemove
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -677,7 +676,7 @@ private fun SkeletonContent(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun CreatorControls(
     c: TehilimChain, assignments: Map<Int, ChainAssignment>, open: Boolean,
@@ -704,22 +703,36 @@ private fun CreatorControls(
             ) { Text(stringResource(R.string.chain_extend_selection)) }
         }
         if (showExtend) {
-            val initial = maxOf(c.selectionDeadlineMillis, System.currentTimeMillis()) + 86_400_000L
-            val state = rememberDatePickerState(initialSelectedDateMillis = initial)
-            DatePickerDialog(
+            // Prolongation par durée (depuis l'échéance si future, sinon depuis maintenant).
+            var extendHours by remember { mutableStateOf(24) }
+            val durations = listOf(1, 3, 6, 12, 24, 48, 72)
+            AlertDialog(
                 onDismissRequest = { showExtend = false },
+                title = { Text(stringResource(R.string.chain_extend_selection)) },
+                text = {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        durations.forEach { h ->
+                            FilterChip(
+                                selected = extendHours == h,
+                                onClick = { extendHours = h },
+                                label = { Text(if (h < 24) "$h h" else "${h / 24} j") }
+                            )
+                        }
+                    }
+                },
                 confirmButton = {
                     TextButton(onClick = {
-                        val newMs = state.selectedDateMillis
                         showExtend = false
-                        if (newMs != null) scope.launch {
+                        val base = maxOf(c.selectionDeadlineMillis, System.currentTimeMillis())
+                        val newMs = base + extendHours * 3600_000L
+                        scope.launch {
                             runCatching { container.chains.extendSelection(chainId, newMs) }
                                 .onFailure { onError("Prolongation impossible.") }
                         }
                     }) { Text(stringResource(R.string.chain_extend_selection)) }
                 },
                 dismissButton = { TextButton(onClick = { showExtend = false }) { Text(stringResource(R.string.action_cancel)) } }
-            ) { DatePicker(state = state) }
+            )
         }
         if (open && assigned < TehilimChain.TOTAL_PSALMS) {
             OutlinedButton(

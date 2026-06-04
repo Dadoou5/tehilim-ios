@@ -25,7 +25,7 @@ struct ChainDetailView: View {
     @State private var showEdit = false
     @State private var showInvite = false
     @State private var showExtend = false
-    @State private var extendDate = Date().addingTimeInterval(86_400)
+    @State private var extendHours = 24
     @State private var gridFilter: ChainGridFilter = .all
     @State private var reading: PsalmNav?
     @State private var nowTick = Date()
@@ -93,10 +93,13 @@ struct ChainDetailView: View {
             }
         }
         .sheet(isPresented: $showExtend) {
-            ExtendSelectionSheet(date: $extendDate) {
-                Task { await extend() }
+            if let chain = session.chain {
+                ExtendSelectionSheet(hours: $extendHours,
+                                     currentDeadline: chain.selectionDeadline) {
+                    Task { await extend(from: chain.selectionDeadline) }
+                }
+                .presentationDetents([.medium])
             }
-            .presentationDetents([.medium])
         }
         .navigationDestination(item: $reading) { nav in
             PsalmDetailView(psalmId: nav.id, siblings: session.myPsalmIds)
@@ -402,7 +405,7 @@ struct ChainDetailView: View {
             // 2ᵉ chance avant de clôturer : prolonger l'échéance + re-notifier.
             if !chain.distributed && !session.isFullyAssigned {
                 Button {
-                    extendDate = max(chain.selectionDeadline, Date()).addingTimeInterval(86_400)
+                    extendHours = 24
                     showExtend = true
                 } label: {
                     Label("Prolonger la sélection", systemImage: "clock.arrow.circlepath")
@@ -563,9 +566,11 @@ struct ChainDetailView: View {
         } catch { errorMessage = "Suppression impossible." }
     }
 
-    private func extend() async {
+    private func extend(from currentDeadline: Date) async {
         working = true; defer { working = false }
-        do { try await container.chains.extendSelection(chainId: chainId, newDeadline: extendDate) }
+        // On prolonge depuis l'échéance si elle est future, sinon depuis maintenant.
+        let newDeadline = max(currentDeadline, Date()).addingTimeInterval(TimeInterval(extendHours) * 3600)
+        do { try await container.chains.extendSelection(chainId: chainId, newDeadline: newDeadline) }
         catch { errorMessage = "Prolongation impossible." }
     }
 

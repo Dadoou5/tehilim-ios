@@ -1,23 +1,35 @@
 import SwiftUI
 
 /// Feuille de prolongation de la sélection d'une chaîne (maître).
-/// Le créateur choisit une nouvelle échéance ; à la confirmation, l'app appelle
+/// Le créateur choisit une **durée** à ajouter (depuis l'échéance courante, ou
+/// depuis maintenant si elle est déjà dépassée). À la confirmation, l'app appelle
 /// `extend_chain_selection` (réarme les rappels + re-notifie les participants).
 struct ExtendSelectionSheet: View {
-    @Binding var date: Date
+    @Binding var hours: Int
+    /// Échéance actuelle, pour afficher la nouvelle date résultante.
+    let currentDeadline: Date
     let onConfirm: () -> Void
     @Environment(\.dismiss) private var dismiss
+
+    private let durationChoices: [Int] = [1, 3, 6, 12, 24, 48, 72]
+
+    /// Base de calcul : on prolonge depuis l'échéance si elle est dans le futur,
+    /// sinon depuis maintenant (chaîne déjà expirée).
+    private var newDeadline: Date {
+        max(currentDeadline, Date()).addingTimeInterval(TimeInterval(hours) * 3600)
+    }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    DatePicker("Nouvelle échéance",
-                               selection: $date,
-                               in: Date().addingTimeInterval(3_600)...,
-                               displayedComponents: [.date, .hourAndMinute])
+                    Picker("Prolonger de", selection: $hours) {
+                        ForEach(durationChoices, id: \.self) { h in
+                            Text(h < 24 ? "\(h) h" : "\(h / 24) j").tag(h)
+                        }
+                    }
                 } footer: {
-                    Text("Les participants seront prévenus que la sélection est prolongée, et les rappels repartiront.")
+                    Text("Nouvelle fin de sélection : \(newDeadline.formatted(date: .abbreviated, time: .shortened)). Les participants seront prévenus et les rappels repartiront.")
                 }
             }
             .navigationTitle("Prolonger la sélection")

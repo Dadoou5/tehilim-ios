@@ -56,6 +56,14 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="tehilim_chain" />
+        <!-- Icône + couleur par défaut des notifications FCM affichées en arrière-plan
+             (sans icône valide, certains OEM n'affichent rien). -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_accent" />
 
         <activity
             android:name=".MainActivity"

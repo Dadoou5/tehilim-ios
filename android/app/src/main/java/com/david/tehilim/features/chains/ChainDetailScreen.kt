@@ -553,7 +553,7 @@ private fun generateQrBitmap(context: android.content.Context, content: String, 
         val r = plate * 0.22f
         canvas.drawRoundRect(plateRect, r, r, android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = white })
 
-        val drawable = androidx.core.content.ContextCompat.getDrawable(context, R.mipmap.ic_launcher)
+        val drawable = androidx.core.content.ContextCompat.getDrawable(context, R.drawable.chain_brand_logo)
         if (drawable != null) {
             val logo = android.graphics.Bitmap.createBitmap(logoSize, logoSize, android.graphics.Bitmap.Config.ARGB_8888)
             val lc = android.graphics.Canvas(logo)

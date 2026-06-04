@@ -36,7 +36,8 @@ class TehilimMessagingService : FirebaseMessagingService() {
         val n = message.notification ?: return
         ensureChannel()
         val notif = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setColor(androidx.core.content.ContextCompat.getColor(this, R.color.notification_accent))
             .setContentTitle(n.title ?: getString(R.string.app_name))
             .setContentText(n.body ?: "")
             .setContentIntent(contentIntent(message.data["chainId"]))

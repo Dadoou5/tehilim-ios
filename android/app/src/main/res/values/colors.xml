@@ -4,4 +4,6 @@
     <color name="accent_main">#1E6091</color>
     <!-- Bleu nuit profond extrait de l'icône iOS (harpe en feu). -->
     <color name="ic_launcher_background">#0E1B3D</color>
+    <!-- Teinte d'accent des notifications (barre de statut). -->
+    <color name="notification_accent">#DB9E2E</color>
 </resources>

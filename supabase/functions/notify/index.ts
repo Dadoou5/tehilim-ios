@@ -202,33 +202,46 @@ Deno.serve(async (req: Request) => {
     await new Promise((r) => setTimeout(r, Math.min(delayMs, 10000)));
   }
 
+  // Les identifiants (JWT APNs, token OAuth FCM) sont calculés UNE fois puis
+  // réutilisés. Les envois sont ensuite parallélisés (Promise.allSettled) pour
+  // ne pas dépasser le timeout sur les chaînes à nombreux participants.
+  const hasIos = tokens.some((t) => t.platform === "ios");
+  const hasAndroid = tokens.some((t) => t.platform === "android");
   let apnsToken: string | null = null;
   let fcmToken: string | null = null;
-  let sent = 0;
+  const fcmProject = Deno.env.get("FCM_PROJECT_ID") || "";
 
-  for (const t of tokens) {
-    const msg = messageFor(event, value ?? null, chainName ?? "", t.locale || "fr");
-    try {
-      if (t.platform === "ios") {
-        const p8 = Deno.env.get("APNS_KEY_P8");
-        const kid = Deno.env.get("APNS_KEY_ID");
-        const team = Deno.env.get("APNS_TEAM_ID");
-        if (!p8 || !kid || !team) { console.warn("APNs not configured"); continue; }
-        if (!apnsToken) apnsToken = await apnsJwt(p8, kid, team);
-        await sendAPNs(t.token, msg, apnsToken, chainId ?? null);
-        sent++;
-      } else if (t.platform === "android") {
-        const saRaw = Deno.env.get("FCM_SERVICE_ACCOUNT");
-        const proj = Deno.env.get("FCM_PROJECT_ID");
-        if (!saRaw || !proj) { console.warn("FCM not configured"); continue; }
-        if (!fcmToken) fcmToken = await fcmAccessToken(JSON.parse(saRaw));
-        await sendFCM(t.token, msg, fcmToken, proj, chainId ?? null);
-        sent++;
-      }
-    } catch (e) {
-      console.error("send failed", t.platform, String(e));
-    }
+  if (hasIos) {
+    const p8 = Deno.env.get("APNS_KEY_P8");
+    const kid = Deno.env.get("APNS_KEY_ID");
+    const team = Deno.env.get("APNS_TEAM_ID");
+    if (p8 && kid && team) {
+      try { apnsToken = await apnsJwt(p8, kid, team); }
+      catch (e) { console.error("apns jwt failed", String(e)); }
+    } else { console.warn("APNs not configured"); }
   }
+  if (hasAndroid) {
+    const saRaw = Deno.env.get("FCM_SERVICE_ACCOUNT");
+    if (saRaw && fcmProject) {
+      try { fcmToken = await fcmAccessToken(JSON.parse(saRaw)); }
+      catch (e) { console.error("fcm token failed", String(e)); }
+    } else { console.warn("FCM not configured"); }
+  }
+
+  const results = await Promise.allSettled(tokens.map(async (t) => {
+    const msg = messageFor(event, value ?? null, chainName ?? "", t.locale || "fr");
+    if (t.platform === "ios") {
+      if (!apnsToken) return false;
+      await sendAPNs(t.token, msg, apnsToken, chainId ?? null);
+      return true;
+    } else if (t.platform === "android") {
+      if (!fcmToken) return false;
+      await sendFCM(t.token, msg, fcmToken, fcmProject, chainId ?? null);
+      return true;
+    }
+    return false;
+  }));
+  const sent = results.filter((r) => r.status === "fulfilled" && r.value === true).length;
 
   return new Response(JSON.stringify({ sent }), { headers: { "Content-Type": "application/json" } });
 });

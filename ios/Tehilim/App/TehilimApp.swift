@@ -148,6 +148,14 @@ struct TehilimApp: App {
             // sa traduction dans la nouvelle locale, sans relancer l'app.
             .id(appLanguage)
             .environment(\.locale, Locale(identifier: appLanguage.activeCode))
+            // Le token push est enregistré avec la locale courante. Au changement
+            // de langue, on le ré-enregistre pour que les notifications de chaîne
+            // arrivent dans la nouvelle langue (sans attendre le prochain lancement).
+            .onChange(of: appLanguage) { _, _ in
+                if UIApplication.shared.isRegisteredForRemoteNotifications {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) {
                     showSplash = false

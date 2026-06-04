@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.Data
@@ -44,6 +45,8 @@ object NotificationScheduler {
 
     const val DAILY_WORK_NAME = "tehilim.daily.reminder"
     const val CHANNEL_ID = "tehilim.daily"
+    /** ID fixe de la notification de rappel quotidien (1 seule à la fois). */
+    const val DAILY_NOTIF_ID = 1
 
     /**
      * Schedule un rappel quotidien à `hour:minute` (heure locale).
@@ -73,6 +76,8 @@ object NotificationScheduler {
 
     fun cancelDaily(context: Context) {
         WorkManager.getInstance(context).cancelUniqueWork(DAILY_WORK_NAME)
+        // Retire aussi la notification déjà postée du tiroir.
+        NotificationManagerCompat.from(context).cancel(DAILY_NOTIF_ID)
     }
 
     // ─── V1.4 — Commémoration (azcara) ───────────────────────────────────
@@ -90,6 +95,8 @@ object NotificationScheduler {
         val wm = WorkManager.getInstance(context)
         wm.cancelUniqueWork(memorialWorkName(intentId, "j7"))
         wm.cancelUniqueWork(memorialWorkName(intentId, "day"))
+        // Retire aussi la notification déjà postée pour cet intent.
+        NotificationManagerCompat.from(context).cancel(intentId.hashCode())
     }
 
     /**
@@ -242,7 +249,8 @@ class DailyReminderWorker(
         )
 
         val notif = NotificationCompat.Builder(context, NotificationScheduler.CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setColor(ContextCompat.getColor(context, R.color.notification_accent))
             .setContentTitle(context.getString(R.string.notif_title))
             .setContentText(context.getString(R.string.notif_body))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -250,7 +258,7 @@ class DailyReminderWorker(
             .setAutoCancel(true)
             .build()
 
-        NotificationManagerCompat.from(context).notify(1, notif)
+        NotificationManagerCompat.from(context).notify(NotificationScheduler.DAILY_NOTIF_ID, notif)
         return Result.success()
     }
 }
@@ -308,7 +316,8 @@ class MemorialReminderWorker(
         )
 
         val notif = NotificationCompat.Builder(context, NotificationScheduler.CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setColor(ContextCompat.getColor(context, R.color.notification_accent))
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

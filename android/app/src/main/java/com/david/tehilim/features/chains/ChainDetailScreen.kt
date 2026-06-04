@@ -705,7 +705,8 @@ private fun CreatorControls(
         if (showExtend) {
             // Prolongation par durée (depuis l'échéance si future, sinon depuis maintenant).
             var extendHours by remember { mutableStateOf(24) }
-            val durations = listOf(1, 3, 6, 12, 24, 48, 72)
+            // Prolongation en heures uniquement, plafonnée à 48 h.
+            val durations = listOf(1, 3, 6, 12, 24, 36, 48)
             AlertDialog(
                 onDismissRequest = { showExtend = false },
                 title = { Text(stringResource(R.string.chain_extend_selection)) },
@@ -715,7 +716,7 @@ private fun CreatorControls(
                             FilterChip(
                                 selected = extendHours == h,
                                 onClick = { extendHours = h },
-                                label = { Text(if (h < 24) "$h h" else "${h / 24} j") }
+                                label = { Text("$h h") }
                             )
                         }
                     }

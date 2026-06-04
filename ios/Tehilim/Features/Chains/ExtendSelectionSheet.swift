@@ -11,7 +11,8 @@ struct ExtendSelectionSheet: View {
     let onConfirm: () -> Void
     @Environment(\.dismiss) private var dismiss
 
-    private let durationChoices: [Int] = [1, 3, 6, 12, 24, 48, 72]
+    // Prolongation en heures uniquement, plafonnée à 48 h.
+    private let durationChoices: [Int] = [1, 3, 6, 12, 24, 36, 48]
 
     /// Base de calcul : on prolonge depuis l'échéance si elle est dans le futur,
     /// sinon depuis maintenant (chaîne déjà expirée).
@@ -25,7 +26,7 @@ struct ExtendSelectionSheet: View {
                 Section {
                     Picker("Prolonger de", selection: $hours) {
                         ForEach(durationChoices, id: \.self) { h in
-                            Text(h < 24 ? "\(h) h" : "\(h / 24) j").tag(h)
+                            Text("\(h) h").tag(h)
                         }
                     }
                 } footer: {

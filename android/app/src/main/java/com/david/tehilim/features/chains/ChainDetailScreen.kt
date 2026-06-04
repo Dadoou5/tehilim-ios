@@ -28,10 +28,23 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.FormatListBulleted
+import androidx.compose.material.icons.automirrored.outlined.Login
+import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.MoveToInbox
+import androidx.compose.material.icons.outlined.MoreTime
+import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.PersonRemove
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.outlined.Verified
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -101,6 +114,22 @@ private fun intentionColor(kind: ChainIntention): Color = when (kind) {
     ChainIntention.LELOUY -> Color(0xFF73699E)   // violet — mémoire
     ChainIntention.REFOUA -> Color(0xFFD1556B)   // rose — guérison
     ChainIntention.REUSSITE -> Color(0xFFDB9E2E) // doré — réussite
+}
+
+/** Contenu standard d'un bouton « premium » : icône en tête + libellé. */
+@Composable
+private fun androidx.compose.foundation.layout.RowScope.BtnContent(icon: ImageVector, text: String) {
+    Icon(icon, null, Modifier.size(18.dp))
+    Text(text, modifier = Modifier.padding(start = 8.dp))
+}
+
+/** Titre de carte avec icône de tête (cohérence + lecture rapide). */
+@Composable
+private fun CardTitle(icon: ImageVector, text: String, tint: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Icon(icon, null, Modifier.size(18.dp), tint = tint)
+        Text(text, style = MaterialTheme.typography.titleSmall)
+    }
 }
 
 private fun bookLabelRes(book: TehilimBook): Int = when (book) {
@@ -236,8 +265,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                 if (open) {
                     fullSpan {
                         OutlinedButton(onClick = { showInvite = true }, modifier = Modifier.fillMaxWidth()) {
-                            Icon(Icons.Outlined.PersonAdd, null, Modifier.size(18.dp))
-                            Text(stringResource(R.string.chain_invite_participants), modifier = Modifier.padding(start = 8.dp))
+                            BtnContent(Icons.Outlined.PersonAdd, stringResource(R.string.chain_invite_participants))
                         }
                     }
                 }
@@ -262,7 +290,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                             }
                         } else {
                             Button(onClick = { showJoin = true }, modifier = Modifier.fillMaxWidth()) {
-                                Text(stringResource(R.string.chain_join_chain))
+                                BtnContent(Icons.AutoMirrored.Outlined.Login, stringResource(R.string.chain_join_chain))
                             }
                         }
                     }
@@ -362,7 +390,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                                 onClick = { showLeave = true },
                                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                            ) { Text(stringResource(R.string.chain_leave)) }
+                            ) { BtnContent(Icons.AutoMirrored.Outlined.Logout, stringResource(R.string.chain_leave)) }
                         }
                     }
                 }
@@ -548,8 +576,11 @@ private fun HeaderCard(c: TehilimChain) {
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
             Box(Modifier.width(4.dp).fillMaxHeight().background(color))
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(intentionLabel(c.intentionType)), style = MaterialTheme.typography.labelMedium,
-                    color = color)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Icon(intentionIcon(c.intentionType), null, Modifier.size(16.dp), tint = color)
+                    Text(stringResource(intentionLabel(c.intentionType)), style = MaterialTheme.typography.labelMedium,
+                        color = color)
+                }
                 Text(c.subjectLine, style = MaterialTheme.typography.titleLarge)
                 Text(stringResource(R.string.chain_created_by, c.creatorName), style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -563,11 +594,10 @@ private fun CountdownCard(c: TehilimChain, open: Boolean, now: Long) {
     val df = remember { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT) }
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(
+            CardTitle(
+                if (open) Icons.Outlined.Timer else Icons.AutoMirrored.Outlined.MenuBook,
                 if (open) stringResource(R.string.chain_countdown_selection)
-                else if (c.distributed) stringResource(R.string.chain_countdown_distributed) else stringResource(R.string.chain_countdown_closed),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                else if (c.distributed) stringResource(R.string.chain_countdown_distributed) else stringResource(R.string.chain_countdown_closed)
             )
             Text(
                 if (open) remaining(c.selectionDeadlineMillis - now) else df.format(Date(c.readingDeadlineMillis)),
@@ -590,7 +620,7 @@ private fun ParticipantsCard(
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                Text(stringResource(R.string.chain_participants), style = MaterialTheme.typography.titleSmall)
+                CardTitle(Icons.Outlined.People, stringResource(R.string.chain_participants))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${participants.size}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                     if (canInvite) {
@@ -632,8 +662,8 @@ private fun ParticipantsCard(
 private fun ProgressCard(assignments: Map<Int, ChainAssignment>, participants: List<ChainParticipant>) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                Text(stringResource(R.string.chain_progress), style = MaterialTheme.typography.titleSmall)
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                CardTitle(Icons.Outlined.Insights, stringResource(R.string.chain_progress))
                 Text("${assignments.size}/${TehilimChain.TOTAL_PSALMS}", style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -658,7 +688,7 @@ private fun ProgressCard(assignments: Map<Int, ChainAssignment>, participants: L
 private fun BreakdownCard(assignments: Map<Int, ChainAssignment>, sep: String) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(stringResource(R.string.chain_breakdown), style = MaterialTheme.typography.titleSmall)
+            CardTitle(Icons.AutoMirrored.Outlined.FormatListBulleted, stringResource(R.string.chain_breakdown))
             val byUid = LinkedHashMap<String, Pair<String, MutableList<Int>>>()
             for ((psalmId, a) in assignments) {
                 byUid.getOrPut(a.uid) { a.name to mutableListOf() }.second.add(psalmId)
@@ -732,7 +762,7 @@ private fun CreatorControls(
         Text(stringResource(R.string.chain_owner), style = MaterialTheme.typography.titleSmall)
         if (open && !c.distributed) {
             OutlinedButton(onClick = onEdit, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.chain_edit))
+                BtnContent(Icons.Outlined.Edit, stringResource(R.string.chain_edit))
             }
         }
         // Sélection incomplète (ouverte ou close) → prolonger l'échéance + re-notifier.
@@ -741,7 +771,7 @@ private fun CreatorControls(
             OutlinedButton(
                 onClick = { showExtend = true },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(stringResource(R.string.chain_extend_selection)) }
+            ) { BtnContent(Icons.Outlined.MoreTime, stringResource(R.string.chain_extend_selection)) }
         }
         if (showExtend) {
             // Prolongation par durée (depuis l'échéance si future, sinon depuis maintenant).
@@ -785,7 +815,7 @@ private fun CreatorControls(
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(stringResource(R.string.chain_assign_remaining, TehilimChain.TOTAL_PSALMS - assigned)) }
+            ) { BtnContent(Icons.Outlined.MoveToInbox, stringResource(R.string.chain_assign_remaining, TehilimChain.TOTAL_PSALMS - assigned)) }
         }
         if (open && !c.distributed) {
             Button(
@@ -804,19 +834,24 @@ private fun CreatorControls(
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(stringResource(R.string.chain_close_distribute)) }
+            ) { BtnContent(Icons.Outlined.Verified, stringResource(R.string.chain_close_distribute)) }
         }
         OutlinedButton(
             onClick = { shareText(context, reportText(context, c, assignments)) },
             modifier = Modifier.fillMaxWidth()
-        ) { Text(stringResource(R.string.chain_share_report)) }
+        ) { BtnContent(Icons.Outlined.Share, stringResource(R.string.chain_share_report)) }
 
+        // Action destructive isolée du reste (divider + tonalité « error »).
+        androidx.compose.material3.HorizontalDivider(
+            Modifier.padding(vertical = 4.dp),
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
         var showDelete by remember { mutableStateOf(false) }
         OutlinedButton(
             onClick = { showDelete = true },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-        ) { Text(stringResource(R.string.chain_delete)) }
+        ) { BtnContent(Icons.Outlined.Delete, stringResource(R.string.chain_delete)) }
 
         if (showDelete) {
             AlertDialog(

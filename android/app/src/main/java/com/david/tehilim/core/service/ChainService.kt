@@ -48,8 +48,20 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
 
     val currentUid: String? get() = client?.auth?.currentUserOrNull()?.id?.lowercase()
 
+    /** uid courant après chargement de la session persistée (sans forcer de
+     *  connexion). À utiliser à l'ouverture d'un écran pour éviter un état
+     *  transitoire « non connecté » au retour d'arrière-plan. */
+    suspend fun awaitUid(): String? {
+        val c = client ?: return null
+        runCatching { c.auth.awaitInitialization() }
+        return c.auth.currentUserOrNull()?.id?.lowercase()
+    }
+
     suspend fun ensureSignedIn(): String {
         val c = client ?: error("Supabase non configuré")
+        // Attendre le chargement de la session persistée avant de tester l'utilisateur,
+        // sinon on risque de créer un nouvel uid anonyme par-dessus une session valide.
+        runCatching { c.auth.awaitInitialization() }
         c.auth.currentUserOrNull()?.let { return it.id.lowercase() }
         c.auth.signInAnonymously()
         return c.auth.currentUserOrNull()?.id?.lowercase() ?: error("Auth anonyme indisponible")

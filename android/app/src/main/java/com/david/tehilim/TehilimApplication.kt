@@ -82,9 +82,17 @@ class TehilimApplication : Application() {
     /** Connexion anonyme si Supabase est configuré et qu'on n'est pas déjà connecté. */
     private fun maybeSignInAnonymously() {
         val client = SupabaseClientProvider.client ?: return   // pas de config → no-op
-        if (client.auth.currentUserOrNull() != null) return
         CoroutineScope(Dispatchers.IO).launch {
-            runCatching { client.auth.signInAnonymously() }
+            runCatching {
+                // IMPORTANT : attendre le chargement de la session persistée AVANT de
+                // tester currentUserOrNull(). Sinon, à la recréation du process (ex.
+                // l'app est tuée en arrière-plan pendant un partage), on re-signe
+                // anonymement et on crée un NOUVEL uid → perte du statut « maître ».
+                client.auth.awaitInitialization()
+                if (client.auth.currentUserOrNull() == null) {
+                    client.auth.signInAnonymously()
+                }
+            }
         }
     }
 

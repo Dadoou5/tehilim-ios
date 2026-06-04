@@ -121,7 +121,11 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     val chain by remember(chainId) { container.chains.chainFlow(chainId) }.collectAsStateWithLifecycle(initialValue = null)
     val participants by remember(chainId) { container.chains.participantsFlow(chainId) }.collectAsStateWithLifecycle(initialValue = emptyList())
     val assignments by remember(chainId) { container.chains.boardFlow(chainId) }.collectAsStateWithLifecycle(initialValue = emptyMap())
-    val uid = container.chains.currentUid
+    // uid réactif : on attend le chargement de la session persistée pour éviter
+    // un faux état « non participant » (proposition de rejoindre) au retour
+    // d'arrière-plan après un partage.
+    var uid by remember { mutableStateOf(container.chains.currentUid) }
+    LaunchedEffect(Unit) { container.chains.awaitUid()?.let { uid = it } }
 
     // UI optimiste : overlay local par-dessus la vérité realtime (tap instantané).
     val optimistic = remember(chainId) { mutableStateMapOf<Int, ChainAssignment?>() }

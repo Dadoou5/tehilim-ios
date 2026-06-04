@@ -28,7 +28,9 @@ data class ChainArchiveSnapshot(
     val readingDeadlineMillis: Long,
     val archivedAtMillis: Long,
     /** psalmId ("1".."150") → nom du lecteur. */
-    val assignments: Map<String, String>
+    val assignments: Map<String, String>,
+    /** Les Tehilim attribués à l'utilisateur courant (lecture hors-ligne). */
+    val myPsalmIds: List<Int> = emptyList()
 ) {
     val subjectLine: String
         get() = if (detail.isBlank()) name else "$name — $detail"

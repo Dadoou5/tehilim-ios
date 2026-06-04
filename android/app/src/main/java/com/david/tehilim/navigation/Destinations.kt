@@ -60,4 +60,7 @@ object Routes {
     const val CHAIN_CREATE = "chains/create"
     const val CHAIN_DETAIL = "chains/detail/{chainId}"
     fun chainDetail(chainId: String) = "chains/detail/$chainId"
+    /** Lecture hors-ligne d'une chaîne distribuée (compte rendu local). */
+    const val CHAIN_ARCHIVE = "chains/archive/{chainId}"
+    fun chainArchive(chainId: String) = "chains/archive/$chainId"
 }

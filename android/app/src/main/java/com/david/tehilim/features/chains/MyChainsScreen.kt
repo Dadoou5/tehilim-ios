@@ -95,10 +95,10 @@ fun MyChainsScreen(container: AppContainer, navController: NavController) {
             if (archives.isNotEmpty()) {
                 item { Text(stringResource(R.string.chain_summaries), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp)) }
                 items(archives) { snap ->
-                    AppCard(onClick = { shareArchive(context, snap) }, modifier = Modifier.fillMaxWidth()) {
+                    AppCard(onClick = { navController.navigate(Routes.chainArchive(snap.id)) }, modifier = Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(16.dp)) {
                             Text(snap.subjectLine, style = MaterialTheme.typography.titleSmall)
-                            Text(stringResource(R.string.chain_tap_to_share),
+                            Text(stringResource(R.string.chain_archive_open_offline),
                                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -108,12 +108,3 @@ fun MyChainsScreen(container: AppContainer, navController: NavController) {
     }
 }
 
-private fun shareArchive(context: android.content.Context, snap: ChainArchiveSnapshot) {
-    val byName = LinkedHashMap<String, MutableList<Int>>()
-    snap.assignments.forEach { (k, name) -> byName.getOrPut(name) { mutableListOf() }.add(k.toIntOrNull() ?: 0) }
-    val sb = StringBuilder(context.getString(R.string.chain_share_prefix) + snap.subjectLine + "\n")
-    val sep = context.getString(R.string.chain_range_to)
-    byName.toSortedMap().forEach { (name, ids) -> sb.append("\n• $name : ${com.david.tehilim.core.model.TehilimChain.compressRanges(ids, sep)}") }
-    val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, sb.toString()) }
-    context.startActivity(Intent.createChooser(intent, null))
-}

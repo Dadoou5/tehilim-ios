@@ -324,6 +324,9 @@
     <string name="chain_my_chains">My chains</string>
     <string name="chain_summaries">Summaries</string>
     <string name="chain_tap_to_share">Tap to share the summary</string>
+    <string name="chain_archive_open_offline">Available offline · read my Tehilim</string>
+    <string name="chain_archive_my_tehilim">My Tehilim</string>
+    <string name="chain_archive_no_mine">No Tehilim were assigned to you in this chain.</string>
     <string name="chain_create_blurb">Share the link on WhatsApp: everyone picks the Tehilim they\'ll read, in real time.</string>
     <string name="chain_service_unavailable">Service unavailable in this build.</string>
     <string name="chain_loading">Loading…</string>

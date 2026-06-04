@@ -413,6 +413,13 @@ fun AppNavigation(container: AppContainer) {
                 val id = it.arguments?.getString("chainId") ?: ""
                 com.david.tehilim.features.chains.ChainDetailScreen(container = container, chainId = id, navController = navController)
             }
+            composable(
+                Routes.CHAIN_ARCHIVE,
+                arguments = listOf(navArgument("chainId") { type = NavType.StringType })
+            ) {
+                val id = it.arguments?.getString("chainId") ?: ""
+                com.david.tehilim.features.chains.ChainArchiveReaderScreen(container = container, chainId = id, navController = navController)
+            }
         }
     }
 }

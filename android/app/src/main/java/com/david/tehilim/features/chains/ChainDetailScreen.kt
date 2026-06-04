@@ -209,6 +209,25 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     val myIds = effectiveAssignments.values.filter { it.uid == uid }.map { it.psalmId }.sorted()
     val open = chain?.isSelectionOpen(nowTick) ?: false
 
+    // Une fois la chaîne distribuée, on en garde un instantané local (pour CHAQUE
+    // participant) afin de pouvoir la consulter et lire ses Tehilim hors-ligne
+    // (mode avion) depuis « Mes chaînes ».
+    LaunchedEffect(chain?.distributed, isParticipant, effectiveAssignments.size, uid) {
+        val c = chain
+        if (c != null && c.distributed && isParticipant && effectiveAssignments.isNotEmpty()) {
+            container.chainArchive.saveArchive(
+                com.david.tehilim.core.persistence.ChainArchiveSnapshot(
+                    id = c.id, name = c.name, intentionWire = c.intentionType.wire,
+                    detail = c.intentionDetail, creatorName = c.creatorName,
+                    readingDeadlineMillis = c.readingDeadlineMillis,
+                    archivedAtMillis = System.currentTimeMillis(),
+                    assignments = effectiveAssignments.mapKeys { it.key.toString() }.mapValues { it.value.name },
+                    myPsalmIds = effectiveAssignments.values.filter { it.uid == uid }.map { it.psalmId }.sorted()
+                )
+            )
+        }
+    }
+
     fun countFor(pUid: String) = effectiveAssignments.values.count { it.uid == pUid }
 
     Box(Modifier.fillMaxSize()) {
@@ -847,7 +866,8 @@ private fun CreatorControls(
                                 detail = c.intentionDetail, creatorName = c.creatorName,
                                 readingDeadlineMillis = c.readingDeadlineMillis,
                                 archivedAtMillis = System.currentTimeMillis(),
-                                assignments = assignments.mapKeys { it.key.toString() }.mapValues { it.value.name }
+                                assignments = assignments.mapKeys { it.key.toString() }.mapValues { it.value.name },
+                                myPsalmIds = assignments.values.filter { it.uid == c.creatorUid }.map { it.psalmId }.sorted()
                             )
                         )
                     }

@@ -20,12 +20,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -136,7 +140,7 @@ fun CreateChainScreen(
                 }
             }
 
-            SectionTitle(stringResource(R.string.chain_intention))
+            SectionTitle(stringResource(R.string.chain_intention), Icons.Outlined.AutoAwesome)
             AppCard(modifier = Modifier.fillMaxWidth()) {
                 Column {
                     ChainIntention.entries.forEachIndexed { i, kind ->
@@ -175,12 +179,12 @@ fun CreateChainScreen(
 
             // ── Délais ──
             if (isEditing) {
-                SectionTitle(stringResource(R.string.chain_selection_end))
+                SectionTitle(stringResource(R.string.chain_selection_end), Icons.Outlined.Timer)
                 AppCard(onClick = { showSelectionPicker = true }, modifier = Modifier.fillMaxWidth()) {
                     DeadlineRow(label = stringResource(R.string.chain_selection_end), value = df.format(Date(selectionDeadline)))
                 }
             } else {
-                SectionTitle(stringResource(R.string.chain_selection_duration))
+                SectionTitle(stringResource(R.string.chain_selection_duration), Icons.Outlined.Timer)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     durations.forEach { h ->
                         FilterChip(
@@ -245,7 +249,11 @@ fun CreateChainScreen(
                 },
                 enabled = canCreate,
                 modifier = Modifier.fillMaxWidth()
-            ) { Text(stringResource(if (isEditing) R.string.chain_save else R.string.chain_create_button)) }
+            ) {
+                Icon(if (isEditing) Icons.Outlined.Check else Icons.Outlined.Add, null, Modifier.size(18.dp))
+                Text(stringResource(if (isEditing) R.string.chain_save else R.string.chain_create_button),
+                    modifier = Modifier.padding(start = 8.dp))
+            }
 
             if (!isEditing) {
                 Row(
@@ -307,10 +315,16 @@ private fun DeadlineRow(label: String, value: String) {
 }
 
 @Composable
-private fun SectionTitle(text: String) {
-    Text(text, style = MaterialTheme.typography.titleSmall,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface)
+private fun SectionTitle(text: String, icon: ImageVector? = null) {
+    Row(verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (icon != null) {
+            Icon(icon, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
+        }
+        Text(text, style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface)
+    }
 }
 
 @Composable

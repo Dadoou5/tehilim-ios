@@ -7,6 +7,10 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -660,25 +664,35 @@ private fun ParticipantsCard(
 
 @Composable
 private fun ProgressCard(assignments: Map<Int, ChainAssignment>, participants: List<ChainParticipant>) {
+    val total = TehilimChain.TOTAL_PSALMS
+    val pct = (assignments.size * 100) / total
+    val animatedPct by animateIntAsState(pct, animationSpec = tween(500), label = "pct")
+    val complete = assignments.size >= total
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
                 CardTitle(Icons.Outlined.Insights, stringResource(R.string.chain_progress))
-                Text("${assignments.size}/${TehilimChain.TOTAL_PSALMS}", style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                // Pourcentage animé, mis en avant (vert à 100 %).
+                Text("$animatedPct%", style = MaterialTheme.typography.titleMedium,
+                    color = if (complete) Color(0xFF22A06B) else MaterialTheme.colorScheme.primary)
             }
-            // Barre segmentée par participant.
+            Text("${assignments.size}/$total", style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 2.dp))
+            // Barre segmentée par participant (apparition fluide de chaque segment).
             Row(Modifier.fillMaxWidth().height(10.dp).padding(top = 8.dp).clip(RoundedCornerShape(5.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)) {
                 participants.forEachIndexed { i, p ->
                     val c = assignments.values.count { it.uid == p.uid }
-                    if (c > 0) {
-                        Box(Modifier.weight(c.toFloat()).fillMaxHeight()
+                    val w by animateFloatAsState(c.toFloat(), animationSpec = tween(400), label = "seg$i")
+                    if (w > 0f) {
+                        Box(Modifier.weight(w).fillMaxHeight()
                             .background(segmentPalette[i % segmentPalette.size]))
                     }
                 }
-                val remaining = TehilimChain.TOTAL_PSALMS - assignments.size
-                if (remaining > 0) Box(Modifier.weight(remaining.toFloat()).fillMaxHeight())
+                val remaining = (total - assignments.size).toFloat()
+                val rw by animateFloatAsState(remaining.coerceAtLeast(0.0001f), animationSpec = tween(400), label = "rem")
+                Box(Modifier.weight(rw).fillMaxHeight())
             }
         }
     }
@@ -711,12 +725,17 @@ private fun PsalmCell(
     id: Int, name: String?, minutes: Int, mine: Boolean, takenByOther: Boolean,
     enabled: Boolean, onClick: () -> Unit
 ) {
-    val bg = when {
+    val targetBg = when {
         mine -> MaterialTheme.colorScheme.primary
         takenByOther -> MaterialTheme.colorScheme.surfaceVariant
         else -> MaterialTheme.colorScheme.surface
     }
-    val fg = if (mine) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    // Fondu de couleur fluide quand on prend / libère un Tehilim (UI optimiste).
+    val bg by animateColorAsState(targetBg, animationSpec = tween(220), label = "cellBg")
+    val fg by animateColorAsState(
+        if (mine) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+        animationSpec = tween(220), label = "cellFg"
+    )
     Surface(
         onClick = onClick, enabled = enabled, color = bg, shape = RoundedCornerShape(8.dp),
         modifier = Modifier.fillMaxWidth().height(46.dp)

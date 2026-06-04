@@ -66,10 +66,12 @@ struct MyChainsView: View {
             if !archive.archives.isEmpty {
                 Section("Comptes rendus") {
                     ForEach(archive.archives) { snap in
-                        ShareLink(item: archiveReport(snap)) {
+                        NavigationLink {
+                            ChainArchiveReaderView(snapshot: snap)
+                        } label: {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(snap.subjectLine).font(.subheadline.weight(.medium))
-                                Text("Archivé le \(snap.archivedAt.formatted(date: .abbreviated, time: .omitted))")
+                                Text("Disponible hors-ligne · lire mes Tehilim")
                                     .font(.caption).foregroundStyle(.secondary)
                             }
                         }
@@ -84,17 +86,6 @@ struct MyChainsView: View {
         .appBackground()
     }
 
-    private func archiveReport(_ snap: ChainArchiveSnapshot) -> String {
-        var byName: [String: [Int]] = [:]
-        for (k, name) in snap.assignments { byName[name, default: []].append(Int(k) ?? 0) }
-        let en = AppLocale.code == "en"
-        let prefix = en ? "Tehilim chain — " : "Chaîne de Tehilim — "
-        var lines = [prefix + snap.subjectLine, ""]
-        for (name, ids) in byName.sorted(by: { $0.key < $1.key }) {
-            lines.append("• \(name) : \(TehilimChain.compressRanges(ids, separator: en ? "to" : "à"))")
-        }
-        return lines.joined(separator: "\n")
-    }
 }
 
 /// Ligne « Mes chaînes » : charge le sujet de la chaîne en temps différé.

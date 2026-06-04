@@ -79,6 +79,9 @@ struct ChainDetailView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { session.start() } else { session.stop() }
         }
+        // Archivage local dès distribution (ou quand les données arrivent) → hors-ligne.
+        .onChange(of: session.chain?.distributed) { _, _ in saveArchiveIfDistributed() }
+        .onChange(of: session.assignments.count) { _, _ in saveArchiveIfDistributed() }
         .sheet(isPresented: $showJoin) {
             JoinChainSheet { name in Task { await join(name) } }
         }
@@ -618,8 +621,17 @@ struct ChainDetailView: View {
         container.chainArchive.saveArchive(ChainArchiveSnapshot(
             id: chain.id, name: chain.name, intentionRaw: chain.intentionType.rawValue,
             detail: chain.intentionDetail, creatorName: chain.creatorName,
-            readingDeadline: chain.readingDeadline, archivedAt: Date(), assignments: map
+            readingDeadline: chain.readingDeadline, archivedAt: Date(), assignments: map,
+            myPsalmIds: session.myPsalmIds
         ))
+    }
+
+    /// Dès qu'une chaîne est distribuée, on en conserve un instantané local pour
+    /// CHAQUE participant → lecture hors-ligne (mode avion) depuis « Mes chaînes ».
+    private func saveArchiveIfDistributed() {
+        guard let chain = session.chain, chain.distributed,
+              session.isCurrentUserParticipant, !session.assignments.isEmpty else { return }
+        saveArchive(chain)
     }
 }
 

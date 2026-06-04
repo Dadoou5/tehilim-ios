@@ -12,6 +12,9 @@ struct ChainArchiveSnapshot: Codable, Identifiable, Equatable {
     let archivedAt: Date
     /// psalmId ("1".."150") → nom du lecteur.
     let assignments: [String: String]
+    /// Tehilim attribués à l'utilisateur courant (lecture hors-ligne).
+    /// Optionnel : les archives d'avant cette version n'ont pas ce champ.
+    var myPsalmIds: [Int]? = nil
 
     var intention: ChainIntention { ChainIntention(rawValue: intentionRaw) ?? .reussite }
     var subjectLine: String {

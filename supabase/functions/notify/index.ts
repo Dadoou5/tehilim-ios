@@ -5,7 +5,8 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 // Appelée par les triggers Postgres (pg_net) avec un secret partagé.
 // Corps reçu : { event, value, chainName, chainId?, tokens:[{token,platform,locale}], delayMs? }
 //   event ∈ 'threshold' (value=70|80|90) | 'complete' | 'distribute_prompt'
-//         | 'distributed' | 'selection_reminder' | 'deleted'
+//         | 'distributed' | 'selection_reminder' | 'final_reminder'
+//         | 'selection_extended' | 'deleted'
 //   chainId : relayé en clé custom APNs / data FCM → tap ouvre l'écran de la chaîne
 //   delayMs : attente avant envoi (ex. invitation à distribuer 3 s après le 100 %)
 // Secrets (Edge Function → Settings → Secrets) :
@@ -101,6 +102,22 @@ function messageFor(event: string, value: number | null, chainName: string, loca
     return {
       title: en ? "Selection closing soon" : "Sélection bientôt close",
       body: en ? `“${chainName}”: ${value} Tehilim left to pick` : `« ${chainName} » : il reste ${value} Tehilim à prendre`,
+    };
+  }
+  if (event === "final_reminder") {
+    return {
+      title: en ? "Last chance ⏳" : "Dernière chance ⏳",
+      body: en
+        ? `“${chainName}” closes very soon — ${value} Tehilim still free`
+        : `« ${chainName} » ferme très bientôt — ${value} Tehilim encore libres`,
+    };
+  }
+  if (event === "selection_extended") {
+    return {
+      title: en ? "Selection extended ⏰" : "Sélection prolongée ⏰",
+      body: en
+        ? `“${chainName}”: more time to pick your Tehilim`
+        : `« ${chainName} » : plus de temps pour choisir vos Tehilim`,
     };
   }
   return {

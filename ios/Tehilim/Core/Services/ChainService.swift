@@ -160,6 +160,16 @@ final class ChainService {
             params: RemoveParticipantParams(p_chain_id: chainId, p_uid: uid)).execute()
     }
 
+    /// (Créateur) prolonge la durée de sélection : repousse l'échéance, réarme
+    /// les rappels et re-notifie les participants (RPC, réservé au créateur).
+    func extendSelection(chainId: String, newDeadline: Date) async throws {
+        guard let client else { throw ChainError.notConfigured }
+        _ = try await ensureSignedIn()
+        try await client.rpc("extend_chain_selection",
+            params: ExtendSelectionParams(p_chain_id: chainId,
+                                          p_new_deadline: Self.iso(newDeadline))).execute()
+    }
+
     /// Enregistre / met à jour le token push de cet appareil (notifications de
     /// chaîne aux participants). Silencieux si non configuré.
     func registerDeviceToken(_ token: String, platform: String = "ios", locale: String) async {
@@ -279,6 +289,10 @@ final class ChainService {
     private struct RemoveParticipantParams: Encodable, Sendable {
         let p_chain_id: String
         let p_uid: String
+    }
+    private struct ExtendSelectionParams: Encodable, Sendable {
+        let p_chain_id: String
+        let p_new_deadline: String
     }
 
     // MARK: - Mapping DTO → modèles applicatifs (inchangés)

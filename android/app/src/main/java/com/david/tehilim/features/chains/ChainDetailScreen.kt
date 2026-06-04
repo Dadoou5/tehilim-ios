@@ -35,8 +35,11 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -672,6 +675,7 @@ private fun SkeletonContent(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreatorControls(
     c: TehilimChain, assignments: Map<Int, ChainAssignment>, open: Boolean,
@@ -688,6 +692,32 @@ private fun CreatorControls(
             OutlinedButton(onClick = onEdit, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.chain_edit))
             }
+        }
+        // Sélection incomplète (ouverte ou close) → prolonger l'échéance + re-notifier.
+        var showExtend by remember { mutableStateOf(false) }
+        if (!c.distributed && assigned < TehilimChain.TOTAL_PSALMS) {
+            OutlinedButton(
+                onClick = { showExtend = true },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text(stringResource(R.string.chain_extend_selection)) }
+        }
+        if (showExtend) {
+            val initial = maxOf(c.selectionDeadlineMillis, System.currentTimeMillis()) + 86_400_000L
+            val state = rememberDatePickerState(initialSelectedDateMillis = initial)
+            DatePickerDialog(
+                onDismissRequest = { showExtend = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val newMs = state.selectedDateMillis
+                        showExtend = false
+                        if (newMs != null) scope.launch {
+                            runCatching { container.chains.extendSelection(chainId, newMs) }
+                                .onFailure { onError("Prolongation impossible.") }
+                        }
+                    }) { Text(stringResource(R.string.chain_extend_selection)) }
+                },
+                dismissButton = { TextButton(onClick = { showExtend = false }) { Text(stringResource(R.string.action_cancel)) } }
+            ) { DatePicker(state = state) }
         }
         if (open && assigned < TehilimChain.TOTAL_PSALMS) {
             OutlinedButton(

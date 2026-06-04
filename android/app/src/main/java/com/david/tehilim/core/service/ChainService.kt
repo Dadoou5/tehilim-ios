@@ -172,6 +172,17 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         })
     }
 
+    /** (Créateur) prolonge la sélection : repousse l'échéance, réarme les rappels
+     *  et re-notifie les participants (RPC, réservé au créateur). */
+    suspend fun extendSelection(chainId: String, newDeadlineMillis: Long) {
+        val c = client ?: error("Supabase non configuré")
+        ensureSignedIn()
+        c.postgrest.rpc("extend_chain_selection", buildJsonObject {
+            put("p_chain_id", chainId)
+            put("p_new_deadline", iso(newDeadlineMillis))
+        })
+    }
+
     /** Enregistre / met à jour le token push de cet appareil (notifs de chaîne). */
     suspend fun registerDeviceToken(token: String, platform: String = "android", locale: String) {
         val c = client ?: return

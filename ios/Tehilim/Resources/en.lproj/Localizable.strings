@@ -414,6 +414,11 @@
 "Quitter" = "Leave";
 "Tes Tehilim seront libérés pour les autres participants." = "Your Tehilim will be released for the other participants.";
 "Modifier la chaîne" = "Edit chain";
+"Prolonger la sélection" = "Extend selection";
+"Prolonger" = "Extend";
+"Prolongation impossible." = "Couldn't extend.";
+"Nouvelle échéance" = "New deadline";
+"Les participants seront prévenus que la sélection est prolongée, et les rappels repartiront." = "Participants will be notified that the selection is extended, and reminders will resume.";
 "Fin de la sélection" = "Selection end";
 "Enregistrement impossible." = "Couldn't save.";
 "Répartition par personne" = "Breakdown by person";

@@ -24,6 +24,8 @@ struct ChainDetailView: View {
     @State private var showLeaveConfirm = false
     @State private var showEdit = false
     @State private var showInvite = false
+    @State private var showExtend = false
+    @State private var extendDate = Date().addingTimeInterval(86_400)
     @State private var gridFilter: ChainGridFilter = .all
     @State private var reading: PsalmNav?
     @State private var nowTick = Date()
@@ -89,6 +91,12 @@ struct ChainDetailView: View {
             if let chain = session.chain {
                 ChainInviteSheet(chain: chain)
             }
+        }
+        .sheet(isPresented: $showExtend) {
+            ExtendSelectionSheet(date: $extendDate) {
+                Task { await extend() }
+            }
+            .presentationDetents([.medium])
         }
         .navigationDestination(item: $reading) { nav in
             PsalmDetailView(psalmId: nav.id, siblings: session.myPsalmIds)
@@ -388,6 +396,18 @@ struct ChainDetailView: View {
                 }
                 .buttonStyle(.bordered).tint(.accentMain)
             }
+            // Sélection incomplète (encore ouverte OU déjà close) → laisser une
+            // 2ᵉ chance avant de clôturer : prolonger l'échéance + re-notifier.
+            if !chain.distributed && !session.isFullyAssigned {
+                Button {
+                    extendDate = max(chain.selectionDeadline, Date()).addingTimeInterval(86_400)
+                    showExtend = true
+                } label: {
+                    Label("Prolonger la sélection", systemImage: "clock.arrow.circlepath")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered).tint(.accentMain)
+            }
             if open && !session.isFullyAssigned {
                 Button {
                     Task { await assignRemaining(chain) }
@@ -539,6 +559,12 @@ struct ChainDetailView: View {
             container.chainArchive.forget(chainId)
             if let onClose { onClose() } else { dismiss() }
         } catch { errorMessage = "Suppression impossible." }
+    }
+
+    private func extend() async {
+        working = true; defer { working = false }
+        do { try await container.chains.extendSelection(chainId: chainId, newDeadline: extendDate) }
+        catch { errorMessage = "Prolongation impossible." }
     }
 
     // MARK: - Helpers

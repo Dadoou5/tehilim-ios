@@ -305,6 +305,7 @@
     <string name="chain_leave_confirm_msg">Tes Tehilim seront libérés pour les autres participants.</string>
     <string name="chain_breakdown">Répartition par personne</string>
     <string name="chain_edit">Modifier la chaîne</string>
+    <string name="chain_extend_selection">Prolonger la sélection</string>
     <string name="chain_save">Enregistrer</string>
     <string name="chain_selection_end">Fin de la sélection</string>
     <string name="chain_owner_tag">· maître</string>

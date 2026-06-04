@@ -127,24 +127,35 @@ struct ChainDetailView: View {
                 headerCard(chain)
                 countdownCard(chain, open: open)
                 participantsCard
-                Button { showInvite = true } label: {
-                    Label("Inviter des participants", systemImage: "person.badge.plus")
-                        .frame(maxWidth: .infinity)
+                // Chaîne distribuée → on ne peut plus inviter de participants.
+                if !chain.distributed {
+                    Button { showInvite = true } label: {
+                        Label("Inviter des participants", systemImage: "person.badge.plus")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered).tint(.accentMain).controlSize(.large)
                 }
-                .buttonStyle(.bordered).tint(.accentMain).controlSize(.large)
                 progressCard
                 if session.assignedCount > 0 { breakdownCard }
 
                 if !session.isCurrentUserParticipant {
-                    Button {
-                        showJoin = true
-                    } label: {
-                        Label("Rejoindre la chaîne", systemImage: "person.badge.plus")
+                    if chain.distributed {
+                        // Chaîne distribuée → inscriptions closes, on ne peut plus rejoindre.
+                        Label("Chaîne distribuée — inscriptions closes", systemImage: "lock.fill")
+                            .font(.callout).foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                    } else {
+                        Button {
+                            showJoin = true
+                        } label: {
+                            Label("Rejoindre la chaîne", systemImage: "person.badge.plus")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.accentMain)
+                        .controlSize(.large)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.accentMain)
-                    .controlSize(.large)
                 } else {
                     selectionSection(chain, open: open)
                     if session.isCurrentUserCreator {
@@ -227,11 +238,14 @@ struct ChainDetailView: View {
                 Label("Participants", systemImage: "person.2.fill").font(.subheadline.weight(.semibold))
                 Spacer()
                 Text("\(session.participants.count)").font(.headline).foregroundStyle(Color.accentMain)
-                Button { showInvite = true } label: {
-                    Image(systemName: "person.crop.circle.badge.plus").font(.title3)
+                // Chaîne distribuée → plus d'invitation possible.
+                if !(session.chain?.distributed ?? false) {
+                    Button { showInvite = true } label: {
+                        Image(systemName: "person.crop.circle.badge.plus").font(.title3)
+                    }
+                    .buttonStyle(.plain).foregroundStyle(Color.accentMain)
+                    .accessibilityLabel("Inviter des participants")
                 }
-                .buttonStyle(.plain).foregroundStyle(Color.accentMain)
-                .accessibilityLabel("Inviter des participants")
             }
             if session.isCurrentUserCreator {
                 // Le créateur peut retirer un participant (libère ses cases).

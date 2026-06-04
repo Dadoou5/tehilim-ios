@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.PersonRemove
 import androidx.compose.material.icons.outlined.Share
@@ -216,16 +217,20 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                         participants = participants,
                         countFor = ::countFor,
                         isCreator = isCreator,
-                        // Chaîne distribuée → lecture figée, plus de retrait possible.
+                        // Chaîne distribuée → lecture figée : plus de retrait ni d'invitation.
                         canRemove = !c.distributed,
+                        canInvite = !c.distributed,
                         onInvite = { showInvite = true },
                         onRemove = { p -> participantToRemove = p }
                     )
                 }
-                fullSpan {
-                    OutlinedButton(onClick = { showInvite = true }, modifier = Modifier.fillMaxWidth()) {
-                        Icon(Icons.Outlined.PersonAdd, null, Modifier.size(18.dp))
-                        Text(stringResource(R.string.chain_invite_participants), modifier = Modifier.padding(start = 8.dp))
+                // Chaîne distribuée → on ne peut plus inviter de participants.
+                if (!c.distributed) {
+                    fullSpan {
+                        OutlinedButton(onClick = { showInvite = true }, modifier = Modifier.fillMaxWidth()) {
+                            Icon(Icons.Outlined.PersonAdd, null, Modifier.size(18.dp))
+                            Text(stringResource(R.string.chain_invite_participants), modifier = Modifier.padding(start = 8.dp))
+                        }
                     }
                 }
                 fullSpan { ProgressCard(effectiveAssignments, participants) }
@@ -235,8 +240,22 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
 
                 if (!isParticipant) {
                     fullSpan {
-                        Button(onClick = { showJoin = true }, modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(R.string.chain_join_chain))
+                        if (c.distributed) {
+                            // Chaîne distribuée → inscriptions closes, on ne peut plus rejoindre.
+                            Row(Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Outlined.Lock, null, Modifier.size(18.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.chain_distributed_closed),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(start = 8.dp))
+                            }
+                        } else {
+                            Button(onClick = { showJoin = true }, modifier = Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.chain_join_chain))
+                            }
                         }
                     }
                 } else {
@@ -519,6 +538,7 @@ private fun ParticipantsCard(
     countFor: (String) -> Int,
     isCreator: Boolean,
     canRemove: Boolean,
+    canInvite: Boolean,
     onInvite: () -> Unit,
     onRemove: (ChainParticipant) -> Unit
 ) {
@@ -528,9 +548,11 @@ private fun ParticipantsCard(
                 Text(stringResource(R.string.chain_participants), style = MaterialTheme.typography.titleSmall)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("${participants.size}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                    IconButton(onClick = onInvite) {
-                        Icon(Icons.Outlined.PersonAdd, stringResource(R.string.chain_invite),
-                            tint = MaterialTheme.colorScheme.primary)
+                    if (canInvite) {
+                        IconButton(onClick = onInvite) {
+                            Icon(Icons.Outlined.PersonAdd, stringResource(R.string.chain_invite),
+                                tint = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 }
             }

@@ -422,6 +422,7 @@
 "· maître" = "· owner";
 "Retirer %@" = "Remove %@";
 "Retirer ce participant ?" = "Remove this participant?";
+"Chaîne distribuée — inscriptions closes" = "Chain distributed — sign-ups closed";
 "Les Tehilim de %@ seront libérés et redeviendront disponibles. Cette personne sera retirée de la chaîne." = "%@'s Tehilim will be released and become available again. They will be removed from the chain.";
 
 /* Chaîne — invitation + QR code */

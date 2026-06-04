@@ -3,8 +3,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 // ============================================================================
 // Edge Function « notify » — envoie les notifications push aux participants.
 // Appelée par les triggers Postgres (pg_net) avec un secret partagé.
-// Corps reçu : { event, value, chainName, tokens: [{token, platform, locale}] }
-//   event ∈ 'threshold' (value=70|80|90) | 'distributed' | 'deleted'
+// Corps reçu : { event, value, chainName, tokens: [{token, platform, locale}], delayMs? }
+//   event ∈ 'threshold' (value=70|80|90) | 'complete' | 'distribute_prompt'
+//         | 'distributed' | 'selection_reminder' | 'deleted'
+//   delayMs : attente avant envoi (ex. invitation à distribuer 3 s après le 100 %)
 // Secrets (Edge Function → Settings → Secrets) :
 //   NOTIFY_SHARED_SECRET, APNS_KEY_P8, APNS_KEY_ID, APNS_TEAM_ID,
 //   APNS_BUNDLE_ID, APNS_HOST(=api.push.apple.com), FCM_SERVICE_ACCOUNT, FCM_PROJECT_ID
@@ -88,6 +90,12 @@ function messageFor(event: string, value: number | null, chainName: string, loca
       body: en ? `“${chainName}” — all 150 Tehilim are assigned!` : `« ${chainName} » — les 150 Tehilim sont attribués !`,
     };
   }
+  if (event === "distribute_prompt") {
+    return {
+      title: en ? "Your turn to distribute 🙏" : "À toi de distribuer 🙏",
+      body: en ? `“${chainName}” is complete — distribute it to start the reading` : `« ${chainName} » est complète — distribue-la pour lancer la lecture`,
+    };
+  }
   if (event === "selection_reminder") {
     return {
       title: en ? "Selection closing soon" : "Sélection bientôt close",
@@ -154,15 +162,21 @@ Deno.serve(async (req: Request) => {
     return new Response("unauthorized", { status: 401 });
   }
 
-  let payload: { event: string; value: number | null; chainName: string; tokens: Array<{ token: string; platform: string; locale: string }> };
+  let payload: { event: string; value: number | null; chainName: string; tokens: Array<{ token: string; platform: string; locale: string }>; delayMs?: number };
   try {
     payload = await req.json();
   } catch {
     return new Response("bad request", { status: 400 });
   }
-  const { event, value, chainName, tokens } = payload;
+  const { event, value, chainName, tokens, delayMs } = payload;
   if (!Array.isArray(tokens) || tokens.length === 0) {
     return new Response(JSON.stringify({ sent: 0 }), { headers: { "Content-Type": "application/json" } });
+  }
+
+  // Délai d'envoi optionnel (ex. invitation à distribuer postée 3 s après le 100 %).
+  // Borné à 10 s pour rester sous le timeout de l'Edge Function.
+  if (typeof delayMs === "number" && delayMs > 0) {
+    await new Promise((r) => setTimeout(r, Math.min(delayMs, 10000)));
   }
 
   let apnsToken: string | null = null;

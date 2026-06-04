@@ -456,7 +456,7 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
 private fun InviteDialog(chain: TehilimChain, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val link = remember(chain.id) { ChainShareLink.uri(chain.id).toString() }
-    val qr = remember(link) { generateQrBitmap(link) }
+    val qr = remember(link) { generateQrBitmap(context, link) }
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_ok)) } },
@@ -490,16 +490,53 @@ private fun InviteDialog(chain: TehilimChain, onDismiss: () -> Unit) {
     )
 }
 
-private fun generateQrBitmap(content: String, size: Int = 600): android.graphics.Bitmap? {
+/**
+ * QR « marque » : modules bleu nuit (couleur de l'icône) sur fond blanc,
+ * correction d'erreur maximale (H), et icône de lancement incrustée au centre
+ * sur une pastille blanche arrondie. Le niveau H tolère la zone masquée.
+ */
+private fun generateQrBitmap(context: android.content.Context, content: String, size: Int = 600): android.graphics.Bitmap? {
     return try {
+        val navy = android.graphics.Color.rgb(14, 20, 48)   // #0E1430, fond de l'icône
+        val white = android.graphics.Color.WHITE
+        val hints = mapOf(
+            com.google.zxing.EncodeHintType.ERROR_CORRECTION to com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.H,
+            com.google.zxing.EncodeHintType.MARGIN to 1
+        )
         val matrix = com.google.zxing.qrcode.QRCodeWriter()
-            .encode(content, com.google.zxing.BarcodeFormat.QR_CODE, size, size)
+            .encode(content, com.google.zxing.BarcodeFormat.QR_CODE, size, size, hints)
         val bmp = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
         val pixels = IntArray(size * size)
         for (y in 0 until size) for (x in 0 until size) {
-            pixels[y * size + x] = if (matrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE
+            pixels[y * size + x] = if (matrix.get(x, y)) navy else white
         }
         bmp.setPixels(pixels, 0, size, 0, 0, size, size)
+
+        // Incrustation du logo de lancement au centre.
+        val canvas = android.graphics.Canvas(bmp)
+        val logoSize = (size * 0.22f).toInt()           // ~22 % de la largeur
+        val plate = (logoSize * 1.18f).toInt()          // pastille blanche un peu plus grande
+        val cx = size / 2f; val cy = size / 2f
+        val plateRect = android.graphics.RectF(cx - plate / 2f, cy - plate / 2f, cx + plate / 2f, cy + plate / 2f)
+        val r = plate * 0.22f
+        canvas.drawRoundRect(plateRect, r, r, android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = white })
+
+        val drawable = androidx.core.content.ContextCompat.getDrawable(context, R.mipmap.ic_launcher)
+        if (drawable != null) {
+            val logo = android.graphics.Bitmap.createBitmap(logoSize, logoSize, android.graphics.Bitmap.Config.ARGB_8888)
+            val lc = android.graphics.Canvas(logo)
+            drawable.setBounds(0, 0, logoSize, logoSize)
+            drawable.draw(lc)
+            // Coins arrondis du logo.
+            val rounded = android.graphics.Bitmap.createBitmap(logoSize, logoSize, android.graphics.Bitmap.Config.ARGB_8888)
+            val rc = android.graphics.Canvas(rounded)
+            val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+            val rectL = android.graphics.RectF(0f, 0f, logoSize.toFloat(), logoSize.toFloat())
+            rc.drawRoundRect(rectL, logoSize * 0.2f, logoSize * 0.2f, paint)
+            paint.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN)
+            rc.drawBitmap(logo, 0f, 0f, paint)
+            canvas.drawBitmap(rounded, cx - logoSize / 2f, cy - logoSize / 2f, null)
+        }
         bmp
     } catch (e: Exception) { null }
 }

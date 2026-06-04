@@ -102,6 +102,13 @@ struct RootTabView: View {
             }
             .environmentObject(container)
             .environmentObject(container.chainArchive)
+            // La lecture d'un Tehilim depuis la chaîne (navigationDestination →
+            // PsalmDetailView) exige FavoritesStore + savedPrayers. Un
+            // fullScreenCover n'hérite pas de façon fiable des EnvironmentObject
+            // posés sur le TabView → on les ré-injecte ici (sinon crash à
+            // l'ouverture d'un psaume via un lien de partage).
+            .environmentObject(container.favorites)
+            .environmentObject(container.savedPrayers)
         }
     }
 

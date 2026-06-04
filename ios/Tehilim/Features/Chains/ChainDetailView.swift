@@ -135,8 +135,10 @@ struct ChainDetailView: View {
                 headerCard(chain)
                 countdownCard(chain, open: open)
                 participantsCard
-                // Chaîne distribuée → on ne peut plus inviter de participants.
-                if !chain.distributed {
+                // Invitation possible uniquement tant que la sélection est ouverte
+                // (un nouvel arrivant ne pourrait plus rien choisir après l'échéance).
+                // Le créateur peut « Prolonger la sélection » pour la rouvrir.
+                if open {
                     Button { showInvite = true } label: {
                         Label("Inviter des participants", systemImage: "person.badge.plus")
                             .frame(maxWidth: .infinity)
@@ -246,8 +248,8 @@ struct ChainDetailView: View {
                 Label("Participants", systemImage: "person.2.fill").font(.subheadline.weight(.semibold))
                 Spacer()
                 Text("\(session.participants.count)").font(.headline).foregroundStyle(Color.accentMain)
-                // Chaîne distribuée → plus d'invitation possible.
-                if !(session.chain?.distributed ?? false) {
+                // Invitation possible seulement tant que la sélection est ouverte.
+                if session.chain?.isSelectionOpen(now: nowTick) ?? false {
                     Button { showInvite = true } label: {
                         Image(systemName: "person.crop.circle.badge.plus").font(.title3)
                     }

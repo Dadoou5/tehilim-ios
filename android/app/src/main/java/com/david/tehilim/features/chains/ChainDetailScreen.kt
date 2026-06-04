@@ -220,15 +220,17 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                         participants = participants,
                         countFor = ::countFor,
                         isCreator = isCreator,
-                        // Chaîne distribuée → lecture figée : plus de retrait ni d'invitation.
+                        // Retrait possible tant que non distribuée ; invitation seulement
+                        // tant que la sélection est ouverte (un arrivant tardif ne pourrait
+                        // plus rien choisir — le créateur peut « Prolonger » pour rouvrir).
                         canRemove = !c.distributed,
-                        canInvite = !c.distributed,
+                        canInvite = open,
                         onInvite = { showInvite = true },
                         onRemove = { p -> participantToRemove = p }
                     )
                 }
-                // Chaîne distribuée → on ne peut plus inviter de participants.
-                if (!c.distributed) {
+                // Invitation possible uniquement tant que la sélection est ouverte.
+                if (open) {
                     fullSpan {
                         OutlinedButton(onClick = { showInvite = true }, modifier = Modifier.fillMaxWidth()) {
                             Icon(Icons.Outlined.PersonAdd, null, Modifier.size(18.dp))

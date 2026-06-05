@@ -360,6 +360,9 @@
 "Répartition" = "Distribution";
 "Mes Tehilim" = "My Tehilim";
 "Lecture jusqu'au" = "Reading until";
+"Fin de la sélection dans" = "Selection ends in";
+"Fin de la lecture dans" = "Reading ends in";
+"Lecture terminée le" = "Reading ended on";
 "Aucun Tehilim ne t'a été attribué dans cette chaîne." = "No Tehilim were assigned to you in this chain.";
 "Disponible hors-ligne · lire mes Tehilim" = "Available offline · read my Tehilim";
 "Mes chaînes" = "My chains";

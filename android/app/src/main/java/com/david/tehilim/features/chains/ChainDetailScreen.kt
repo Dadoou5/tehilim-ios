@@ -647,8 +647,8 @@ private fun CountdownCard(c: TehilimChain, open: Boolean, now: Long) {
             )
             Text(
                 when {
-                    open -> remaining(c.selectionDeadlineMillis - now)
-                    reading -> remaining(c.readingDeadlineMillis - now)
+                    open -> chainCountdown(c.selectionDeadlineMillis - now)
+                    reading -> chainCountdown(c.readingDeadlineMillis - now)
                     else -> df.format(Date(c.readingDeadlineMillis))
                 },
                 style = if (live) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleMedium
@@ -943,18 +943,6 @@ private fun CreatorControls(
     }
 }
 
-// MARK: - Helpers
-
-private fun remaining(ms: Long): String {
-    val secs = (ms / 1000).coerceAtLeast(0)
-    val d = secs / 86400; val h = (secs % 86400) / 3600; val m = (secs % 3600) / 60; val s = secs % 60
-    return when {
-        d > 0 -> "$d j $h h"
-        h > 0 -> "$h h $m min"
-        m > 0 -> "$m min $s s"
-        else -> "$s s"
-    }
-}
 
 private fun shareText(context: android.content.Context, text: String) {
     val intent = Intent(Intent.ACTION_SEND).apply {

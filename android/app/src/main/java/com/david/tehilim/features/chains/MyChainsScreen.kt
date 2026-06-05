@@ -205,7 +205,7 @@ private fun ChainEntryCard(
                 if (e.countdownTarget != null) {
                     val left = (e.countdownTarget - now).coerceAtLeast(0L)
                     Text(
-                        formatRemaining(left),
+                        chainCountdown(left),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
@@ -231,14 +231,3 @@ private fun ChainEntryCard(
     }
 }
 
-/** Compte à rebours compact (j / h / min / s). */
-private fun formatRemaining(ms: Long): String {
-    val s = ms / 1000
-    val d = s / 86400; val h = (s % 86400) / 3600; val m = (s % 3600) / 60; val sec = s % 60
-    return when {
-        d > 0 -> "$d j $h h"
-        h > 0 -> "$h h $m min"
-        m > 0 -> "$m min $sec s"
-        else -> "$sec s"
-    }
-}

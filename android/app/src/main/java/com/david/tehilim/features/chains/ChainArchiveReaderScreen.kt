@@ -27,9 +27,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontWeight
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -57,6 +62,9 @@ fun ChainArchiveReaderScreen(container: AppContainer, chainId: String, navContro
     val snap = archives.firstOrNull { it.id == chainId }
     val context = LocalContext.current
     val df = remember(snap?.readingDeadlineMillis) { DateFormat.getDateInstance(DateFormat.MEDIUM) }
+    // Horloge → compte à rebours du temps de lecture restant.
+    var now by remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) { while (true) { delay(1000); now = System.currentTimeMillis() } }
 
     Scaffold(
         topBar = {
@@ -106,9 +114,20 @@ fun ChainArchiveReaderScreen(container: AppContainer, chainId: String, navContro
                         Text(stringResource(R.string.chain_created_by, snap.creatorName),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(stringResource(R.string.chain_countdown_distributed) + " · " + df.format(Date(snap.readingDeadlineMillis)),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        val readingLeft = snap.readingDeadlineMillis - now
+                        if (readingLeft > 0) {
+                            Text(stringResource(R.string.chain_countdown_reading),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(chainCountdown(readingLeft),
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary)
+                        } else {
+                            Text(stringResource(R.string.chain_countdown_closed) + " · " + df.format(Date(snap.readingDeadlineMillis)),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                     }
                 }
             }

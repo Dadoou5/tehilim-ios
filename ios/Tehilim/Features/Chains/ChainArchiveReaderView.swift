@@ -10,7 +10,9 @@ struct ChainArchiveReaderView: View {
     @Environment(\.horizontalSizeClass) private var hSize
     let snapshot: ChainArchiveSnapshot
     @State private var reading: ArchivePsalmNav?
+    @State private var now = Date()
 
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private var myIds: [Int] { (snapshot.myPsalmIds ?? []).sorted() }
 
     var body: some View {
@@ -49,16 +51,28 @@ struct ChainArchiveReaderView: View {
         .navigationDestination(item: $reading) { nav in
             PsalmDetailView(psalmId: nav.id, siblings: myIds)
         }
+        .onReceive(timer) { now = $0 }
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        let isReading = now < snapshot.readingDeadline
+        return VStack(alignment: .leading, spacing: 4) {
             Label(LocalizedStringKey(snapshot.intention.titleKey), systemImage: snapshot.intention.symbol)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(snapshot.intention.tint)
             Text(snapshot.subjectLine).font(.title3.weight(.semibold))
-            (Text("Lecture jusqu'au") + Text(" " + snapshot.readingDeadline.formatted(date: .abbreviated, time: .omitted)))
+            // Temps de lecture restant (compte à rebours) tant que la lecture
+            // est en cours ; sinon date de fin.
+            Text(LocalizedStringKey(isReading ? "Fin de la lecture dans" : "Lecture terminée le"))
                 .font(.caption).foregroundStyle(.secondary)
+            if isReading {
+                Text(ChainCountdown.format(seconds: Int(snapshot.readingDeadline.timeIntervalSince(now))))
+                    .font(.system(.title2, design: .rounded).weight(.bold).monospacedDigit())
+                    .foregroundStyle(snapshot.intention.tint)
+            } else {
+                Text(snapshot.readingDeadline.formatted(date: .abbreviated, time: .omitted))
+                    .font(.headline)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)

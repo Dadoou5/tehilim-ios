@@ -598,13 +598,7 @@ struct ChainDetailView: View {
     }
 
     private func remaining(until date: Date) -> String {
-        let secs = max(0, Int(date.timeIntervalSince(nowTick)))
-        let d = secs / 86400, h = (secs % 86400) / 3600, m = (secs % 3600) / 60, s = secs % 60
-        let dU = AppLocale.code == "en" ? "d" : "j"
-        if d > 0 { return "\(d) \(dU) \(h) h" }
-        if h > 0 { return "\(h) h \(m) min" }
-        if m > 0 { return "\(m) min \(s) s" }
-        return "\(s) s"
+        ChainCountdown.format(seconds: max(0, Int(date.timeIntervalSince(nowTick))))
     }
 
     /// Compte rendu texte (groupé par participant) — partageable WhatsApp.

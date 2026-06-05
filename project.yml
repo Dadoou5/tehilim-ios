@@ -47,7 +47,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: ios/Tehilim/Tehilim.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.david.tehilim
         PRODUCT_NAME: Tehilim
-        CURRENT_PROJECT_VERSION: "60"
+        CURRENT_PROJECT_VERSION: "61"
         MARKETING_VERSION: "1.14.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
@@ -89,7 +89,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: ios/TehilimWidget/TehilimWidget.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.david.tehilim.widget
         PRODUCT_NAME: TehilimWidget
-        CURRENT_PROJECT_VERSION: "60"
+        CURRENT_PROJECT_VERSION: "61"
         MARKETING_VERSION: "1.14.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic

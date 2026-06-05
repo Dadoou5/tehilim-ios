@@ -323,6 +323,14 @@
     <string name="chain_created_by">Créée par %1$s</string>
     <string name="chain_my_chains">Mes chaînes</string>
     <string name="chain_summaries">Comptes rendus</string>
+    <string name="chain_cat_selection">Sélection en cours</string>
+    <string name="chain_cat_reading">Lecture en cours</string>
+    <string name="chain_cat_closed">Terminées</string>
+    <string name="chain_cat_selection_sub">avant la fin de la sélection</string>
+    <string name="chain_cat_reading_sub">avant la fin de la lecture</string>
+    <string name="chain_remove">Retirer</string>
+    <string name="chain_remove_from_list_title">Retirer de la liste ?</string>
+    <string name="chain_remove_from_list_msg">La chaîne sera retirée de ta liste sur cet appareil. Cela ne la supprime pas pour les autres participants.</string>
     <string name="chain_tap_to_share">Touche pour partager le compte rendu</string>
     <string name="chain_archive_open_offline">Disponible hors-ligne · lire mes Tehilim</string>
     <string name="chain_archive_my_tehilim">Mes Tehilim</string>

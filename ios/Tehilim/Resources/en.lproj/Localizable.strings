@@ -363,6 +363,11 @@
 "Aucun Tehilim ne t'a été attribué dans cette chaîne." = "No Tehilim were assigned to you in this chain.";
 "Disponible hors-ligne · lire mes Tehilim" = "Available offline · read my Tehilim";
 "Mes chaînes" = "My chains";
+"Sélection en cours" = "Selection in progress";
+"Lecture en cours" = "Reading in progress";
+"Terminées" = "Finished";
+"avant la fin de la sélection" = "until selection ends";
+"avant la fin de la lecture" = "until reading ends";
 "Comptes rendus" = "Summaries";
 "Indisponible" = "Unavailable";
 "Chaîne introuvable" = "Chain not found";

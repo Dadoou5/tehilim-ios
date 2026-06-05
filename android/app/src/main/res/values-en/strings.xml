@@ -323,6 +323,14 @@
     <string name="chain_created_by">Created by %1$s</string>
     <string name="chain_my_chains">My chains</string>
     <string name="chain_summaries">Summaries</string>
+    <string name="chain_cat_selection">Selection in progress</string>
+    <string name="chain_cat_reading">Reading in progress</string>
+    <string name="chain_cat_closed">Finished</string>
+    <string name="chain_cat_selection_sub">until selection ends</string>
+    <string name="chain_cat_reading_sub">until reading ends</string>
+    <string name="chain_remove">Remove</string>
+    <string name="chain_remove_from_list_title">Remove from list?</string>
+    <string name="chain_remove_from_list_msg">The chain will be removed from your list on this device. It is not deleted for the other participants.</string>
     <string name="chain_tap_to_share">Tap to share the summary</string>
     <string name="chain_archive_open_offline">Available offline · read my Tehilim</string>
     <string name="chain_archive_my_tehilim">My Tehilim</string>

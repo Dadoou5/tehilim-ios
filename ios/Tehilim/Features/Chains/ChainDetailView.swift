@@ -227,18 +227,22 @@ struct ChainDetailView: View {
 
     @ViewBuilder
     private func countdownCard(_ chain: TehilimChain, open: Bool) -> some View {
-        let deadline = open ? chain.selectionDeadline : chain.readingDeadline
+        // Trois états : sélection (compte à rebours), lecture en cours (compte à
+        // rebours vers la fin de lecture), terminée (date).
+        let reading = !open && nowTick < chain.readingDeadline
+        let live = open || reading
         HStack(spacing: 14) {
-            Image(systemName: open ? "timer" : "book")
+            Image(systemName: live ? "timer" : "book")
                 .font(.title2).foregroundStyle(chain.intentionType.tint)
             VStack(alignment: .leading, spacing: 2) {
-                Text(open ? "Fin de la sélection dans" : (chain.distributed ? "Distribuée · lecture jusqu'au" : "Sélection close · lecture jusqu'au"))
+                Text(open ? "Fin de la sélection dans"
+                     : (reading ? "Fin de la lecture dans" : "Lecture terminée le"))
                     .font(.caption).foregroundStyle(.secondary)
-                if open {
-                    Text(remaining(until: deadline))
+                if live {
+                    Text(remaining(until: open ? chain.selectionDeadline : chain.readingDeadline))
                         .font(.system(.title2, design: .rounded).weight(.bold).monospacedDigit())
                 } else {
-                    Text(deadline.formatted(date: .abbreviated, time: .shortened))
+                    Text(chain.readingDeadline.formatted(date: .abbreviated, time: .shortened))
                         .font(.headline)
                 }
             }

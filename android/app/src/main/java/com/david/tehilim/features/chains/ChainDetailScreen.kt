@@ -157,8 +157,13 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     // uid réactif : on attend le chargement de la session persistée pour éviter
     // un faux état « non participant » (proposition de rejoindre) au retour
     // d'arrière-plan après un partage.
+    // On garantit une session (sign-in anonyme si besoin) dès l'ouverture, sinon
+    // `uid` reste null pour un nouvel appareil ouvrant un lien → « Rejoindre »
+    // ne basculerait jamais en participant après le join.
     var uid by remember { mutableStateOf(container.chains.currentUid) }
-    LaunchedEffect(Unit) { container.chains.awaitUid()?.let { uid = it } }
+    LaunchedEffect(Unit) {
+        uid = runCatching { container.chains.ensureSignedIn() }.getOrNull() ?: container.chains.currentUid
+    }
 
     // UI optimiste : overlay local par-dessus la vérité realtime (tap instantané).
     val optimistic = remember(chainId) { mutableStateMapOf<Int, ChainAssignment?>() }
@@ -453,7 +458,11 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                     onClick = {
                         val n = nameInput.trim()
                         showJoin = false
-                        scope.launch { runCatching { container.chains.join(chainId, n) } }
+                        scope.launch {
+                            runCatching { container.chains.join(chainId, n) }
+                                .onSuccess { uid = container.chains.currentUid }  // bascule en participant
+                                .onFailure { error = it.message ?: "Impossible de rejoindre." }
+                        }
                     }
                 ) { Text(stringResource(R.string.chain_join)) }
             },
@@ -615,16 +624,27 @@ private fun HeaderCard(c: TehilimChain) {
 @Composable
 private fun CountdownCard(c: TehilimChain, open: Boolean, now: Long) {
     val df = remember { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT) }
+    // Trois états : sélection (compte à rebours), lecture en cours (compte à
+    // rebours vers la fin de lecture), terminée (date).
+    val reading = !open && now < c.readingDeadlineMillis
+    val live = open || reading
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             CardTitle(
-                if (open) Icons.Outlined.Timer else Icons.AutoMirrored.Outlined.MenuBook,
-                if (open) stringResource(R.string.chain_countdown_selection)
-                else if (c.distributed) stringResource(R.string.chain_countdown_distributed) else stringResource(R.string.chain_countdown_closed)
+                if (live) Icons.Outlined.Timer else Icons.AutoMirrored.Outlined.MenuBook,
+                when {
+                    open -> stringResource(R.string.chain_countdown_selection)
+                    reading -> stringResource(R.string.chain_countdown_reading)
+                    else -> stringResource(R.string.chain_countdown_closed)
+                }
             )
             Text(
-                if (open) remaining(c.selectionDeadlineMillis - now) else df.format(Date(c.readingDeadlineMillis)),
-                style = if (open) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleMedium
+                when {
+                    open -> remaining(c.selectionDeadlineMillis - now)
+                    reading -> remaining(c.readingDeadlineMillis - now)
+                    else -> df.format(Date(c.readingDeadlineMillis))
+                },
+                style = if (live) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleMedium
             )
         }
     }

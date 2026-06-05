@@ -343,6 +343,7 @@
     <string name="chain_countdown_selection">Fin de la sélection dans</string>
     <string name="chain_countdown_distributed">Distribuée · lecture jusqu\'au</string>
     <string name="chain_countdown_closed">Sélection close · lecture jusqu\'au</string>
+    <string name="chain_countdown_reading">Fin de la lecture dans</string>
     <string name="chain_consent">Ton nom et l\'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture.</string>
     <string name="chain_intention_lelouy">Lelouy Nichmat</string>
     <string name="chain_intention_refoua">Refoua Chelema</string>

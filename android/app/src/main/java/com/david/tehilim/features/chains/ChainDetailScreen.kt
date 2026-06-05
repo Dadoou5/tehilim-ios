@@ -208,9 +208,13 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
     var error by remember { mutableStateOf<String?>(null) }
     val errTaken = stringResource(R.string.chain_error_taken)
 
-    val isParticipant = uid != null && participants.any { it.uid == uid }
+    // Bascule optimiste : dès le join réussi on se considère participant (nom
+    // saisi), sans attendre la confirmation realtime → l'écran quitte « Rejoindre »
+    // immédiatement et la grille devient sélectionnable.
+    var joinedName by remember(chainId) { mutableStateOf<String?>(null) }
+    val isParticipant = uid != null && (joinedName != null || participants.any { it.uid == uid })
     val isCreator = uid != null && chain?.creatorUid == uid
-    val myName = participants.firstOrNull { it.uid == uid }?.name ?: "—"
+    val myName = participants.firstOrNull { it.uid == uid }?.name ?: joinedName ?: "—"
     val myIds = effectiveAssignments.values.filter { it.uid == uid }.map { it.psalmId }.sorted()
     val open = chain?.isSelectionOpen(nowTick) ?: false
 
@@ -460,7 +464,10 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                         showJoin = false
                         scope.launch {
                             runCatching { container.chains.join(chainId, n) }
-                                .onSuccess { uid = container.chains.currentUid }  // bascule en participant
+                                .onSuccess {
+                                    uid = container.chains.currentUid
+                                    joinedName = n   // bascule optimiste en participant
+                                }
                                 .onFailure { error = it.message ?: "Impossible de rejoindre." }
                         }
                     }

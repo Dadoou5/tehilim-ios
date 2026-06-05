@@ -20,6 +20,9 @@ struct ChainDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var session: ChainSession
     @State private var showJoin = false
+    /// Bascule optimiste après un join réussi (nom saisi) — l'écran quitte
+    /// « Rejoindre » sans attendre la confirmation realtime.
+    @State private var joinedName: String?
     @State private var showDeleteConfirm = false
     @State private var showLeaveConfirm = false
     @State private var showEdit = false
@@ -41,6 +44,11 @@ struct ChainDetailView: View {
     }
 
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    /// Participant si la vérité realtime le dit, OU juste après un join optimiste.
+    private var isParticipant: Bool {
+        session.isCurrentUserParticipant || joinedName != nil
+    }
 
     var body: some View {
         Group {
@@ -154,7 +162,7 @@ struct ChainDetailView: View {
                 progressCard
                 if session.assignedCount > 0 { breakdownCard }
 
-                if !session.isCurrentUserParticipant {
+                if !isParticipant {
                     if chain.distributed {
                         // Chaîne distribuée → inscriptions closes, on ne peut plus rejoindre.
                         Label("Chaîne distribuée — inscriptions closes", systemImage: "lock.fill")
@@ -197,7 +205,7 @@ struct ChainDetailView: View {
         }
         // Compteur + filtre « collants » en haut, pendant qu'on est participant.
         .safeAreaInset(edge: .top, spacing: 0) {
-            if session.isCurrentUserParticipant { filterBar }
+            if isParticipant { filterBar }
         }
     }
 
@@ -508,8 +516,10 @@ struct ChainDetailView: View {
     // MARK: - Actions
 
     private func join(_ name: String) async {
-        do { try await container.chains.join(chainId: chainId, name: name) }
-        catch { errorMessage = "Impossible de rejoindre." }
+        do {
+            try await container.chains.join(chainId: chainId, name: name)
+            joinedName = name   // bascule optimiste en participant
+        } catch { errorMessage = "Impossible de rejoindre." }
     }
 
     private func leave() async {
@@ -584,7 +594,7 @@ struct ChainDetailView: View {
     // MARK: - Helpers
 
     private func myDisplayName() -> String {
-        session.participants.first { $0.id == session.currentUid }?.name ?? "—"
+        session.participants.first { $0.id == session.currentUid }?.name ?? joinedName ?? "—"
     }
 
     private func remaining(until date: Date) -> String {

@@ -235,28 +235,34 @@ struct ChainDetailView: View {
 
     @ViewBuilder
     private func countdownCard(_ chain: TehilimChain, open: Bool) -> some View {
-        // Trois états : sélection (compte à rebours), lecture en cours (compte à
-        // rebours vers la fin de lecture), terminée (date).
-        let reading = !open && nowTick < chain.readingDeadline
-        let live = open || reading
-        HStack(spacing: 14) {
-            Image(systemName: live ? "timer" : "book")
-                .font(.title2).foregroundStyle(chain.intentionType.tint)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(open ? "Fin de la sélection dans"
-                     : (reading ? "Fin de la lecture dans" : "Lecture terminée le"))
-                    .font(.caption).foregroundStyle(.secondary)
-                if live {
-                    Text(remaining(until: open ? chain.selectionDeadline : chain.readingDeadline))
-                        .font(.system(.title2, design: .rounded).weight(.bold).monospacedDigit())
-                } else {
-                    Text(chain.readingDeadline.formatted(date: .abbreviated, time: .shortened))
-                        .font(.headline)
+        // TimelineView pilote son propre tick → le compte à rebours défile de façon
+        // fiable, y compris au retour sur l'écran (le Timer Combine + onReceive ne
+        // reprenait pas toujours après une navigation). Trois états : sélection,
+        // lecture en cours, terminée.
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            let now = context.date
+            let deadline = open ? chain.selectionDeadline : chain.readingDeadline
+            let reading = !open && now < chain.readingDeadline
+            let live = open || reading
+            HStack(spacing: 14) {
+                Image(systemName: live ? "timer" : "book")
+                    .font(.title2).foregroundStyle(chain.intentionType.tint)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(LocalizedStringKey(open ? "Fin de la sélection dans"
+                         : (reading ? "Fin de la lecture dans" : "Lecture terminée le")))
+                        .font(.caption).foregroundStyle(.secondary)
+                    if live {
+                        Text(ChainCountdown.format(seconds: Int(deadline.timeIntervalSince(now))))
+                            .font(.system(.title2, design: .rounded).weight(.bold).monospacedDigit())
+                    } else {
+                        Text(chain.readingDeadline.formatted(date: .abbreviated, time: .shortened))
+                            .font(.headline)
+                    }
                 }
+                Spacer()
             }
-            Spacer()
+            .padding(16).appCard()
         }
-        .padding(16).appCard()
     }
 
     @ViewBuilder
@@ -597,9 +603,6 @@ struct ChainDetailView: View {
         session.participants.first { $0.id == session.currentUid }?.name ?? joinedName ?? "—"
     }
 
-    private func remaining(until date: Date) -> String {
-        ChainCountdown.format(seconds: max(0, Int(date.timeIntervalSince(nowTick))))
-    }
 
     /// Compte rendu texte (groupé par participant) — partageable WhatsApp.
     private func reportText(_ chain: TehilimChain) -> String {

@@ -45,6 +45,9 @@
 "Moyen" = "Medium";
 "Grand" = "Large";
 "Très grand" = "Very large";
+"Taille du texte" = "Text size";
+"Réduire le texte" = "Decrease text";
+"Agrandir le texte" = "Increase text";
 "Affichage" = "Display";
 "Thème" = "Theme";
 "Système" = "System";

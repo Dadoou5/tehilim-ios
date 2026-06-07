@@ -15,6 +15,7 @@ struct PsalmDetailView: View {
     var siblings: [Int]? = nil
 
     @State private var localShowFR: Bool? = nil
+    @State private var showTextSize = false
     @State private var presentedPrayer: Prayer.Kind? = nil
     @State private var containerWidth: CGFloat = 0
 
@@ -226,6 +227,19 @@ struct PsalmDetailView: View {
             }
             .help(showFR ? "Masquer la traduction" : "Afficher la traduction")
             .accessibilityLabel(showFR ? "Masquer la traduction" : "Afficher la traduction")
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                showTextSize = true
+            } label: {
+                Image(systemName: "textformat.size")
+            }
+            .help("Taille du texte")
+            .accessibilityLabel("Taille du texte")
+            .popover(isPresented: $showTextSize) {
+                ReadingTextSizeControl(prefs: prefs, includeTranslation: showFR)
+                    .presentationCompactAdaptation(.popover)
+            }
         }
         ToolbarItem(placement: .topBarTrailing) {
             Menu {

@@ -427,4 +427,7 @@
     <string name="a11y_limit_hebrew_tts">Le texte hébreu est lu phonétiquement par TalkBack selon les capacités de la voix sélectionnée par l\'utilisateur·rice.</string>
     <string name="a11y_limit_119_grid">La grille des 22 lettres du Tehilim 119 peut nécessiter un défilement avec une très grande taille de texte.</string>
     <string name="a11y_recourse_body">Pour signaler un problème d\'accessibilité : contact à définir avant publication Google Play.</string>
+    <string name="reading_text_size">Taille du texte</string>
+    <string name="reading_text_smaller">Réduire le texte</string>
+    <string name="reading_text_larger">Agrandir le texte</string>
 </resources>

@@ -47,6 +47,16 @@ enum TextSize: String, Codable, CaseIterable, Identifiable {
         case .xl: return L("Très grand")
         }
     }
+
+    /// Pas suivant / précédent (borné aux extrêmes) — pour les contrôles A− / A+.
+    func stepped(by delta: Int) -> TextSize {
+        let all = TextSize.allCases
+        guard let i = all.firstIndex(of: self) else { return self }
+        let j = min(max(i + delta, 0), all.count - 1)
+        return all[j]
+    }
+    var isSmallest: Bool { self == TextSize.allCases.first }
+    var isLargest: Bool { self == TextSize.allCases.last }
 }
 
 enum VerseNumberStyle: String, Codable, CaseIterable, Identifiable {

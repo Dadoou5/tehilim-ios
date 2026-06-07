@@ -427,4 +427,7 @@
     <string name="a11y_limit_hebrew_tts">Hebrew text is read phonetically by TalkBack according to the capabilities of the voice chosen by the user.</string>
     <string name="a11y_limit_119_grid">The 22-letter grid of Tehilim 119 may require scrolling at very large text size.</string>
     <string name="a11y_recourse_body">To report an accessibility issue: contact to be defined before Google Play release.</string>
+    <string name="reading_text_size">Text size</string>
+    <string name="reading_text_smaller">Decrease text</string>
+    <string name="reading_text_larger">Increase text</string>
 </resources>

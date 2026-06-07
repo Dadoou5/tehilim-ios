@@ -48,6 +48,12 @@ enum class TextSize(val scale: Float, @StringRes val labelRes: Int) {
     MEDIUM(1.0f, R.string.enum_textsize_medium),
     LARGE(1.15f, R.string.enum_textsize_large),
     XLARGE(1.30f, R.string.enum_textsize_xlarge);
+
+    /** Pas suivant / précédent borné (pour les contrôles A− / A+ en lecture). */
+    fun stepped(delta: Int): TextSize =
+        entries[(ordinal + delta).coerceIn(0, entries.size - 1)]
+    val isSmallest get() = ordinal == 0
+    val isLargest get() = ordinal == entries.size - 1
 }
 
 enum class VerseNumberStyle(@StringRes val labelRes: Int) {

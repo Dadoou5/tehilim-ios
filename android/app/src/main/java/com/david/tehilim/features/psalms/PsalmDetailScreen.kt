@@ -17,6 +17,15 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.RecordVoiceOver
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material.icons.outlined.FormatSize
+import androidx.compose.material.icons.outlined.TextDecrease
+import androidx.compose.material.icons.outlined.TextIncrease
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -89,6 +98,8 @@ fun PsalmDetailScreen(
     // Override local pour toggle la traduction sans toucher au global
     var localShowFR by remember { mutableStateOf<Boolean?>(null) }
     val showFR = localShowFR ?: translationFR
+    // Menu de taille du texte (contrôle A− / A+ en lecture).
+    var showTextSize by remember { mutableStateOf(false) }
 
     LaunchedEffect(psalmId) {
         container.preferences.setLastReadPsalmId(psalmId)
@@ -123,6 +134,47 @@ fun PsalmDetailScreen(
                             else stringResource(R.string.cd_show_translation),
                             tint = if (showFR) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                         )
+                    }
+                    // Taille du texte : bouton « Aa » + menu A− / A+ (persisté).
+                    Box {
+                        IconButton(onClick = { showTextSize = true }) {
+                            Icon(Icons.Outlined.FormatSize,
+                                contentDescription = stringResource(R.string.reading_text_size))
+                        }
+                        DropdownMenu(expanded = showTextSize, onDismissRequest = { showTextSize = false }) {
+                            Column(
+                                Modifier.padding(horizontal = 16.dp, vertical = 8.dp).width(220.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(stringResource(R.string.reading_text_size),
+                                    style = MaterialTheme.typography.titleSmall)
+                                Row(verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+                                    IconButton(
+                                        onClick = { scope.launch {
+                                            container.preferences.setTextSizeHebrew(textSizeHebrew.stepped(-1))
+                                            if (showFR) container.preferences.setTextSizeFR(textSizeFR.stepped(-1))
+                                        } },
+                                        enabled = !textSizeHebrew.isSmallest
+                                    ) { Icon(Icons.Outlined.TextDecrease, stringResource(R.string.reading_text_smaller)) }
+
+                                    Text("Aa", fontSize = (17 * textSizeHebrew.scale).sp,
+                                        fontWeight = FontWeight.SemiBold)
+
+                                    IconButton(
+                                        onClick = { scope.launch {
+                                            container.preferences.setTextSizeHebrew(textSizeHebrew.stepped(1))
+                                            if (showFR) container.preferences.setTextSizeFR(textSizeFR.stepped(1))
+                                        } },
+                                        enabled = !textSizeHebrew.isLargest
+                                    ) { Icon(Icons.Outlined.TextIncrease, stringResource(R.string.reading_text_larger)) }
+                                }
+                                Text(stringResource(textSizeHebrew.labelRes),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
                     }
                 }
             )

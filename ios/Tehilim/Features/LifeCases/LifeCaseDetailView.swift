@@ -36,7 +36,6 @@ struct LifeCaseDetailView: View {
                 prayerButton(.before)
                 psalmsList(for: c)
                 prayerButton(.after)
-                disclaimerFooter
             }
             .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
             .padding(.vertical, 16)
@@ -170,17 +169,6 @@ struct LifeCaseDetailView: View {
         .accessibilityLabel("Tehilim \(p.id)")
         .accessibilityHint("Ouvre la lecture")
         .accessibilityAddTraits(.isButton)
-    }
-
-    @ViewBuilder
-    private var disclaimerFooter: some View {
-        Text("Tradition. Ne remplace pas un avis professionnel.")
-            .font(.footnote)
-            .foregroundStyle(.tertiary)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity)
-            .padding(.top, 8)
-            .padding(.bottom, 16)
     }
 
     // V1.10.7 — localisé via L() (Text(stringVar) ne passe pas par

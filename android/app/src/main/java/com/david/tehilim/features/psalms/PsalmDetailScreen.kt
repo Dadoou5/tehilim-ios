@@ -189,6 +189,21 @@ fun PsalmDetailScreen(
         ) {
             item { IluyNishmatBanner() }
 
+            // Numéro du Tehilim toujours visible dans le contenu (le titre de la
+            // barre peut être tronqué par les boutons sur petit écran).
+            item {
+                Column(
+                    Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(stringResource(R.string.label_psalm_number, psalm.id),
+                        style = MaterialTheme.typography.titleMedium)
+                    Text(psalm.hebrewNumber,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+
             // Inline translation toggle button (visible sur tablette, mirror V1.10.1 iOS)
             if (isTablet) {
                 item {

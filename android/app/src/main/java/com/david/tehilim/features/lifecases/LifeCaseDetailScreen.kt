@@ -147,19 +147,6 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
                     onClick = { presentedPrayer = Prayer.Kind.AFTER }
                 )
             }
-
-            // Disclaimer footer
-            item {
-                Text(
-                    stringResource(R.string.msg_tradition_disclaimer),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 16.dp)
-                )
-            }
         }
 
         // Sheet prière

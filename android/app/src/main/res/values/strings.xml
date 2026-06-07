@@ -87,6 +87,7 @@
     <string name="label_letters_count">%1$d lettres</string>
     <string name="label_psalm_with_id">Tehilim %1$d</string>
     <string name="label_psalm_with_hebrew">Tehilim %1$d · %2$s</string>
+    <string name="label_psalm_number">Tehilim %1$d</string>
     <string name="label_psalm_only_number">Tehilim %1$d</string>
     <string name="label_psalm_button">Tehilim %1$d </string>
     <string name="label_psalm_button_prev">" Tehilim %1$d"</string>

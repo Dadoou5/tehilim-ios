@@ -73,6 +73,18 @@ struct PsalmDetailView: View {
                     inlineTranslationToggle
                 }
 
+                // Numéro du Tehilim toujours visible dans le contenu (le titre de
+                // la barre peut être tronqué par les boutons sur petit écran).
+                VStack(spacing: 1) {
+                    Text("Tehilim \(psalm.id)")
+                        .font(.headline)
+                    Text(psalm.hebrewNumber)
+                        .font(.subheadline).foregroundStyle(.secondary)
+                        .environment(\.layoutDirection, .rightToLeft)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 4)
+
                 if let title = psalm.hebrewTitle {
                     Text(title)
                         .font(.hebrewTitle())

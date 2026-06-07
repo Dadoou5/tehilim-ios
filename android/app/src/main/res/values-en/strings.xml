@@ -212,6 +212,9 @@
     <string name="enum_textsize_medium">Medium</string>
     <string name="enum_textsize_large">Large</string>
     <string name="enum_textsize_xlarge">Very large</string>
+    <string name="enum_textsize_xxlarge">Huge</string>
+    <string name="enum_textsize_xxxlarge">Giant</string>
+    <string name="enum_textsize_xxxxlarge">Maximum</string>
 
     <string name="enum_versestyle_hebrew">Hebrew</string>
     <string name="enum_versestyle_arabic">Numeric</string>

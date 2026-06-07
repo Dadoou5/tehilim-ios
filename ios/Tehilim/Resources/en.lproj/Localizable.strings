@@ -45,6 +45,9 @@
 "Moyen" = "Medium";
 "Grand" = "Large";
 "Très grand" = "Very large";
+"Énorme" = "Huge";
+"Géant" = "Giant";
+"Maximum" = "Maximum";
 "Taille du texte" = "Text size";
 "Réduire le texte" = "Decrease text";
 "Agrandir le texte" = "Increase text";

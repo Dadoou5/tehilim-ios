@@ -24,27 +24,33 @@ enum AppTheme: String, Codable, CaseIterable, Identifiable {
 }
 
 enum TextSize: String, Codable, CaseIterable, Identifiable {
-    case xs, s, m, l, xl
+    case xs, s, m, l, xl, xxl, xxxl, xxxxl
     var id: String { rawValue }
 
     /// Échelle relative — appliquée à la taille de base de chaque famille.
     var scale: CGFloat {
         switch self {
-        case .xs: return 0.85
-        case .s:  return 0.93
-        case .m:  return 1.00
-        case .l:  return 1.18
-        case .xl: return 1.40
+        case .xs:    return 0.85
+        case .s:     return 0.93
+        case .m:     return 1.00
+        case .l:     return 1.18
+        case .xl:    return 1.40
+        case .xxl:   return 1.65
+        case .xxxl:  return 1.95
+        case .xxxxl: return 2.30
         }
     }
 
     var label: String {
         switch self {
-        case .xs: return L("Très petit")
-        case .s:  return L("Petit")
-        case .m:  return L("Moyen")
-        case .l:  return L("Grand")
-        case .xl: return L("Très grand")
+        case .xs:    return L("Très petit")
+        case .s:     return L("Petit")
+        case .m:     return L("Moyen")
+        case .l:     return L("Grand")
+        case .xl:    return L("Très grand")
+        case .xxl:   return L("Énorme")
+        case .xxxl:  return L("Géant")
+        case .xxxxl: return L("Maximum")
         }
     }
 

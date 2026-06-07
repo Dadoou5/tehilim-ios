@@ -47,7 +47,10 @@ enum class TextSize(val scale: Float, @StringRes val labelRes: Int) {
     SMALL(0.95f, R.string.enum_textsize_small),
     MEDIUM(1.0f, R.string.enum_textsize_medium),
     LARGE(1.15f, R.string.enum_textsize_large),
-    XLARGE(1.30f, R.string.enum_textsize_xlarge);
+    XLARGE(1.30f, R.string.enum_textsize_xlarge),
+    XXLARGE(1.50f, R.string.enum_textsize_xxlarge),
+    XXXLARGE(1.75f, R.string.enum_textsize_xxxlarge),
+    XXXXLARGE(2.00f, R.string.enum_textsize_xxxxlarge);
 
     /** Pas suivant / précédent borné (pour les contrôles A− / A+ en lecture). */
     fun stepped(delta: Int): TextSize =

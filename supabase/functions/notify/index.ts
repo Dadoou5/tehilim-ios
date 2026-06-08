@@ -6,7 +6,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 // Corps reçu : { event, value, chainName, chainId?, tokens:[{token,platform,locale}], delayMs? }
 //   event ∈ 'threshold' (value=70|80|90) | 'complete' | 'distribute_prompt'
 //         | 'distributed' | 'selection_reminder' | 'final_reminder'
-//         | 'selection_extended' | 'deleted'
+//         | 'selection_extended' | 'auto_extended' | 'deleted'
 //   chainId : relayé en clé custom APNs / data FCM → tap ouvre l'écran de la chaîne
 //   delayMs : attente avant envoi (ex. invitation à distribuer 3 s après le 100 %)
 // Secrets (Edge Function → Settings → Secrets) :
@@ -118,6 +118,14 @@ function messageFor(event: string, value: number | null, chainName: string, loca
       body: en
         ? `“${chainName}”: more time to pick your Tehilim`
         : `« ${chainName} » : plus de temps pour choisir vos Tehilim`,
+    };
+  }
+  if (event === "auto_extended") {
+    return {
+      title: en ? "Selection extended +3h ⏰" : "Sélection prolongée de 3 h ⏰",
+      body: en
+        ? `“${chainName}”: ${value} Tehilim still free — 3 extra hours to pick`
+        : `« ${chainName} » : ${value} Tehilim encore libres — 3 h de plus pour choisir`,
     };
   }
   return {

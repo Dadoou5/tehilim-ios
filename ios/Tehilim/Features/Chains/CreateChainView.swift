@@ -19,8 +19,6 @@ struct CreateChainView: View {
     @State private var readingDeadline: Date
     @State private var selectionDeadline: Date
     @State private var creatorName: String
-    /// 0 = illimité. Borne le nombre de participants (capacité / fan-out).
-    @State private var participantLimit: Int = 0
 
     @State private var isCreating = false
     @State private var errorMessage: String?
@@ -91,22 +89,11 @@ struct CreateChainView: View {
 
                 if !isEditing {
                     Section {
-                        Picker("Participants max", selection: $participantLimit) {
-                            Text("Illimité").tag(0)
-                            Text("10").tag(10)
-                            Text("25").tag(25)
-                            Text("50").tag(50)
-                        }
-                    } footer: {
-                        Text("Limiter le nombre de participants garde la chaîne réactive. « Illimité » convient pour les petites chaînes entre proches.")
-                    }
-
-                    Section {
                         TextField("Ton nom (visible de tous)", text: $creatorName)
                     } header: {
                         Text("Toi")
                     } footer: {
-                        Text("Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture.")
+                        Text("Jusqu'à 50 participants par chaîne. Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture.")
                     }
                 }
 
@@ -162,8 +149,7 @@ struct CreateChainView: View {
                     detail: detail.trimmingCharacters(in: .whitespaces),
                     selectionDuration: TimeInterval(selectionHours) * 3600,
                     readingDeadline: readingDeadline,
-                    creatorName: creatorName.trimmingCharacters(in: .whitespaces),
-                    participantLimit: participantLimit == 0 ? nil : participantLimit)
+                    creatorName: creatorName.trimmingCharacters(in: .whitespaces))
                 container.chainArchive.remember(id)
                 isCreating = false
                 dismiss()
@@ -171,7 +157,11 @@ struct CreateChainView: View {
             }
         } catch {
             isCreating = false
-            errorMessage = isEditing ? "Enregistrement impossible." : "Création impossible. Vérifie ta connexion."
+            if "\(error)".contains("TOO_MANY_OPEN_CHAINS") {
+                errorMessage = "Tu as déjà 2 chaînes en cours de sélection. Termine-les avant d'en créer une autre."
+            } else {
+                errorMessage = isEditing ? "Enregistrement impossible." : "Création impossible. Vérifie ta connexion."
+            }
         }
     }
 }

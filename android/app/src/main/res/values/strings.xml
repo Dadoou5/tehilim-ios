@@ -436,4 +436,6 @@
     <string name="reading_text_larger">Agrandir le texte</string>
     <string name="chain_participant_limit">Participants max</string>
     <string name="chain_participant_unlimited">Illimité</string>
+    <string name="chain_participant_cap_note">Jusqu\u0027à 50 participants par chaîne.</string>
+    <string name="chain_too_many_open">Tu as déjà 2 chaînes en cours de sélection. Termine-les avant d\u0027en créer une autre.</string>
 </resources>

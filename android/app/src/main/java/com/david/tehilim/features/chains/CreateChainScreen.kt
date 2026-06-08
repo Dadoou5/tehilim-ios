@@ -28,7 +28,6 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Button
@@ -83,7 +82,6 @@ fun CreateChainScreen(
     var detail by remember { mutableStateOf(editing?.intentionDetail ?: "") }
     var creatorName by remember { mutableStateOf(editing?.creatorName ?: "") }
     var selectionHours by remember { mutableStateOf(24) }
-    var participantLimit by remember { mutableStateOf(0) }   // 0 = illimité
     var readingDeadline by remember {
         mutableStateOf(editing?.readingDeadlineMillis ?: (System.currentTimeMillis() + 7L * 24 * 3600 * 1000))
     }
@@ -98,6 +96,7 @@ fun CreateChainScreen(
     val durations = listOf(1, 3, 6, 12, 24, 48, 72)
     val df = remember { DateFormat.getDateInstance(DateFormat.MEDIUM) }
     val errCreate = stringResource(R.string.chain_create_error)
+    val errTooMany = stringResource(R.string.chain_too_many_open)
     val canCreate = if (isEditing) {
         name.isNotBlank() && readingDeadline > selectionDeadline && !creating
     } else {
@@ -203,22 +202,14 @@ fun CreateChainScreen(
             }
 
             if (!isEditing) {
-                SectionTitle(stringResource(R.string.chain_participant_limit), Icons.Outlined.People)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(0, 10, 25, 50).forEach { v ->
-                        FilterChip(
-                            selected = participantLimit == v,
-                            onClick = { participantLimit = v },
-                            label = { Text(if (v == 0) stringResource(R.string.chain_participant_unlimited) else "$v") }
-                        )
-                    }
-                }
-
                 OutlinedTextField(
                     value = creatorName, onValueChange = { creatorName = it },
                     label = { Text(stringResource(R.string.chain_your_name_all)) },
                     singleLine = true, modifier = Modifier.fillMaxWidth()
                 )
+                Text(stringResource(R.string.chain_participant_cap_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             error?.let {
@@ -248,14 +239,13 @@ fun CreateChainScreen(
                                     detail = detail.trim(),
                                     selectionDurationMillis = selectionHours * 3600_000L,
                                     readingDeadlineMillis = readingDeadline,
-                                    creatorName = creatorName.trim(),
-                                    participantLimit = if (participantLimit == 0) null else participantLimit
+                                    creatorName = creatorName.trim()
                                 )
                                 container.chainArchive.remember(id)
                                 onCreated(id)
                             }
                         } catch (e: Exception) {
-                            error = errCreate
+                            error = if ((e.message ?: "").contains("TOO_MANY_OPEN_CHAINS")) errTooMany else errCreate
                         } finally {
                             creating = false
                         }

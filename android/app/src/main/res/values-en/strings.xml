@@ -436,4 +436,6 @@
     <string name="reading_text_larger">Increase text</string>
     <string name="chain_participant_limit">Max participants</string>
     <string name="chain_participant_unlimited">Unlimited</string>
+    <string name="chain_participant_cap_note">Up to 50 participants per chain.</string>
+    <string name="chain_too_many_open">You already have 2 chains in the selection phase. Finish them before creating another.</string>
 </resources>

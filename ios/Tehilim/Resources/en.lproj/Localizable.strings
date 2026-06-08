@@ -456,3 +456,7 @@
 "Lien copié" = "Link copied";
 "QR code d'invitation" = "Invitation QR code";
 "Partage le QR code ou le lien — chacun rejoint la chaîne et choisit les Tehilim qu'il lira." = "Share the QR code or the link — everyone joins the chain and picks the Tehilim they'll read.";
+"Chaîne complète." = "Chain is full.";
+"Participants max" = "Max participants";
+"Illimité" = "Unlimited";
+"Limiter le nombre de participants garde la chaîne réactive. « Illimité » convient pour les petites chaînes entre proches." = "Limiting the number of participants keeps the chain responsive. “Unlimited” is fine for small chains among close ones.";

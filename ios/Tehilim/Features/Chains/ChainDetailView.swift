@@ -525,7 +525,9 @@ struct ChainDetailView: View {
         do {
             try await container.chains.join(chainId: chainId, name: name)
             joinedName = name   // bascule optimiste en participant
-        } catch { errorMessage = "Impossible de rejoindre." }
+        } catch {
+            errorMessage = "\(error)".contains("CHAIN_FULL") ? "Chaîne complète." : "Impossible de rejoindre."
+        }
     }
 
     private func leave() async {

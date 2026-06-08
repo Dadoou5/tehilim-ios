@@ -434,4 +434,6 @@
     <string name="reading_text_size">Taille du texte</string>
     <string name="reading_text_smaller">Réduire le texte</string>
     <string name="reading_text_larger">Agrandir le texte</string>
+    <string name="chain_participant_limit">Participants max</string>
+    <string name="chain_participant_unlimited">Illimité</string>
 </resources>

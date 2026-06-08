@@ -51,7 +51,8 @@ final class ChainService {
         detail: String,
         selectionDuration: TimeInterval,
         readingDeadline: Date,
-        creatorName: String
+        creatorName: String,
+        participantLimit: Int? = nil
     ) async throws -> String {
         guard let client else { throw ChainError.notConfigured }
         _ = try await ensureSignedIn()
@@ -63,7 +64,8 @@ final class ChainService {
             p_creator_name: creatorName,
             p_selection_deadline: Self.iso(now.addingTimeInterval(selectionDuration)),
             p_reading_deadline: Self.iso(readingDeadline),
-            p_expires_at: Self.iso(readingDeadline.addingTimeInterval(Self.expiryGraceSeconds))
+            p_expires_at: Self.iso(readingDeadline.addingTimeInterval(Self.expiryGraceSeconds)),
+            p_participant_limit: participantLimit
         )
         // RPC atomique : crée la chaîne + le créateur-participant, renvoie l'id.
         let newId: String = try await client.rpc("create_chain", params: params).execute().value
@@ -251,6 +253,7 @@ final class ChainService {
         let p_selection_deadline: String
         let p_reading_deadline: String
         let p_expires_at: String
+        let p_participant_limit: Int?
     }
     private struct AssignRemainingParams: Encodable, Sendable {
         let p_chain_id: String

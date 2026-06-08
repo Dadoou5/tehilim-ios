@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -77,7 +78,8 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         detail: String,
         selectionDurationMillis: Long,
         readingDeadlineMillis: Long,
-        creatorName: String
+        creatorName: String,
+        participantLimit: Int? = null
     ): String {
         val c = client ?: error("Supabase non configuré")
         ensureSignedIn()
@@ -92,6 +94,8 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
             put("p_selection_deadline", iso(now + selectionDurationMillis))
             put("p_reading_deadline", iso(readingDeadlineMillis))
             put("p_expires_at", iso(readingDeadlineMillis + EXPIRY_GRACE_MILLIS))
+            if (participantLimit != null) put("p_participant_limit", participantLimit)
+            else put("p_participant_limit", JsonNull)
         }
         return c.postgrest.rpc("create_chain", params).decodeAs<String>()
     }

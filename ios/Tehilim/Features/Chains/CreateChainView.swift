@@ -19,6 +19,8 @@ struct CreateChainView: View {
     @State private var readingDeadline: Date
     @State private var selectionDeadline: Date
     @State private var creatorName: String
+    /// 0 = illimité. Borne le nombre de participants (capacité / fan-out).
+    @State private var participantLimit: Int = 0
 
     @State private var isCreating = false
     @State private var errorMessage: String?
@@ -89,6 +91,17 @@ struct CreateChainView: View {
 
                 if !isEditing {
                     Section {
+                        Picker("Participants max", selection: $participantLimit) {
+                            Text("Illimité").tag(0)
+                            Text("10").tag(10)
+                            Text("25").tag(25)
+                            Text("50").tag(50)
+                        }
+                    } footer: {
+                        Text("Limiter le nombre de participants garde la chaîne réactive. « Illimité » convient pour les petites chaînes entre proches.")
+                    }
+
+                    Section {
                         TextField("Ton nom (visible de tous)", text: $creatorName)
                     } header: {
                         Text("Toi")
@@ -149,7 +162,8 @@ struct CreateChainView: View {
                     detail: detail.trimmingCharacters(in: .whitespaces),
                     selectionDuration: TimeInterval(selectionHours) * 3600,
                     readingDeadline: readingDeadline,
-                    creatorName: creatorName.trimmingCharacters(in: .whitespaces))
+                    creatorName: creatorName.trimmingCharacters(in: .whitespaces),
+                    participantLimit: participantLimit == 0 ? nil : participantLimit)
                 container.chainArchive.remember(id)
                 isCreating = false
                 dismiss()

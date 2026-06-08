@@ -468,7 +468,10 @@ fun ChainDetailScreen(container: AppContainer, chainId: String, navController: N
                                     uid = container.chains.currentUid
                                     joinedName = n   // bascule optimiste en participant
                                 }
-                                .onFailure { error = it.message ?: "Impossible de rejoindre." }
+                                .onFailure {
+                                    error = if ((it.message ?: "").contains("CHAIN_FULL"))
+                                        "Chaîne complète." else "Impossible de rejoindre."
+                                }
                         }
                     }
                 ) { Text(stringResource(R.string.chain_join)) }

@@ -454,11 +454,23 @@ final class ChainSession: ObservableObject {
         start()
     }
 
-    /// Charge l'état puis attache l'écoute realtime (idempotent).
+    /// Charge l'état puis, **uniquement si la sélection est ouverte**, attache
+    /// l'écoute realtime (idempotent).
     func start() {
-        guard channel == nil, let client = SupabaseManager.shared.client else { return }
+        guard channel == nil, SupabaseManager.shared.client != nil else { return }
+        tasks.append(Task { [weak self] in
+            await self?.reloadAll()
+            self?.attachRealtimeIfSelecting()
+        })
+    }
 
-        tasks.append(Task { [weak self] in await self?.reloadAll() })
+    /// N'ouvre une connexion Realtime **que pendant la phase de sélection**.
+    /// En lecture / terminée, l'état est figé → le fetch ponctuel de `reloadAll`
+    /// suffit et **aucune connexion n'est maintenue** (économie de connexions
+    /// simultanées = capacité). Un refetch a lieu au retour au premier plan.
+    private func attachRealtimeIfSelecting() {
+        guard channel == nil, let client = SupabaseManager.shared.client else { return }
+        guard let chain, chain.isSelectionOpen() else { return }
 
         let channel = client.realtimeV2.channel("chain:\(chainId)")
         self.channel = channel
@@ -471,10 +483,8 @@ final class ChainSession: ObservableObject {
             AnyAction.self, schema: "public", table: "chain_assignments", filter: "chain_id=eq.\(chainId)")
 
         tasks.append(Task { await channel.subscribe() })
-        // `chains` : évènement rare (création/distribution/prolongation/suppression)
-        // → un refetch suffit. Les tables chaudes (participants, assignments)
-        // appliquent des **deltas** issus du payload Realtime, sans refetch :
-        // c'est ce qui supprime la « tempête » de requêtes pendant la sélection.
+        // `chains` : évènement rare → un refetch suffit. Les tables chaudes
+        // (participants, assignments) appliquent des **deltas** sans refetch.
         tasks.append(Task { [weak self] in
             for await _ in chainChanges { await self?.reloadChain() }
         })

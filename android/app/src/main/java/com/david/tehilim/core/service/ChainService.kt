@@ -235,6 +235,15 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
             .decodeList<AssignmentRow>().associate { it.psalmId to toAssignment(it) }
     }
 
+    /** True si la chaîne est en phase de sélection → on maintient une connexion
+     *  Realtime. En lecture/terminée, l'état est figé : aucun socket maintenu
+     *  (le fetch initial suffit), ce qui réduit fortement les connexions
+     *  simultanées et augmente la capacité. */
+    private suspend fun isSelectionOpen(chainId: String): Boolean {
+        val c = runCatching { fetchChain(chainId) }.getOrNull() ?: return false
+        return !c.distributed && System.currentTimeMillis() < c.selectionDeadlineMillis
+    }
+
     // MARK: - Flows temps réel (Supabase Realtime)
     // Sur chaque évènement realtime de la table, on recharge la collection
     // concernée (SELECT léger) : simple, robuste, adapté à l'échelle. Quand le
@@ -273,10 +282,11 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         }
         launch {
             runCatching {
-                ensureSignedIn(); channel.subscribe()
+                ensureSignedIn()
                 state.clear()
                 fetchParticipants(chainId).forEach { state[it.uid.lowercase()] = it }
                 emit()
+                if (isSelectionOpen(chainId)) channel.subscribe()   // socket : sélection uniquement
             }
         }
         awaitClose {
@@ -309,10 +319,11 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         }
         launch {
             runCatching {
-                ensureSignedIn(); channel.subscribe()
+                ensureSignedIn()
                 state.clear()
                 fetchBoard(chainId).forEach { (k, v) -> state[k] = v }
                 emit()
+                if (isSelectionOpen(chainId)) channel.subscribe()   // socket : sélection uniquement
             }
         }
         awaitClose {
@@ -343,8 +354,8 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         launch {
             runCatching {
                 ensureSignedIn()
-                channel.subscribe()
                 trySend(fetch())   // état initial
+                if (isSelectionOpen(chainId)) channel.subscribe()   // socket : sélection uniquement
             }
         }
         awaitClose {

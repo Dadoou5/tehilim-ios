@@ -1,6 +1,12 @@
 # Tehilim Android
 
-Port Android du projet iOS Tehilim — même corpus, même design, **fonctionnalité iso** avec V1.10.5 iOS.
+Port Android du projet iOS Tehilim — même corpus, même design, **parité fonctionnelle** avec iOS (V1.14.0 · versionCode 48).
+
+Inclut la **Chaîne de Tehilim** (collaboratif, backend Supabase + notifications FCM)
+et le réglage de **taille du texte en lecture**. Voir `../docs/V1.14_CHAIN.md` et
+`../docs/supabase-setup.md`. Config backend hors dépôt : `app/supabase.properties`
+(+ `app/google-services.json` pour FCM) ; absente → la chaîne est désactivée et
+l'app reste 100 % locale.
 
 ## 🏗️ Stack technique
 

@@ -2,10 +2,12 @@
 
 Applications natives dédiées à la lecture quotidienne et contextuelle des Tehilim.
 
-- **iOS** : SwiftUI · iOS 17+ — V1.10.6 publiée sur l'App Store.
-- **Android** : Jetpack Compose · Material 3 · min SDK 26 (Android 8) — V1.3.12 en cours.
+- **iOS** : SwiftUI · iOS 17+ — V1.14.0 (build 65).
+- **Android** : Jetpack Compose · Material 3 · min SDK 26 (Android 8) — V1.14.0 (versionCode 48).
 
-> Sobre, premium, hors-ligne, sans collecte de données. Le texte est l'objet principal. UI bilingue **FR + EN** (texte hébreu + translittération + traduction).
+> Sobre, premium, le texte comme objet principal. UI bilingue **FR + EN** (hébreu + translittération + traduction).
+>
+> **La lecture reste 100 % locale et sans collecte** (corpus embarqué, préférences sur l'appareil). Une **fonctionnalité collaborative optionnelle** — la **Chaîne de Tehilim** — repose, elle seule, sur un backend **Supabase** (Postgres + Realtime + auth anonyme + notifications push) et ne stocke que ce que l'utilisateur saisit pour participer (prénom d'affichage + intention), supprimé automatiquement après la lecture. Voir [Confidentialité](#confidentialité).
 
 ---
 
@@ -30,14 +32,15 @@ Applications natives dédiées à la lecture quotidienne et contextuelle des Teh
 ### Lecture des Tehilim
 - 150 psaumes en **hébreu vocalisé** (nikud, sans téamim) + traduction française.
 - Mode **phonétique sépharade** activable (transcription algorithmique avec règles Tetragrammaton, ḥiriq-yod, etc.).
-- Tailles de texte hébreu et français **paramétrables séparément** (XS → XL, AAA contraste).
+- Tailles de texte hébreu et français **paramétrables séparément** (8 paliers : Très petit → Maximum), réglables **en cours de lecture** via le bouton « Aa » (popover/menu A− / A+, persisté) — disponible aussi sur les sections du Tehilim 119 et la lecture depuis une chaîne.
+- **Numéro du Tehilim toujours visible** dans le contenu (en plus du titre de la barre).
 - Numérotation des versets en lettres hébraïques ou chiffres arabes.
 - Mode clair / sombre / système.
 - Navigation prev/next **contextuelle** : depuis Favoris ou Cas de la vie, on reste dans la liste correspondante.
 
 ### Découverte
 - **5 livres** classiques (1–41 / 42–72 / 73–89 / 90–106 / 107–150).
-- **17 cas de la vie** organisés en 4 sections (Cycle de vie, Santé et épreuves, Spiritualité, Communauté et calendrier) avec **validation rabbinique reçue**.
+- **18 cas de la vie** (dont **Réussite**) organisés en 4 sections (Cycle de vie, Santé et épreuves, Spiritualité, Communauté et calendrier) avec **validation rabbinique reçue**.
 - **Tehilim 119** par 22 lettres de l'alphabet hébreu.
 - **Tikkoun HaKlali** (Rabbi Nachman de Breslev — 10 psaumes).
 
@@ -60,6 +63,16 @@ Applications natives dédiées à la lecture quotidienne et contextuelle des Teh
 - **Rappel quotidien** paramétrable (heure choisie, deep link vers Aujourd'hui).
 - **Widget WidgetKit** « Tehilim du jour » 3 tailles (small/medium/large) avec date hébraïque, liste des psaumes du jour, mode actif.
 - **App Group** pour synchroniser le mode utilisateur entre l'app et le widget.
+
+### Chaîne de Tehilim (collaboratif — optionnel)
+Lecture collective des 150 Tehilim répartie entre participants, pour une intention (Lelouy Nichmat / Refoua Chelema / Réussite).
+- **Création** : intention + détail, durée de sélection, échéance de lecture ; partage par **lien WhatsApp** + **QR code** aux couleurs de l'app.
+- **Sélection en temps réel** : chacun rejoint avec un prénom, choisit les Tehilim qu'il s'engage à lire ; un Tehilim pris est **verrouillé** (PK exclusive côté Postgres). Sélection optimiste (réactivité immédiate).
+- **Liste « Mes chaînes »** en 3 catégories claires : **Sélection en cours** · **Lecture en cours** · **Terminées**, avec compte à rebours `HH:MM:SS` (gros + gras), bascule automatique et suppression locale.
+- **Maître de la chaîne** : éditer, **prolonger la sélection** (par durée, ≤ 48 h), m'attribuer les restants, **clôturer & distribuer**, retirer un participant, supprimer.
+- **Notifications push** (APNs + FCM) aux participants : seuils 70/80/90/100 %, distribution, suppression, rappels « il reste N à prendre » (80 %) et « dernière chance » (95 %), prolongation.
+- **Lecture hors-ligne** : une chaîne distribuée est mise en cache localement → on peut lire ses Tehilim en **mode avion**.
+- **Cycle de vie** : conservation Supabase jusqu'à *fin de lecture + 7 jours*, puis suppression automatique (pg_cron). L'app reste 100 % locale si le backend n'est pas configuré (dégradation propre).
 
 ### Onboarding
 - 3 écrans courts au premier lancement (skip-able), ne réapparait plus ensuite.
@@ -145,7 +158,7 @@ cd android
 | Domaine | iOS | Android | Notes |
 |---------|-----|---------|-------|
 | 150 psaumes HE + traduction | ✅ | ✅ | JSON `data/psalms.json` partagé |
-| Cas de la vie (17) | ✅ | ✅ | JSON `data/life_cases.json` partagé, EN inclus |
+| Cas de la vie (18) | ✅ | ✅ | JSON `data/life_cases.json` partagé, EN inclus |
 | Tehilim 119 (22 lettres) | ✅ | ✅ | Toggle traduction local en V1.3.12 |
 | Tikkoun HaKlali | ✅ | ✅ | |
 | Recherche tolérante FR/HE/mixte | ✅ | ✅ | |
@@ -157,6 +170,9 @@ cd android
 | Onboarding 1ʳᵉ utilisation | ✅ | ✅ | |
 | Iluy Nishmat dédicace | ✅ | ✅ | |
 | Lelouy Nichmat (séquences) | ✅ | ✅ | |
+| Taille du texte en lecture (Aa, 8 paliers) | ✅ | ✅ | Persistée via préférences |
+| **Chaîne de Tehilim** (collaboratif) | ✅ | ✅ | Backend Supabase ; QR + lien ; lecture hors-ligne |
+| Notifications push de chaîne | ✅ (APNs) | ✅ (FCM) | Via Edge Function `notify` |
 
 ### Spécificités Android
 - **Langue UI** : FR / EN / Système via `LocaleManager.applicationLocales` (API 33+, fallback `AppCompatDelegate` pour API 26–32). Voir `MainActivity.attachBaseContext()`.
@@ -242,6 +258,16 @@ cd android
 - `UserDefaults(suiteName: "group.com.david.tehilim")` → préférences partagées avec le widget (mode quotidien).
 - `Application Support/favorites.json` → favoris.
 - Bundle (read-only) → corpus JSON.
+- **Chaîne de Tehilim** → cache local des chaînes connues + instantané hors-ligne (`ChainArchiveStore`).
+
+**Backend (Chaîne de Tehilim uniquement)** — **Supabase** :
+- **Postgres** : `chains` / `chain_participants` / `chain_assignments` (PK `(chain_id, psalm_id)` = verrou exclusif) + `device_tokens`. RLS active.
+- **Realtime** : propagation live des sélections / participants.
+- **Auth** anonyme.
+- **Edge Function `notify`** (Deno) : envoi APNs + FCM, parallélisé, auto-purge des jetons morts.
+- **pg_cron** : rappels de sélection (toutes les 5 min) + nettoyage quotidien des chaînes expirées.
+- Config injectée hors dépôt (`Supabase-Info.plist` iOS / `supabase.properties` Android) ; absente → feature désactivée.
+- Migrations dans `supabase/migrations/`, fonction dans `supabase/functions/notify/`.
 
 ---
 
@@ -265,10 +291,13 @@ TEHILIM/
 │   ├── V1.2_NOTIFICATIONS.md         ← rappel quotidien
 │   ├── V1.4_QUICK_WINS.md            ← Tikkoun, partage, onboarding
 │   ├── V1.5_WIDGET.md                ← widget WidgetKit
-│   └── V1.6_APP_GROUP.md             ← partage app↔widget
+│   ├── V1.6_APP_GROUP.md             ← partage app↔widget
+│   ├── V1.14_CHAIN.md                ← Chaîne de Tehilim + lecture + cas de la vie
+│   ├── supabase-setup.md             ← config backend chaîne
+│   └── push-setup.md                 ← secrets APNs/FCM (Edge Function)
 ├── data/                             ← contenu JSON embarqué dans l'app
 │   ├── psalms.json                   ← 150 psaumes HE+FR (Sefaria + Beth Loubavitch)
-│   ├── life_cases.json               ← 17 catégories validées
+│   ├── life_cases.json               ← 18 cas validés (4 sections)
 │   ├── psalm_119_sections.json       ← 22 sections du Tehilim 119
 │   ├── daily_reading_rules.json      ← cycles mensuel + hebdo
 │   └── translations_fr.schema.json   ← schéma traductions
@@ -277,6 +306,10 @@ TEHILIM/
 │   ├── fetch_letehilim.py            ← Beth Loubavitch
 │   ├── merge_letehilim.py            ← merge des deux sources
 │   └── requirements.txt
+├── supabase/                         ← backend Chaîne de Tehilim (optionnel)
+│   ├── migrations/                   ← schéma Postgres + RLS + RPC + pg_cron
+│   └── functions/notify/             ← Edge Function push (APNs + FCM)
+├── android/                          ← port Jetpack Compose (parité iOS)
 └── ios/
     ├── Tehilim/                      ← target principal
     │   ├── App/                      ← TehilimApp, AppContainer, RootTabView, TabRouter
@@ -379,15 +412,20 @@ Tests manuels documentés dans :
 
 ---
 
-## Confidentialité
+### Lecture (cœur de l'app)
+- **Aucune donnée personnelle collectée**, **aucun tracker / analytics**, **aucune connexion réseau** nécessaire.
+- Préférences et favoris stockés **localement** (UserDefaults / Application Support ; DataStore côté Android), avec synchronisation **iCloud KVS** des favoris/Lelouy Nichmat (gérée par Apple, hors de portée de l'éditeur).
+- Le rappel quotidien est une **notification locale**.
 
-- **Aucune donnée personnelle collectée.**
-- **Aucun tracker, aucune analytics.**
-- **Aucune connexion réseau** nécessaire au fonctionnement principal.
-- Toutes les préférences et favoris sont stockés **localement** (UserDefaults / Application Support).
-- Les notifications sont **locales** (pas de push remote).
+### Chaîne de Tehilim (collaboratif, opt-in)
+La seule fonctionnalité qui sort de l'appareil. Elle utilise **Supabase** :
+- **Auth anonyme** (identifiant aléatoire par appareil, aucun compte, aucun e-mail).
+- Données stockées **uniquement le temps de la chaîne** : prénom d'affichage choisi, type + détail d'intention, sélection des Tehilim, jeton de notification push de l'appareil.
+- **Suppression automatique** *fin de lecture + 7 jours* (pg_cron) ; un participant peut retirer une chaîne de sa liste à tout moment.
+- Sécurité serveur par **Row Level Security** (un utilisateur n'écrit que ses propres données ; verrou exclusif par Tehilim).
+- Si le backend n'est pas configuré dans la build, la feature est **désactivée** et l'app reste 100 % locale.
 
-Détails dans `Réglages → Confidentialité` de l'app et `docs/07-qa/ACCESSIBILITY.md`.
+Détails complets : [`PRIVACY.md`](./PRIVACY.md), `docs/V1.14_CHAIN.md`, `docs/supabase-setup.md`.
 
 ---
 
@@ -395,7 +433,7 @@ Détails dans `Réglages → Confidentialité` de l'app et `docs/07-qa/ACCESSIBI
 
 ✅ **Validation reçue** par le porteur projet (2026-05-08) sur :
 - Découpages des cycles mensuel et hebdomadaire.
-- Liste des 17 catégories "cas de la vie" et leurs Tehilim associés.
+- Liste des cas "cas de la vie" et leurs Tehilim associés (18 cas en V1.14).
 - Choix du tétragramme rendu par "Adonaï" en phonétique.
 
 Les notes éditoriales **ne contiennent aucune promesse** (médicale, juridique, financière, psychologique). Détails dans `docs/05-content/content_validation_notes.md`.

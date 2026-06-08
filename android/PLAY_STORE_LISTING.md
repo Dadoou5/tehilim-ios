@@ -2,6 +2,11 @@
 
 Premier upload Play Console — V1.4 dev tracker (versionCode=1, versionName="1.0.0").
 
+> **Maj :** version en cours **V1.14.0 (versionCode 48)**. Les textes ci-dessous
+> (premier upload) restent valables ; pour intégrer la **Chaîne de Tehilim** et le
+> réglage de taille du texte à la description, voir `../AppStoreListing.md`
+> (section chaîne FR/EN) et `../docs/V1.14_CHAIN.md`. What's New : `../RELEASE_NOTES.md`.
+
 ---
 
 ## 1. Identité de l'app

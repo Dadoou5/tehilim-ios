@@ -78,3 +78,8 @@ docs/push-activation-email.md
 # Ancienne config Firebase (conservée sur la branche `firebase`)
 ios/Tehilim/Resources/GoogleService-Info.plist
 android/app/google-services.json
+
+# Test de charge (secrets/identités/artefacts — ne pas committer)
+tests/load/.env
+tests/load/tokens.json
+tests/load/results/

@@ -1,5 +1,42 @@
 # Notes de version Tehilim
 
+## V1.14.0 — juin 2026 (iOS build 65 · Android versionCode 48) — Chaîne de Tehilim + lecture améliorée
+
+### Chaîne de Tehilim (nouveau, collaboratif)
+Lecture collective des 150 Tehilim répartie entre participants, pour une intention
+(Lelouy Nichmat / Refoua Chelema / Réussite). Backend **Supabase** (Postgres +
+Realtime + auth anonyme), activé uniquement si l'utilisateur crée/rejoint une chaîne.
+- Création (intention, durée de sélection, échéance de lecture) + partage **lien
+  WhatsApp** et **QR code** aux couleurs de l'app.
+- Sélection **temps réel** avec verrou exclusif par Tehilim ; bascule participant optimiste.
+- Liste **« Mes chaînes »** en 3 catégories : **Sélection en cours · Lecture en
+  cours · Terminées**, compte à rebours `HH:MM:SS`, bascule automatique, suppression locale.
+- Maître : éditer, **prolonger la sélection** (par durée ≤ 48 h), m'attribuer les
+  restants, **clôturer & distribuer**, retirer un participant, supprimer.
+- **Notifications push** (APNs + FCM) : seuils 70/80/90/100 %, distribution,
+  suppression, rappels « restants » (80 %) et « dernière chance » (95 %), prolongation.
+- **Lecture hors-ligne** d'une chaîne distribuée (mode avion).
+- Suppression serveur automatique *fin de lecture + 7 jours* (pg_cron).
+
+### Lecture
+- **Taille du texte réglable en cours de lecture** : bouton « Aa » (A− / A+),
+  persisté, sur un Tehilim, les sections du Tehilim 119 et la lecture depuis une
+  chaîne. **8 paliers** (Très petit → Maximum).
+- **Numéro du Tehilim toujours visible** dans le contenu ; compte à rebours fiable.
+
+### Cas de la vie
+- Nouveau cas **« Réussite »** (section Santé et épreuves).
+- Notes recentrées : retrait des mentions « Tradition. » et de tous les
+  avertissements « ne remplace pas un avis… » ; formulations religieuses pour
+  « Avant un procès » et « Inquiétude ».
+
+### Sous le capot
+- Migration de l'infra collaborative **Firebase → Supabase**.
+- Icône de lancement et logo QR non rognés (zone de sécurité adaptive) ; petite
+  icône de notification dédiée (fiabilité OEM).
+
+---
+
 ## V1.10.6 — 18 mai 2026 (build 23) — Stabilité App Group + politique de confidentialité
 
 ### Communication app ↔ widget plus robuste

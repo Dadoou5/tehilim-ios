@@ -15,7 +15,24 @@
 2. **Modularité par feature** : chaque feature autonome.
 3. **Une seule source de vérité par domaine** : `PsalmRepository` est unique.
 4. **Pas d'over-engineering** : pas de Redux, pas de Combine massif. `@Observable` (Observation framework iOS 17) pour ViewModels.
-5. **Pas de réseau** en V1.
+5. **Offline-first par défaut, réseau opt-in** : seule la **Chaîne de Tehilim**
+   (collaboratif, depuis V1.14) sort de l'appareil. Le reste de l'app n'effectue
+   aucune connexion réseau. *(Historique : « Pas de réseau » en V1.)*
+
+## Backend Chaîne de Tehilim (V1.14, optionnel)
+
+La feature collaborative repose sur **Supabase** ; désactivée si la config n'est
+pas présente dans la build (dégradation propre → app 100 % locale).
+
+- **Postgres** : `chains`, `chain_participants`, `chain_assignments`
+  (PK `(chain_id, psalm_id)` = verrou exclusif), `device_tokens`. **RLS** active.
+- **Auth anonyme** (identifiant par appareil, aucun compte).
+- **Realtime** (postgres changes) → refetch des collections.
+- **Edge Function `notify`** (Deno) : push APNs + FCM, parallélisé, purge des jetons morts.
+- **pg_cron** : rappels de sélection (5 min) + nettoyage quotidien (*fin de lecture + 7 j*).
+- Clients : `ChainService` (iOS supabase-swift / Android supabase-kt), API UI
+  identique ; `ChainArchiveStore` (cache + lecture hors-ligne).
+  Détails : `../V1.14_CHAIN.md`, `../supabase-setup.md`.
 
 ## Diagramme
 

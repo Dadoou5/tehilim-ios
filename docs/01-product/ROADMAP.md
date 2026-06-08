@@ -81,3 +81,24 @@
 - **V1.0 Go** : licence traduction OU décision de partir hébreu seul + corpus relu humainement.
 - **V2.0 Go** : ≥ 5 000 utilisateurs actifs + retours réels.
 - **V3.0 Go** : équipe ≥ 2 personnes ou contributions externes.
+
+---
+
+## V1.14 — Chaîne de Tehilim + lecture (livrée) — iOS build 65 · Android vc 48
+
+- **Chaîne de Tehilim** (collaboratif) : création, partage lien WhatsApp + QR,
+  sélection temps réel (verrou exclusif par Tehilim), liste « Mes chaînes » en 3
+  catégories (Sélection / Lecture / Terminées) avec compte à rebours, prolongation
+  de la sélection, clôture & distribution, retrait de participant, suppression.
+- **Backend Supabase** : Postgres + RLS + Realtime + auth anonyme + Edge Function
+  `notify` (APNs + FCM) + pg_cron (rappels 5 min, nettoyage quotidien +7 j).
+- **Notifications push** participants (seuils 70/80/90/100 %, distribution,
+  suppression, rappels 80 %/95 %, prolongation).
+- **Lecture hors-ligne** d'une chaîne distribuée (mode avion).
+- **Lecture** : réglage de taille du texte en cours de lecture (bouton « Aa »,
+  8 paliers, persisté) ; numéro du Tehilim toujours visible.
+- **Cas de la vie** : ajout « Réussite » (18 cas) ; notes recentrées (retrait des
+  disclaimers, textes religieux pour « Avant un procès » et « Inquiétude »).
+- Migration de l'infra collaborative **Firebase → Supabase**.
+
+> Détails : `../V1.14_CHAIN.md`.

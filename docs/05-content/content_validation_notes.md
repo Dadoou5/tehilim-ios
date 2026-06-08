@@ -81,3 +81,18 @@ Validation rabbinique reçue sur :
 ## Responsabilité
 
 Le porteur projet (David) est responsable de la signature de la validation rabbinique. Aucune publication App Store ne peut se faire sans cette signature documentée.
+
+---
+
+## Addendum V1.14 — Cas de la vie
+
+- **18 cas** désormais (ajout de **Réussite** — section « Santé et épreuves »,
+  Tehilim 1·20·57·90·112·121). Données : `data/life_cases.json` v1.3.0.
+- **Notes éditoriales recentrées** (décision porteur projet) : retrait du préfixe
+  « Tradition. » et de **tous** les avertissements « ne remplace pas un avis… »
+  (professionnel / médical / juridique / psychologique). Le footer disclaimer
+  global a été supprimé de l'écran d'un cas.
+- Reformulations **religieuses** pour « Avant un procès » (justice et miséricorde
+  du Ciel) et « Inquiétude » (apaiser le cœur, bitahon) ; disclaimer médical
+  retiré de « Pour avoir des enfants » (bénédiction conservée).
+- Les autres notes conservent leur contenu factuel, sans le préfixe « Tradition. ».

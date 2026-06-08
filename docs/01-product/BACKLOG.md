@@ -60,3 +60,18 @@ Format : `As a <user>, I want <goal>, so that <reason>` — Priorité (P0/P1/P2)
 - **US-80** [P0/M] As a user, I want the app to work fully offline (Hebrew corpus).
 - **US-81** [P0/S] As a user, I want the app < 1.5s cold start.
 - **US-82** [P1/S] As a user, I don't want any tracker / analytics without consent.
+
+## EPIC : Chaîne de Tehilim (collaboratif) — livré V1.14
+
+- **US-CH01** [P1/L] As a user, I want to create a chain for an intention and share it (WhatsApp link + QR), so that others can join. ✅
+- **US-CH02** [P1/M] As a participant, I want to join with a display name and pick the Tehilim I commit to read, in real time, so that the 150 get covered. ✅
+- **US-CH03** [P1/M] As a participant, I want a taken Tehilim to be locked, so that there is no double booking. ✅
+- **US-CH04** [P1/M] As the chain owner, I want to extend the selection, assign the rest, close & distribute, and remove a participant. ✅
+- **US-CH05** [P1/M] As a participant, I want push notifications about progress (thresholds, distribution, reminders). ✅
+- **US-CH06** [P1/M] As a user, I want « My chains » grouped (Selection / Reading / Finished) with a live countdown and local delete. ✅
+- **US-CH07** [P1/M] As a participant, I want to read my Tehilim offline once the chain is distributed. ✅
+
+## EPIC : Lecture — additions V1.14
+
+- **US-RD10** [P1/S] As a reader, I want to change text size while reading (Aa, A−/A+), persisted, so that I read comfortably. ✅
+- **US-RD11** [P2/S] As a reader, I want the Tehilim number always visible in the content. ✅

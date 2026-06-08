@@ -83,3 +83,20 @@
 - [ ] Privacy : "Data not collected".
 - [ ] Pas de tracker SDK.
 - [ ] Build TestFlight signé et installable.
+
+## Chaîne de Tehilim (V1.14)
+- [ ] Créer une chaîne → partage lien WhatsApp + QR (logo non rogné).
+- [ ] Rejoindre depuis un autre appareil (prénom) → bascule participant immédiate.
+- [ ] Sélection temps réel ; un Tehilim pris est verrouillé pour les autres.
+- [ ] « Mes chaînes » : 3 catégories correctes + compte à rebours qui défile.
+- [ ] Distribution → quitte « Sélection en cours » ; fin de lecture → « Terminées ».
+- [ ] Prolonger la sélection (durée ≤ 48 h) → rappels réarmés + re-notif.
+- [ ] Notifications push reçues (seuils, distribution, rappels) iOS + Android.
+- [ ] Lecture hors-ligne d'une chaîne distribuée (mode avion).
+- [ ] Suppression locale (Lecture / Terminées) ; suppression chaîne par le maître.
+- [ ] Build sans config backend → chaîne absente, app 100 % locale OK.
+
+## Lecture (V1.14)
+- [ ] Bouton « Aa » présent (Tehilim, sections 119, lecteur de chaîne).
+- [ ] Taille persistée et synchronisée avec Réglages ; 8 paliers.
+- [ ] Numéro du Tehilim visible dans le contenu.

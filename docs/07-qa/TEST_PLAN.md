@@ -69,3 +69,27 @@ Mode avion ON pendant tous les tests fonctionnels — comportement identique att
 - Sévérité : Blocker / Critical / Major / Minor / Cosmetic.
 - Tout bug sécurité (rare ici) → patch immédiat.
 - Tout bug de contenu (texte hébreu erroné) → escalade humaine + patch immédiat.
+
+## Addendum V1.14 — Chaîne de Tehilim (réseau / temps réel / push)
+
+- **Multi-appareils** : 2 simulateurs/devices ouvrant la même chaîne via le lien →
+  vérifier join, sélection, verrou (un Tehilim pris ne peut l'être 2×), compteurs
+  et compte à rebours qui se propagent en temps réel.
+- **Catégories** : distribution → quitte « Sélection en cours » ; échéance de
+  lecture atteinte → bascule « Terminées » (recalcul live).
+- **Prolongation** : repousse l'échéance, réarme les rappels, re-notifie ;
+  l'invitation redevient possible.
+- **Notifications push** : seuils 70/80/90/100 %, distribution, suppression,
+  rappels 80 %/95 % (vérifier la livraison APNs + FCM ; petite icône correcte).
+- **Hors-ligne** : chaîne distribuée ouverte une fois en ligne → lisible en mode
+  avion via le lecteur hors-ligne.
+- **Dégradation** : build sans config Supabase → la chaîne est absente, le reste
+  de l'app fonctionne.
+- **Sécurité** : RLS (un user n'écrit que ses données ; double-booking refusé).
+- **Confidentialité** : suppression automatique *fin de lecture + 7 j* ; retrait
+  local d'une chaîne.
+
+## Addendum V1.14 — Lecture
+- Bouton « Aa » : A−/A+ borné (8 paliers), persistant, présent sur Tehilim,
+  sections 119 et lecteur de chaîne.
+- Numéro du Tehilim visible ; compte à rebours qui défile y compris au retour sur l'écran.

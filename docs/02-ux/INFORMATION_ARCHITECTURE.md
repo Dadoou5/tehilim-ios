@@ -69,3 +69,24 @@ Le Psaume 119 est accessible via Accueil + via l'onglet Tehilim (carte spéciale
 - **Niveau 2** : Listes (livres, catégories, lettres, jours).
 - **Niveau 3** : Détail d'un psaume.
 - **Modal / sheet** : Recherche, sélecteur de mode quotidien, sélecteur de taille texte.
+
+## Addendum V1.14 — Chaîne de Tehilim
+
+```
+Cas de la vie / Accueil
+└── Chaîne de Tehilim
+    ├── Mes chaînes
+    │   ├── Sélection en cours   (compte à rebours → fin de sélection)
+    │   ├── Lecture en cours      (compte à rebours → fin de lecture)
+    │   └── Terminées             (suppression locale ; Lecture aussi)
+    ├── Créer une chaîne          (intention, durées) → partage lien/QR
+    └── Détail d'une chaîne
+        ├── En-tête (intention, compte à rebours, participants, progression)
+        ├── Inviter (lien WhatsApp + QR)   [tant que sélection ouverte]
+        ├── Grille 1→150 (filtres Tous/Libres/À moi ; sélection temps réel)
+        ├── Contrôles maître (éditer · prolonger · attribuer · distribuer · retirer · supprimer)
+        └── Lecteur hors-ligne (chaîne distribuée → mes Tehilim)
+```
+
+Lecture (transverse) : bouton « Aa » (taille du texte) dans la barre de lecture
+d'un Tehilim, des sections du Tehilim 119, et du lecteur de chaîne.

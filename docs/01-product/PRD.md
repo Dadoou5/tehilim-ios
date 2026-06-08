@@ -119,3 +119,31 @@ Hypothèse : majorité d'utilisateurs francophones. Validation humaine requise s
 - La traduction française n'est pas bloquante pour la sortie : le texte hébreu seul a une valeur produit.
 - Les utilisateurs accepteront de choisir explicitement leur mode de "Tehilim du jour".
 - Les cas de la vie peuvent être présentés sans promesse, en tant que tradition.
+
+---
+
+## Addendum V1.14 — Chaîne de Tehilim (collaboratif)
+
+**Statut : livré** (iOS build 65 · Android versionCode 48).
+
+### Objectif
+Permettre la lecture collective des 150 Tehilim répartie entre des participants
+(qui ne se connaissent pas forcément), pour une intention commune (Lelouy Nichmat,
+Refoua Chelema, Réussite). Seule fonctionnalité de l'app nécessitant un réseau ;
+opt-in et désactivable (dégradation propre → app 100 % locale).
+
+### Exigences clés
+- Création d'une chaîne (intention, durée de sélection, échéance de lecture),
+  partage par lien WhatsApp + QR code de marque.
+- Sélection temps réel ; **un Tehilim pris est verrouillé** (unicité garantie
+  serveur, PK `(chain_id, psalm_id)`).
+- Rôle **maître** : éditer, prolonger la sélection (par durée ≤ 48 h), attribuer
+  les restants, clôturer & distribuer, retirer un participant, supprimer.
+- **Notifications push** d'avancement aux participants.
+- **Lecture hors-ligne** d'une chaîne distribuée.
+- **Confidentialité** : données minimales (prénom d'affichage, intention,
+  répartition, jeton push), supprimées *fin de lecture + 7 j*. Cf. `PRIVACY.md`.
+
+### Hors-périmètre (assumé V1.14)
+- Pas de compte/identité réelle (auth anonyme).
+- Une seule personne par Tehilim (verrou exclusif).

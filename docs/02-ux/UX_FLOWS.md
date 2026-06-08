@@ -132,3 +132,27 @@ OU :
 - Geste retour iOS standard partout.
 - Toolbar minimale dans le détail (favori + traduction + partage V2).
 - Pas de pop-up de demande de notes / d'avis → respect du lecteur.
+
+## Flow — Chaîne de Tehilim (V1.14)
+
+```
+[Créer une chaîne] (intention + durées)
+   │ créer
+   ▼
+[Détail chaîne] ──partage──> lien WhatsApp / QR code
+   │
+   ├─ (autre appareil) ouvre le lien ─> [Détail] ─ "Rejoindre" (prénom) ─> participant
+   │      │ tap numéro libre ─> verrouillé à mon nom (temps réel)
+   │
+   ├─ (maître) "Prolonger la sélection" (durée ≤ 48 h)
+   │           "M'attribuer les restants" / "Clôturer & distribuer"
+   ▼
+[Distribuée] ─ notifications push aux participants
+   │ tap un de mes Tehilim ─> [Détail psaume] (lecture)
+   │ (hors-ligne) Mes chaînes ─> lecteur hors-ligne ─> lecture
+   ▼
+[Fin de lecture +7 j] ─ suppression serveur automatique
+```
+
+Catégorisation « Mes chaînes » : Sélection en cours → (distribution OU échéance)
+→ Lecture en cours → (échéance de lecture) → Terminées (bascule automatique).

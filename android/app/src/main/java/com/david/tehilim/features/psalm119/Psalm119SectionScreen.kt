@@ -122,6 +122,12 @@ fun Psalm119SectionScreen(
                             tint = if (showFR) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                         )
                     }
+                    com.david.tehilim.features.psalms.ReadingTextSizeButton(
+                        container = container,
+                        textSizeHebrew = textSizeHebrew,
+                        textSizeFR = textSizeFR,
+                        includeTranslation = showFR
+                    )
                 }
             )
         }

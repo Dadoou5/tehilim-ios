@@ -12,6 +12,8 @@ import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
+import io.github.jan.supabase.realtime.decodeOldRecordOrNull
+import io.github.jan.supabase.realtime.decodeRecordOrNull
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.CoroutineScope
@@ -236,14 +238,84 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
     // Lifecycle), `awaitClose` se déclenche → on retire le canal (= écoute
     // coupée, équivalent du start/stop iOS et de l'optimisation quota).
 
+    // `chains` : évènement rare → un refetch suffit. Les tables chaudes
+    // (participants, assignments) appliquent des **deltas** issus du payload
+    // Realtime (sans refetch) → supprime la « tempête » de requêtes pendant la
+    // sélection. Resync complet à chaque (ré)abonnement (sécurité reconnexion).
     fun chainFlow(chainId: String): Flow<TehilimChain?> =
         realtimeFlow(chainId, CHAINS, "id", null) { fetchChain(chainId) }
 
-    fun participantsFlow(chainId: String): Flow<List<ChainParticipant>> =
-        realtimeFlow(chainId, PARTICIPANTS, "chain_id", emptyList()) { fetchParticipants(chainId) }
+    fun participantsFlow(chainId: String): Flow<List<ChainParticipant>> = callbackFlow {
+        val c = client
+        if (c == null) { trySend(emptyList()); close(); return@callbackFlow }
+        val state = LinkedHashMap<String, ChainParticipant>()   // uid → participant
+        fun emit() { trySend(state.values.sortedBy { it.joinedAtMillis }) }
+        val channel = c.channel("rt:participants:$chainId:${System.nanoTime()}")
+        val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = PARTICIPANTS; filter("chain_id", FilterOperator.EQ, chainId)
+        }
+        val collectJob = launch {
+            changes.collect { action ->
+                when (action) {
+                    is PostgresAction.Insert -> action.decodeRecordOrNull<ParticipantRow>()
+                        ?.let { state[it.uid.lowercase()] = toParticipant(it); emit() }
+                    is PostgresAction.Update -> action.decodeRecordOrNull<ParticipantRow>()
+                        ?.let { state[it.uid.lowercase()] = toParticipant(it); emit() }
+                    is PostgresAction.Delete -> action.decodeOldRecordOrNull<ParticipantKey>()
+                        ?.let { if (state.remove(it.uid.lowercase()) != null) emit() }
+                    else -> {}
+                }
+            }
+        }
+        launch {
+            runCatching {
+                ensureSignedIn(); channel.subscribe()
+                state.clear()
+                fetchParticipants(chainId).forEach { state[it.uid.lowercase()] = it }
+                emit()
+            }
+        }
+        awaitClose {
+            collectJob.cancel()
+            CoroutineScope(Dispatchers.Default).launch { runCatching { c.realtime.removeChannel(channel) } }
+        }
+    }
 
-    fun boardFlow(chainId: String): Flow<Map<Int, ChainAssignment>> =
-        realtimeFlow(chainId, ASSIGNMENTS, "chain_id", emptyMap()) { fetchBoard(chainId) }
+    fun boardFlow(chainId: String): Flow<Map<Int, ChainAssignment>> = callbackFlow {
+        val c = client
+        if (c == null) { trySend(emptyMap()); close(); return@callbackFlow }
+        val state = HashMap<Int, ChainAssignment>()   // psalmId → attribution
+        fun emit() { trySend(state.toMap()) }
+        val channel = c.channel("rt:assignments:$chainId:${System.nanoTime()}")
+        val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+            table = ASSIGNMENTS; filter("chain_id", FilterOperator.EQ, chainId)
+        }
+        val collectJob = launch {
+            changes.collect { action ->
+                when (action) {
+                    is PostgresAction.Insert -> action.decodeRecordOrNull<AssignmentRow>()
+                        ?.let { state[it.psalmId] = toAssignment(it); emit() }
+                    is PostgresAction.Update -> action.decodeRecordOrNull<AssignmentRow>()
+                        ?.let { state[it.psalmId] = toAssignment(it); emit() }
+                    is PostgresAction.Delete -> action.decodeOldRecordOrNull<AssignmentKey>()
+                        ?.let { if (state.remove(it.psalmId) != null) emit() }
+                    else -> {}
+                }
+            }
+        }
+        launch {
+            runCatching {
+                ensureSignedIn(); channel.subscribe()
+                state.clear()
+                fetchBoard(chainId).forEach { (k, v) -> state[k] = v }
+                emit()
+            }
+        }
+        awaitClose {
+            collectJob.cancel()
+            CoroutineScope(Dispatchers.Default).launch { runCatching { c.realtime.removeChannel(channel) } }
+        }
+    }
 
     private fun <T> realtimeFlow(
         chainId: String,
@@ -352,6 +424,13 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         @SerialName("by_creator") val byCreator: Boolean = false,
         @SerialName("assigned_at") val assignedAt: String? = null
     )
+
+    // Clés minimales pour les évènements DELETE (oldRecord = PK uniquement en
+    // REPLICA IDENTITY par défaut).
+    @Serializable
+    private data class AssignmentKey(@SerialName("psalm_id") val psalmId: Int)
+    @Serializable
+    private data class ParticipantKey(val uid: String)
 
     @Serializable
     private data class ParticipantUpsert(

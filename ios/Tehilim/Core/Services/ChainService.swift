@@ -332,6 +332,46 @@ final class ChainService {
         )
     }
 
+    // MARK: - Décodage des deltas Realtime (DTO/mappers privés → modèles)
+
+    private static let rtDecoder = JSONDecoder()
+    private struct AssignmentKey: Decodable { let psalm_id: Int }
+    private struct ParticipantKey: Decodable { let uid: String }
+
+    /// INSERT/UPDATE d'une attribution → (psalmId, modèle). nil sinon.
+    func parsedAssignment(from action: AnyAction) -> (psalmId: Int, value: ChainAssignment)? {
+        let row: AssignmentRow?
+        switch action {
+        case .insert(let a): row = try? a.decodeRecord(decoder: Self.rtDecoder)
+        case .update(let a): row = try? a.decodeRecord(decoder: Self.rtDecoder)
+        default: row = nil
+        }
+        guard let r = row else { return nil }
+        return (r.psalm_id, Self.assignment(from: r))
+    }
+    /// DELETE d'une attribution → psalmId (PK dans oldRecord). nil sinon.
+    func deletedAssignmentPsalmId(from action: AnyAction) -> Int? {
+        guard case .delete(let a) = action,
+              let k: AssignmentKey = try? a.decodeOldRecord(decoder: Self.rtDecoder) else { return nil }
+        return k.psalm_id
+    }
+    /// INSERT/UPDATE d'un participant → modèle. nil sinon.
+    func parsedParticipant(from action: AnyAction) -> ChainParticipant? {
+        let row: ParticipantRow?
+        switch action {
+        case .insert(let a): row = try? a.decodeRecord(decoder: Self.rtDecoder)
+        case .update(let a): row = try? a.decodeRecord(decoder: Self.rtDecoder)
+        default: row = nil
+        }
+        return row.map { Self.participant(from: $0) }
+    }
+    /// DELETE d'un participant → uid (PK dans oldRecord). nil sinon.
+    func deletedParticipantUid(from action: AnyAction) -> String? {
+        guard case .delete(let a) = action,
+              let k: ParticipantKey = try? a.decodeOldRecord(decoder: Self.rtDecoder) else { return nil }
+        return k.uid.lowercased()
+    }
+
     // MARK: - Dates (Postgres timestamptz ↔ Date)
 
     private static let isoFractional: ISO8601DateFormatter = {
@@ -428,15 +468,41 @@ final class ChainSession: ObservableObject {
             AnyAction.self, schema: "public", table: "chain_assignments", filter: "chain_id=eq.\(chainId)")
 
         tasks.append(Task { await channel.subscribe() })
+        // `chains` : évènement rare (création/distribution/prolongation/suppression)
+        // → un refetch suffit. Les tables chaudes (participants, assignments)
+        // appliquent des **deltas** issus du payload Realtime, sans refetch :
+        // c'est ce qui supprime la « tempête » de requêtes pendant la sélection.
         tasks.append(Task { [weak self] in
             for await _ in chainChanges { await self?.reloadChain() }
         })
         tasks.append(Task { [weak self] in
-            for await _ in partChanges { await self?.reloadParticipants() }
+            for await change in partChanges { await self?.applyParticipant(change) }
         })
         tasks.append(Task { [weak self] in
-            for await _ in asgChanges { await self?.reloadAssignments() }
+            for await change in asgChanges { await self?.applyAssignment(change) }
         })
+    }
+
+    // MARK: - Application des deltas Realtime (sans refetch)
+    // Le décodage vit dans ChainService (qui détient les DTO/mappers privés) ;
+    // ici on ne fait que muter l'état publié.
+
+    private func applyAssignment(_ action: AnyAction) {
+        if let id = service.deletedAssignmentPsalmId(from: action) {
+            assignments.removeValue(forKey: id)
+        } else if let pair = service.parsedAssignment(from: action) {
+            assignments[pair.psalmId] = pair.value
+        }
+    }
+
+    private func applyParticipant(_ action: AnyAction) {
+        if let uid = service.deletedParticipantUid(from: action) {
+            participants.removeAll { $0.id == uid }
+        } else if let p = service.parsedParticipant(from: action) {
+            if let i = participants.firstIndex(where: { $0.id == p.id }) { participants[i] = p }
+            else { participants.append(p) }
+            participants.sort { $0.joinedAt < $1.joinedAt }
+        }
     }
 
     /// Détache l'écoute (arrière-plan / écran fermé).

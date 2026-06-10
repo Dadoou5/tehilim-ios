@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Tehilim — Chaîne de Tehilim</title>
+
+<!-- Aperçu enrichi (WhatsApp / Mail / iMessage) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tehilim">
+<meta property="og:title" content="Chaîne de Tehilim">
+<meta property="og:description" content="Rejoins la chaîne et choisis les Tehilim que tu t'engages à lire.">
+<meta property="og:image" content="https://tehilimapp.com/c/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Chaîne de Tehilim">
+<meta name="twitter:description" content="Rejoins la chaîne et choisis les Tehilim que tu liras.">
+<meta name="twitter:image" content="https://tehilimapp.com/c/og.png">
+<link rel="icon" href="https://tehilimapp.com/icon.png">
+<link rel="apple-touch-icon" href="https://tehilimapp.com/icon.png">
+
+<style>
+  :root {
+    --bg: #f7f3ec; --surface: #ffffff; --text: #2b2620;
+    --muted: #8a8276; --accent: #b8893b; --accent-d: #9a7330;
+    --border: rgba(0,0,0,.08); --track: rgba(184,137,59,.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#15120d; --surface:#1f1b14; --text:#efe8da; --muted:#a89c87;
+            --accent:#d6a85a; --accent-d:#c0954a; --border: rgba(255,255,255,.10);
+            --track: rgba(214,168,90,.18); }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body { margin:0; height:100%; }
+  body {
+    background: linear-gradient(160deg, var(--bg), color-mix(in srgb, var(--bg) 85%, #000));
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px; min-height: 100%;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 22px; padding: 32px 26px; max-width: 430px; width: 100%;
+    text-align: center; box-shadow: 0 18px 50px rgba(0,0,0,.12);
+  }
+  .appicon {
+    width: 78px; height: 78px; border-radius: 18px;
+    box-shadow: 0 8px 22px rgba(0,0,0,.20); display:block; margin: 0 auto 4px;
+  }
+  .kind {
+    display:inline-block; margin-top: 14px; padding: 5px 14px; border-radius: 999px;
+    background: var(--accent); color: #fff; font-size: 13px; font-weight: 600; letter-spacing:.3px;
+  }
+  .title { font-size: 26px; font-weight: 700; margin: 16px 0 2px; line-height: 1.25; }
+  .heb { direction: rtl; color: var(--accent); font-size: 20px; margin: 0 0 8px; font-weight: 600; }
+  .lead { color: var(--muted); font-size: 15px; margin: 14px 4px 18px; line-height: 1.5; }
+
+  /* Motif « 150 Tehilim » : barre d'accent + libellé */
+  .chain { margin: 18px 0 22px; }
+  .bar { height: 10px; border-radius: 999px; background: var(--track); overflow: hidden; }
+  .bar > i {
+    display:block; height:100%; width: 62%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-d));
+    border-radius: 999px;
+  }
+  .bar-label { display:flex; justify-content:space-between; margin-top: 8px;
+               color: var(--muted); font-size: 12.5px; }
+  .bar-label b { color: var(--text); font-weight: 700; }
+
+  .btn {
+    display:block; width:100%; padding: 15px 18px; border-radius: 14px;
+    font-size: 16px; font-weight: 600; text-decoration:none; border:none; cursor:pointer;
+  }
+  .btn-primary { background: var(--accent); color:#fff; }
+  .btn-primary:active { background: var(--accent-d); }
+  .stores { margin-top: 18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .store {
+    color: var(--accent); text-decoration:none; font-size: 14px; font-weight: 600;
+    padding: 9px 14px; border:1px solid var(--border); border-radius: 12px;
+  }
+  .foot { margin-top: 22px; color: var(--muted); font-size: 12px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+  <main class="card">
+    <img class="appicon" src="https://tehilimapp.com/icon.png" alt="Tehilim" width="78" height="78">
+    <div class="kind" id="kind">Chaîne de Tehilim</div>
+    <h1 class="title" id="title">Chaîne de Tehilim</h1>
+    <div class="heb">תהילים</div>
+
+    <p class="lead" id="lead">Rejoins la chaîne et choisis les Tehilim que tu t'engages à lire.</p>
+
+    <div class="chain">
+      <div class="bar"><i></i></div>
+      <div class="bar-label"><span id="barLeft">Lecture collective</span><span><b>150</b>&nbsp;<span id="barRight">Tehilim</span></span></div>
+    </div>
+
+    <a class="btn btn-primary" id="open" href="#">Rejoindre dans Tehilim</a>
+
+    <div class="stores">
+      <a class="store" id="appstore" href="#">App&nbsp;Store</a>
+      <a class="store" id="playstore"
+         href="https://play.google.com/store/apps/details?id=app.tehilim">Google&nbsp;Play</a>
+    </div>
+
+    <p class="foot" id="foot">Si rien ne se passe, installe Tehilim puis rouvre ce lien.</p>
+  </main>
+
+<script>
+(function () {
+  var APPLE_APP_ID = "6768043533";
+  var T = {
+    fr: { lead:"Rejoins la chaîne et choisis les Tehilim que tu t'engages à lire.",
+          open:"Rejoindre dans Tehilim", foot:"Si rien ne se passe, installe Tehilim puis rouvre ce lien.",
+          invalid:"Lien de chaîne invalide (identifiant manquant).",
+          left:"Lecture collective", right:"Tehilim" },
+    en: { lead:"Join the chain and pick the Tehilim you'll read.",
+          open:"Join in Tehilim", foot:"If nothing happens, install Tehilim then reopen this link.",
+          invalid:"Invalid chain link (missing id).",
+          left:"Group reading", right:"Tehilim" }
+  };
+  var lang = (navigator.language || "fr").slice(0,2) === "en" ? "en" : "fr";
+  var t = T[lang]; document.documentElement.lang = lang;
+
+  var id = (new URLSearchParams(location.search).get("id") || "").trim();
+  document.getElementById("appstore").href = "https://apps.apple.com/app/tehilim/id" + APPLE_APP_ID;
+  document.getElementById("lead").textContent = t.lead;
+  document.getElementById("open").textContent = t.open;
+  document.getElementById("foot").textContent = t.foot;
+  document.getElementById("barLeft").textContent = t.left;
+  document.getElementById("barRight").textContent = t.right;
+
+  if (!id) {
+    document.getElementById("title").textContent = t.invalid;
+    document.getElementById("kind").classList.add("hidden");
+    document.getElementById("open").classList.add("hidden");
+    return;
+  }
+
+  var deepLink = "tehilim://chain?id=" + encodeURIComponent(id);
+  var openBtn = document.getElementById("open");
+  openBtn.href = deepLink;
+  openBtn.addEventListener("click", function (e) { e.preventDefault(); window.location.href = deepLink; });
+  setTimeout(function () { window.location.href = deepLink; }, 350);
+})();
+</script>
+</body>
+</html>

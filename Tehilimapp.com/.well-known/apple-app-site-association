@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "NFQ2Q87CV9.com.david.tehilim",
+        "paths": [ "/c/*", "/p/*" ]
+      }
+    ]
+  }
+}

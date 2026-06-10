@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1e6091">
+  <meta name="description" content="Politique de confidentialité de l'application Tehilim — Privacy Policy of the Tehilim app">
+  <title>Tehilim — Politique de confidentialité / Privacy Policy</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e6091'/%3E%3Ctext x='32' y='44' font-size='38' text-anchor='middle' fill='white' font-family='Georgia,serif'%3E%D7%AA%3C/text%3E%3C/svg%3E">
+
+  <style>
+    :root {
+      --bg: #f4f8fb;
+      --surface: #ffffff;
+      --text: #0f1f2e;
+      --text-muted: #5c6b7a;
+      --accent: #1e6091;
+      --accent-soft: #d6e8f3;
+      --border: #e1e9f0;
+      --shadow: 0 1px 3px rgba(15, 31, 46, 0.06), 0 4px 12px rgba(15, 31, 46, 0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1620;
+        --surface: #16222e;
+        --text: #e7eef4;
+        --text-muted: #9aa9b7;
+        --accent: #5eb1e0;
+        --accent-soft: #1c3447;
+        --border: #243341;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 17px;
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font-size: 36px;
+      font-family: Georgia, "Times New Roman", serif;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .lang-switch button {
+      background: transparent;
+      border: 0;
+      padding: 6px 14px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 7px;
+      transition: all 0.15s ease;
+    }
+
+    .lang-switch button.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .lang-switch button:not(.active):hover {
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+
+    main {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 32px 0 12px;
+      letter-spacing: -0.01em;
+    }
+
+    h2:first-child { margin-top: 0; }
+
+    p { margin: 0 0 14px; }
+
+    ul {
+      margin: 0 0 14px;
+      padding-left: 22px;
+    }
+
+    li { margin-bottom: 6px; }
+
+    a { color: var(--accent); }
+
+    .effective {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .contact-card {
+      margin-top: 24px;
+      padding: 16px 18px;
+      background: var(--accent-soft);
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .contact-card strong { display: block; margin-bottom: 4px; }
+
+    footer {
+      text-align: center;
+      margin-top: 32px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    footer a { text-decoration: none; }
+
+    [data-lang] { display: none; }
+    [data-lang].active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header>
+      <div class="logo">ת</div>
+      <h1>Tehilim</h1>
+      <p class="subtitle" data-lang="fr">Politique de confidentialité</p>
+      <p class="subtitle" data-lang="en">Privacy Policy</p>
+
+      <div class="lang-switch" role="tablist">
+        <button type="button" data-set-lang="fr" class="active">Français</button>
+        <button type="button" data-set-lang="en">English</button>
+      </div>
+    </header>
+
+    <main>
+
+      <!-- ============ FRANÇAIS ============ -->
+      <article data-lang="fr" class="active">
+        <span class="effective">Dernière mise à jour : 18 mai 2026</span>
+
+        <h2>Notre engagement</h2>
+        <p>L'application <strong>Tehilim</strong> (« l'application ») est conçue avec un principe simple : <strong>aucune donnée personnelle n'est collectée par l'éditeur, ni partagée avec qui que ce soit</strong>.</p>
+        <p>Cette politique explique en clair ce que fait — et ne fait pas — l'application avec tes données.</p>
+
+        <h2>Données collectées par l'éditeur</h2>
+        <p><strong>Aucune.</strong> L'application ne transmet à l'éditeur ni nom, ni email, ni adresse IP, ni identifiant d'appareil, ni donnée d'usage, ni statistique d'aucune sorte.</p>
+        <p>Il n'y a aucun système de compte, aucune connexion requise, aucun formulaire à remplir.</p>
+
+        <h2>Stockage local</h2>
+        <p>L'application stocke certaines préférences <strong>uniquement sur ton appareil</strong>, dans le sandbox iOS standard :</p>
+        <ul>
+          <li>Choix de langue (français, anglais, hébreu, système)</li>
+          <li>Taille du texte, thème (clair/sombre), mode hébreu/phonétique</li>
+          <li>Dernier Tehilim lu (pour la reprise de lecture)</li>
+          <li>Mode de lecture quotidienne (mensuel / hebdomadaire), partagé avec le widget via App Group, toujours local</li>
+          <li>Réglages des rappels quotidiens</li>
+        </ul>
+        <p>Ces données ne quittent jamais ton appareil par l'intermédiaire de l'éditeur.</p>
+
+        <h2>Synchronisation iCloud (depuis V1.10.5)</h2>
+        <p>Certaines données peuvent être synchronisées <strong>entre les appareils Apple connectés au même identifiant Apple</strong> via <strong>iCloud Key-Value Store</strong> (NSUbiquitousKeyValueStore). Cette synchronisation est gérée directement par Apple — <strong>l'éditeur n'a aucun accès à ce contenu</strong> :</p>
+        <ul>
+          <li><strong>Favoris</strong> (liste des Tehilim marqués ♡)</li>
+          <li><strong>Lelouy Nichmat sauvegardés</strong> (prénom, lien de parenté, prénom de la mère — saisis librement par l'utilisateur pour la lecture personnalisée)</li>
+        </ul>
+        <p>Cette synchronisation :</p>
+        <ul>
+          <li>utilise exclusivement l'infrastructure iCloud du compte Apple de l'utilisateur, chiffrée et opérée par Apple ;</li>
+          <li>ne quitte jamais l'écosystème Apple — aucun serveur de l'éditeur n'est impliqué ;</li>
+          <li>peut être désactivée en se déconnectant d'iCloud dans les Réglages iOS — l'application continue de fonctionner en local sans erreur ;</li>
+          <li>maintient un cache local en miroir pour le mode hors-ligne.</li>
+        </ul>
+        <p>Aucune information personnelle identifiante (identifiant Apple, email, nom complet, IDFA, etc.) n'est lue, exportée ou transmise par l'application.</p>
+
+        <h2>Notifications</h2>
+        <p>Si tu actives les rappels quotidiens, les notifications sont planifiées <strong>localement par iOS</strong> (UNUserNotificationCenter). Aucun serveur n'est impliqué. Aucune notification push n'est envoyée par nos soins.</p>
+
+        <h2>Widget</h2>
+        <p>Le widget « Tehilim du jour » lit les Tehilim assignés au jour courant depuis le corpus embarqué dans l'application. Aucune requête réseau n'est effectuée.</p>
+
+        <h2>Fonctionnement hors-ligne</h2>
+        <p>Le corpus complet (texte hébreu, traductions française et anglaise) est embarqué dans l'application au téléchargement. L'application ne fait <strong>aucune requête réseau</strong> après installation, jamais.</p>
+
+        <h2>Services tiers</h2>
+        <p><strong>Aucun.</strong> L'application n'utilise pas de SDK d'analyse, de tracking, de publicité ou de crash reporting. Aucun cookie, aucun pixel, aucun service tiers de quelque nature que ce soit.</p>
+
+        <h2>Sources du contenu</h2>
+        <p>Le contenu religieux affiché provient de sources tierces dûment créditées :</p>
+        <ul>
+          <li>Texte hébreu et traduction anglaise (JPS 1917) : <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> (licence CC-BY)</li>
+          <li>Traduction française : Beth Loubavitch — <a href="https://le-tehilim.online" target="_blank" rel="noopener">le-tehilim.online</a> (avec leur autorisation)</li>
+          <li>Police hébraïque Ezra SIL SR : <a href="https://software.sil.org/ezra/" target="_blank" rel="noopener">SIL International</a> (licence SIL OFL)</li>
+        </ul>
+        <p>Ces sources ne reçoivent aucune donnée te concernant — leur contenu est copié dans l'application au moment du build.</p>
+
+        <h2>Droits des utilisateurs (RGPD)</h2>
+        <p>L'éditeur ne collectant aucune donnée, les droits d'accès, de rectification ou de suppression exercés auprès de lui sont sans objet. Les données stockées localement et dans iCloud restent entièrement sous ton contrôle :</p>
+        <ul>
+          <li>Désinstaller l'application supprime les données locales.</li>
+          <li>Supprimer Tehilim depuis <strong>Réglages iOS → [ton nom] → iCloud → Gérer le stockage du compte → Tehilim</strong> supprime également les données synchronisées dans iCloud.</li>
+        </ul>
+
+        <h2>Enfants</h2>
+        <p>L'application convient à tous les publics (4+ sur l'App Store). Elle ne collecte aucune donnée d'aucun utilisateur, enfant ou adulte.</p>
+
+        <h2>Modifications</h2>
+        <p>Toute modification de cette politique sera publiée sur cette même page avec une nouvelle date de mise à jour. Aucun changement rétroactif ne peut affecter des données qui n'existent pas.</p>
+
+        <div class="contact-card">
+          <strong>Contact</strong>
+          Pour toute question, écris à <a href="mailto:david.bouganim@gmail.com">david.bouganim@gmail.com</a>.
+        </div>
+      </article>
+
+      <!-- ============ ENGLISH ============ -->
+      <article data-lang="en">
+        <span class="effective">Last updated: May 18, 2026</span>
+
+        <h2>Our commitment</h2>
+        <p>The <strong>Tehilim</strong> app ("the app") is built on a simple principle: <strong>no personal data is collected by the publisher, or shared with anyone</strong>.</p>
+        <p>This policy explains in plain language what the app does — and does not do — with your data.</p>
+
+        <h2>Data collected by the publisher</h2>
+        <p><strong>None.</strong> The app transmits no name, email, IP address, device identifier, usage data, or analytics of any kind to the publisher.</p>
+        <p>There is no account system, no sign-in required, no form to fill.</p>
+
+        <h2>Local storage</h2>
+        <p>The app stores some preferences <strong>only on your device</strong>, in the standard iOS sandbox:</p>
+        <ul>
+          <li>Language choice (French, English, Hebrew, system)</li>
+          <li>Text size, theme (light/dark), Hebrew/phonetic mode</li>
+          <li>Last Tehilim read (for resume reading)</li>
+          <li>Daily reading mode (monthly / weekly), shared with the widget via App Group, always local</li>
+          <li>Daily reminder settings</li>
+        </ul>
+        <p>This data never leaves your device through the publisher.</p>
+
+        <h2>iCloud sync (since V1.10.5)</h2>
+        <p>Some data may be synchronized <strong>across Apple devices signed in with the same Apple ID</strong> via <strong>iCloud Key-Value Store</strong> (NSUbiquitousKeyValueStore). This sync is handled directly by Apple — <strong>the publisher has no access to this content</strong>:</p>
+        <ul>
+          <li><strong>Favorites</strong> (list of Tehilim marked ♡)</li>
+          <li><strong>Saved Lelouy Nichmat</strong> (first name, relationship, mother's first name — freely entered by the user for personalized reading)</li>
+        </ul>
+        <p>This sync:</p>
+        <ul>
+          <li>uses only the iCloud infrastructure of the user's Apple account, encrypted and operated by Apple;</li>
+          <li>never leaves the Apple ecosystem — no publisher server is involved;</li>
+          <li>can be disabled by signing out of iCloud in iOS Settings — the app continues to work locally without errors;</li>
+          <li>keeps a local mirror cache for offline use.</li>
+        </ul>
+        <p>No identifying personal information (Apple ID, email, full name, IDFA, etc.) is read, exported, or transmitted by the app.</p>
+
+        <h2>Notifications</h2>
+        <p>If you enable daily reminders, notifications are scheduled <strong>locally by iOS</strong> (UNUserNotificationCenter). No server is involved. No push notifications are sent by us.</p>
+
+        <h2>Widget</h2>
+        <p>The "Today's Tehilim" widget reads the psalms assigned to the current day from the corpus embedded in the app. No network request is made.</p>
+
+        <h2>Offline operation</h2>
+        <p>The full corpus (Hebrew text, French and English translations) is bundled with the app at download. The app makes <strong>no network requests</strong> after install, ever.</p>
+
+        <h2>Third-party services</h2>
+        <p><strong>None.</strong> The app does not use any analytics SDK, tracking, advertising, or crash reporting. No cookies, no pixels, no third-party services whatsoever.</p>
+
+        <h2>Content sources</h2>
+        <p>The religious content displayed comes from properly credited third-party sources:</p>
+        <ul>
+          <li>Hebrew text and English translation (JPS 1917): <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> (CC-BY license)</li>
+          <li>French translation: Beth Loubavitch — <a href="https://le-tehilim.online" target="_blank" rel="noopener">le-tehilim.online</a> (with permission)</li>
+          <li>Hebrew font Ezra SIL SR: <a href="https://software.sil.org/ezra/" target="_blank" rel="noopener">SIL International</a> (SIL OFL license)</li>
+        </ul>
+        <p>These sources receive no data about you — their content is copied into the app at build time.</p>
+
+        <h2>User rights (GDPR / CCPA)</h2>
+        <p>Since the publisher collects no data, access, rectification, and deletion rights exercised against the publisher are moot. Data stored locally and in iCloud remains entirely under your control:</p>
+        <ul>
+          <li>Uninstalling the app deletes local data.</li>
+          <li>Removing Tehilim from <strong>iOS Settings → [your name] → iCloud → Manage Account Storage → Tehilim</strong> also deletes the synced iCloud data.</li>
+        </ul>
+
+        <h2>Children</h2>
+        <p>The app is suitable for all audiences (4+ on the App Store). It collects no data from any user, child or adult.</p>
+
+        <h2>Changes</h2>
+        <p>Any changes to this policy will be published on this same page with a new last-updated date. No retroactive change can affect data that does not exist.</p>
+
+        <div class="contact-card">
+          <strong>Contact</strong>
+          For any question, write to <a href="mailto:david.bouganim@gmail.com">david.bouganim@gmail.com</a>.
+        </div>
+      </article>
+
+    </main>
+
+    <footer>
+      <p>
+        <span data-lang="fr" class="active">Source ouvert sur</span>
+        <span data-lang="en">Open source on</span>
+        <a href="https://github.com/Dadoou5/tehilim-ios" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    (function () {
+      const buttons = document.querySelectorAll('[data-set-lang]');
+      const items = document.querySelectorAll('[data-lang]');
+
+      function setLang(lang) {
+        document.documentElement.lang = lang;
+        buttons.forEach(b => b.classList.toggle('active', b.dataset.setLang === lang));
+        items.forEach(el => el.classList.toggle('active', el.dataset.lang === lang));
+        try { localStorage.setItem('tehilim-privacy-lang', lang); } catch (e) {}
+      }
+
+      buttons.forEach(b => b.addEventListener('click', () => setLang(b.dataset.setLang)));
+
+      // Auto-detect on first visit
+      const saved = (() => { try { return localStorage.getItem('tehilim-privacy-lang'); } catch (e) { return null; } })();
+      const initial = saved || (navigator.language && navigator.language.startsWith('fr') ? 'fr' : 'en');
+      setLang(initial);
+    })();
+  </script>
+</body>
+</html>

@@ -5,6 +5,8 @@
       "namespace": "android_app",
       "package_name": "app.tehilim",
       "sha256_cert_fingerprints": [
+        "AF:E5:C9:76:1E:29:05:F1:51:3F:B4:0A:2E:9A:BA:94:D4:78:B8:8E:C1:AA:00:13:AF:3D:BC:08:92:B9:49:0B",
+        "D8:E9:2B:BA:44:09:B6:9F:E1:F7:F8:52:6F:08:52:1A:31:4C:9A:06:DB:A3:CA:C5:7D:CF:46:DB:6B:9C:DF:54",
         "57:B6:7F:6A:0C:1D:90:B1:ED:7A:73:A6:8A:35:3C:DD:46:EE:F7:40:B3:24:41:AD:4C:85:6B:A0:89:96:CD:EB"
       ]
     }

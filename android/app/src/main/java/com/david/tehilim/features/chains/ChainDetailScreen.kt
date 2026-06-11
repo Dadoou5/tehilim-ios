@@ -729,7 +729,7 @@ private fun ProgressCard(assignments: Map<Int, ChainAssignment>, participants: L
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 2.dp))
             // Barre segmentée par participant (apparition fluide de chaque segment).
-            Row(Modifier.fillMaxWidth().height(10.dp).padding(top = 8.dp).clip(RoundedCornerShape(5.dp))
+            Row(Modifier.fillMaxWidth().padding(top = 8.dp).height(10.dp).clip(RoundedCornerShape(5.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)) {
                 participants.forEachIndexed { i, p ->
                     val c = assignments.values.count { it.uid == p.uid }

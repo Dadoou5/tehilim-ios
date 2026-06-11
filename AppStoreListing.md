@@ -263,7 +263,86 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.14.0 (build 48) · Android versionCode 31
+## 📋 What's New / Nouveautés — V1.15.0 (build 67) · Android versionCode 50
+
+> Saut depuis la **V1.12.1** en production (mode Chabbat). Cette version regroupe
+> tout ce qui a suivi : la **Chaîne de Tehilim** (nouveauté majeure), une lecture
+> plus confortable (taille du texte réglable), le cas de la vie « Réussite », la
+> dédicace sur les partages, et de la fiabilité (notifications, compte à rebours).
+> Limite Apple : 4 000 caractères par locale.
+
+### 🇫🇷 — App Store / Play (grand public)
+```
+Cette mise à jour apporte une fonctionnalité majeure et de nombreuses améliorations.
+
+NOUVEAU — LA CHAÎNE DE TEHILIM 📿
+Lecture collective des 150 Tehilim en temps réel, pour une intention (Lelouy Nichmat, Refoua Chelema, ou la réussite d'un proche / d'Am Israël).
+• Invite tes proches par lien WhatsApp ou QR code.
+• Chacun rejoint et choisit les Tehilim qu'il s'engage à lire — en temps réel, sans doublon.
+• Grille des 150 Tehilim regroupée par les 5 livres et filtrable (tous / libres / les miens).
+• Vois qui lit quoi et l'avancement ; notifications quand la chaîne se remplit, est prolongée, distribuée ou complétée 🎉.
+• « Mes chaînes » classées en Sélection en cours · Lecture en cours · Terminées, avec compte à rebours.
+• Le créateur peut éditer, prolonger la sélection, retirer un participant, distribuer les Tehilim restants et partager le compte rendu.
+• Lis tes Tehilim assignés directement dans l'app, même hors-ligne.
+
+LECTURE PLUS CONFORTABLE
+• Taille du texte réglable pendant la lecture (bouton « Aa », A− / A+), mémorisée — 8 paliers, du très petit au très grand.
+• Disponible aussi dans les sections du Tehilim 119.
+• Le numéro du Tehilim reste toujours visible à l'écran.
+
+CAS DE LA VIE
+• Nouveau cas « Réussite ».
+• Textes recentrés sur la tradition pour plusieurs cas.
+
+PARTAGE
+• Les versets partagés (image et texte) portent désormais l'icône de l'app et la dédicace לעילוי נשמת.
+
+Et aussi : meilleure fiabilité des notifications, compte à rebours fluide et divers correctifs.
+
+Disponible en français et en anglais, optimisé iPhone et iPad.
+```
+
+### 🇬🇧 — App Store / Play (general public)
+```
+This update brings a major new feature and many improvements.
+
+NEW — THE TEHILIM CHAIN 📿
+Real-time group reading of the 150 Tehilim for an intention (Lelouy Nichmat, Refoua Chelema, or the success of a loved one / Am Israel).
+• Invite people via WhatsApp link or QR code.
+• Everyone joins and picks the Tehilim they commit to read — in real time, no duplicates.
+• The 150 Tehilim grid grouped by the 5 books and filterable (all / free / mine).
+• See who reads what and overall progress; notifications when the chain fills up, is extended, distributed or completed 🎉.
+• "My chains" sorted into In selection · Reading · Completed, each with a countdown.
+• The creator can edit, extend the selection, remove a participant, assign the remaining Tehilim and share the summary.
+• Read your assigned Tehilim right in the app, even offline.
+
+MORE COMFORTABLE READING
+• Adjustable text size while reading ("Aa" button, A− / A+), remembered — 8 levels, from very small to very large.
+• Also available in the Tehilim 119 sections.
+• The Tehilim number now stays visible on screen.
+
+LIFE CASES
+• New "Success" case.
+• Notes refocused on tradition for several cases.
+
+SHARING
+• Shared verses (image and text) now carry the app icon and the לעילוי נשמת dedication.
+
+Also: improved notification reliability, a smooth countdown and various fixes.
+
+Available in French and English, optimized for iPhone and iPad.
+```
+
+> ⚠️ Note review : la Chaîne de Tehilim est une fonctionnalité collaborative en
+> ligne (backend Supabase). Identité = compte anonyme par appareil + un prénom
+> d'affichage saisi, visible des participants. Aucune donnée personnelle sensible ;
+> les chaînes sont supprimées automatiquement après la lecture. Notifications push
+> aux participants (APNs/FCM). Connexion réseau requise pour cette fonctionnalité
+> uniquement — le reste de l'app fonctionne hors-ligne.
+
+---
+
+## 📋 Archive — What's New V1.14.0 (build 48) · Android versionCode 31
 
 > Nouveauté majeure : **la Chaîne de Tehilim** — lecture collective en temps réel, enrichie (invitation QR, notifications, grille par livres, répartition).
 

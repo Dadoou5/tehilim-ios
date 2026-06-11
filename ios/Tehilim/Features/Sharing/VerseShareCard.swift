@@ -33,13 +33,31 @@ struct VerseShareCard: View {
 
                 Spacer(minLength: 0)
 
-                VStack(spacing: 6) {
+                VStack(spacing: 14) {
                     Text("Verset \(verse.number)")
                         .font(.system(size: 24, weight: .medium))
                         .foregroundStyle(.secondary)
-                    Text(translationLang.sourceCredit)
-                        .font(.system(size: 18))
-                        .foregroundStyle(.tertiary)
+
+                    // Icône de lancement de l'app.
+                    Image("ChainBrandLogo")
+                        .resizable()
+                        .interpolation(.high)
+                        .scaledToFit()
+                        .frame(width: 88, height: 88)
+                        .clipShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
+
+                    // Dédicace לעילוי נשמת (identique à l'encart de chaque Tehilim).
+                    VStack(spacing: 4) {
+                        Text("לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים")
+                            .font(.system(size: 22))
+                            .environment(\.layoutDirection, .rightToLeft)
+                            .multilineTextAlignment(.center)
+                        Text("Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim")
+                            .font(.system(size: 20, design: .serif))
+                            .italic()
+                            .multilineTextAlignment(.center)
+                    }
+                    .foregroundStyle(.secondary)
                 }
             }
             .padding(64)

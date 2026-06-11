@@ -91,20 +91,49 @@ object VerseShareRenderer {
                 textAlign = Paint.Align.CENTER
                 typeface = Typeface.create(Typeface.SERIF, Typeface.ITALIC)
             }
-            drawWrappedText(canvas, translation, trPaint, RectF(80f, 650f, SIZE - 80f, 900f))
+            drawWrappedText(canvas, translation, trPaint, RectF(80f, 650f, SIZE - 80f, 820f))
         }
 
-        // Footer : verset + source
+        // Footer : verset
         val footerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.parseColor("#8A99A7")
-            textSize = 34f
+            textSize = 30f
             textAlign = Paint.Align.CENTER
         }
         canvas.drawText(
             context.getString(R.string.share_verse_label, verse.number),
-            SIZE / 2f, 970f, footerPaint
+            SIZE / 2f, 858f, footerPaint
         )
-        canvas.drawText(translationLang.sourceCredit, SIZE / 2f, 1020f, footerPaint)
+
+        // Icône de lancement de l'app, centrée.
+        runCatching {
+            ResourcesCompat.getDrawable(context.resources, R.drawable.chain_brand_logo, null)?.let { d ->
+                val logo = 96
+                val left = (SIZE - logo) / 2
+                val top = 872
+                d.setBounds(left, top, left + logo, top + logo)
+                d.draw(canvas)
+            }
+        }
+
+        // Dédicace לעילוי נשמת (identique à l'encart de chaque Tehilim).
+        val dedicationHePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#5C6B7A")
+            textSize = 30f
+            textAlign = Paint.Align.CENTER
+        }
+        canvas.drawText("לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים", SIZE / 2f, 1010f, dedicationHePaint)
+
+        val dedicationFrPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#8A99A7")
+            textSize = 26f
+            textAlign = Paint.Align.CENTER
+            typeface = Typeface.create(Typeface.SERIF, Typeface.ITALIC)
+        }
+        canvas.drawText(
+            context.getString(R.string.splash_dedication_french),
+            SIZE / 2f, 1052f, dedicationFrPaint
+        )
 
         return bitmap
     }

@@ -9,6 +9,167 @@ Premier upload Play Console — V1.4 dev tracker (versionCode=1, versionName="1.
 
 ---
 
+## 0. Description à jour — V1.15.0 (versionCode 50)
+
+> ⚠️ Ces textes **remplacent** ceux des sections 2 et 3 (rédigés pour la V1.0.0,
+> avant la Chaîne de Tehilim, le mode Chabbat et le réglage de taille en lecture).
+> Le cœur de l'app reste hors-ligne ; la **Chaîne de Tehilim** est une
+> fonctionnalité collaborative **en ligne** → le **formulaire « Sécurité des
+> données » (section 7) doit être mis à jour** (un prénom d'affichage est collecté
+> et transmis ; connexion réseau requise pour cette fonctionnalité).
+
+### 🇫🇷 Description courte (80 caractères max)
+```
+Les 150 Tehilim en hébreu, FR/EN, chaîne collective, hors-ligne et sans pub.
+```
+
+### 🇫🇷 Description complète (4000 caractères max)
+```
+Tehilim met à ta disposition les 150 psaumes du Roi David dans une app sobre, soignée et pensée pour la lecture quotidienne comme pour l'étude.
+
+— TEXTE HÉBREU VOCALISÉ avec nikoud et téamim (Sefaria)
+— TRADUCTION FRANÇAISE (Beth Loubavitch, avec autorisation)
+— TRADUCTION ANGLAISE (JPS 1917, via Sefaria)
+— PHONÉTIQUE SÉPHARADE pour lire même sans connaître l'hébreu
+
+★ CHAÎNE DE TEHILIM — LECTURE COLLECTIVE (nouveau)
+Lis les 150 Tehilim à plusieurs, en temps réel, pour une intention commune (Lelouy Nichmat, Refoua Chelema, réussite).
+• Crée une chaîne et invite par lien WhatsApp ou QR code
+• Chacun choisit les Tehilim qu'il s'engage à lire — sans doublon
+• Grille regroupée par les 5 livres ; vois qui lit quoi et l'avancement
+• Notifications de progression ; le créateur distribue les restants et partage le compte rendu
+• Lis tes Tehilim assignés même hors-ligne
+
+★ NAVIGATION INTUITIVE
+• 5 livres classiques (1–41 / 42–72 / 73–89 / 90–106 / 107–150)
+• Tehilim 119 par les 22 lettres de l'alphabet hébraïque
+• Tikkoun HaKlali (10 psaumes de Rabbi Nachman)
+• Recherche tolérante : chiffres, lettres hébraïques ou mixte
+
+★ TEHILIM DU JOUR
+• Cycle mensuel (par jour du mois) ou par jour de la semaine
+• Reprise automatique à la dernière lecture
+
+★ 19 CAS DE LA VIE
+Trouve les Tehilim associés à un moment précis : cycle de vie, santé et épreuves, réussite, spiritualité, communauté et calendrier juif.
+
+★ LELOUY NICHMAT & COMMÉMORATION
+• Séquence personnalisée à partir du prénom d'un défunt et de celui de sa mère
+• Calcul automatique de la prochaine azcara selon les règles traditionnelles
+• Rappels 7 jours avant et le jour même
+• Synchronisation privée entre tes appareils
+
+★ MODE CHABBAT
+• Écran « Chabbat Chalom » apaisant pendant Chabbat
+• Heures d'entrée et de sortie calculées selon ta position
+• Désactivable, avec une option « continuer quand même »
+
+★ LECTURE CONFORTABLE
+• Taille du texte réglable en cours de lecture (bouton « Aa »), mémorisée — 8 paliers
+• Tailles hébreu et traduction séparées
+• Numérotation en lettres hébraïques ou chiffres arabes
+• Mode clair / sombre / système
+
+★ FONCTIONNALITÉS PRATIQUES
+• Favoris, reprise de lecture, dédicace en tête de chaque psaume
+• Partage d'un verset en image soignée (1080×1080) ou en texte
+• Widget date hébraïque sur l'écran d'accueil
+• Rappel quotidien paramétrable
+
+★ CONFIDENTIALITÉ
+• Le cœur de l'app fonctionne entièrement hors-ligne
+• Aucune publicité, aucun tracker
+• La Chaîne de Tehilim (optionnelle) utilise un service en ligne : un prénom d'affichage que tu choisis, visible des participants ; aucune donnée sensible, chaînes supprimées automatiquement après la lecture
+
+★ ACCESSIBILITÉ
+• Conforme WCAG 2.1 AA, TalkBack optimisé (hébreu RTL + traduction LTR)
+• Grandes tailles de texte, cibles tactiles ≥ 48 dp
+
+★ TYPOGRAPHIE PREMIUM
+Frank Ruhl Libre (hébreu) et Ezra SIL SR pour le texte vocalisé — l'élégance d'une édition imprimée.
+
+Tehilim est gratuit, sans achat in-app et sans publicité. Un projet personnel offert à la communauté.
+
+À l'élévation de l'âme de Johann Meïr ben Sarah Bouganim ז״ל.
+```
+
+### 🇬🇧 Short description (80 chars max)
+```
+The 150 Tehilim in Hebrew, EN/FR, group-reading chain, offline and ad-free.
+```
+
+### 🇬🇧 Full description (4000 chars max)
+```
+Tehilim brings you the 150 psalms of King David in a clean, refined app, made for daily reading as well as study.
+
+— VOCALIZED HEBREW TEXT with nikud and te'amim (Sefaria)
+— ENGLISH TRANSLATION (JPS 1917, via Sefaria)
+— FRENCH TRANSLATION (Beth Loubavitch, with permission)
+— SEPHARDIC TRANSLITERATION to read even without Hebrew
+
+★ THE TEHILIM CHAIN — GROUP READING (new)
+Read the 150 Tehilim together, in real time, for a shared intention (Lelouy Nichmat, Refoua Chelema, success).
+• Create a chain and invite via WhatsApp link or QR code
+• Everyone picks the Tehilim they commit to read — no duplicates
+• Grid grouped by the 5 books; see who reads what and overall progress
+• Progress notifications; the creator assigns the remaining ones and shares the summary
+• Read your assigned Tehilim even offline
+
+★ INTUITIVE NAVIGATION
+• 5 classical books (1–41 / 42–72 / 73–89 / 90–106 / 107–150)
+• Tehilim 119 by the 22 letters of the Hebrew alphabet
+• Tikkoun HaKlali (10 psalms by Rabbi Nachman)
+• Tolerant search: digits, Hebrew letters or mixed
+
+★ TEHILIM OF THE DAY
+• Monthly cycle (by day of month) or by day of the week
+• Automatic resume at your last reading
+
+★ 19 LIFE CASES
+Find the Tehilim for a specific moment: life cycle, health and trials, success, spirituality, community and the Jewish calendar.
+
+★ LELOUY NICHMAT & REMEMBRANCE
+• Personalized sequence from a departed soul's name and their mother's
+• Automatic next-azkara date per traditional rules
+• Reminders 7 days before and on the day
+• Private sync across your devices
+
+★ SHABBAT MODE
+• A calm "Shabbat Shalom" screen during Shabbat
+• Candle-lighting and havdalah times based on your location
+• Can be turned off, with a "continue anyway" option
+
+★ COMFORTABLE READING
+• Adjustable text size while reading ("Aa" button), remembered — 8 levels
+• Separate Hebrew and translation sizes
+• Verse numbering in Hebrew letters or Arabic digits
+• Light / dark / system theme
+
+★ HANDY FEATURES
+• Favorites, reading resume, a dedication atop each psalm
+• Share a verse as a refined image (1080×1080) or as text
+• Hebrew date widget on your home screen
+• Customizable daily reminder
+
+★ PRIVACY
+• The core app works fully offline
+• No ads, no trackers
+• The optional Tehilim Chain uses an online service: a display name you choose, visible to participants; no sensitive data, chains auto-deleted after reading
+
+★ ACCESSIBILITY
+• WCAG 2.1 AA, TalkBack optimized (Hebrew RTL + translation LTR)
+• Large text sizes, touch targets ≥ 48 dp
+
+★ PREMIUM TYPOGRAPHY
+Frank Ruhl Libre (Hebrew) and Ezra SIL SR for the vocalized text — the elegance of a printed edition.
+
+Tehilim is free, with no in-app purchases and no ads. A personal project offered to the community.
+
+In memory of Johann Meïr ben Sarah Bouganim ז״ל.
+```
+
+---
+
 ## 1. Identité de l'app
 
 | Champ | Valeur |

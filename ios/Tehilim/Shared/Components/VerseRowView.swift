@@ -165,7 +165,8 @@ struct VerseRowView: View {
         if let translation = verse.translation(for: translationLang) {
             parts.append(translation)
         }
-        parts.append("Source : \(translationLang.sourceCredit)")
+        parts.append("לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים")
+        parts.append(NSLocalizedString("Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim", comment: ""))
         return parts.joined(separator: "\n")
     }
 

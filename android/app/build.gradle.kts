@@ -137,7 +137,9 @@ android {
         //            retirer un participant, notifs 100 % + rappel 80 %.
         // Build 49 : temps réel via VPS (WebSocket derrière feature flag) +
         //            migration domaine de partage vers tehilimapp.com.
-        versionCode = 49
+        // Build 50 : dédicace לעילוי נשמת + icône de l'app sur les versets
+        //            partagés (image + texte), barre de progression chaîne 10 dp.
+        versionCode = 50
         versionName = "1.0.0"
 
         // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.

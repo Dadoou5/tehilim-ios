@@ -43,6 +43,30 @@ final class ChainService {
         return user.id.uuidString.lowercased()
     }
 
+    // MARK: - Realtime self-hosté (flag distant + token)
+
+    /// Source realtime décidée côté serveur (`rpc realtime_source`) :
+    /// `"vps"` (serveur WS self-hosté) ou `"supabase"` (Realtime managé).
+    /// Cohorte stable par uid, pilotable sans release (table `app_flags`).
+    /// Mise en cache pour la durée du process ; `"supabase"` en cas d'échec
+    /// (= comportement historique, fail-safe).
+    private static var cachedRealtimeSource: String?
+    func realtimeSource() async -> String {
+        if let cached = Self.cachedRealtimeSource { return cached }
+        guard let client else { return "supabase" }
+        let source: String = (try? await client.rpc("realtime_source").execute().value) ?? "supabase"
+        let resolved = (source == "vps") ? "vps" : "supabase"
+        Self.cachedRealtimeSource = resolved
+        return resolved
+    }
+
+    /// JWT Supabase courant (rafraîchi par le SDK si besoin) — présenté au
+    /// serveur WS du VPS qui le vérifie (HS256) avant tout abonnement.
+    func realtimeAccessToken() async -> String? {
+        guard let client else { return nil }
+        return try? await client.auth.session.accessToken
+    }
+
     // MARK: - Écritures
 
     func createChain(
@@ -445,6 +469,7 @@ final class ChainSession: ObservableObject {
     let chainId: String
     private let service = ChainService()
     private var channel: RealtimeChannelV2?
+    private var vpsClient: VpsRealtimeClient?
     private var tasks: [Task<Void, Never>] = []
 
     var currentUid: String? { service.currentUid }
@@ -457,10 +482,10 @@ final class ChainSession: ObservableObject {
     /// Charge l'état puis, **uniquement si la sélection est ouverte**, attache
     /// l'écoute realtime (idempotent).
     func start() {
-        guard channel == nil, SupabaseManager.shared.client != nil else { return }
+        guard channel == nil, vpsClient == nil, SupabaseManager.shared.client != nil else { return }
         tasks.append(Task { [weak self] in
             await self?.reloadAll()
-            self?.attachRealtimeIfSelecting()
+            await self?.attachRealtimeIfSelecting()
         })
     }
 
@@ -468,10 +493,65 @@ final class ChainSession: ObservableObject {
     /// En lecture / terminée, l'état est figé → le fetch ponctuel de `reloadAll`
     /// suffit et **aucune connexion n'est maintenue** (économie de connexions
     /// simultanées = capacité). Un refetch a lieu au retour au premier plan.
-    private func attachRealtimeIfSelecting() {
-        guard channel == nil, let client = SupabaseManager.shared.client else { return }
+    ///
+    /// La **source** (Supabase Realtime managé vs serveur WS self-hosté du VPS)
+    /// est décidée par le flag distant `realtime_source` — bascule par cohorte
+    /// sans release, rollback instantané (cf. server/REALTIME_CONTRACT.md).
+    private func attachRealtimeIfSelecting() async {
+        guard channel == nil, vpsClient == nil else { return }
         guard let chain, chain.isSelectionOpen() else { return }
+        if await service.realtimeSource() == "vps" {
+            attachVpsRealtime()
+        } else {
+            attachSupabaseRealtime()
+        }
+    }
 
+    /// Variante self-hostée : une connexion WS unique vers le VPS, deltas pour
+    /// la table chaude (`chain_assignments`), refetch pour les tables rares.
+    private func attachVpsRealtime() {
+        let vps = VpsRealtimeClient(
+            chainId: chainId,
+            tokenProvider: { [service] in await service.realtimeAccessToken() },
+            onDelta: { [weak self] delta in self?.applyVpsDelta(delta) },
+            onResync: { [weak self] in
+                // (Ré)abonnement réussi → resync complet (comble les trous).
+                guard let self else { return }
+                self.tasks.append(Task { [weak self] in await self?.reloadAll() })
+            }
+        )
+        vpsClient = vps
+        vps.start()
+    }
+
+    private func applyVpsDelta(_ delta: VpsRealtimeClient.Delta) {
+        switch delta.table {
+        case "chain_assignments":
+            if delta.op == "DELETE" {
+                if let id = delta.old?["psalm_id"] as? Int {
+                    assignments.removeValue(forKey: id)
+                }
+            } else if let row = delta.row, let psalmId = row["psalm_id"] as? Int {
+                // `assigned_at` ne circule pas dans le delta (payload minimal) :
+                // la date n'est pas affichée pour les attributions → Date() suffit.
+                assignments[psalmId] = ChainAssignment(
+                    id: String(psalmId),
+                    uid: (row["uid"] as? String ?? "").lowercased(),
+                    name: row["name"] as? String ?? "—",
+                    byCreator: row["by_creator"] as? Bool ?? false,
+                    assignedAt: Date())
+            }
+        case "chain_participants":
+            // Rare (join/rename/départ) + `joined_at` absent du delta → refetch.
+            tasks.append(Task { [weak self] in await self?.reloadParticipants() })
+        default: // "chains"
+            tasks.append(Task { [weak self] in await self?.reloadChain() })
+        }
+    }
+
+    /// Variante managée (chemin historique Supabase Realtime).
+    private func attachSupabaseRealtime() {
+        guard let client = SupabaseManager.shared.client else { return }
         let channel = client.realtimeV2.channel("chain:\(chainId)")
         self.channel = channel
 
@@ -526,10 +606,13 @@ final class ChainSession: ObservableObject {
             Task { await channel.unsubscribe() }
         }
         channel = nil
+        vpsClient?.stop()
+        vpsClient = nil
     }
 
     deinit {
         tasks.forEach { $0.cancel() }
+        vpsClient?.stop()
     }
 
     // MARK: - Chargements

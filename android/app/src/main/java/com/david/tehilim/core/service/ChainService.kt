@@ -26,7 +26,11 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 /**
@@ -69,6 +73,23 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         c.auth.signInAnonymously()
         return c.auth.currentUserOrNull()?.id?.lowercase() ?: error("Auth anonyme indisponible")
     }
+
+    // MARK: - Realtime self-hosté (flag distant + token)
+
+    /** Source realtime décidée côté serveur (`rpc realtime_source`) : `"vps"`
+     *  (serveur WS self-hosté, cf. [VpsRealtime]) ou `"supabase"` (managé).
+     *  Cohorte stable par uid, pilotable sans release (table `app_flags`).
+     *  Cache process ; `"supabase"` en cas d'échec (fail-safe = historique). */
+    private var cachedRealtimeSource: String? = null
+    private suspend fun realtimeSource(): String {
+        cachedRealtimeSource?.let { return it }
+        val c = client ?: return "supabase"
+        val src = runCatching { c.postgrest.rpc("realtime_source").decodeAs<String>() }.getOrNull()
+        return (if (src == "vps") "vps" else "supabase").also { cachedRealtimeSource = it }
+    }
+
+    /** JWT Supabase courant — présenté au serveur WS du VPS (vérifié HS256). */
+    private fun accessToken(): String? = client?.auth?.currentSessionOrNull()?.accessToken
 
     // MARK: - Écritures
 
@@ -261,8 +282,20 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
     fun participantsFlow(chainId: String): Flow<List<ChainParticipant>> = callbackFlow {
         val c = client
         if (c == null) { trySend(emptyList()); close(); return@callbackFlow }
+        val flowScope = this
+        var vpsSub: VpsRealtime.Subscription? = null
         val state = LinkedHashMap<String, ChainParticipant>()   // uid → participant
-        fun emit() { trySend(state.values.sortedBy { it.joinedAtMillis }) }
+        fun emit() { trySend(synchronized(state) { state.values.sortedBy { it.joinedAtMillis } }) }
+        // Refetch complet (join/rename/départ rares + resync reconnexion).
+        fun refetch() {
+            flowScope.launch {
+                runCatching {
+                    val fresh = fetchParticipants(chainId)
+                    synchronized(state) { state.clear(); fresh.forEach { state[it.uid.lowercase()] = it } }
+                    emit()
+                }
+            }
+        }
         val channel = c.channel("rt:participants:$chainId:${System.nanoTime()}")
         val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
             table = PARTICIPANTS; filter("chain_id", FilterOperator.EQ, chainId)
@@ -283,14 +316,33 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         launch {
             runCatching {
                 ensureSignedIn()
-                state.clear()
-                fetchParticipants(chainId).forEach { state[it.uid.lowercase()] = it }
+                synchronized(state) {
+                    state.clear()
+                }
+                fetchParticipants(chainId).let { fresh ->
+                    synchronized(state) { fresh.forEach { state[it.uid.lowercase()] = it } }
+                }
                 emit()
-                if (isSelectionOpen(chainId)) channel.subscribe()   // socket : sélection uniquement
+                if (isSelectionOpen(chainId)) {                     // socket : sélection uniquement
+                    if (realtimeSource() == "vps") {
+                        // Serveur WS self-hosté (flag distant) : deltas participants
+                        // rares → refetch ; resync au (ré)abonnement.
+                        vpsSub = VpsRealtime.subscribe(chainId, { accessToken() },
+                            object : VpsRealtime.Listener {
+                                override fun onDelta(table: String, op: String, row: JsonObject?, old: JsonObject?) {
+                                    if (table == PARTICIPANTS) refetch()
+                                }
+                                override fun onResync() = refetch()
+                            })
+                    } else {
+                        channel.subscribe()
+                    }
+                }
             }
         }
         awaitClose {
             collectJob.cancel()
+            runCatching { vpsSub?.close() }
             CoroutineScope(Dispatchers.Default).launch { runCatching { c.realtime.removeChannel(channel) } }
         }
     }
@@ -298,8 +350,10 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
     fun boardFlow(chainId: String): Flow<Map<Int, ChainAssignment>> = callbackFlow {
         val c = client
         if (c == null) { trySend(emptyMap()); close(); return@callbackFlow }
+        val flowScope = this
+        var vpsSub: VpsRealtime.Subscription? = null
         val state = HashMap<Int, ChainAssignment>()   // psalmId → attribution
-        fun emit() { trySend(state.toMap()) }
+        fun emit() { trySend(synchronized(state) { state.toMap() }) }
         val channel = c.channel("rt:assignments:$chainId:${System.nanoTime()}")
         val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
             table = ASSIGNMENTS; filter("chain_id", FilterOperator.EQ, chainId)
@@ -320,14 +374,57 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         launch {
             runCatching {
                 ensureSignedIn()
-                state.clear()
-                fetchBoard(chainId).forEach { (k, v) -> state[k] = v }
+                fetchBoard(chainId).let { fresh ->
+                    synchronized(state) { state.clear(); state.putAll(fresh) }
+                }
                 emit()
-                if (isSelectionOpen(chainId)) channel.subscribe()   // socket : sélection uniquement
+                if (isSelectionOpen(chainId)) {                     // socket : sélection uniquement
+                    if (realtimeSource() == "vps") {
+                        // Serveur WS self-hosté (flag distant) : table chaude →
+                        // **deltas** appliqués sans refetch (payload minimal du
+                        // trigger : psalm_id/uid/name/by_creator — `assigned_at`
+                        // absent, non affiché → horloge locale).
+                        vpsSub = VpsRealtime.subscribe(chainId, { accessToken() },
+                            object : VpsRealtime.Listener {
+                                override fun onDelta(table: String, op: String, row: JsonObject?, old: JsonObject?) {
+                                    if (table != ASSIGNMENTS) return
+                                    if (op == "DELETE") {
+                                        val pid = old?.get("psalm_id")?.jsonPrimitive?.intOrNull ?: return
+                                        val removed = synchronized(state) { state.remove(pid) != null }
+                                        if (removed) emit()
+                                    } else {
+                                        val pid = row?.get("psalm_id")?.jsonPrimitive?.intOrNull ?: return
+                                        val a = ChainAssignment(
+                                            psalmId = pid,
+                                            uid = row["uid"]?.jsonPrimitive?.content?.lowercase() ?: "",
+                                            name = row["name"]?.jsonPrimitive?.content ?: "—",
+                                            byCreator = row["by_creator"]?.jsonPrimitive?.booleanOrNull ?: false,
+                                            assignedAtMillis = System.currentTimeMillis()
+                                        )
+                                        synchronized(state) { state[pid] = a }
+                                        emit()
+                                    }
+                                }
+                                override fun onResync() {
+                                    // (Ré)abonnement → resync complet (trous comblés).
+                                    flowScope.launch {
+                                        runCatching {
+                                            val fresh = fetchBoard(chainId)
+                                            synchronized(state) { state.clear(); state.putAll(fresh) }
+                                            emit()
+                                        }
+                                    }
+                                }
+                            })
+                    } else {
+                        channel.subscribe()
+                    }
+                }
             }
         }
         awaitClose {
             collectJob.cancel()
+            runCatching { vpsSub?.close() }
             CoroutineScope(Dispatchers.Default).launch { runCatching { c.realtime.removeChannel(channel) } }
         }
     }
@@ -343,6 +440,11 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         if (c == null) {
             trySend(initial); close(); return@callbackFlow
         }
+        val flowScope = this
+        var vpsSub: VpsRealtime.Subscription? = null
+        fun refetch() {
+            flowScope.launch { runCatching { trySend(fetch()) } }
+        }
         val channel = c.channel("rt:$tableName:$chainId:${System.nanoTime()}")
         val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
             table = tableName
@@ -355,11 +457,26 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
             runCatching {
                 ensureSignedIn()
                 trySend(fetch())   // état initial
-                if (isSelectionOpen(chainId)) channel.subscribe()   // socket : sélection uniquement
+                if (isSelectionOpen(chainId)) {                     // socket : sélection uniquement
+                    if (realtimeSource() == "vps") {
+                        // Serveur WS self-hosté (flag distant) : évènement rare
+                        // sur cette table → refetch, comme le chemin Supabase.
+                        vpsSub = VpsRealtime.subscribe(chainId, { accessToken() },
+                            object : VpsRealtime.Listener {
+                                override fun onDelta(table: String, op: String, row: JsonObject?, old: JsonObject?) {
+                                    if (table == tableName) refetch()
+                                }
+                                override fun onResync() = refetch()
+                            })
+                    } else {
+                        channel.subscribe()
+                    }
+                }
             }
         }
         awaitClose {
             collectJob.cancel()
+            runCatching { vpsSub?.close() }
             // Nettoyage sur un scope indépendant (le scope du flow se ferme).
             CoroutineScope(Dispatchers.Default).launch {
                 runCatching { c.realtime.removeChannel(channel) }

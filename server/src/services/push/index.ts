@@ -1,6 +1,7 @@
-// Orchestrateur d'envoi push : reçoit le même payload que l'Edge Function
-// d'origine, calcule les identifiants (JWT APNs / token OAuth FCM) UNE fois,
-// puis parallélise les envois. Inerte si les secrets ne sont pas configurés.
+// Orchestrateur d'envoi push. Calcule les identifiants UNE fois et les MET EN
+// CACHE entre les requêtes — APNs renvoie « 429 TooManyProviderTokenUpdates » si
+// on régénère le provider token trop souvent ; on le réutilise donc ~40 min
+// (validité 1 h). Idem token OAuth FCM (~50 min). Inerte si secrets absents.
 
 import { env, requireApnsConfigured, requireFcmConfigured } from "../../config/env.js";
 import { log } from "../../log.js";
@@ -24,61 +25,72 @@ export interface NotifyPayload {
   delayMs?: number;
 }
 
+// --- Caches d'identifiants (clé du fix « TooManyProviderTokenUpdates ») ---
+let apnsCache: { token: string; expMs: number } | null = null;
+async function cachedApnsJwt(): Promise<string | null> {
+  if (!requireApnsConfigured()) {
+    log.warn("push.apns_not_configured");
+    return null;
+  }
+  const now = Date.now();
+  if (apnsCache && apnsCache.expMs > now) return apnsCache.token;
+  try {
+    const t = await apnsJwt(env.apns.keyP8!, env.apns.keyId!, env.apns.teamId!);
+    apnsCache = { token: t, expMs: now + 40 * 60 * 1000 }; // 40 min (< 1 h de validité)
+    return t;
+  } catch (e) {
+    log.error("push.apns_jwt_failed", { error: String(e) });
+    return null;
+  }
+}
+
+let fcmCache: { token: string; expMs: number } | null = null;
+async function cachedFcmToken(): Promise<string | null> {
+  if (!requireFcmConfigured()) {
+    log.warn("push.fcm_not_configured");
+    return null;
+  }
+  const now = Date.now();
+  if (fcmCache && fcmCache.expMs > now) return fcmCache.token;
+  try {
+    const t = await fcmAccessToken(JSON.parse(env.fcm.serviceAccount!));
+    fcmCache = { token: t, expMs: now + 50 * 60 * 1000 }; // 50 min (validité 1 h)
+    return t;
+  } catch (e) {
+    log.error("push.fcm_token_failed", { error: String(e) });
+    return null;
+  }
+}
+
 export async function sendPush(payload: NotifyPayload): Promise<{ sent: number }> {
   const { event, value, chainName, chainId, tokens, delayMs } = payload;
   if (!Array.isArray(tokens) || tokens.length === 0) return { sent: 0 };
 
-  // Délai optionnel (ex. invitation à distribuer 3 s après 100 %), borné à 10 s.
   if (typeof delayMs === "number" && delayMs > 0) {
     await new Promise((r) => setTimeout(r, Math.min(delayMs, 10_000)));
   }
 
   const hasIos = tokens.some((t) => t.platform === "ios");
   const hasAndroid = tokens.some((t) => t.platform === "android");
-  let apnsToken: string | null = null;
-  let fcmTok: string | null = null;
+  const apnsToken = hasIos ? await cachedApnsJwt() : null;
+  const fcmTok = hasAndroid ? await cachedFcmToken() : null;
   const fcmProject = env.fcm.projectId || "";
 
-  if (hasIos) {
-    if (requireApnsConfigured()) {
-      try {
-        apnsToken = await apnsJwt(env.apns.keyP8!, env.apns.keyId!, env.apns.teamId!);
-      } catch (e) {
-        log.error("push.apns_jwt_failed", { error: String(e) });
-      }
-    } else {
-      log.warn("push.apns_not_configured");
-    }
-  }
-  if (hasAndroid) {
-    if (requireFcmConfigured()) {
-      try {
-        fcmTok = await fcmAccessToken(JSON.parse(env.fcm.serviceAccount!));
-      } catch (e) {
-        log.error("push.fcm_token_failed", { error: String(e) });
-      }
-    } else {
-      log.warn("push.fcm_not_configured");
-    }
-  }
-
+  // `sent` = livraisons RÉELLES (2xx), pas tentatives.
   const results = await Promise.allSettled(
-    tokens.map(async (t) => {
+    tokens.map(async (t): Promise<boolean> => {
       const msg = messageFor(event, value ?? null, chainName ?? "", t.locale || "fr");
       if (t.platform === "ios") {
-        if (!apnsToken) return false;
-        await sendAPNs(t.token, msg, apnsToken, chainId ?? null);
-        return true;
+        return apnsToken ? sendAPNs(t.token, msg, apnsToken, chainId ?? null) : false;
       } else if (t.platform === "android") {
-        if (!fcmTok) return false;
-        await sendFCM(t.token, msg, fcmTok, fcmProject, chainId ?? null);
-        return true;
+        return fcmTok ? sendFCM(t.token, msg, fcmTok, fcmProject, chainId ?? null) : false;
       }
       return false;
     }),
   );
 
   const sent = results.filter((r) => r.status === "fulfilled" && r.value === true).length;
-  log.info("push.batch", { event, value, chainId: chainId ?? null, total: tokens.length, sent });
+  const failed = tokens.length - sent;
+  log.info("push.batch", { event, value, chainId: chainId ?? null, total: tokens.length, sent, failed });
   return { sent };
 }

@@ -10,6 +10,7 @@
     <string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
     <key>com.apple.developer.associated-domains</key>
     <array>
+        <string>applinks:tehilimapp.com</string>
         <string>applinks:dadoou5.github.io</string>
     </array>
     <!-- Build Release / App Store : push en PRODUCTION (api.push.apple.com). -->

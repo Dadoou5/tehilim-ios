@@ -32,7 +32,7 @@ object PrayerShareLink {
     /** Page de redirection https (GitHub Pages) — un lien https est cliquable
      *  dans Mail / WhatsApp / SMS (contrairement à tehilim://). La page rouvre
      *  ensuite tehilim://prayer?... avec les mêmes paramètres. */
-    const val WEB_BASE_URL = "https://dadoou5.github.io/p/"
+    const val WEB_BASE_URL = "https://tehilimapp.com/p/"
 
     /** `yyyy-MM-dd` / locale US : format stable, identique à iOS. */
     private fun dateFormat() = SimpleDateFormat("yyyy-MM-dd", Locale.US)

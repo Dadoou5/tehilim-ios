@@ -17,7 +17,7 @@ object ChainShareLink {
 
     const val SCHEME = "tehilim"
     const val HOST = "chain"
-    const val WEB_BASE_URL = "https://dadoou5.github.io/c/"
+    const val WEB_BASE_URL = "https://tehilimapp.com/c/"
 
     /** Lien `https://…/c/?id=<chainId>`. */
     fun uri(chainId: String): Uri =

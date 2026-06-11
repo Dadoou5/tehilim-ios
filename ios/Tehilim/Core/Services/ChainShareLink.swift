@@ -12,7 +12,7 @@ enum ChainShareLink {
     static let host = "chain"
 
     /// Page de redirection https (repo Pages séparé) — cliquable partout.
-    static let webBaseURL = "https://dadoou5.github.io/c/"
+    static let webBaseURL = "https://tehilimapp.com/c/"
 
     // MARK: - Encodage
 

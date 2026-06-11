@@ -24,7 +24,7 @@ enum PrayerShareLink {
     /// Page de redirection https (GitHub Pages) — un lien `https://` est
     /// cliquable dans Mail / WhatsApp / SMS (contrairement à `tehilim://`).
     /// La page lit les mêmes paramètres et rouvre `tehilim://prayer?...`.
-    static let webBaseURL = "https://dadoou5.github.io/p/"
+    static let webBaseURL = "https://tehilimapp.com/p/"
 
     /// `yyyy-MM-dd` en calendrier grégorien + locale POSIX : format stable,
     /// identique côté Android, indépendant de la locale de l'appareil.

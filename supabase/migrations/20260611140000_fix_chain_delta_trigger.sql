@@ -1,20 +1,11 @@
--- ============================================================================
--- PHASE 3 — Triggers ADDITIFS qui publient les deltas chaîne sur le canal
--- Postgres `chain_delta` (consommé par le serveur WS du VPS via LISTEN).
---
--- 100 % NON DESTRUCTIF et sûr en dual-run : sans écouteur, pg_notify est un
--- no-op. N'affecte ni Supabase Realtime ni la logique métier existante.
--- Payload < 8 ko (largement) → limite NOTIFY respectée.
---
--- APPLIQUÉ en prod (migrations `realtime_delta_triggers` puis
--- `fix_chain_delta_trigger_field_refs`). Version ci-dessous = corrigée.
---
--- ⚠️ Règle plpgsql apprise à la dure : dans un trigger multi-tables, ne JAMAIS
--- référencer un champ de NEW/OLD hors d'un bloc IF garantissant (1) la bonne
--- table (les champs doivent exister sur la ligne courante, sinon 42703 même
--- dans une branche booléenne « morte ») et (2) la bonne opération (NEW absent
--- sur DELETE, OLD absent sur INSERT). Rollback en bas.
--- ============================================================================
+-- FIX URGENT : trg_chain_delta référençait NEW.distributed (champ de `chains`)
+-- dans une expression évaluée aussi pour participants/assignments → 42703
+-- « record new has no field distributed » → TOUTES les écritures chaîne
+-- échouaient (création/join/sélection) entre l'application de
+-- 20260611120000_realtime_delta_triggers et ce fix. Réécriture : NEW/OLD ne
+-- sont plus référencés que dans des blocs IF propres à leur table ET leur op.
+-- Vérifié : cycle de vie complet (insert chains/participants/assignments,
+-- update distribute, delete assignment, delete chains) → OK.
 
 create or replace function public.trg_chain_delta()
 returns trigger
@@ -77,27 +68,6 @@ begin
     jsonb_build_object('chain_id', v_chain, 'table', TG_TABLE_NAME, 'op', TG_OP,
                        'row', v_row, 'old', v_old)::text
   );
-  return null; -- AFTER trigger
+  return null;
 end;
 $$;
-revoke all on function public.trg_chain_delta() from public;
-
-drop trigger if exists chain_delta_chains on public.chains;
-create trigger chain_delta_chains after insert or update or delete on public.chains
-  for each row execute function public.trg_chain_delta();
-
-drop trigger if exists chain_delta_participants on public.chain_participants;
-create trigger chain_delta_participants after insert or update or delete on public.chain_participants
-  for each row execute function public.trg_chain_delta();
-
-drop trigger if exists chain_delta_assignments on public.chain_assignments;
-create trigger chain_delta_assignments after insert or update or delete on public.chain_assignments
-  for each row execute function public.trg_chain_delta();
-
--- ----------------------------------------------------------------------------
--- ROLLBACK :
--- drop trigger if exists chain_delta_chains       on public.chains;
--- drop trigger if exists chain_delta_participants on public.chain_participants;
--- drop trigger if exists chain_delta_assignments  on public.chain_assignments;
--- drop function if exists public.trg_chain_delta();
--- ----------------------------------------------------------------------------

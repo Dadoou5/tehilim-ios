@@ -135,7 +135,9 @@ android {
         // Build 31 : chaîne v2 — invitation + QR code, filtres de grille (par
         //            les 5 livres), répartition par personne, quitter / éditer /
         //            retirer un participant, notifs 100 % + rappel 80 %.
-        versionCode = 48
+        // Build 49 : temps réel via VPS (WebSocket derrière feature flag) +
+        //            migration domaine de partage vers tehilimapp.com.
+        versionCode = 49
         versionName = "1.0.0"
 
         // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.

@@ -72,6 +72,8 @@
 "Rappel quotidien" = "תזכורת יומית";
 
 /* Mode Chabbat */
+/* Ligne latine décorative sous שבת שלום — comme EN (pas d'hébreu doublé). */
+"Chabbat Chalom" = "Shabbat Shalom";
 "Début du Chabbat" = "כניסת שבת";
 "Fin du Chabbat" = "צאת שבת";
 "Horaires calculés selon ta position (bougies : coucher − 18 min · fin : sortie des étoiles)." = "הזמנים מחושבים לפי מיקומכם (נרות: שקיעה − 18 דק׳ · צאת: צאת הכוכבים).";

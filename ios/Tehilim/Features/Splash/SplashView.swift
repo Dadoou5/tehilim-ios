@@ -32,7 +32,9 @@ struct SplashView: View {
 
                 // Tehilim — Latin, calligraphie Pinyon Script (Google Fonts OFL).
                 // V1.10.7 — remplace SnellRoundhand-Bold (Apple-only) pour parité Android.
-                Text("Tehilim")
+                // verbatim : branding décoratif, toujours en latin (la clé
+                // « Tehilim » est traduite en תהילים sous UI hébreu → doublon).
+                Text(verbatim: "Tehilim")
                     .font(.custom("PinyonScript-Regular", size: 64))
                     .foregroundStyle(Color.accentMain)
                     .opacity(visibleLatin ? 1 : 0)

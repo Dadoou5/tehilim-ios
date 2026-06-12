@@ -4,6 +4,8 @@
    ============================================================ */
 
 "Aujourd'hui" = "היום";
+/* Ligne latine décorative sous שבת שלום — comme EN (pas d'hébreu doublé). */
+"Chabbat Chalom" = "Shabbat Shalom";
 "Tehilim du jour" = "תהילים יומי";
 "Aucun Tehilim défini" = "לא הוגדרו פרקים";
 

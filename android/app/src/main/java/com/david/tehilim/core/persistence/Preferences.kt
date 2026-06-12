@@ -56,6 +56,7 @@ class Preferences(private val context: Context) {
         when (prefs[Keys.APP_LANGUAGE]) {
             "fr" -> AppLanguage.FR
             "en" -> AppLanguage.EN
+            "he" -> AppLanguage.HE
             else -> AppLanguage.SYSTEM
         }
     }

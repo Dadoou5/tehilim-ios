@@ -1,0 +1,18 @@
+/* ============================================================
+   Widget UI strings — V2.2 (hébreu)
+   Mirror de en.lproj/fr.lproj — résolu via le swizzle LocalizedBundle.
+   ============================================================ */
+
+"Aujourd'hui" = "היום";
+"Tehilim du jour" = "תהילים יומי";
+"Aucun Tehilim défini" = "לא הוגדרו פרקים";
+
+/* Modes */
+"Cycle mensuel" = "מחזור חודשי";
+"Jour de la semaine" = "יום בשבוע";
+"Personnalisé" = "מותאם אישית";
+
+/* Footer + overflow */
+"%lld Tehilim" = "%lld פרקים";
+"+ %lld autres" = "+ %lld נוספים";
+"+ %lld autres Tehilim" = "+ %lld פרקים נוספים";

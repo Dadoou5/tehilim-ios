@@ -83,6 +83,7 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
                         val tag = when (newLang) {
                             AppLanguage.FR -> "fr"
                             AppLanguage.EN -> "en"
+                            AppLanguage.HE -> "he"
                             AppLanguage.SYSTEM -> ""
                         }
                         // V1.3.11 — sur API 33+, AppCompatDelegate.setApplicationLocales

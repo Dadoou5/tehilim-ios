@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hébreu — V2.2. Android utilise le code ISO legacy « iw » pour les
+     ressources (AAPT2 normalise he → iw). Mirror complet de values-en. -->
+<resources>
+    <!-- App metadata -->
+    <string name="app_name">תהילים</string>
+    <string name="widget_description">מציג את תהילים היומי</string>
+
+    <!-- ==================== TITLES ==================== -->
+    <string name="title_today">היום</string>
+    <string name="title_favorites">המועדפים שלי</string>
+    <string name="title_settings">הגדרות</string>
+    <string name="title_life_cases">מצבי חיים</string>
+    <string name="title_psalms">תהילים</string>
+    <string name="title_search">חיפוש</string>
+    <string name="title_lelouy_nichmat">לעילוי נשמת</string>
+    <string name="title_my_prayers">התפילות שלי</string>
+    <string name="title_psalm_119_home">קי״ט — אלפא־ביתא</string>
+    <string name="title_psalm_119_full">תהילים קי״ט</string>
+    <string name="title_about_content">מקורות התוכן</string>
+    <string name="title_about_privacy">פרטיות</string>
+    <string name="title_accessibility">נגישות</string>
+    <string name="title_accessibility_declaration">הצהרת נגישות</string>
+    <string name="title_all_psalms">כל פרקי התהילים</string>
+
+    <!-- ==================== TAB / DESTINATION LABELS ==================== -->
+    <string name="tab_home">בית</string>
+    <string name="tab_psalms">תהילים</string>
+    <string name="tab_daily">היום</string>
+    <string name="tab_life_cases">מצבי חיים</string>
+    <string name="tab_settings">הגדרות</string>
+    <string name="tab_books">ספרים</string>
+    <string name="tab_all">הכול</string>
+    <string name="tab_favorites">מועדפים</string>
+
+    <!-- ==================== SECTIONS / HEADERS ==================== -->
+    <string name="section_resume_reading">המשך קריאה</string>
+    <string name="section_my_favorites">המועדפים שלי</string>
+    <string name="section_today_psalms">תהילים יומי</string>
+    <string name="section_explore">גלו</string>
+    <string name="section_schedule">בתוכנית</string>
+    <string name="section_favorite_psalms">פרקים מועדפים</string>
+    <string name="section_psalms_to_read">פרקים לקריאה</string>
+    <string name="section_reading_sequence">רצף הקריאה</string>
+    <string name="section_result">תוצאה</string>
+    <string name="section_suggestions">הצעות</string>
+    <string name="section_recents">אחרונים</string>
+    <string name="section_language">שפה</string>
+    <string name="section_display">תצוגה</string>
+    <string name="section_daily_reading">קריאה יומית</string>
+    <string name="section_daily_reminder">תזכורת יומית</string>
+    <string name="section_accessibility">נגישות</string>
+    <string name="section_about">אודות</string>
+    <string name="section_engagement">מחויבות</string>
+    <string name="section_compliance_status">מצב תאימות</string>
+    <string name="section_a11y_features">יכולות נגישות נתמכות</string>
+    <string name="section_known_limits">מגבלות ידועות</string>
+    <string name="section_recourse">דרכי פנייה</string>
+    <string name="section_label_source">מקור</string>
+
+    <!-- ==================== ACTIONS ==================== -->
+    <string name="action_skip">דילוג</string>
+    <string name="action_next">הבא</string>
+    <string name="action_previous">הקודם</string>
+    <string name="action_start">להתחיל</string>
+    <string name="action_ok">אישור</string>
+    <string name="action_cancel">ביטול</string>
+    <string name="action_generate_save">יצירה ושמירה</string>
+    <string name="action_open_keyboard_settings">פתיחת הגדרות המקלדת</string>
+
+    <!-- ==================== LABELS ==================== -->
+    <string name="label_hour">שעה</string>
+    <string name="label_link">קשר:</string>
+    <string name="label_daily_reminder">תזכורת יומית</string>
+    <string name="label_reminder_time">שעת התזכורת</string>
+    <string name="label_app_language">שפת האפליקציה</string>
+    <string name="label_show_translation_default">הצגת התרגום כברירת מחדל</string>
+    <string name="label_theme">ערכת נושא</string>
+    <string name="label_text_mode">מצב הטקסט</string>
+    <string name="label_hebrew_size">גודל הטקסט העברי</string>
+    <string name="label_translation_size">גודל טקסט התרגום</string>
+    <string name="label_numbering">מספור הפסוקים</string>
+    <string name="label_mode">מצב</string>
+    <string name="label_preview">תצוגה מקדימה</string>
+    <string name="label_translation_preview">תצוגה מקדימה של התרגום</string>
+    <string name="label_book">ספר %1$d</string>
+    <string name="label_tehilim_count">%1$d פרקים</string>
+    <string name="label_verses_count">%1$d פסוקים</string>
+    <string name="label_letters_count">%1$d אותיות</string>
+    <string name="label_psalm_with_id">תהילים %1$d</string>
+    <string name="label_psalm_with_hebrew">תהילים %1$d · %2$s</string>
+    <string name="label_psalm_number">תהילים %1$d</string>
+    <string name="label_psalm_only_number">תהילים %1$d</string>
+    <string name="label_psalm_button">תהילים %1$d </string>
+    <string name="label_psalm_button_prev">" תהילים %1$d"</string>
+    <string name="label_mode_count">מצב: %1$s · %2$d פרקים</string>
+    <string name="label_section_letter_range">%1$s — %2$s · פס׳ %3$d–%4$d</string>
+    <string name="label_section_letter_name">%1$s — %2$s</string>
+    <string name="label_psalms_recommended_singular">פרק מומלץ %1$d</string>
+    <string name="label_psalms_recommended_plural">%1$d פרקים מומלצים</string>
+    <string name="label_at_letter_n_of_m">באות %1$d מתוך %2$d</string>
+    <string name="label_letter_progress">אות %1$d מתוך %2$d</string>
+    <string name="label_dot_source">· מקור: %1$s</string>
+    <string name="label_saved_singular">אחת שמורה</string>
+    <string name="label_saved_plural">%1$d שמורות</string>
+    <string name="label_saved_none">אין שמורות</string>
+    <string name="label_psalms_saved_singular">פרק אחד שמור</string>
+    <string name="label_psalms_saved_plural">%1$d פרקים שמורים</string>
+    <string name="label_version">גרסה %1$s</string>
+    <string name="label_a11y_rgaa_version">RGAA 4.1.2 — גרסת האפליקציה: %1$s</string>
+
+    <!-- ==================== PLACEHOLDERS ==================== -->
+    <string name="placeholder_search_psalms">חיפוש (23, כג, מילה מהכותרת…)</string>
+    <string name="placeholder_search_short">23, כג, תהילים 23…</string>
+    <string name="placeholder_relative_name">הנפטר — שם פרטי (בעברית)</string>
+    <string name="placeholder_relative_example">למשל יוסף</string>
+    <string name="placeholder_mother_name">שם האם (בעברית)</string>
+    <string name="placeholder_mother_example">למשל שרה</string>
+
+    <!-- ==================== CONTENT DESCRIPTIONS ==================== -->
+    <string name="cd_search">חיפוש</string>
+    <string name="cd_back">חזרה</string>
+    <string name="cd_close">סגירה</string>
+    <string name="cd_clear">ניקוי</string>
+    <string name="cd_favorite">מועדף</string>
+    <string name="cd_add_favorite">הוספה למועדפים</string>
+    <string name="cd_remove_favorite">הסרה מהמועדפים</string>
+    <string name="cd_show_translation">הצגת התרגום</string>
+    <string name="cd_hide_translation">הסתרת התרגום</string>
+    <string name="cd_show_translation_inline">"  הצגת התרגום"</string>
+    <string name="cd_hide_translation_inline">"  הסתרת התרגום"</string>
+
+    <!-- ==================== MESSAGES / EMPTY STATES ==================== -->
+    <string name="msg_no_favorite">אין מועדפים</string>
+    <string name="msg_tap_heart_to_add">הקישו ♡ על פרק כדי להוסיף אותו לכאן</string>
+    <string name="msg_tap_heart_to_add_dot">הקישו ♡ על פרק כדי להוסיף אותו לכאן.</string>
+    <string name="msg_tap_heart_to_add_long">הקישו על הלב בפרק תהילים כדי להוסיף אותו לכאן.</string>
+    <string name="msg_view_list">הצגת הרשימה</string>
+    <string name="msg_no_psalm_for_mode">לא הוגדרו פרקים למצב זה.</string>
+    <string name="msg_no_psalm_for_day">לא הוגדרו פרקים ליום זה.</string>
+    <string name="msg_no_psalm_in_book">אין פרקים בספר זה.</string>
+    <string name="msg_no_psalm_matches">אין פרק שתואם את «%1$s».</string>
+    <string name="msg_no_psalm_found">לא נמצא פרק. נסו מספר בין 1 ל־150, או אותיות עבריות (למשל כג).</string>
+    <string name="msg_psalm_not_found">הפרק לא נמצא.</string>
+    <string name="msg_category_not_found">הקטגוריה לא נמצאה</string>
+    <string name="msg_lelouy_nichmat_not_found">הקריאה לעילוי נשמת לא נמצאה</string>
+    <string name="msg_no_saved_lelouy_nichmat">אין קריאות לעילוי נשמת שמורות</string>
+    <string name="msg_generate_to_find_here">צרו קריאה כדי למצוא אותה כאן.</string>
+    <string name="msg_resume_reading">המשך קריאה</string>
+    <string name="msg_new_reading">קריאה חדשה</string>
+    <string name="msg_new_reading_subtitle">עילוי נשמה — שם פרטי + שם האם</string>
+    <string name="msg_psalm_119_subtitle">22 אותיות האלף־בית, שמונה פסוקים לכל אות.</string>
+    <string name="msg_tradition_disclaimer">מסורת. אינה תחליף לייעוץ מקצועי.</string>
+    <string name="msg_neshama_appended_form">«נשמה» תתווסף אוטומטית בסוף הרצף.</string>
+    <string name="msg_neshama_appended_list">«נשמה» נוספה אוטומטית בסוף הרצף.</string>
+    <string name="msg_enable_hebrew_keyboard_title">הפעילו את המקלדת העברית</string>
+    <string name="msg_enable_hebrew_keyboard_body">הגדרות ← מערכת ← שפות וקלט ← מקלדת וירטואלית ← Gboard ← שפות ← הוסיפו עברית. לאחר מכן אפשר לעבור עם 🌐.</string>
+    <string name="msg_lelouy_banner_title">קריאה לעילוי נשמה</string>
+    <string name="msg_lelouy_banner_body">הרצף שנוצר תואם את אותיות שם הנפטר, הקשר (בן/בת), שם האם, ולבסוף נשמה.</string>
+    <string name="msg_restart_required_title">נדרשת הפעלה מחדש</string>
+    <string name="msg_restart_required_body">תרגום התהילים הוחלף מייד. כדי שגם הממשק יתעדכן, סגרו את האפליקציה ופתחו אותה מחדש.</string>
+    <string name="msg_permission_denied_notifications">ההרשאה נדחתה. הפעילו התראות בהגדרות ← אפליקציות ← תהילים ← התראות כדי לקבל את התזכורת.</string>
+    <string name="msg_reminder_time_hint">אפשר לשנות את השעה מאוחר יותר. ההתראות נשארות מקומיות (WorkManager).</string>
+    <string name="msg_sources_footer">טקסט עברי: ספריא · תרגום צרפתי: בית ליובאוויטש · תרגום אנגלי: JPS 1917</string>
+    <string name="msg_widget_no_psalm">לא הוגדרו פרקים</string>
+    <!-- V1.4 — widget responsive 3 sizes (iOS mirror) -->
+    <string name="label_today_short">היום</string>
+    <string name="label_widget_psalm_count">%d פרקים</string>
+    <string name="label_widget_more_n">+ %d נוספים</string>
+    <string name="label_widget_more_psalms_n">+ %d פרקים נוספים</string>
+
+    <!-- Sample previews -->
+    <string name="msg_preview_hebrew_phonetic">Chir lamaalot essa enaï</string>
+    <string name="msg_preview_french">שיר למעלות, אשא עיני אל ההרים…</string>
+
+    <!-- Prayer titles & subtitles -->
+    <string name="prayer_before_title">תפילה לפני הקריאה</string>
+    <string name="prayer_after_title">תפילה אחרי הקריאה</string>
+    <string name="prayer_before_subtitle">לומר לפני שמתחילים</string>
+    <string name="prayer_after_subtitle">לומר בסיום</string>
+
+    <!-- Explore card titles -->
+    <string name="explore_5_books">חמישה ספרים</string>
+    <string name="explore_life_cases">מצבי חיים</string>
+    <string name="explore_119_alphabeta">קי״ט — אלפא־ביתא</string>
+    <string name="explore_all_1_150">הכול (1–150)</string>
+    <string name="explore_prayer_before">תפילה לפני</string>
+    <string name="explore_prayer_after">תפילה אחרי</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">ברוכים הבאים</string>
+    <string name="onboarding_welcome_subtitle">כל ק״נ פרקי התהילים, בעברית מנוקדת עם טעמים, ועם תרגום.</string>
+    <string name="onboarding_daily_title">תהילים יומי</string>
+    <string name="onboarding_daily_subtitle">מחזור חודשי או שבועי, עם ווידג׳ט למסך הבית.</string>
+    <string name="onboarding_lifecases_title">מצבי חיים + אלפא־ביתא</string>
+    <string name="onboarding_lifecases_subtitle">מסלולים לפי נושא. תהילים קי״ט אות באות. קריאה אישית לעילוי נשמת.</string>
+
+    <!-- Splash dedication -->
+    <string name="splash_dedication_french">לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים</string>
+
+    <!-- ==================== ENUM LABELS ==================== -->
+    <string name="enum_applang_system">מערכת</string>
+    <string name="enum_applang_fr">Français</string>
+    <string name="enum_applang_en">English</string>
+    <string name="enum_applang_he">עברית</string>
+
+    <string name="enum_theme_system">מערכת</string>
+    <string name="enum_theme_light">בהיר</string>
+    <string name="enum_theme_dark">כהה</string>
+
+    <string name="enum_textmode_hebrew">עברית</string>
+    <string name="enum_textmode_phonetic">תעתיק</string>
+
+    <string name="enum_textsize_xsmall">קטן מאוד</string>
+    <string name="enum_textsize_small">קטן</string>
+    <string name="enum_textsize_medium">בינוני</string>
+    <string name="enum_textsize_large">גדול</string>
+    <string name="enum_textsize_xlarge">גדול מאוד</string>
+    <string name="enum_textsize_xxlarge">ענק</string>
+    <string name="enum_textsize_xxxlarge">ענק במיוחד</string>
+    <string name="enum_textsize_xxxxlarge">מקסימום</string>
+
+    <string name="enum_versestyle_hebrew">עברית</string>
+    <string name="enum_versestyle_arabic">ספרות</string>
+
+    <string name="enum_dailymode_monthly">מחזור חודשי</string>
+    <string name="enum_dailymode_weekly">יום בשבוע</string>
+
+    <!-- Letter source labels -->
+    <string name="letter_source_proche">יקיר</string>
+    <string name="letter_source_lien">קשר</string>
+    <string name="letter_source_mere">אם</string>
+
+    <!-- ==================== SHARING ==================== -->
+    <string name="msg_translation_unavailable">אין תרגום זמין.</string>
+    <string name="share_verse_label">פסוק %1$d</string>
+    <string name="share_chooser_title">שיתוף הפסוק</string>
+    <string name="share_subject">תהילים %1$d · פסוק %2$d</string>
+
+    <!-- ==================== NOTIFICATIONS ==================== -->
+    <string name="notif_channel_name">תהילים יומי</string>
+    <string name="notif_channel_description">תזכורת יומית לקריאת תהילים היומי.</string>
+    <string name="notif_title">תהילים יומי</string>
+    <string name="notif_body">הגיע הזמן לקרוא את תהילים היומי.</string>
+
+    <!-- V1.4 — Commemoration (azcara) -->
+    <string name="memorial_section_title">אזכרה</string>
+    <string name="memorial_date_label">תאריך הפטירה</string>
+    <string name="memorial_date_pick">בחירת תאריך</string>
+    <string name="memorial_date_clear">מחיקת התאריך</string>
+    <string name="memorial_helper">האפליקציה מחשבת אוטומטית את מועד האזכרה הבא מהתאריך הלועזי שהוזן.</string>
+    <string name="memorial_reminder_toggle">קבלת תזכורת</string>
+    <string name="memorial_reminder_7d">שבעה ימים לפני</string>
+    <string name="memorial_reminder_day">ביום עצמו</string>
+    <string name="memorial_need_date">הוסיפו תאריך פטירה כדי לתזמן את התזכורות.</string>
+    <string name="memorial_notif_disabled">ההתראות מושבתות במכשיר זה.</string>
+    <string name="memorial_next_azcara">האזכרה הבאה</string>
+    <string name="memorial_notif_title_j7">אזכרה בעוד שבעה ימים</string>
+    <string name="memorial_notif_title_today">אזכרה היום</string>
+    <string name="memorial_notif_body_today">אזכרה של %1$s.</string>
+    <string name="memorial_notif_body_j7">אזכרה של %1$s בעוד %2$d ימים.</string>
+    <string name="memorial_starts_previous_evening">* מתחילה בערב הקודם</string>
+    <string name="action_delete">מחיקה</string>
+    <string name="confirm_delete_prayer_title">למחוק את הקריאה לעילוי נשמת?</string>
+    <string name="confirm_delete_prayer_body">פעולה בלתי הפיכה. גם התזכורות המשויכות יבוטלו.</string>
+    <string name="cd_delete_prayer">מחיקת התפילה</string>
+    <string name="memorial_scheduled_reminders">תזכורות מתוזמנות</string>
+    <string name="memorial_reminders">תזכורות</string>
+    <string name="memorial_no_reminder">אין תזכורת</string>
+    <string name="memorial_no_reminder_no_date">הזינו תאריך פטירה כדי להפעיל את תזכורות האזכרה.</string>
+    <string name="memorial_no_reminder_disabled">הפעילו את התזכורות דרך «עריכה».</string>
+
+    <!-- Tehilim chain (share link) -->
+    <string name="explore_chain">שרשרת תהילים</string>
+    <string name="chain_share_prefix">"שרשרת תהילים — "</string>
+    <string name="chain_share_cta">הצטרפו לשרשרת ובחרו את הפרקים שתקראו:</string>
+    <string name="chain_title">שרשרת תהילים</string>
+    <string name="chain_list_title">שרשראות תהילים</string>
+    <string name="chain_create">יצירת שרשרת</string>
+    <string name="chain_create_button">יצירת השרשרת</string>
+    <string name="chain_new">שרשרת חדשה</string>
+    <string name="chain_name">שם השרשרת</string>
+    <string name="chain_intention">כוונה</string>
+    <string name="chain_selection_duration">משך הבחירה</string>
+    <string name="chain_reading_end_prefix">סיום הקריאה: %1$s</string>
+    <string name="chain_your_name_all">השם שלכם (גלוי לכולם)</string>
+    <string name="chain_your_name">השם שלכם</string>
+    <string name="chain_join">הצטרפות</string>
+    <string name="chain_join_chain">הצטרפות לשרשרת</string>
+    <string name="chain_name_visible_note">השם שלכם יהיה גלוי לכל המשתתפים.</string>
+    <string name="chain_participants">משתתפים</string>
+    <string name="chain_progress">התקדמות</string>
+    <string name="chain_owner">מנהל השרשרת</string>
+    <string name="chain_assign_remaining">להקצות לי את %1$d הנותרים</string>
+    <string name="chain_close_distribute">סגירה וחלוקה</string>
+    <string name="chain_share_report">שיתוף הסיכום</string>
+    <string name="chain_delete">מחיקת השרשרת</string>
+    <string name="chain_delete_confirm_title">למחוק את השרשרת?</string>
+    <string name="chain_delete_confirm_msg">השרשרת תימחק לצמיתות לכל המשתתפים. פעולה בלתי הפיכה.</string>
+    <string name="chain_filter_all">הכול</string>
+    <string name="chain_filter_free">פנויים</string>
+    <string name="chain_filter_mine">שלי</string>
+    <string name="chain_filter_empty_mine">עדיין לא שמרתם לעצמכם פרקים.</string>
+    <string name="chain_filter_empty_free">כל הפרקים נתפסו 🎉</string>
+    <string name="chain_book_1">ספר א׳</string>
+    <string name="chain_book_2">ספר ב׳</string>
+    <string name="chain_book_3">ספר ג׳</string>
+    <string name="chain_book_4">ספר ד׳</string>
+    <string name="chain_book_5">ספר ה׳</string>
+    <string name="chain_leave">עזיבת השרשרת</string>
+    <string name="chain_leave_confirm_title">לעזוב את השרשרת?</string>
+    <string name="chain_leave_confirm_msg">הפרקים שלכם ישוחררו לטובת שאר המשתתפים.</string>
+    <string name="chain_breakdown">חלוקה לפי משתתף</string>
+    <string name="chain_edit">עריכת השרשרת</string>
+    <string name="chain_extend_selection">הארכת הבחירה</string>
+    <string name="chain_save">שמירה</string>
+    <string name="chain_selection_end">סיום הבחירה</string>
+    <string name="chain_owner_tag">· מנהל</string>
+    <string name="chain_remove_participant">הסרת %1$s</string>
+    <string name="chain_remove_confirm_title">להסיר את המשתתף?</string>
+    <string name="chain_remove_confirm_msg">הפרקים של %1$s ישוחררו ויהיו זמינים שוב. המשתתף יוסר מהשרשרת.</string>
+    <string name="chain_remove_action">הסרה</string>
+    <string name="chain_distributed_closed">השרשרת חולקה — ההרשמה נסגרה</string>
+    <string name="chain_invite">הזמנה</string>
+    <string name="chain_invite_participants">הזמנת משתתפים</string>
+    <string name="chain_invite_blurb">שתפו את קוד ה־QR או את הקישור — כל אחד מצטרף ובוחר את פרקיו.</string>
+    <string name="chain_invite_qr">קוד QR להזמנה</string>
+    <string name="chain_share_link">שיתוף הקישור</string>
+    <string name="chain_copy_link">העתקת הקישור</string>
+    <string name="chain_created_by">נוצרה על ידי %1$s</string>
+    <string name="chain_my_chains">השרשראות שלי</string>
+    <string name="chain_summaries">סיכומים</string>
+    <string name="chain_cat_selection">בחירה מתבצעת</string>
+    <string name="chain_cat_reading">קריאה מתבצעת</string>
+    <string name="chain_cat_closed">הסתיימו</string>
+    <string name="chain_cat_selection_sub">עד סיום הבחירה</string>
+    <string name="chain_cat_reading_sub">עד סיום הקריאה</string>
+    <string name="chain_remove">הסרה</string>
+    <string name="chain_remove_from_list_title">להסיר מהרשימה?</string>
+    <string name="chain_remove_from_list_msg">השרשרת תוסר מהרשימה במכשיר זה. היא אינה נמחקת לשאר המשתתפים.</string>
+    <string name="chain_tap_to_share">הקישו לשיתוף הסיכום</string>
+    <string name="chain_archive_open_offline">זמין ללא אינטרנט · קריאת הפרקים שלי</string>
+    <string name="chain_archive_my_tehilim">הפרקים שלי</string>
+    <string name="chain_archive_no_mine">לא הוקצו לכם פרקים בשרשרת זו.</string>
+    <string name="chain_create_blurb">שתפו את הקישור בוואטסאפ: כל אחד בוחר את הפרקים שיקרא, בזמן אמת.</string>
+    <string name="chain_service_unavailable">השירות אינו זמין בגרסה זו.</string>
+    <string name="chain_loading">טוען…</string>
+    <string name="chain_select_hint_open">הקישו על מספר פנוי כדי להתחייב אליו. הקישו על אחד משלכם כדי לשחרר אותו.</string>
+    <string name="chain_select_hint_locked">הבחירה נסגרה. הקישו על אחד מהפרקים שלכם כדי לקרוא אותו.</string>
+    <string name="chain_countdown_selection">הבחירה מסתיימת בעוד</string>
+    <string name="chain_countdown_distributed">חולקה · קריאה עד</string>
+    <string name="chain_countdown_closed">הבחירה נסגרה · קריאה עד</string>
+    <string name="chain_countdown_reading">הקריאה מסתיימת בעוד</string>
+    <string name="chain_consent">השם והכוונה נשמרים בענן למשך חיי השרשרת, ונמחקים אוטומטית לאחר הקריאה.</string>
+    <string name="chain_intention_lelouy">לעילוי נשמת</string>
+    <string name="chain_intention_refoua">רפואה שלמה</string>
+    <string name="chain_intention_reussite">להצלחת</string>
+    <string name="chain_detail_deceased">שם הנפטר</string>
+    <string name="chain_detail_sick">שם החולה</string>
+    <string name="chain_detail_success">עם ישראל, אדם יקר…</string>
+    <string name="chain_create_error">לא ניתן ליצור. בדקו את החיבור.</string>
+    <string name="chain_report_remaining">נותרו: %1$d פרקים ללא הקצאה.</string>
+    <string name="chain_error_taken">הפרק הזה נתפס זה עתה.</string>
+    <string name="chain_reading_end_label">סיום הקריאה</string>
+    <string name="chain_range_to">עד</string>
+    <string name="chain_share_action">שיתוף</string>
+
+    <!-- Share / import a prayer (tehilim://prayer link) -->
+    <string name="action_share_prayer">שיתוף התפילה</string>
+    <string name="share_prayer_intro">פתחו את התפילה הזו בתהילים:</string>
+    <string name="share_date_of_death">תאריך הפטירה: %1$s</string>
+    <string name="share_next_azcara">האזכרה הבאה: %1$s (מתחילה בערב הקודם)</string>
+    <string name="import_prayer_title">לייבא את התפילה הזו?</string>
+    <string name="import_prayer_already">התפילה הזו כבר נמצאת בתפילות שלי.</string>
+    <string name="action_import">ייבוא</string>
+    <string name="action_open">פתיחה</string>
+
+    <!-- Edit an existing prayer -->
+    <string name="title_edit_prayer">עריכת התפילה</string>
+    <string name="action_edit_prayer">עריכת התפילה</string>
+    <string name="action_save">שמירה</string>
+
+    <!-- Shabbat mode -->
+    <string name="shabbat_chalom_latin">שבת שלום</string>
+    <string name="shabbat_starts_label">כניסת שבת</string>
+    <string name="shabbat_ends_label">צאת שבת</string>
+    <string name="shabbat_ends_short">צאת · %1$s</string>
+    <string name="shabbat_end_hint">הזמנים מחושבים לפי מיקומכם (נרות: שקיעה − 18 דק׳ · צאת: צאת הכוכבים).</string>
+    <string name="shabbat_continue_anyway">להמשיך בכל זאת</string>
+    <string name="shabbat_section_title">מצב שבת</string>
+    <string name="shabbat_enable">הפעלת מצב שבת</string>
+    <string name="shabbat_position">מיקום</string>
+    <string name="shabbat_position_auto">אוטומטי (GPS)</string>
+    <string name="shabbat_footer">בשבת, האפליקציה והווידג׳ט מציגים «שבת שלום». הכניסה (הדלקת נרות) והצאת (צאת הכוכבים) מחושבות לפי מיקומכם: GPS אם אושר, אחרת העיר שנבחרה. תמיד אפשר «להמשיך בכל זאת».</string>
+
+    <!-- ==================== ABOUT — CONTENT SOURCES ==================== -->
+    <string name="about_content_hebrew_title">הטקסט העברי</string>
+    <string name="about_content_hebrew_body">הטקסט העברי המנוקד עם הטעמים מגיע מספריא (sefaria.org), בהפצה תחת רישיון Creative Commons By 4.0.</string>
+    <string name="about_content_fr_title">התרגום הצרפתי</string>
+    <string name="about_content_fr_body">התרגום הצרפתי מגיע מבית ליובאוויטש (le-tehilim.online), בשימוש באישורם.</string>
+    <string name="about_content_en_title">התרגום האנגלי</string>
+    <string name="about_content_en_body">התרגום האנגלי הוא JPS Tanakh 1917, בנחלת הכלל, באמצעות ספריא.</string>
+    <string name="about_content_font_title">הגופן העברי</string>
+    <string name="about_content_font_body">גופן התצוגה העברי הוא Ezra SIL SR, מבית SIL International תחת רישיון SIL OFL.</string>
+    <string name="about_content_calendar_title">הלוח העברי</string>
+    <string name="about_content_calendar_body">המרות התאריכים משתמשות בלוח העברי הרשמי באמצעות ICU ‏(Unicode CLDR).</string>
+
+    <!-- ==================== ABOUT — PRIVACY ==================== -->
+    <string name="about_privacy_none_title">לא נאסף מידע</string>
+    <string name="about_privacy_none_body">תהילים אינה אוספת, משדרת או שומרת שום מידע אישי.</string>
+    <string name="about_privacy_local_title">אחסון מקומי</string>
+    <string name="about_privacy_local_body">ההעדפות שלכם (שפה, גודל טקסט, מועדפים, קריאה אחרונה, לעילוי נשמת) נשמרות מקומית במכשיר באמצעות Android DataStore, ומגובות על ידי Android Auto Backup אם הפעלתם גיבוי בענן של Google.</string>
+    <string name="about_privacy_offline_title">ללא אינטרנט</string>
+    <string name="about_privacy_offline_body">האפליקציה פועלת לחלוטין ללא אינטרנט לאחר ההתקנה — ללא קריאות רשת.</string>
+    <string name="about_privacy_notifications_title">התראות</string>
+    <string name="about_privacy_notifications_body">התזכורות היומיות משתמשות ב־WorkManager של Android ונשארות מקומיות. לא נעשה שימוש בשרת push.</string>
+    <string name="about_privacy_thirdparty_title">צדדים שלישיים</string>
+    <string name="about_privacy_thirdparty_body">ללא מעקב, ללא פרסומות, ללא שירותי צד שלישי מכל סוג.</string>
+    <string name="about_privacy_contact_title">יצירת קשר</string>
+    <string name="about_privacy_contact_body">לכל שאלה: david.bouganim@gmail.com</string>
+
+    <!-- ==================== ACCESSIBILITY DECLARATION ==================== -->
+    <string name="a11y_engagement_body">אפליקציית תהילים מחויבת להנגיש את תוכנה בהתאם לתקן הצרפתי RGAA 4.1.2 ולתקן WCAG 2.1 רמה AA, החלים על אפליקציות לנייד.</string>
+    <string name="a11y_status_main">סטטוס: תאימות חלקית (הצהרה עצמית).</string>
+    <string name="a11y_status_secondary">הצהרה זו מבוססת על בדיקה עצמית. בדיקה חיצונית מתוכננת לפני ההפצה.</string>
+    <string name="a11y_feature_talkback">תאימות מלאה ל־TalkBack.</string>
+    <string name="a11y_feature_text_size">כיבוד גודל הטקסט של המערכת (עד סולם הנגישות המרבי).</string>
+    <string name="a11y_feature_themes">מצבים בהיר, כהה ואוטומטי.</string>
+    <string name="a11y_feature_contrast">ניגודיות הטקסט עומדת ברמה AA ‏(≥ 4.5:1).</string>
+    <string name="a11y_feature_targets">אזורי מגע בגודל 48 × 48 dp לפחות.</string>
+    <string name="a11y_feature_no_color_only">שום מידע אינו מועבר באמצעות צבע בלבד.</string>
+    <string name="a11y_feature_animations">כיבוד הגדרת המערכת «הסרת אנימציות».</string>
+    <string name="a11y_feature_rtl_ltr">TalkBack קורא את העברית מימין לשמאל ואת התרגום משמאל לימין, בסדר זה.</string>
+    <string name="a11y_limit_hebrew_tts">הטקסט העברי נקרא על ידי TalkBack לפי יכולות הקול שבחר המשתמש.</string>
+    <string name="a11y_limit_119_grid">רשת 22 האותיות של תהילים קי״ט עשויה לדרוש גלילה בגודל טקסט גדול מאוד.</string>
+    <string name="a11y_recourse_body">לדיווח על בעיית נגישות: פרטי קשר יוגדרו לפני הפרסום ב־Google Play.</string>
+    <string name="reading_text_size">גודל הטקסט</string>
+    <string name="reading_text_smaller">הקטנת הטקסט</string>
+    <string name="reading_text_larger">הגדלת הטקסט</string>
+    <string name="chain_participant_limit">מקסימום משתתפים</string>
+    <string name="chain_participant_unlimited">ללא הגבלה</string>
+    <string name="chain_participant_cap_note">עד 50 משתתפים בשרשרת.</string>
+    <string name="chain_too_many_open">כבר יש לכם שתי שרשראות בשלב הבחירה. סיימו אותן לפני יצירת שרשרת נוספת.</string>
+</resources>

@@ -148,6 +148,10 @@ struct TehilimApp: App {
             // sa traduction dans la nouvelle locale, sans relancer l'app.
             .id(appLanguage)
             .environment(\.locale, Locale(identifier: appLanguage.activeCode))
+            // V2.2 — hébreu : toute l'interface bascule en droite-à-gauche.
+            // Les zones déjà forcées (texte hébreu RTL, phonétique LTR)
+            // gardent leur propre `.environment(\.layoutDirection, …)` local.
+            .environment(\.layoutDirection, appLanguage.isRTL ? .rightToLeft : .leftToRight)
             // Le token push est enregistré avec la locale courante. Au changement
             // de langue, on le ré-enregistre pour que les notifications de chaîne
             // arrivent dans la nouvelle langue (sans attendre le prochain lancement).

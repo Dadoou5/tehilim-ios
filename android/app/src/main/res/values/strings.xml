@@ -200,6 +200,7 @@
     <string name="enum_applang_system">Système</string>
     <string name="enum_applang_fr">Français</string>
     <string name="enum_applang_en">English</string>
+    <string name="enum_applang_he">עברית</string>
 
     <string name="enum_theme_system">Système</string>
     <string name="enum_theme_light">Clair</string>

@@ -51,13 +51,14 @@ class TehilimApplication : Application() {
         val tag = when (savedLang) {
             AppLanguage.FR -> "fr"
             AppLanguage.EN -> "en"
-            // SYSTEM : suit la langue de l'appareil si fr/en (tag vide = pas
+            AppLanguage.HE -> "he"
+            // SYSTEM : suit la langue de l'appareil si fr/en/he (tag vide = pas
             // d'override). Pour toute autre langue système, l'app n'étant
-            // traduite qu'en fr/en, on force l'**anglais** (et non le repli
+            // traduite qu'en fr/en/he, on force l'**anglais** (et non le repli
             // par défaut sur les ressources `values/` qui sont en français).
             AppLanguage.SYSTEM -> {
                 val sys = systemLanguage()
-                if (sys == "fr" || sys == "en") "" else "en"
+                if (sys == "fr" || sys == "en" || sys == "he" || sys == "iw") "" else "en"
             }
         }
         // V1.3.11 — sur API 33+ on bypass AppCompat et on tape LocaleManager

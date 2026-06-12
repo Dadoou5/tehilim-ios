@@ -36,6 +36,7 @@ struct SettingsView: View {
                         Text("Système").tag(AppLanguage.system)
                         Text("Français").tag(AppLanguage.fr)
                         Text("English").tag(AppLanguage.en)
+                        Text(verbatim: "עברית").tag(AppLanguage.he)
                     }
                     .onChange(of: prefs.appLanguage) { _, _ in
                         // V2.1.b — écrit AppleLanguages pour les API système

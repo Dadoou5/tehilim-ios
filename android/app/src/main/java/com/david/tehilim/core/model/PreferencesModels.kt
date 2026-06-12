@@ -14,18 +14,23 @@ import com.david.tehilim.R
 enum class AppLanguage(val storageValue: String, @StringRes val labelRes: Int) {
     SYSTEM("system", R.string.enum_applang_system),
     FR("fr", R.string.enum_applang_fr),
-    EN("en", R.string.enum_applang_en);
+    EN("en", R.string.enum_applang_en),
+    HE("he", R.string.enum_applang_he);
 
     /**
      * Langue de traduction effective utilisée pour afficher les versets.
-     * SYSTEM = on regarde la locale du device.
+     * SYSTEM = on regarde la locale du device. En hébreu, le texte source EST
+     * l'hébreu — la traduction affichable retombe sur l'anglais (corpus FR/EN).
      */
     val translation: TranslationLanguage get() = when (this) {
-        EN -> TranslationLanguage.EN
+        EN, HE -> TranslationLanguage.EN
         FR -> TranslationLanguage.FR
         SYSTEM -> {
             val locale = java.util.Locale.getDefault().language
-            if (locale.startsWith("en")) TranslationLanguage.EN else TranslationLanguage.FR
+            // `Locale.getLanguage()` rapporte l'hébreu sous l'ancien code « iw ».
+            if (locale.startsWith("en") || locale.startsWith("iw") || locale.startsWith("he"))
+                TranslationLanguage.EN
+            else TranslationLanguage.FR
         }
     }
 }

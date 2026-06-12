@@ -74,28 +74,39 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable {
     case system
     case fr
     case en
+    case he
 
     var id: String { rawValue }
 
     /// Code BCP-47 actif. Pour `.system`, suit la langue de l'appareil si
-    /// c'est le français ou l'anglais ; pour toute autre langue système
-    /// (l'app n'est traduite qu'en fr/en), l'**anglais** est la valeur par
-    /// défaut (et non le français).
+    /// c'est le français, l'anglais ou l'hébreu ; pour toute autre langue
+    /// système, l'**anglais** est la valeur par défaut (et non le français).
     var activeCode: String {
         switch self {
         case .system:
             let pref = Locale.preferredLanguages.first ?? "en"
             let code = String(pref.split(separator: "-").first ?? "en")
-            return (code == "fr" || code == "en") ? code : "en"
+            // iOS peut rapporter l'hébreu sous son ancien code ISO « iw ».
+            if code == "iw" { return "he" }
+            return ["fr", "en", "he"].contains(code) ? code : "en"
         case .fr: return "fr"
         case .en: return "en"
+        case .he: return "he"
         }
     }
 
     /// Langue effective pour le texte de traduction des Tehilim.
+    /// En hébreu, le texte source EST l'hébreu — la traduction affichable
+    /// retombe sur l'anglais (le corpus n'a que FR/EN).
     var translation: TranslationLanguage {
-        activeCode == "en" ? .en : .fr
+        switch activeCode {
+        case "fr": return .fr
+        default:   return .en
+        }
     }
+
+    /// Direction de lecture de l'interface pour cette langue.
+    var isRTL: Bool { activeCode == "he" }
 
     /// Code à inscrire dans `AppleLanguages`. `nil` pour `.system` (laisse iOS choisir).
     var appleLanguagesCode: String? {

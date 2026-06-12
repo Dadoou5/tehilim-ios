@@ -1,0 +1,441 @@
+/* ============================================================
+   Hebrew UI strings — V2.2
+   Keys are the French source strings (used by Text("Accueil") etc.).
+   Mirror complet de en.lproj — toute clé absente retombe sur le français.
+   ============================================================ */
+
+/* Tabs */
+"Accueil" = "בית";
+"Tehilim" = "תהילים";
+"Aujourd'hui" = "היום";
+"Cas de la vie" = "מצבי חיים";
+"Réglages" = "הגדרות";
+
+/* Sections / titres */
+"Reprendre la lecture" = "המשך קריאה";
+"Mes favoris" = "המועדפים שלי";
+"Tehilim du jour" = "תהילים יומי";
+"Explorer" = "גלו";
+"Prières" = "תפילות";
+"Tous les Tehilim" = "כל פרקי התהילים";
+"Au programme" = "בתוכנית";
+
+/* Cards */
+"5 livres" = "חמישה ספרים";
+"Tous (1–150)" = "הכול (1–150)";
+"Tehilim 119" = "קי״ט — אלפא־ביתא";
+"119 - AlphaBeta" = "קי״ט — אלפא־ביתא";
+"Prière avant" = "תפילה לפני";
+"Prière après" = "תפילה אחרי";
+"Prière avant la lecture" = "תפילה לפני הקריאה";
+"Prière après la lecture" = "תפילה אחרי הקריאה";
+
+/* Settings sections */
+"Texte du psaume" = "טקסט הפרק";
+"Mode du texte" = "מצב הטקסט";
+"Hébreu" = "עברית";
+"Phonétique" = "תעתיק";
+"Taille hébreu / phonétique" = "גודל עברית / תעתיק";
+"Taille français" = "גודל התרגום";
+"Taille de la traduction" = "גודל התרגום";
+"Numérique" = "מספרי";
+"Très petit" = "קטן מאוד";
+"Petit" = "קטן";
+"Moyen" = "בינוני";
+"Grand" = "גדול";
+"Très grand" = "גדול מאוד";
+"Énorme" = "ענק";
+"Géant" = "ענק במיוחד";
+"Maximum" = "מקסימום";
+"Taille du texte" = "גודל הטקסט";
+"Réduire le texte" = "הקטנת הטקסט";
+"Agrandir le texte" = "הגדלת הטקסט";
+"Affichage" = "תצוגה";
+"Thème" = "ערכת נושא";
+"Système" = "מערכת";
+"Clair" = "בהיר";
+"Sombre" = "כהה";
+"Traduction" = "תרגום";
+"Langue" = "שפה";
+"Langue de la traduction" = "שפת התרגום";
+"Afficher la traduction par défaut" = "הצגת התרגום כברירת מחדל";
+"Redémarrage requis" = "נדרשת הפעלה מחדש";
+"La traduction des Tehilim a basculé immédiatement. Pour que l'interface change aussi, ferme l'app puis rouvre-la." = "תרגום התהילים הוחלף מייד. כדי שגם הממשק ישתנה, סגרו את האפליקציה ופתחו אותה מחדש.";
+"Numérotation des versets" = "מספור הפסוקים";
+"Arabe" = "ספרות";
+"Lecture quotidienne" = "קריאה יומית";
+"Mode" = "מצב";
+"Cycle mensuel" = "מחזור חודשי";
+"Jour de la semaine" = "יום בשבוע";
+"Cycle mensuel — jour %d" = "מחזור חודשי — יום %d";
+"Personnalisé (V2)" = "מותאם אישית (V2)";
+"Rappel quotidien" = "תזכורת יומית";
+
+/* Mode Chabbat */
+"Début du Chabbat" = "כניסת שבת";
+"Fin du Chabbat" = "צאת שבת";
+"Horaires calculés selon ta position (bougies : coucher − 18 min · fin : sortie des étoiles)." = "הזמנים מחושבים לפי מיקומכם (נרות: שקיעה − 18 דק׳ · צאת: צאת הכוכבים).";
+"Continuer quand même" = "להמשיך בכל זאת";
+"Me notifier chaque jour" = "תזכורת מדי יום";
+"Heure du rappel" = "שעת התזכורת";
+"Mode de lecture" = "מצב קריאה";
+"Accessibilité" = "נגישות";
+"Déclaration d'accessibilité" = "הצהרת נגישות";
+"À propos" = "אודות";
+"Sources du contenu" = "מקורות התוכן";
+"Confidentialité" = "פרטיות";
+"Version" = "גרסה";
+
+/* Buttons */
+"Annuler" = "ביטול";
+"Fermer" = "סגירה";
+"OK" = "אישור";
+"Suivant" = "הבא";
+"Commencer" = "להתחיל";
+"Passer" = "דילוג";
+"Enregistrer" = "שמירה";
+"Changer" = "שינוי";
+"Précédent" = "הקודם";
+"Rechercher" = "חיפוש";
+"Plus d'actions" = "פעולות נוספות";
+"Ajouter aux favoris" = "הוספה למועדפים";
+"Retirer des favoris" = "הסרה מהמועדפים";
+"Afficher la traduction française" = "הצגת התרגום";
+"Masquer la traduction française" = "הסתרת התרגום";
+"Copier" = "העתקה";
+"Partager" = "שיתוף";
+"Retirer" = "הסרה";
+"Partager le texte" = "שיתוף הטקסט";
+
+/* Search */
+"Rechercher un Tehilim" = "חיפוש פרק תהילים";
+"23, כג, tehilim 23" = "23, כג, תהילים 23";
+"Aucun Tehilim trouvé" = "לא נמצא פרק";
+"Essaie un numéro entre 1 et 150, ou les lettres hébraïques (ex. כג)." = "נסו מספר בין 1 ל־150, או אותיות עבריות (למשל כג).";
+"Résultat" = "תוצאה";
+"Suggestions" = "הצעות";
+"Récents" = "אחרונים";
+
+/* Onboarding */
+"Bienvenue" = "ברוכים הבאים";
+"Au quotidien" = "ביום־יום";
+"À ton rythme" = "בקצב שלכם";
+"L'intégralité des 150 Tehilim, en hébreu vocalisé et en français.\n\nTraduction : Beth Loubavitch.\nTexte hébreu : Sefaria — Miqra according to the Masorah." = "כל ק״נ פרקי התהילים בעברית מנוקדת, עם תרגום לצרפתית ולאנגלית.\n\nצרפתית: בית ליובאוויטש.\nאנגלית: JPS 1917.\nעברית: ספריא — מקרא על פי המסורה.";
+"Retrouve les Tehilim du jour, ceux associés à un moment de vie (santé, mariage, deuil, voyage…), et 17 cas de la vie organisés en 4 sections." = "מצאו את תהילים היומי, פרקים לרגעי חיים (בריאות, חתונה, אבלות, נסיעה…) ומצבי חיים מסודרים לפי נושאים.";
+"Choisis la taille du texte, le mode hébreu ou phonétique, l'affichage de la traduction, l'heure du rappel quotidien — tout est configurable dans Réglages." = "בחרו את גודל הטקסט, מצב עברית או תעתיק, הצגת התרגום, שעת התזכורת היומית — הכול ניתן להגדרה בהגדרות.";
+
+/* Verses */
+"Traduction non disponible." = "אין תרגום זמין.";
+"Tehilim introuvable" = "הפרק לא נמצא";
+"Ce psaume n'existe pas dans le corpus chargé." = "פרק זה אינו קיים בתוכן הטעון.";
+"Aucun favori" = "אין מועדפים";
+"Tape sur le cœur dans un Tehilim pour l'ajouter ici." = "הקישו על הלב בפרק תהילים כדי להוסיף אותו לכאן.";
+"Catégories en cours de validation" = "קטגוריות בתהליך אימות";
+
+/* Daily */
+"Aucun Tehilim défini pour ce jour." = "לא הוגדרו פרקים ליום זה.";
+"Aucun Tehilim défini pour ce mode." = "לא הוגדרו פרקים למצב זה.";
+
+/* Notifications */
+"Notifications désactivées dans iOS" = "ההתראות מושבתות ב־iOS";
+"Active-les dans Réglages iOS → Tehilim → Notifications pour recevoir le rappel." = "הפעילו אותן בהגדרות iOS ← תהילים ← התראות כדי לקבל את התזכורת.";
+"Ouvrir Réglages iOS" = "פתיחת הגדרות iOS";
+"Tu recevras un rappel chaque jour à cette heure pour les Tehilim du jour." = "תקבלו תזכורת מדי יום בשעה זו לתהילים היומי.";
+"C'est le moment de lire tes Tehilim du jour." = "הגיע הזמן לקרוא את תהילים היומי שלכם.";
+
+/* Accessibility VoiceOver labels */
+"Verset %d." = "פסוק %d.";
+
+/* About — Sources */
+"Texte hébreu" = "הטקסט העברי";
+"Source : Sefaria — édition « Miqra according to the Masorah ». Texte massorétique avec nikud, sans téamim. Domaine public." = "מקור: ספריא — מהדורת «מקרא על פי המסורה». נוסח המסורה עם ניקוד, ללא טעמים. נחלת הכלל.";
+"Traduction française" = "התרגום הצרפתי";
+"Beth Loubavitch — le-tehilim.online" = "בית ליובאוויטש — le-tehilim.online";
+"8 rue Lamartine, 75009 Paris\nchabad@loubavitch.fr" = "8 rue Lamartine, 75009 Paris\nchabad@loubavitch.fr";
+"Utilisée avec l'autorisation expresse de l'éditeur." = "בשימוש באישור מפורש של המו״ל.";
+"English translation" = "התרגום האנגלי";
+"Sefaria — JPS 1917 (The Holy Scriptures: A New Translation)" = "ספריא — JPS 1917 (The Holy Scriptures: A New Translation)";
+"Domaine public — publié à l'origine par la Jewish Publication Society of America en 1917." = "נחלת הכלל — פורסם במקור על ידי Jewish Publication Society of America בשנת 1917.";
+"Aucune donnée personnelle n'est collectée par cette application." = "אפליקציה זו אינה אוספת שום מידע אישי.";
+
+/* About — Privacy */
+"Cette application ne collecte aucune donnée personnelle." = "אפליקציה זו אינה אוספת שום מידע אישי.";
+"Toutes les préférences sont stockées localement sur l'appareil." = "כל ההעדפות נשמרות מקומית במכשיר.";
+"Aucune connexion réseau n'est nécessaire au fonctionnement principal." = "אין צורך בחיבור לאינטרנט לתפקוד העיקרי.";
+"Sources" = "מקורות";
+
+/* Accessibility declaration */
+"Engagement" = "מחויבות";
+"L'application Tehilim s'engage à rendre son contenu accessible conformément au Référentiel Général d'Amélioration de l'Accessibilité (RGAA 4.1.2) et au standard WCAG 2.1 niveau AA, applicables aux applications mobiles." = "אפליקציית תהילים מחויבת להנגיש את תוכנה בהתאם לתקן WCAG 2.1 רמה AA, החל על אפליקציות לנייד.";
+"État de conformité" = "מצב תאימות";
+"Statut : conformité partielle (auto-déclaration)." = "סטטוס: תאימות חלקית (הצהרה עצמית).";
+"Cette déclaration est établie sur la base d'un auto-audit. Un audit externe est prévu avant la mise en production." = "הצהרה זו מבוססת על בדיקה עצמית. בדיקה חיצונית מתוכננת לפני ההפצה.";
+"Caractéristiques d'accessibilité prises en charge" = "יכולות נגישות נתמכות";
+"Compatibilité complète avec VoiceOver." = "תאימות מלאה ל־VoiceOver.";
+"Respect de la taille de texte système (Dynamic Type) jusqu'à AX5." = "תמיכה בגודל הטקסט של המערכת (Dynamic Type) עד AX5.";
+"Modes clair, sombre, et automatique." = "מצבים בהיר, כהה ואוטומטי.";
+"Contrastes de texte conformes au niveau AA (≥ 4.5:1)." = "ניגודיות טקסט תואמת רמה AA ‏(≥ 4.5:1).";
+"Cibles tactiles supérieures ou égales à 44 × 44 points." = "אזורי מגע בגודל 44 × 44 נקודות לפחות.";
+"Aucune information transmise uniquement par la couleur." = "שום מידע אינו מועבר באמצעות צבע בלבד.";
+"Respect du paramètre « Réduire les animations »." = "כיבוד ההגדרה «הפחתת תנועה».";
+"Lecture VoiceOver de l'hébreu en sens RTL et de la traduction en LTR, dans cet ordre." = "קריאת VoiceOver של העברית מימין לשמאל ושל התרגום משמאל לימין, בסדר זה.";
+"Limites connues" = "מגבלות ידועות";
+"Le texte hébreu est lu phonétiquement par VoiceOver selon les capacités de la voix sélectionnée par l'utilisateur·rice." = "הטקסט העברי נקרא על ידי VoiceOver לפי יכולות הקול שבחר המשתמש.";
+"La grille des 22 lettres du Tehilim 119 peut nécessiter un défilement avec une très grande taille de texte." = "רשת 22 האותיות של פרק קי״ט עשויה לדרוש גלילה בגודל טקסט גדול מאוד.";
+"Voies de recours" = "דרכי פנייה";
+"Pour signaler un problème d'accessibilité : contact à définir avant publication App Store." = "לדיווח על בעיית נגישות: פרטי קשר יוגדרו לפני הפרסום ב־App Store.";
+"Référentiel et version" = "תקן וגרסה";
+
+/* Settings preview */
+"Aperçu" = "תצוגה מקדימה";
+
+/* Errors */
+"Section introuvable" = "המדור לא נמצא";
+"Catégorie introuvable" = "הקטגוריה לא נמצאה";
+
+/* DailyMode labels (runtime) */
+"Personnalisé" = "מותאם אישית";
+
+/* Resume card fallback */
+"Reprendre" = "המשך";
+
+/* Favorites shortcut */
+"1 Tehilim sauvegardé" = "פרק אחד שמור";
+"%lld Tehilim sauvegardés" = "%lld פרקים שמורים";
+"Tape ♡ sur un Tehilim pour l'ajouter ici" = "הקישו ♡ על פרק כדי להוסיף אותו לכאן";
+"Voir la liste" = "הצגת הרשימה";
+
+/* Prayer subtitles */
+"Tehilim 95, versets 1 à 3" = "תהילים צ״ה, פסוקים א–ג";
+"Tehilim 14:7 et 37, versets 39 à 40" = "תהילים י״ד:ז ו־ל״ז, פסוקים לט–מ";
+
+/* Verse range header in Tehilim 119 */
+"%@ — %@ · v. %d–%d" = "%@ — %@ · פס׳ %d–%d";
+
+/* Tehilim tab segments */
+"Livres" = "ספרים";
+"Tous" = "הכול";
+"Favoris" = "מועדפים";
+
+/* Book list */
+"Livre %lld" = "ספר %lld";
+"%lld Tehilim" = "%lld פרקים";
+
+/* Psalm list — verse count */
+"%lld versets" = "%lld פסוקים";
+"1 verset" = "פסוק אחד";
+
+/* Tehilim list common */
+"Tehilim %lld · %@" = "תהילים %lld · %@";
+
+/* Onboarding additions */
+"Bienvenue dans Tehilim" = "ברוכים הבאים לתהילים";
+
+/* IluyNishmat in splash */
+"À la mémoire de" = "לזכר";
+"Aucune dédicace personnelle. La dédicace par défaut s'affiche en tête de chaque psaume." = "אין הקדשה אישית. הקדשת ברירת המחדל מוצגת בראש כל פרק.";
+
+/* Disclaimer in life cases */
+"Tradition" = "מסורת";
+
+/* Settings labels not yet covered */
+"Le contenu sera disponible après validation éditoriale." = "התוכן יהיה זמין לאחר אימות עריכתי.";
+
+/* V2.1.b — keys discovered missing during the EN polish pass. */
+"Source : %@" = "מקור: %@";
+"Aperçu traduction" = "תצוגה מקדימה של התרגום";
+"Cantique des degrés. Je lève mes yeux vers les montagnes…" = "שיר למעלות, אשא עיני אל ההרים…";
+"Transcription assistée du texte hébreu en lettres latines (sépharade). Approximation algorithmique, ne remplace pas une lecture du texte original." = "תעתיק של הטקסט העברי באותיות לטיניות (הגייה ספרדית). קירוב אלגוריתמי, אינו תחליף לקריאת המקור.";
+"Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים";
+"Tehilim. Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "תהילים. לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים";
+
+/* Tehilim 119 (AlphaBeta) home */
+"Les 22 lettres de l'alphabet hébreu, huit versets chacune." = "22 אותיות האלף־בית, שמונה פסוקים לכל אות.";
+"Lelouy Nichmat" = "לעילוי נשמת";
+"Nouvelle lecture" = "קריאה חדשה";
+"Mes prières" = "התפילות שלי";
+"Élévation de l'âme — prénom + mère" = "עילוי נשמה — שם פרטי + שם האם";
+"Aucun sauvegardé" = "אין שמורות";
+"1 sauvegardé" = "אחת שמורה";
+"%lld sauvegardés" = "%lld שמורות";
+
+/* Lelouy Nichmat : SavedPrayersListView, form, ListView */
+"Aucun Lelouy Nichmat sauvegardé" = "אין קריאות לעילוי נשמת שמורות";
+"Génère une lecture personnalisée et sauvegarde-la pour la retrouver ici." = "צרו קריאה אישית ושמרו אותה כדי למצוא אותה כאן.";
+"Le défunt" = "הנפטר";
+"Sa mère" = "אימו";
+"Prénom" = "שם פרטי";
+"Prénom de la mère" = "שם האם";
+"Lien" = "קשר";
+"Aperçu hébraïque" = "תצוגה מקדימה בעברית";
+"Générer" = "יצירה";
+"Lecture pour l'élévation de l'âme" = "קריאה לעילוי נשמה";
+"Active le clavier hébreu" = "הפעילו את המקלדת העברית";
+"Séquence de lecture" = "רצף הקריאה";
+"Prénom en hébreu uniquement." = "שם פרטי בעברית בלבד.";
+"« נשמה » sera ajouté automatiquement à la fin de la séquence." = "«נשמה» תתווסף אוטומטית בסוף הרצף.";
+"« נשמה » a été ajouté automatiquement à la fin de la séquence." = "«נשמה» נוספה אוטומטית בסוף הרצף.";
+"La séquence générée correspond aux lettres du prénom du défunt, du lien (בן/בת), du prénom de sa mère, puis de נשמה." = "הרצף שנוצר תואם את אותיות שם הנפטר, הקשר (בן/בת), שם אימו, ולבסוף נשמה.";
+"Réglages → Général → Clavier → Claviers → Ajouter un clavier → Hébreu. Puis appuie sur 🌐 pendant la saisie pour basculer." = "הגדרות ← כללי ← מקלדת ← מקלדות ← הוספת מקלדת ← עברית. לאחר מכן הקישו על 🌐 בזמן ההקלדה כדי לעבור.";
+
+/* Strings dynamiques (formats %lld) */
+"%lld lettres" = "%lld אותיות";
+"%lld sauvegardé" = "%lld שמורה";
+"lue jusqu'à %lld" = "נקראה עד %lld";
+"À la lettre %lld sur %lld" = "באות %lld מתוך %lld";
+
+/* Labels LetterSource */
+"proche" = "יקיר";
+"lien" = "קשר";
+"mère" = "אם";
+
+/* Section Tehilim 119 — header de progression */
+"· source : %@" = "· מקור: %@";
+
+/* Life Cases */
+"1 Tehilim recommandé" = "פרק מומלץ אחד";
+"%lld Tehilim recommandés" = "%lld פרקים מומלצים";
+"Tehilim à lire" = "פרקים לקריאה";
+
+/* Commémoration (Lelouy Nichmat form section + notifications) */
+"Commémoration" = "אזכרה";
+"Date du décès" = "תאריך הפטירה";
+"Effacer la date" = "מחיקת התאריך";
+"L'application calcule automatiquement la prochaine azcara à partir de la date civile saisie." = "האפליקציה מחשבת אוטומטית את מועד האזכרה הבא מהתאריך הלועזי שהוזן.";
+"Recevoir un rappel" = "קבלת תזכורת";
+"7 jours avant" = "שבעה ימים לפני";
+"Le jour même" = "ביום עצמו";
+"Ajoutez une date du décès pour programmer les rappels." = "הוסיפו תאריך פטירה כדי לתזמן את התזכורות.";
+"Les notifications sont désactivées sur cet appareil." = "ההתראות מושבתות במכשיר זה.";
+"Prochaine azcara" = "האזכרה הבאה";
+"Azcara dans 7 jours" = "אזכרה בעוד שבעה ימים";
+"Azcara aujourd'hui" = "אזכרה היום";
+"Azcara de %@." = "אזכרה של %@.";
+"Azcara de %@ dans %lld jours." = "אזכרה של %@ בעוד %lld ימים.";
+"* commence la veille au soir" = "* מתחילה בערב הקודם";
+"Rappels programmés" = "תזכורות מתוזמנות";
+"Rappels" = "תזכורות";
+"Aucun rappel" = "אין תזכורת";
+"Renseigne une date du décès pour activer les rappels d'azcara." = "הזינו תאריך פטירה כדי להפעיל את תזכורות האזכרה.";
+"Active les rappels depuis « Modifier »." = "הפעילו את התזכורות דרך «עריכה».";
+
+/* Chaîne de Tehilim */
+"Chaîne de Tehilim" = "שרשרת תהילים";
+"Chaînes de Tehilim" = "שרשראות תהילים";
+"Créer une chaîne" = "יצירת שרשרת";
+"Créer" = "יצירה";
+"Rejoindre" = "הצטרפות";
+"Rejoindre la chaîne" = "הצטרפות לשרשרת";
+"Nouvelle chaîne" = "שרשרת חדשה";
+"Nom de la chaîne" = "שם השרשרת";
+"Intention" = "כוונה";
+"Délais" = "מועדים";
+"Durée de sélection" = "משך הבחירה";
+"Fin de lecture" = "סיום הקריאה";
+"Toi" = "אתם";
+"Ton nom" = "השם שלכם";
+"Ton nom (visible de tous)" = "השם שלכם (גלוי לכולם)";
+"Participants" = "משתתפים";
+"Avancement" = "התקדמות";
+"Maître de la chaîne" = "מנהל השרשרת";
+"Clôturer et distribuer" = "סגירה וחלוקה";
+"Partager le compte rendu" = "שיתוף הסיכום";
+"Choisis tes Tehilim" = "בחרו את הפרקים שלכם";
+"Répartition" = "חלוקה";
+"Mes Tehilim" = "הפרקים שלי";
+"Lecture jusqu'au" = "קריאה עד";
+"Fin de la sélection dans" = "הבחירה מסתיימת בעוד";
+"Fin de la lecture dans" = "הקריאה מסתיימת בעוד";
+"Lecture terminée le" = "הקריאה הסתיימה ב־";
+"Aucun Tehilim ne t'a été attribué dans cette chaîne." = "לא הוקצו לכם פרקים בשרשרת זו.";
+"Disponible hors-ligne · lire mes Tehilim" = "זמין ללא אינטרנט · קריאת הפרקים שלי";
+"Mes chaînes" = "השרשראות שלי";
+"Sélection en cours" = "בחירה מתבצעת";
+"Lecture en cours" = "קריאה מתבצעת";
+"Terminées" = "הסתיימו";
+"avant la fin de la sélection" = "עד סיום הבחירה";
+"avant la fin de la lecture" = "עד סיום הקריאה";
+"Comptes rendus" = "סיכומים";
+"Indisponible" = "לא זמין";
+"Chaîne introuvable" = "השרשרת לא נמצאה";
+"Chaîne clôturée" = "השרשרת נסגרה";
+"Ton nom sera visible par tous les participants de la chaîne." = "השם שלכם יהיה גלוי לכל משתתפי השרשרת.";
+"Touche un numéro libre pour t'y engager. Touche un de tes numéros pour le libérer." = "הקישו על מספר פנוי כדי להתחייב אליו. הקישו על אחד מהמספרים שלכם כדי לשחרר אותו.";
+"La sélection est close. Touche un de tes Tehilim pour le lire." = "הבחירה נסגרה. הקישו על אחד מהפרקים שלכם כדי לקרוא אותו.";
+"Pendant la sélection, chacun choisit ses Tehilim. Ensuite la chaîne passe en lecture seule jusqu'à la fin de lecture." = "בזמן הבחירה, כל אחד בוחר את פרקיו. לאחר מכן השרשרת עוברת לקריאה בלבד עד מועד סיום הקריאה.";
+"Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture." = "השם והכוונה נשמרים בענן למשך חיי השרשרת, ונמחקים אוטומטית לאחר הקריאה.";
+"Crée une chaîne, partage le lien sur WhatsApp : chacun choisit les Tehilim qu'il s'engage à lire, en temps réel." = "צרו שרשרת ושתפו את הקישור בוואטסאפ: כל אחד בוחר את הפרקים שהוא מתחייב לקרוא, בזמן אמת.";
+"Les chaînes de Tehilim nécessitent une connexion (service non configuré sur cette build)." = "שרשראות תהילים דורשות חיבור (השירות אינו מוגדר בגרסה זו).";
+"Ce lien n'est plus valable ou la chaîne a été clôturée." = "הקישור כבר אינו תקף, או שהשרשרת נסגרה.";
+"Créée par %@" = "נוצרה על ידי %@";
+"Toi : %lld" = "אתם: %lld";
+"M'attribuer les %lld restants" = "להקצות לי את %lld הנותרים";
+"Archivé le %@" = "נשמר בארכיון ב־%@";
+"Tu peux ajouter des émojis. Le sujet apparaîtra : « %@ — %@ »." = "אפשר להוסיף אימוג׳ים. הנושא יוצג: «%@ — %@».";
+"Refoua Chelema" = "רפואה שלמה";
+"Pour la réussite de" = "להצלחת";
+"Prénom du défunt" = "שם הנפטר";
+"Prénom du malade" = "שם החולה";
+"Am Israël, un proche…" = "עם ישראל, אדם יקר…";
+
+/* Chaîne de Tehilim — suppression par le créateur */
+"Supprimer la chaîne" = "מחיקת השרשרת";
+"Supprimer la chaîne ?" = "למחוק את השרשרת?";
+"Supprimer" = "מחיקה";
+"La chaîne sera définitivement supprimée pour tous les participants. Action irréversible." = "השרשרת תימחק לצמיתות לכל המשתתפים. פעולה בלתי הפיכה.";
+
+/* Chaîne de Tehilim — chargement + messages d'erreur */
+"Chargement…" = "טוען…";
+"Ce Tehilim vient d'être pris." = "הפרק הזה נתפס זה עתה.";
+"Impossible de libérer ce Tehilim." = "לא ניתן לשחרר את הפרק.";
+"Impossible de rejoindre." = "לא ניתן להצטרף.";
+"Attribution impossible." = "לא ניתן להקצות.";
+"Distribution impossible." = "לא ניתן לחלק.";
+"Suppression impossible." = "לא ניתן למחוק.";
+"Création impossible. Vérifie ta connexion." = "לא ניתן ליצור. בדקו את החיבור.";
+
+/* Chaîne v2 — filtres, livres, quitter, édition, répartition */
+"Libres" = "פנויים";
+"Les miens" = "שלי";
+"Livre I" = "ספר א׳";
+"Livre II" = "ספר ב׳";
+"Livre III" = "ספר ג׳";
+"Livre IV" = "ספר ד׳";
+"Livre V" = "ספר ה׳";
+"Tu n'as pas encore réservé de Tehilim." = "עדיין לא שמרתם לעצמכם פרקים.";
+"Tous les Tehilim sont pris 🎉" = "כל הפרקים נתפסו 🎉";
+"Quitter la chaîne" = "עזיבת השרשרת";
+"Quitter la chaîne ?" = "לעזוב את השרשרת?";
+"Quitter" = "עזיבה";
+"Tes Tehilim seront libérés pour les autres participants." = "הפרקים שלכם ישוחררו לטובת שאר המשתתפים.";
+"Modifier la chaîne" = "עריכת השרשרת";
+"Prolonger la sélection" = "הארכת הבחירה";
+"Prolonger" = "הארכה";
+"Prolongation impossible." = "לא ניתן להאריך.";
+"Nouvelle échéance" = "מועד חדש";
+"Les participants seront prévenus que la sélection est prolongée, et les rappels repartiront." = "המשתתפים יקבלו הודעה שהבחירה הוארכה, והתזכורות יחודשו.";
+"Fin de la sélection" = "סיום הבחירה";
+"Enregistrement impossible." = "לא ניתן לשמור.";
+"Répartition par personne" = "חלוקה לפי משתתף";
+"Impossible de quitter." = "לא ניתן לעזוב.";
+"Retrait impossible." = "לא ניתן להסיר.";
+"· maître" = "· מנהל";
+"Retirer %@" = "הסרת %@";
+"Retirer ce participant ?" = "להסיר את המשתתף?";
+"Chaîne distribuée — inscriptions closes" = "השרשרת חולקה — ההרשמה נסגרה";
+"Les Tehilim de %@ seront libérés et redeviendront disponibles. Cette personne sera retirée de la chaîne." = "הפרקים של %@ ישוחררו ויהיו זמינים שוב. המשתתף יוסר מהשרשרת.";
+
+/* Chaîne — invitation + QR code */
+"Inviter" = "הזמנה";
+"Inviter des participants" = "הזמנת משתתפים";
+"Partager le lien" = "שיתוף הקישור";
+"Copier le lien" = "העתקת הקישור";
+"Lien copié" = "הקישור הועתק";
+"QR code d'invitation" = "קוד QR להזמנה";
+"Partage le QR code ou le lien — chacun rejoint la chaîne et choisit les Tehilim qu'il lira." = "שתפו את קוד ה־QR או את הקישור — כל אחד מצטרף לשרשרת ובוחר את הפרקים שיקרא.";
+"Chaîne complète." = "השרשרת מלאה.";
+"Participants max" = "מקסימום משתתפים";
+"Illimité" = "ללא הגבלה";
+"Limiter le nombre de participants garde la chaîne réactive. « Illimité » convient pour les petites chaînes entre proches." = "הגבלת מספר המשתתפים שומרת על שרשרת מגיבה. «ללא הגבלה» מתאים לשרשראות קטנות בין קרובים.";
+"Jusqu'à 50 participants par chaîne. Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture." = "עד 50 משתתפים בשרשרת. השם והכוונה נשמרים בענן למשך חיי השרשרת, ונמחקים אוטומטית לאחר הקריאה.";
+"Tu as déjà 2 chaînes en cours de sélection. Termine-les avant d'en créer une autre." = "כבר יש לכם שתי שרשראות בשלב הבחירה. סיימו אותן לפני יצירת שרשרת נוספת.";

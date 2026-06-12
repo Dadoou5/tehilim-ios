@@ -67,11 +67,13 @@ private final class LocalizedBundle: Bundle, @unchecked Sendable {
         switch raw {
         case "fr": return "fr"
         case "en": return "en"
+        case "he": return "he"
         default:
-            // `.system` : suit l'appareil si fr, sinon anglais (l'app n'est
-            // traduite qu'en fr/en → tout système non-fr bascule en anglais).
+            // `.system` : suit l'appareil si fr ou hébreu (iOS peut rapporter
+            // l'hébreu sous l'ancien code « iw ») ; sinon anglais.
             let pref = Locale.preferredLanguages.first ?? "en"
             let code = String(pref.split(separator: "-").first ?? "en")
+            if code == "he" || code == "iw" { return "he" }
             return code == "fr" ? "fr" : "en"
         }
     }

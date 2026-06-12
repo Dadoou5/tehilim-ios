@@ -139,7 +139,8 @@ android {
         //            migration domaine de partage vers tehilimapp.com.
         // Build 50 : dédicace לעילוי נשמת + icône de l'app sur les versets
         //            partagés (image + texte), barre de progression chaîne 10 dp.
-        versionCode = 50
+        // Build 51 : interface en hébreu (RTL) + notifs en hébreu + grille 119 + splash.
+        versionCode = 51
         versionName = "1.0.0"
 
         // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.

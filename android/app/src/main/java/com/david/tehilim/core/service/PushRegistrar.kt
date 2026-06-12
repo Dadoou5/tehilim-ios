@@ -16,7 +16,12 @@ import kotlinx.coroutines.launch
 object PushRegistrar {
     fun registerToken(context: Context, container: AppContainer) {
         if (FirebaseApp.getApps(context).isEmpty()) return   // pas de config FCM → no-op
-        val locale = if (context.resources.configuration.locales[0].language == "en") "en" else "fr"
+        val locale = when (context.resources.configuration.locales[0].language) {
+            "en" -> "en"
+            // `Locale.getLanguage()` rapporte l'hébreu sous l'ancien code « iw ».
+            "iw", "he" -> "he"
+            else -> "fr"
+        }
         FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
             CoroutineScope(Dispatchers.IO).launch {
                 runCatching { container.chains.registerDeviceToken(token, locale = locale) }

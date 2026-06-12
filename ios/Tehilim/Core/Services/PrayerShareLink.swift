@@ -61,7 +61,7 @@ enum PrayerShareLink {
     /// date du décès + prochaine azcara (dans la langue de l'expéditeur),
     /// puis le lien d'import. Taper le lien ouvre l'app et propose l'import.
     static func shareMessage(for intent: SavedPrayerIntent) -> String {
-        let fr = AppLocale.code != "en"
+        let fr = AppLocale.code == "fr"   // hébreu → message EN
         let link = url(for: intent)?.absoluteString ?? ""
         let df = DateFormatter()
         df.locale = AppLocale.locale

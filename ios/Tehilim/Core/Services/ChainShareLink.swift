@@ -27,7 +27,7 @@ enum ChainShareLink {
     /// le lien d'ouverture. Le destinataire tape le lien → ouvre l'app sur la
     /// chaîne et peut rejoindre / sélectionner ses Tehilim.
     static func shareMessage(for chain: TehilimChain) -> String {
-        let fr = AppLocale.code != "en"
+        let fr = AppLocale.code == "fr"   // hébreu → message EN
         let link = url(forChainId: chain.id)?.absoluteString ?? ""
         var lines: [String] = []
         lines.append((fr ? "Chaîne de Tehilim — " : "Tehilim chain — ") + chain.subjectLine)

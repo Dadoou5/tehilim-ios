@@ -11,7 +11,7 @@ import Foundation
 /// et pour `.system` la 1ʳᵉ langue préférée de l'appareil (live).
 enum AppLocale {
 
-    /// Code langue effectif : "fr" ou "en".
+    /// Code langue effectif : "fr", "en" ou "he".
     static var code: String {
         let raw = AppGroup.userDefaults.string(forKey: AppGroup.Keys.appLanguage)
             ?? UserDefaults.standard.string(forKey: "pref.app.language")
@@ -19,16 +19,22 @@ enum AppLocale {
         switch raw {
         case "fr": return "fr"
         case "en": return "en"
+        case "he": return "he"
         default:
-            // `.system` : suit l'appareil si français, sinon anglais (l'app
-            // n'est traduite qu'en fr/en). Aligné sur le swizzle UI.
+            // `.system` : suit l'appareil si français ou hébreu (code legacy
+            // « iw » possible), sinon anglais. Aligné sur le swizzle UI.
             let pref = Locale.preferredLanguages.first ?? "en"
+            if pref.hasPrefix("he") || pref.hasPrefix("iw") { return "he" }
             return pref.hasPrefix("fr") ? "fr" : "en"
         }
     }
 
     /// `Locale` correspondant (pour DateFormatter / FormatStyle).
     static var locale: Locale {
-        Locale(identifier: code == "fr" ? "fr_FR" : "en_US")
+        switch code {
+        case "fr": return Locale(identifier: "fr_FR")
+        case "he": return Locale(identifier: "he_IL")
+        default:   return Locale(identifier: "en_US")
+        }
     }
 }

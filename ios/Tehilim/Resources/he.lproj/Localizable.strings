@@ -76,6 +76,11 @@
 "Fin du Chabbat" = "צאת שבת";
 "Horaires calculés selon ta position (bougies : coucher − 18 min · fin : sortie des étoiles)." = "הזמנים מחושבים לפי מיקומכם (נרות: שקיעה − 18 דק׳ · צאת: צאת הכוכבים).";
 "Continuer quand même" = "להמשיך בכל זאת";
+"Mode Chabbat" = "מצב שבת";
+"Activer le mode Chabbat" = "הפעלת מצב שבת";
+"Position" = "מיקום";
+"Automatique (GPS)" = "אוטומטי (GPS)";
+"Pendant Chabbat, l'app et le widget affichent « Chabbat Chalom ». Le début (allumage des bougies) et la fin (sortie des étoiles) sont calculés selon ta position : GPS si tu l'autorises, sinon la ville choisie. Tu peux toujours « continuer quand même »." = "בשבת, האפליקציה והווידג׳ט מציגים «שבת שלום». הכניסה (הדלקת נרות) והצאת (צאת הכוכבים) מחושבות לפי מיקומכם: GPS אם אישרתם, אחרת העיר שנבחרה. תמיד אפשר «להמשיך בכל זאת».";
 "Me notifier chaque jour" = "תזכורת מדי יום";
 "Heure du rappel" = "שעת התזכורת";
 "Mode de lecture" = "מצב קריאה";

@@ -78,6 +78,12 @@
 "Fin du Chabbat" = "End of Shabbat";
 "Horaires calculés selon ta position (bougies : coucher − 18 min · fin : sortie des étoiles)." = "Times computed from your location (candles: sunset − 18 min · end: nightfall, 3 stars).";
 "Continuer quand même" = "Continue anyway";
+"Mode Chabbat" = "Shabbat mode";
+"Activer le mode Chabbat" = "Enable Shabbat mode";
+"Position" = "Location";
+"Automatique (GPS)" = "Automatic (GPS)";
+"Chabbat Chalom" = "Shabbat Shalom";
+"Pendant Chabbat, l'app et le widget affichent « Chabbat Chalom ». Le début (allumage des bougies) et la fin (sortie des étoiles) sont calculés selon ta position : GPS si tu l'autorises, sinon la ville choisie. Tu peux toujours « continuer quand même »." = "During Shabbat, the app and widget show “Shabbat Shalom”. The start (candle lighting) and end (nightfall) are computed from your location: GPS if you allow it, otherwise the chosen city. You can always “continue anyway”.";
 "Me notifier chaque jour" = "Remind me every day";
 "Heure du rappel" = "Reminder time";
 "Mode de lecture" = "Reading mode";

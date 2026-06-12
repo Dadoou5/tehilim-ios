@@ -65,8 +65,11 @@ class TehilimMessagingService : FirebaseMessagingService() {
         return PendingIntent.getActivity(this, (chainId ?: "").hashCode(), intent, flags)
     }
 
-    private fun localeTag(): String =
-        if (resources.configuration.locales[0].language == "en") "en" else "fr"
+    private fun localeTag(): String = when (resources.configuration.locales[0].language) {
+        "en" -> "en"
+        "iw", "he" -> "he"   // l'hébreu est rapporté sous l'ancien code « iw »
+        else -> "fr"
+    }
 
     private fun ensureChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

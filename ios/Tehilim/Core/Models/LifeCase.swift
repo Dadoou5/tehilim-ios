@@ -37,6 +37,7 @@ extension LifeCase {
     /// anglais après une bascule à chaud vers Système, alors que l'UI était
     /// déjà repassée en français.
     static var preferEnglish: Bool {
-        AppLocale.code == "en"
+        // UI hébreu → contenu EN (le contenu éditorial n'existe qu'en FR/EN).
+        AppLocale.code != "fr"
     }
 }

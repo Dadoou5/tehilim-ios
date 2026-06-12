@@ -229,7 +229,7 @@ class ChainService(@Suppress("UNUSED_PARAMETER") context: Context) {
         runCatching {
             c.from("device_tokens").upsert(
                 DeviceTokenRow(token = token, uid = uid, platform = platform,
-                               locale = if (locale == "en") "en" else "fr")
+                               locale = if (locale in listOf("en", "he")) locale else "fr")
             ) { onConflict = "token" }
         }
     }

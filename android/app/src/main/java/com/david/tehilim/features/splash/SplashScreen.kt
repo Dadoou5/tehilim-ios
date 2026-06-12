@@ -1,10 +1,14 @@
 package com.david.tehilim.features.splash
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseOut
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -12,20 +16,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -40,32 +51,34 @@ import androidx.compose.material3.Text
 import com.david.tehilim.R
 import com.david.tehilim.ui.theme.FrankRuhlLibreFontFamily
 import com.david.tehilim.ui.theme.PinyonScriptFontFamily
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
- * Splash écran de démarrage — mirror SplashView.swift V1.10.5.
+ * Splash écran de démarrage — mirror SplashView.swift V2.2.b.
  *
- * Apparitions animées séquentielles :
- *  - 0.00s : Hebrew « תהילים » (fade-in + scale-up 0.88→1.0, easeOut 0.8s)
- *  - 0.35s : Latin « Tehilim » (fade-in + translate-up 16dp)
- *  - 0.60s : glow oscille en permanence (easeInOut 1.6s)
- *  - 0.90s : dédicace hébreu (fade-in + slide-up)
- *  - 1.20s : dédicace français
+ * Animation « écriture » : les deux titres s'écrivent lettre à lettre,
+ * simultanément — l'hébreu de droite à gauche (sens d'écriture), le latin
+ * de gauche à droite. Chaque glyphe arrive comme un trait de plume : flou
+ * d'encre, léger excès d'échelle, inclinaison calligraphique (latin), puis
+ * se pose sur la ligne. Une fois les mots écrits, le halo pulse, le filet
+ * se trace et les dédicaces montent.
  *
- * Total ~1.8s avant [onFinished], comme iOS.
+ * Chronologie (~2.6 s avant [onFinished], comme iOS) :
+ *   0.00 → 0.95 s  תהילים s'écrit (6 lettres, cadence 120 ms)
+ *   0.25 → 1.25 s  Tehilim s'écrit (révélation au masque, plume invisible)
+ *   1.20 s         halo doré (pulse infini) + le filet se trace
+ *   1.30 s         dédicace hébraïque
+ *   1.55 s         dédicace latine
  */
 @Composable
 fun SplashScreen(onFinished: () -> Unit) {
-    val visibleHebrew = remember { Animatable(0f) }
-    val scaleHebrew = remember { Animatable(0.88f) }
-    val visibleLatin = remember { Animatable(0f) }
-    val offsetLatin = remember { Animatable(16f) }
-    val visibleDedicationHebrew = remember { Animatable(0f) }
-    val offsetDedicationHebrew = remember { Animatable(8f) }
-    val visibleDedicationLatin = remember { Animatable(0f) }
-    val offsetDedicationLatin = remember { Animatable(8f) }
+    var started by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        started = true
+        delay(2600)
+        onFinished()
+    }
 
     val glowTransition = rememberInfiniteTransition(label = "glow")
     val glowAlpha by glowTransition.animateFloat(
@@ -77,35 +90,6 @@ fun SplashScreen(onFinished: () -> Unit) {
         ),
         label = "glowAlpha"
     )
-
-    LaunchedEffect(Unit) {
-        // Hebrew title (alpha + scale en parallèle) — démarre immédiatement.
-        coroutineScope {
-            launch { visibleHebrew.animateTo(1f, tween(800, easing = EaseOut)) }
-            launch { scaleHebrew.animateTo(1f, tween(800, easing = EaseOut)) }
-        }
-        // Latin (T + 0.35s)
-        delay(350)
-        coroutineScope {
-            launch { visibleLatin.animateTo(1f, tween(800, easing = EaseOut)) }
-            launch { offsetLatin.animateTo(0f, tween(800, easing = EaseOut)) }
-        }
-        // Dédicace hébreu (T + 0.9s — déjà 350ms écoulés)
-        delay(550)
-        coroutineScope {
-            launch { visibleDedicationHebrew.animateTo(1f, tween(700, easing = EaseOut)) }
-            launch { offsetDedicationHebrew.animateTo(0f, tween(700, easing = EaseOut)) }
-        }
-        // Dédicace latin (T + 1.2s)
-        delay(300)
-        coroutineScope {
-            launch { visibleDedicationLatin.animateTo(1f, tween(700, easing = EaseOut)) }
-            launch { offsetDedicationLatin.animateTo(0f, tween(700, easing = EaseOut)) }
-        }
-        // Pause contemplative puis on quitte (~1.8s total comme iOS).
-        delay(600)
-        onFinished()
-    }
 
     val accent = MaterialTheme.colorScheme.primary
     val bg = MaterialTheme.colorScheme.background
@@ -133,36 +117,84 @@ fun SplashScreen(onFinished: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // תהילים — Hebrew RTL avec glow, police Frank Ruhl Libre (mirror iOS)
-                androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                    Text(
-                        text = "תהילים",
-                        style = TextStyle(
-                            fontFamily = FrankRuhlLibreFontFamily,
-                            fontSize = 96.sp,
-                            color = accent.copy(alpha = visibleHebrew.value),
-                            textAlign = TextAlign.Center,
-                            shadow = Shadow(
-                                color = accent.copy(alpha = glowAlpha * visibleHebrew.value),
-                                blurRadius = 24f
+                // תהילים — la Row est verrouillée en RTL : l'index 0 (ת) se
+                // place à droite et le délai croissant par index écrit donc
+                // de droite à gauche.
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                    Row {
+                        "תהילים".forEachIndexed { i, letter ->
+                            val p by animateFloatAsState(
+                                targetValue = if (started) 1f else 0f,
+                                animationSpec = tween(550, delayMillis = i * 120, easing = EaseOut),
+                                label = "heb$i"
                             )
-                        ),
-                        modifier = Modifier.scale(scaleHebrew.value)
-                    )
+                            Text(
+                                text = letter.toString(),
+                                style = TextStyle(
+                                    fontFamily = FrankRuhlLibreFontFamily,
+                                    fontSize = 96.sp,
+                                    color = accent.copy(alpha = p),
+                                    shadow = Shadow(
+                                        color = accent.copy(alpha = glowAlpha * p),
+                                        blurRadius = 24f
+                                    )
+                                ),
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        val s = 1.3f - 0.3f * p
+                                        scaleX = s
+                                        scaleY = s
+                                        translationY = 14.dp.toPx() * (1f - p)
+                                        transformOrigin = TransformOrigin(0.5f, 1f)
+                                    }
+                                    .blur(((1f - p) * 8).dp, BlurredEdgeTreatment.Unbounded)
+                            )
+                        }
+                    }
                 }
 
-                // Tehilim — calligraphie latine Pinyon Script (mirror iOS Snell Roundhand)
-                Text(
-                    text = "Tehilim",
-                    style = TextStyle(
-                        fontFamily = PinyonScriptFontFamily,
-                        fontSize = 64.sp,
-                        color = accent.copy(alpha = visibleLatin.value),
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier
-                        .padding(top = offsetLatin.value.dp.coerceAtLeast(0.dp))
-                )
+                // Tehilim — calligraphie écrite de gauche à droite. Pinyon
+                // est une cursive contextuelle : découpée lettre à lettre,
+                // le shaping se dégrade (liaisons perdues). Le mot est donc
+                // rendu ENTIER et révélé par un masque dégradé qui balaie de
+                // gauche à droite — la « plume invisible » qui écrit. Bord
+                // doux (36 dp) : l'encre semble apparaître, pas surgir.
+                // Texte verrouillé en LTR même sous UI hébreu (RTL global).
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    val latinProgress by animateFloatAsState(
+                        targetValue = if (started) 1f else 0f,
+                        animationSpec = tween(1000, delayMillis = 250, easing = EaseInOut),
+                        label = "latin"
+                    )
+                    Text(
+                        text = "Tehilim",
+                        style = TextStyle(
+                            fontFamily = PinyonScriptFontFamily,
+                            fontSize = 64.sp,
+                            color = accent
+                        ),
+                        modifier = Modifier
+                            .graphicsLayer {
+                                // Couche offscreen requise pour que DstIn ne
+                                // « troue » que le texte, pas le fond.
+                                compositingStrategy = CompositingStrategy.Offscreen
+                            }
+                            .drawWithContent {
+                                drawContent()
+                                val pen = 36.dp.toPx()
+                                val reveal = latinProgress * (size.width + pen)
+                                drawRect(
+                                    brush = Brush.horizontalGradient(
+                                        0f to Color.Black,
+                                        1f to Color.Transparent,
+                                        startX = reveal - pen,
+                                        endX = reveal
+                                    ),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                    )
+                }
             }
 
             // Dédicace en bas
@@ -171,18 +203,25 @@ fun SplashScreen(onFinished: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 40.dp)
             ) {
+                // Le filet se « trace » (0 → 60 dp) une fois les mots écrits.
+                val divider by animateFloatAsState(
+                    targetValue = if (started) 1f else 0f,
+                    animationSpec = tween(500, delayMillis = 1200, easing = EaseOut),
+                    label = "divider"
+                )
                 Box(
                     Modifier
-                        .width(60.dp)
+                        .width((60 * divider).dp)
                         .height(0.5.dp)
-                        .background(
-                            MaterialTheme.colorScheme.outline.copy(
-                                alpha = visibleDedicationHebrew.value
-                            )
-                        )
+                        .background(MaterialTheme.colorScheme.outline.copy(alpha = divider))
                 )
 
-                androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                val dedicationHebrew by animateFloatAsState(
+                    targetValue = if (started) 1f else 0f,
+                    animationSpec = tween(700, delayMillis = 1300, easing = EaseOut),
+                    label = "dedicationHebrew"
+                )
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                     Text(
                         "לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים",
                         style = TextStyle(
@@ -190,12 +229,19 @@ fun SplashScreen(onFinished: () -> Unit) {
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
-                                .copy(alpha = visibleDedicationHebrew.value)
+                                .copy(alpha = dedicationHebrew)
                         ),
-                        modifier = Modifier.padding(top = offsetDedicationHebrew.value.dp.coerceAtLeast(0.dp))
+                        modifier = Modifier.graphicsLayer {
+                            translationY = 8.dp.toPx() * (1f - dedicationHebrew)
+                        }
                     )
                 }
 
+                val dedicationLatin by animateFloatAsState(
+                    targetValue = if (started) 1f else 0f,
+                    animationSpec = tween(700, delayMillis = 1550, easing = EaseOut),
+                    label = "dedicationLatin"
+                )
                 Text(
                     stringResource(R.string.splash_dedication_french),
                     style = TextStyle(
@@ -204,12 +250,13 @@ fun SplashScreen(onFinished: () -> Unit) {
                         fontStyle = FontStyle.Italic,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
-                            .copy(alpha = 0.7f * visibleDedicationLatin.value)
+                            .copy(alpha = 0.7f * dedicationLatin)
                     ),
-                    modifier = Modifier.padding(top = offsetDedicationLatin.value.dp.coerceAtLeast(0.dp))
+                    modifier = Modifier.graphicsLayer {
+                        translationY = 8.dp.toPx() * (1f - dedicationLatin)
+                    }
                 )
             }
         }
     }
 }
-

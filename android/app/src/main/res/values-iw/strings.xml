@@ -197,8 +197,8 @@
 
     <!-- Splash dedication -->
     <!-- La ligne hébraïque לעילוי נשמת est affichée en dur au-dessus : la ligne
-         « latine » reste en anglais pour ne pas doubler l'hébreu (= version EN). -->
-    <string name="splash_dedication_french">In memory of Johann Meïr ben Sarah Bouganim</string>
+         « latine » reprend EXACTEMENT le texte EN pour un splash identique. -->
+    <string name="splash_dedication_french">For the elevation of the soul of Johann Meïr ben Sarah Bouganim</string>
 
     <!-- ==================== ENUM LABELS ==================== -->
     <string name="enum_applang_system">מערכת</string>

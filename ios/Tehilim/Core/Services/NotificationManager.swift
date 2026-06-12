@@ -65,8 +65,8 @@ final class NotificationManager: NSObject, ObservableObject {
         await cancelDailyReminder()
 
         let content = UNMutableNotificationContent()
-        content.title = "Tehilim du jour"
-        content.body  = "C'est le moment de lire tes Tehilim du jour."
+        content.title = L("Tehilim du jour")
+        content.body  = L("C'est le moment de lire tes Tehilim du jour.")
         content.sound = .default
         content.userInfo = [Self.routeKey: Self.routeDailyValue]
 
@@ -164,7 +164,7 @@ final class NotificationManager: NSObject, ObservableObject {
            triggerDate > Date() {
             await schedule(
                 id: ids.sevenDays,
-                title: String(localized: "Azcara dans 7 jours"),
+                title: L("Azcara dans 7 jours"),
                 body: bodyFor(intent: intent, daysOffset: 7),
                 date: triggerDate
             )
@@ -176,7 +176,7 @@ final class NotificationManager: NSObject, ObservableObject {
             if let sameDay = cal.date(from: dc), sameDay > Date() {
                 await schedule(
                     id: ids.sameDay,
-                    title: String(localized: "Azcara aujourd'hui"),
+                    title: L("Azcara aujourd'hui"),
                     body: bodyFor(intent: intent, daysOffset: 0),
                     date: sameDay
                 )
@@ -187,10 +187,10 @@ final class NotificationManager: NSObject, ObservableObject {
     private func bodyFor(intent: SavedPrayerIntent, daysOffset: Int) -> String {
         let subject = intent.hebrewSubject
         if daysOffset == 0 {
-            return String(format: String(localized: "Azcara de %@."), subject)
+            return String(format: L("Azcara de %@."), subject)
         }
         return String(
-            format: String(localized: "Azcara de %@ dans %lld jours."),
+            format: L("Azcara de %@ dans %lld jours."),
             subject, daysOffset
         )
     }

@@ -251,8 +251,11 @@
 "Aperçu traduction" = "תצוגה מקדימה של התרגום";
 "Cantique des degrés. Je lève mes yeux vers les montagnes…" = "שיר למעלות, אשא עיני אל ההרים…";
 "Transcription assistée du texte hébreu en lettres latines (sépharade). Approximation algorithmique, ne remplace pas une lecture du texte original." = "תעתיק של הטקסט העברי באותיות לטיניות (הגייה ספרדית). קירוב אלגוריתמי, אינו תחליף לקריאת המקור.";
-"Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים";
-"Tehilim. Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "תהילים. לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים";
+/* Splash + bandeau de dédicace : la ligne hébraïque לעילוי נשמת est déjà
+   affichée en dur au-dessus — la ligne « latine » reste en anglais pour ne
+   pas doubler l'hébreu (identique à la version EN). */
+"Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "In memory of Johann Meïr ben Sarah Bouganim";
+"Tehilim. Pour l'élévation de l'âme de Johann Meïr ben Sarah Bouganim" = "Tehilim. In memory of Johann Meïr ben Sarah Bouganim";
 
 /* Tehilim 119 (AlphaBeta) home */
 "Les 22 lettres de l'alphabet hébreu, huit versets chacune." = "22 אותיות האלף־בית, שמונה פסוקים לכל אות.";

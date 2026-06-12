@@ -58,7 +58,10 @@ struct Psalm119HomeView: View {
 
                 // Grille alphabet — sens de lecture hébreu (Aleph haut-droite).
                 // Voir `rtlGridCells` pour la construction du flat list avec
-                // placeholders.
+                // placeholders. La grille est verrouillée en LTR : l'ordre RTL
+                // est déjà construit manuellement — sous UI hébreu (RTL
+                // global), laisser la grille hériter doublerait l'inversion
+                // et Aleph partirait à gauche.
                 LazyVGrid(columns: columns, spacing: isRegular ? 16 : 12) {
                     ForEach(Array(rtlGridCells.enumerated()), id: \.offset) { _, maybeSection in
                         if let section = maybeSection {
@@ -80,6 +83,7 @@ struct Psalm119HomeView: View {
                         }
                     }
                 }
+                .environment(\.layoutDirection, .leftToRight)
             }
             .padding(.horizontal, AdaptiveLayout.horizontalPadding(for: hSize))
             .padding(.vertical, isRegular ? 24 : 16)

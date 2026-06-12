@@ -196,7 +196,9 @@
     <string name="onboarding_lifecases_subtitle">מסלולים לפי נושא. תהילים קי״ט אות באות. קריאה אישית לעילוי נשמת.</string>
 
     <!-- Splash dedication -->
-    <string name="splash_dedication_french">לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים</string>
+    <!-- La ligne hébraïque לעילוי נשמת est affichée en dur au-dessus : la ligne
+         « latine » reste en anglais pour ne pas doubler l'hébreu (= version EN). -->
+    <string name="splash_dedication_french">In memory of Johann Meïr ben Sarah Bouganim</string>
 
     <!-- ==================== ENUM LABELS ==================== -->
     <string name="enum_applang_system">מערכת</string>

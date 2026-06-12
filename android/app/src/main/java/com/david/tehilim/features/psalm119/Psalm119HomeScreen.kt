@@ -142,34 +142,41 @@ fun Psalm119HomeScreen(container: AppContainer, navController: NavController) {
             // Grille des 22 lettres — chunked en rows.
             // Sens de lecture hébreu : Aleph en haut à DROITE, et la dernière
             // ligne (ש ת) est collée à droite avec les placeholders à gauche.
+            // Rows verrouillées en LTR : l'ordre RTL est déjà construit
+            // manuellement — sous UI hébreu (RTL global), hériter doublerait
+            // l'inversion et Aleph partirait à gauche.
             items(items = sections.chunked(columnsCount), key = { it.first().index }) { rowSections ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(if (isTablet) 16.dp else 12.dp)
+                androidx.compose.runtime.CompositionLocalProvider(
+                    androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr
                 ) {
-                    // Placeholders d'abord (= côté gauche) pour pousser le
-                    // contenu vers la droite quand la ligne est incomplète.
-                    repeat(columnsCount - rowSections.size) {
-                        Box(modifier = Modifier.weight(1f))
-                    }
-                    // Puis les sections en ordre inversé : la plus petite
-                    // index (= la lettre la plus tôt dans l'alphabet) finit
-                    // à droite, conforme au sens RTL.
-                    rowSections.reversed().forEach { section ->
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable {
-                                    navController.navigate(Routes.psalm119Section(section.index))
-                                }
-                        ) {
-                            HebrewLetterTile(
-                                letter = section.letter,
-                                index = section.index,
-                                name = section.name,
-                                verseStart = section.verseStart,
-                                verseEnd = section.verseEnd
-                            )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(if (isTablet) 16.dp else 12.dp)
+                    ) {
+                        // Placeholders d'abord (= côté gauche) pour pousser le
+                        // contenu vers la droite quand la ligne est incomplète.
+                        repeat(columnsCount - rowSections.size) {
+                            Box(modifier = Modifier.weight(1f))
+                        }
+                        // Puis les sections en ordre inversé : la plus petite
+                        // index (= la lettre la plus tôt dans l'alphabet) finit
+                        // à droite, conforme au sens RTL.
+                        rowSections.reversed().forEach { section ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable {
+                                        navController.navigate(Routes.psalm119Section(section.index))
+                                    }
+                            ) {
+                                HebrewLetterTile(
+                                    letter = section.letter,
+                                    index = section.index,
+                                    name = section.name,
+                                    verseStart = section.verseStart,
+                                    verseEnd = section.verseEnd
+                                )
+                            }
                         }
                     }
                 }

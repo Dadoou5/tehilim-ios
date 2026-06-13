@@ -30,6 +30,13 @@ struct VerseRowView: View {
                 stackedLayout
             }
         }
+        // V2.2.c — ligne verrouillée en LTR : l'alignement à droite du texte
+        // hébreu (.trailing) et à gauche de la traduction (.leading) doit
+        // rester identique quelle que soit la langue d'interface. Sous UI
+        // hébraïque (RTL global), sans ce verrou, .trailing s'inverserait en
+        // gauche et le numéro passerait du mauvais côté. Le moteur de texte
+        // gère le RTL interne de l'hébreu (bidi) indépendamment.
+        .environment(\.layoutDirection, .leftToRight)
         .padding(.vertical, 8)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)

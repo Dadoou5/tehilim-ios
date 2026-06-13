@@ -67,6 +67,14 @@ fun VerseRow(
         baseModifier.combinedClickable(onLongClick = onLongClick, onClick = {})
     } else baseModifier
 
+    // V2.2.c — ligne verrouillée en LTR : le numéro reste à droite du texte
+    // hébreu et la traduction calée à gauche, identiques quelle que soit la
+    // langue d'interface. Sous UI hébraïque (RTL global), sans ce verrou, la
+    // Row extérieure se mirroir et le texte hébreu se cale à gauche. Le texte
+    // hébreu lui-même reste en RTL (provider local plus bas).
+    androidx.compose.runtime.CompositionLocalProvider(
+        LocalLayoutDirection provides LayoutDirection.Ltr
+    ) {
     // V1.2 — Side-by-side (paysage tablette) : 2 colonnes au lieu de stacked
     if (useSideBySide) {
         Row(
@@ -104,8 +112,7 @@ fun VerseRow(
                 )
             }
         }
-        return
-    }
+    } else {
 
     Column(
         modifier = interactiveModifier,
@@ -171,6 +178,8 @@ fun VerseRow(
                 )
             }
         }
+    }
+    }
     }
 }
 

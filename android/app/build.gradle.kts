@@ -141,7 +141,8 @@ android {
         //            partagés (image + texte), barre de progression chaîne 10 dp.
         // Build 51 : interface en hébreu (RTL) + notifs en hébreu + grille 119 + splash.
         // Build 52 : splash en hébreu identique à l'anglais (ligne latine = texte EN).
-        versionCode = 52
+        // Build 53 : splash « écriture » + cas de la vie en hébreu + versets calés à droite (RTL).
+        versionCode = 53
         versionName = "1.0.0"
 
         // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.

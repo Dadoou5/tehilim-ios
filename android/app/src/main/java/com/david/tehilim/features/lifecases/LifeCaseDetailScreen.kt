@@ -42,9 +42,9 @@ import androidx.navigation.NavController
 import com.david.tehilim.AppContainer
 import com.david.tehilim.R
 import com.david.tehilim.core.model.AppLanguage
+import com.david.tehilim.core.model.ContentLanguage
 import com.david.tehilim.core.model.LifeCase
 import com.david.tehilim.core.model.Prayer
-import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.features.prayers.PrayerSheet
 import com.david.tehilim.navigation.Routes
 import com.david.tehilim.ui.components.AppCard
@@ -61,7 +61,7 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
         Text(stringResource(R.string.msg_category_not_found)); return
     }
     val appLanguage by container.preferences.appLanguage.collectAsState(initial = AppLanguage.SYSTEM)
-    val lang = appLanguage.translation
+    val lang = appLanguage.content
     var presentedPrayer by remember { mutableStateOf<Prayer.Kind?>(null) }
 
     Scaffold(
@@ -161,7 +161,7 @@ fun LifeCaseDetailScreen(container: AppContainer, caseId: String, navController:
 }
 
 @Composable
-private fun LifeCaseHeaderCard(c: LifeCase, language: TranslationLanguage) {
+private fun LifeCaseHeaderCard(c: LifeCase, language: ContentLanguage) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier

@@ -19,8 +19,11 @@
         124
       ],
       "sectionEN": "Life cycle",
+      "sectionHE": "מעגל החיים",
       "titleEN": "Finding one's match",
-      "noteEN": "It is customary to recite these Tehilim to find one's zivug (soulmate)."
+      "titleHE": "למצוא את הזיווג",
+      "noteEN": "It is customary to recite these Tehilim to find one's zivug (soulmate).",
+      "noteHE": "נהוג לומר תהילים אלו כדי למצוא את הזיווג."
     },
     {
       "id": "wedding_day",
@@ -37,8 +40,11 @@
         145
       ],
       "sectionEN": "Life cycle",
+      "sectionHE": "מעגל החיים",
       "titleEN": "Wedding day",
-      "noteEN": "Tehilim recited on the occasion of a wedding, for the blessing of the couple."
+      "titleHE": "יום החתונה",
+      "noteEN": "Tehilim recited on the occasion of a wedding, for the blessing of the couple.",
+      "noteHE": "תהילים הנאמרים לרגל חתונה, לברכת בני הזוג."
     },
     {
       "id": "children",
@@ -54,8 +60,11 @@
         128
       ],
       "sectionEN": "Life cycle",
+      "sectionHE": "מעגל החיים",
       "titleEN": "For children",
-      "noteEN": "Tehilim recited for the blessing of having children."
+      "titleHE": "לזכות בילדים",
+      "noteEN": "Tehilim recited for the blessing of having children.",
+      "noteHE": "תהילים הנאמרים לברכת זרע של קיימא."
     },
     {
       "id": "pregnancy",
@@ -73,8 +82,11 @@
         121
       ],
       "sectionEN": "Life cycle",
+      "sectionHE": "מעגל החיים",
       "titleEN": "Pregnancy",
-      "noteEN": "Tehilim associated with pregnancy and a successful childbirth."
+      "titleHE": "אישה בהיריון",
+      "noteEN": "Tehilim associated with pregnancy and a successful childbirth.",
+      "noteHE": "תהילים הקשורים להיריון וללידה קלה."
     },
     {
       "id": "brit_mila",
@@ -89,8 +101,11 @@
         128
       ],
       "sectionEN": "Life cycle",
+      "sectionHE": "מעגל החיים",
       "titleEN": "Brit Mila",
-      "noteEN": "Tehilim recited on the occasion of a circumcision (Tehilim 12 begins with «Lamenatzeach al hashminit» — for the eighth day)."
+      "titleHE": "ברית מילה",
+      "noteEN": "Tehilim recited on the occasion of a circumcision (Tehilim 12 begins with «Lamenatzeach al hashminit» — for the eighth day).",
+      "noteHE": "תהילים הנאמרים לרגל ברית מילה (פרק י״ב פותח ב«למנצח על השמינית» — ליום השמיני)."
     },
     {
       "id": "healing",
@@ -111,8 +126,11 @@
         142
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Healing",
-      "noteEN": "It is customary to recite these Tehilim for the healing of a loved one."
+      "titleHE": "רפואה",
+      "noteEN": "It is customary to recite these Tehilim for the healing of a loved one.",
+      "noteHE": "נהוג לומר תהילים אלו לרפואת חולה."
     },
     {
       "id": "anxiety",
@@ -129,8 +147,11 @@
         130
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Anxiety",
-      "noteEN": "These Tehilim are recited to calm the heart and strengthen one's trust (bitachon) in Hashem, who is close to all who call upon Him."
+      "titleHE": "דאגה",
+      "noteEN": "These Tehilim are recited to calm the heart and strengthen one's trust (bitachon) in Hashem, who is close to all who call upon Him.",
+      "noteHE": "אומרים תהילים אלו כדי להרגיע את הלב ולחזק את הביטחון בה׳, הקרוב לכל קוראיו."
     },
     {
       "id": "protection",
@@ -146,8 +167,11 @@
         124
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Protection",
-      "noteEN": "Tehilim associated with protection."
+      "titleHE": "שמירה",
+      "noteEN": "Tehilim associated with protection.",
+      "noteHE": "תהילים הקשורים לשמירה."
     },
     {
       "id": "travel",
@@ -162,8 +186,11 @@
         134
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Travel",
-      "noteEN": "To distinguish from Tefilat haDerekh, which is not a Tehilim."
+      "titleHE": "נסיעה",
+      "noteEN": "To distinguish from Tefilat haDerekh, which is not a Tehilim.",
+      "noteHE": "יש להבחין מתפילת הדרך, שאינה תהילים."
     },
     {
       "id": "before_trial",
@@ -179,8 +206,11 @@
         109
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Before a trial",
-      "noteEN": "These Tehilim are recited to plead for Heaven's justice and mercy, that the truth may come to light and judgment incline toward good."
+      "titleHE": "לפני משפט",
+      "noteEN": "These Tehilim are recited to plead for Heaven's justice and mercy, that the truth may come to light and judgment incline toward good.",
+      "noteHE": "אומרים תהילים אלו לבקש מן השמים צדק ורחמים, שתתגלה האמת והדין יטה לטובה."
     },
     {
       "id": "parnassa",
@@ -196,8 +226,11 @@
         145
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Parnassa (livelihood)",
-      "noteEN": "Tehilim associated with livelihood."
+      "titleHE": "פרנסה",
+      "noteEN": "Tehilim associated with livelihood.",
+      "noteHE": "תהילים הקשורים לפרנסה."
     },
     {
       "id": "success",
@@ -214,8 +247,11 @@
         121
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Success",
-      "noteEN": "These Tehilim are recited to ask for success (hatzlachah) in one's projects, studies and endeavors, with Heaven's help."
+      "titleHE": "הצלחה",
+      "noteEN": "These Tehilim are recited to ask for success (hatzlachah) in one's projects, studies and endeavors, with Heaven's help.",
+      "noteHE": "אומרים תהילים אלו לבקש הצלחה בכל המעשים, בלימודים ובעסקים, בסייעתא דשמיא."
     },
     {
       "id": "mourning",
@@ -233,8 +269,11 @@
         130
       ],
       "sectionEN": "Health and trials",
+      "sectionHE": "בריאות וקשיים",
       "titleEN": "Mourning",
-      "noteEN": "Tehilim recited in memory of a departed loved one."
+      "titleHE": "אבלות",
+      "noteEN": "Tehilim recited in memory of a departed loved one.",
+      "noteHE": "תהילים הנאמרים לעילוי נשמת הנפטר."
     },
     {
       "id": "tikkoun_haklali",
@@ -255,8 +294,11 @@
         150
       ],
       "sectionEN": "Spirituality",
+      "sectionHE": "רוחניות",
       "titleEN": "Tikkoun HaKlali",
-      "noteEN": "According to the tradition of Rabbi Nachman of Breslev — 10 Tehilim forming a general tikkoun. To be recited in the indicated order."
+      "titleHE": "תיקון הכללי",
+      "noteEN": "According to the tradition of Rabbi Nachman of Breslev — 10 Tehilim forming a general tikkoun. To be recited in the indicated order.",
+      "noteHE": "על פי מסורת רבי נחמן מברסלב — עשרה פרקי תהילים המהווים תיקון כללי. יש לאומרם לפי הסדר."
     },
     {
       "id": "teshuva",
@@ -275,8 +317,11 @@
         143
       ],
       "sectionEN": "Spirituality",
+      "sectionHE": "רוחניות",
       "titleEN": "Repentance (teshuva)",
-      "noteEN": "Tehilim associated with teshuva."
+      "titleHE": "תשובה",
+      "noteEN": "Tehilim associated with teshuva.",
+      "noteHE": "תהילים הקשורים לתשובה."
     },
     {
       "id": "gratitude",
@@ -293,8 +338,11 @@
         150
       ],
       "sectionEN": "Spirituality",
+      "sectionHE": "רוחניות",
       "titleEN": "Thanksgiving",
-      "noteEN": "Tehilim of gratitude."
+      "titleHE": "הודיה",
+      "noteEN": "Tehilim of gratitude.",
+      "noteHE": "תהילים של הודיה."
     },
     {
       "id": "rosh_chodesh",
@@ -312,8 +360,11 @@
         118
       ],
       "sectionEN": "Community and calendar",
+      "sectionHE": "קהילה ולוח השנה",
       "titleEN": "Rosh Chodesh",
-      "noteEN": "Tehilim 104 («Borkhi Nafchi») is associated with Rosh Chodesh; Tehilim 113 to 118 form the Hallel recited on this day."
+      "titleHE": "ראש חודש",
+      "noteEN": "Tehilim 104 («Borkhi Nafchi») is associated with Rosh Chodesh; Tehilim 113 to 118 form the Hallel recited on this day.",
+      "noteHE": "פרק ק״ד («ברכי נפשי») קשור לראש חודש; פרקים קי״ג עד קי״ח הם ההלל הנאמר ביום זה."
     },
     {
       "id": "peace",
@@ -330,8 +381,11 @@
         133
       ],
       "sectionEN": "Community and calendar",
+      "sectionHE": "קהילה ולוח השנה",
       "titleEN": "For peace",
-      "noteEN": "Tehilim associated with peace, particularly those explicitly mentioning shalom (29, 122, 125, 133)."
+      "titleHE": "לשלום",
+      "noteEN": "Tehilim associated with peace, particularly those explicitly mentioning shalom (29, 122, 125, 133).",
+      "noteHE": "תהילים הקשורים לשלום, ובפרט המזכירים במפורש את השלום (כ״ט, קכ״ב, קכ״ה, קל״ג)."
     },
     {
       "id": "israel",
@@ -348,8 +402,11 @@
         137
       ],
       "sectionEN": "Community and calendar",
+      "sectionHE": "קהילה ולוח השנה",
       "titleEN": "For the State of Israel",
-      "noteEN": "Tehilim recited for the well-being of the Land of Israel and its inhabitants."
+      "titleHE": "למען מדינת ישראל",
+      "noteEN": "Tehilim recited for the well-being of the Land of Israel and its inhabitants.",
+      "noteHE": "תהילים הנאמרים לשלום ארץ ישראל ויושביה."
     }
   ],
   "_notes": [

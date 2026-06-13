@@ -1,7 +1,7 @@
 package com.david.tehilim.core.service
 
+import com.david.tehilim.core.model.ContentLanguage
 import com.david.tehilim.core.model.LifeCase
-import com.david.tehilim.core.model.TranslationLanguage
 
 class LifeCaseRepository(val cases: List<LifeCase>) {
 
@@ -11,30 +11,32 @@ class LifeCaseRepository(val cases: List<LifeCase>) {
     data class Group(
         val title: String,
         val titleEN: String,
+        val titleHE: String,
         val cases: List<LifeCase>
     ) {
-        fun localizedTitle(language: TranslationLanguage) = when (language) {
-            TranslationLanguage.EN -> titleEN
-            TranslationLanguage.FR -> title
+        fun localizedTitle(language: ContentLanguage) = when (language) {
+            ContentLanguage.HE -> titleHE
+            ContentLanguage.EN -> titleEN
+            ContentLanguage.FR -> title
         }
     }
 
-    fun grouped(language: TranslationLanguage = TranslationLanguage.FR): List<Group> {
+    fun grouped(language: ContentLanguage = ContentLanguage.FR): List<Group> {
         val order = listOf(
-            "Cycle de vie" to "Life cycle",
-            "Santé et épreuves" to "Health and trials",
-            "Spiritualité" to "Spirituality",
-            "Communauté et calendrier" to "Community and calendar",
-            "Autres" to "Other"
+            Triple("Cycle de vie", "Life cycle", "מעגל החיים"),
+            Triple("Santé et épreuves", "Health and trials", "בריאות וקשיים"),
+            Triple("Spiritualité", "Spirituality", "רוחניות"),
+            Triple("Communauté et calendrier", "Community and calendar", "קהילה ולוח השנה"),
+            Triple("Autres", "Other", "אחר")
         )
         val byName: MutableMap<String, MutableList<LifeCase>> = mutableMapOf()
         for (c in cases) {
             val key = c.section ?: "Autres"
             byName.getOrPut(key) { mutableListOf() }.add(c)
         }
-        return order.mapNotNull { (fr, en) ->
+        return order.mapNotNull { (fr, en, he) ->
             val list = byName[fr] ?: return@mapNotNull null
-            if (list.isEmpty()) null else Group(fr, en, list)
+            if (list.isEmpty()) null else Group(fr, en, he, list)
         }
     }
 }

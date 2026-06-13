@@ -24,7 +24,6 @@ import com.david.tehilim.AppContainer
 import com.david.tehilim.R
 import com.david.tehilim.core.model.AppLanguage
 import com.david.tehilim.core.model.LifeCase
-import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.navigation.Routes
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,7 +36,7 @@ import androidx.compose.runtime.getValue
 @Composable
 fun LifeCasesScreen(container: AppContainer, navController: NavController) {
     val appLanguage by container.preferences.appLanguage.collectAsState(initial = AppLanguage.SYSTEM)
-    val groups = container.lifeCaseRepository.grouped(appLanguage.translation)
+    val groups = container.lifeCaseRepository.grouped(appLanguage.content)
     val columnsCount = if (LocalConfiguration.current.screenWidthDp >= 600) 3 else 2
 
     Scaffold(topBar = { TopAppBar(title = { Text(stringResource(R.string.title_life_cases)) }) }) { padding ->
@@ -51,7 +50,7 @@ fun LifeCasesScreen(container: AppContainer, navController: NavController) {
             groups.forEach { group ->
                 item {
                     Text(
-                        group.localizedTitle(appLanguage.translation),
+                        group.localizedTitle(appLanguage.content),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Start,
@@ -68,7 +67,7 @@ fun LifeCasesScreen(container: AppContainer, navController: NavController) {
                             Box(modifier = Modifier.weight(1f)) {
                                 LifeCaseCard(
                                     lifeCase = c,
-                                    language = appLanguage.translation,
+                                    language = appLanguage.content,
                                     onClick = { navController.navigate(Routes.lifeCaseDetail(c.id)) }
                                 )
                             }

@@ -12,32 +12,47 @@ struct LifeCase: Codable, Identifiable, Hashable {
     let titleEN: String?
     let noteEN: String?
     let sectionEN: String?
+    /// Traductions hébraïques (optionnelles, fallback EN puis FR).
+    let titleHE: String?
+    let noteHE: String?
+    let sectionHE: String?
 }
 
 extension LifeCase {
-    /// Renvoie le titre dans la langue active de l'OS.
+    /// Renvoie le titre dans la langue active de l'app.
     var localizedTitle: String {
-        LifeCase.preferEnglish ? (titleEN ?? title) : title
+        LifeCase.pick(fr: title, en: titleEN, he: titleHE)
     }
 
-    /// Renvoie la note dans la langue active de l'OS.
+    /// Renvoie la note dans la langue active de l'app.
     var localizedNote: String {
-        LifeCase.preferEnglish ? (noteEN ?? note) : note
+        LifeCase.pick(fr: note, en: noteEN, he: noteHE)
     }
 
-    /// Section dans la langue active de l'OS.
+    /// Section dans la langue active de l'app.
     var localizedSection: String? {
-        LifeCase.preferEnglish ? (sectionEN ?? section) : section
+        switch LifeCase.contentCode {
+        case "he": return sectionHE ?? sectionEN ?? section
+        case "en": return sectionEN ?? section
+        default:   return section
+        }
     }
 
-    /// `true` si la langue active de l'app est l'anglais.
+    /// Code de langue du contenu éditorial : "fr" | "en" | "he".
     ///
     /// V1.12 — délègue à `AppLocale` (source unique). Avant, le cas `.system`
     /// lisait `Locale.current` (instantané figé) → le contenu restait en
-    /// anglais après une bascule à chaud vers Système, alors que l'UI était
-    /// déjà repassée en français.
-    static var preferEnglish: Bool {
-        // UI hébreu → contenu EN (le contenu éditorial n'existe qu'en FR/EN).
-        AppLocale.code != "fr"
+    /// anglais après une bascule à chaud vers Système.
+    /// V2.2.b — l'hébreu a désormais son propre contenu (titleHE/noteHE…),
+    /// avec repli sur EN puis FR si une clé manque.
+    static var contentCode: String { AppLocale.code }
+
+    /// Choisit la chaîne selon la langue active, avec repli HE → EN → FR.
+    static func pick(fr: String, en: String?, he: String?) -> String {
+        switch contentCode {
+        case "he": return he ?? en ?? fr
+        case "en": return en ?? fr
+        default:   return fr
+        }
     }
 }

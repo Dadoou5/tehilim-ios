@@ -17,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.david.tehilim.R
+import com.david.tehilim.core.model.ContentLanguage
 import com.david.tehilim.core.model.LifeCase
-import com.david.tehilim.core.model.TranslationLanguage
 import com.david.tehilim.ui.components.AppCard
 
 /**
@@ -28,7 +28,7 @@ import com.david.tehilim.ui.components.AppCard
 @Composable
 fun LifeCaseCard(
     lifeCase: LifeCase,
-    language: TranslationLanguage,
+    language: ContentLanguage,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

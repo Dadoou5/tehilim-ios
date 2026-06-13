@@ -33,7 +33,29 @@ enum class AppLanguage(val storageValue: String, @StringRes val labelRes: Int) {
             else TranslationLanguage.FR
         }
     }
+
+    /**
+     * Langue du contenu éditorial (cas de la vie : titres, conseils, sections).
+     * Contrairement à [translation] (corpus des versets, FR/EN), ce contenu
+     * existe désormais en hébreu — d'où une troisième valeur HE.
+     */
+    val content: ContentLanguage get() = when (this) {
+        FR -> ContentLanguage.FR
+        EN -> ContentLanguage.EN
+        HE -> ContentLanguage.HE
+        SYSTEM -> {
+            val locale = java.util.Locale.getDefault().language
+            when {
+                locale.startsWith("iw") || locale.startsWith("he") -> ContentLanguage.HE
+                locale.startsWith("en") -> ContentLanguage.EN
+                else -> ContentLanguage.FR
+            }
+        }
+    }
 }
+
+/** Langue du contenu éditorial localisé en FR / EN / HE (repli HE → EN → FR). */
+enum class ContentLanguage { FR, EN, HE }
 
 enum class AppTheme(@StringRes val labelRes: Int) {
     SYSTEM(R.string.enum_theme_system),

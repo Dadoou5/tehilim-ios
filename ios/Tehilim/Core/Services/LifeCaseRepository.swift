@@ -4,11 +4,12 @@ final class LifeCaseRepository {
     struct Group: Identifiable {
         let title: String      // titre français (clé canonique)
         let titleEN: String    // titre anglais
+        let titleHE: String    // titre hébreu
         let cases: [LifeCase]
         var id: String { title }
 
         var localizedTitle: String {
-            LifeCase.preferEnglish ? titleEN : title
+            LifeCase.pick(fr: title, en: titleEN, he: titleHE)
         }
     }
 
@@ -19,21 +20,21 @@ final class LifeCaseRepository {
 
     /// Cas regroupés par section, dans l'ordre canonique.
     var grouped: [Group] {
-        let order: [(fr: String, en: String)] = [
-            ("Cycle de vie", "Life cycle"),
-            ("Santé et épreuves", "Health and trials"),
-            ("Spiritualité", "Spirituality"),
-            ("Communauté et calendrier", "Community and calendar"),
-            ("Autres", "Other"),
+        let order: [(fr: String, en: String, he: String)] = [
+            ("Cycle de vie", "Life cycle", "מעגל החיים"),
+            ("Santé et épreuves", "Health and trials", "בריאות וקשיים"),
+            ("Spiritualité", "Spirituality", "רוחניות"),
+            ("Communauté et calendrier", "Community and calendar", "קהילה ולוח השנה"),
+            ("Autres", "Other", "אחר"),
         ]
         var byName: [String: [LifeCase]] = [:]
         for c in cases {
             let name = c.section ?? "Autres"
             byName[name, default: []].append(c)
         }
-        return order.compactMap { pair in
-            guard let list = byName[pair.fr], !list.isEmpty else { return nil }
-            return Group(title: pair.fr, titleEN: pair.en, cases: list)
+        return order.compactMap { triple in
+            guard let list = byName[triple.fr], !list.isEmpty else { return nil }
+            return Group(title: triple.fr, titleEN: triple.en, titleHE: triple.he, cases: list)
         }
     }
 }

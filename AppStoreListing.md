@@ -263,7 +263,198 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.15.0 (build 67) · Android versionCode 50
+## 🇮🇱 עברית (HEBREW)
+
+> Nouvelle locale du store, disponible depuis que l'app parle hébreu (V1.15.1).
+> Texte en RTL — coller tel quel dans App Store Connect / Play Console (locale he).
+
+### שם האפליקציה / App name (30 car. max)
+```
+תהילים
+```
+
+### כותרת משנה / Subtitle (30 car. max)
+```
+150 הפרקים, תרגום ופונטיקה
+```
+> 26 caractères.
+
+### טקסט קידום / Promotional text (170 car. max)
+```
+150 פרקי תהילים בעברית מנוקדת, עם תרגום לצרפתית ולאנגלית ופונטיקה. תהילים יומי, לעילוי נשמת ואזכרה, מצב שבת, ווידג׳ט — עובד גם ללא אינטרנט, ללא פרסומות.
+```
+
+### תיאור / Description (4 000 car. max)
+```
+תהילים — האפליקציה המלאה לקריאת 150 מזמורי דוד המלך, ב-iPhone וב-iPad.
+
+מתאימה לקריאה יומית כמו גם ללימוד מעמיק, האפליקציה מאחדת את הטקסט העברי המנוקד עם טעמים, תרגומים מהימנים לצרפתית ולאנגלית, ופונטיקה בהגייה ספרדית — בממשק נקי, רגוע ונגיש לחלוטין, כולל בעברית מלאה (מימין לשמאל).
+
+— כל הספר —
+• כל 150 הפרקים, 2,527 פסוקים
+• טקסט עברי עם ניקוד וטעמים
+• תרגום לצרפתית: בית חב״ד (ברשות)
+• תרגום לאנגלית: JPS 1917 (דרך Sefaria)
+• פונטיקה ספרדית למתחילים
+
+— קריאה יומית —
+• מחזור חודשי מסורתי (חלוקה ל-30 ימי החודש)
+• קריאה לפי יום בשבוע
+• תזכורות התראה הניתנות להתאמה
+• המשך אוטומטי מהקריאה האחרונה
+
+— שרשרת תהילים (קריאה משותפת) —
+• פתחו שרשרת לכוונה (לעילוי נשמת, רפואה שלמה, הצלחה) והזמינו בקישור וואטסאפ או בקוד QR
+• כל אחד מצטרף ובוחר את הפרקים שהוא מתחייב לקרוא — בזמן אמת, בלי כפילויות
+• רשת הפרקים מקובצת לפי 5 הספרים וניתנת לסינון; רואים מי קורא מה ואת ההתקדמות
+• התראות התקדמות; היוצר מחלק את הנותרים ומשתף את הסיכום
+
+— לעילוי נשמת ואזכרה —
+• קריאה אישית לעילוי נשמת הנפטר: הרצף בנוי מאותיות שמו הפרטי, הקשר (בן/בת), שם האם, ואז נשמה
+• חישוב אוטומטי של האזכרה הבאה מתאריך הפטירה, לפי הכללים המסורתיים (אדר / אדר ב׳, חשוון, כסלו…)
+• תזכורות 7 ימים לפני וביום עצמו
+• שיתוף ב-SMS, וואטסאפ… — הנמען מייבא את התפילה לאפליקציה בלחיצה אחת
+• עריכה בכל עת, עם סנכרון פרטי ב-iCloud בין המכשירים
+
+— מצב שבת —
+• בשבת, האפליקציה והווידג׳ט מפנים מקום למסך «שבת שלום» רגוע
+• זמני כניסה (הדלקת נרות) וצאת (צאת הכוכבים) מחושבים לפי המיקום והתאריך
+• ניתן להפעלה/כיבוי, עם אפשרות «להמשיך בכל זאת»
+
+— מסלולים נושאיים —
+• «מצבי חיים»: בריאות, פרנסה, נישואין, אבלות, נסיעה, מבחנים… — מתורגמים לעברית
+• תיקון הכללי (עשרת פרקי רבי נחמן)
+• תהילים קי״ט (אלפא־ביתא) לעיון אות אחר אות
+
+— תפילות וסדר —
+• תפילה לפני אמירת תהילים
+• תפילה לאחר אמירת תהילים
+• קישור ישיר מכל מסך קריאה
+
+— חוויית הקריאה —
+• גופן Ezra SIL SR, מותאם לטעמים
+• 5 גדלי טקסט עצמאיים (עברית ותרגום)
+• מספור פסוקים בעברית או בספרות
+• ממשק בעברית, צרפתית או אנגלית (או לפי המכשיר)
+• מצב בהיר / כהה / מערכת
+• טקסט עברי מיושר לימין (פריסה מסורתית)
+• תאריך עברי מוצג תמיד
+
+— ווידג׳ט למסך הבית —
+• ווידג׳ט «תהילים יומי» בשלושה גדלים
+• מתעדכן אוטומטית מדי יום
+• הקשה → פתיחת פרקי היום ישירות
+
+— מועדפים וחיפוש —
+• סימון הפרקים האהובים בלב
+• חיפוש לפי מספר (ספרות או עברית) או מילת מפתח
+• שיתוף פסוקים כתמונה מעוצבת
+
+— iPad —
+• פריסה מותאמת: סרגל צד וקריאה מקבילה עברית / תרגום לרוחב
+
+— נגישות —
+• תואם WCAG 2.1 AA
+• תמיכה מלאה ב-VoiceOver וב-Dynamic Type
+• ניגודיות מיטבית, הפחתת אנימציות
+
+— פרטיות לפני הכול —
+• ללא חשבון, ללא פרסומות, ללא עוקבים
+• שרשרת תהילים (אופציונלית, מקוונת): נשמרים רק שם תצוגה והכוונה, ונמחקים אוטומטית לאחר הקריאה
+• המיקום (מצב שבת) משמש רק לחישוב הזמנים במכשיר — לעולם לא נשלח ולא נשמר
+• התפילות השמורות מסונכרנות בפרטיות דרך iCloud (חשבון Apple שלך)
+• קריאת תהילים עובדת לחלוטין ללא אינטרנט
+
+תהילים היא אפליקציה חינמית, ללא רכישות מתוך האפליקציה וללא פרסומות. היא מוקדשת לעילוי נשמת ג׳והאן מאיר בן שרה בוגנים.
+
+מקורות:
+• טקסט עברי ותרגום לאנגלית: Sefaria (CC-BY)
+• תרגום לצרפתית: בית חב״ד — le-tehilim.online
+• גופן: Ezra SIL SR מאת SIL International (SIL OFL)
+```
+
+### מילות מפתח / Keywords (100 car. max, séparés par virgule sans espace)
+```
+תהילים,מזמורים,תפילה,תורה,יהדות,דוד,נחמן,אזכרה,שבת,סידור,רפואה,פרנסה,הבדלה
+```
+
+### קטגוריה ראשית / Primary category
+```
+עיון (Reference)
+```
+
+### קטגוריה משנית / Secondary category
+```
+אורח חיים (Lifestyle)
+```
+
+### דירוג גיל / Age rating
+```
+4+
+```
+
+---
+
+## 📋 What's New / Nouveautés — V1.15.1 (build 71) · iOS
+
+> Mise à jour ciblée : **l'app parle désormais hébreu** de bout en bout (interface
+> RTL), nouveau splash « écriture », et les cas de la vie traduits en hébreu.
+> Limite Apple : 4 000 caractères par locale.
+
+### 🇫🇷 — App Store / Play (grand public)
+```
+NOUVEAU — L'APP EN HÉBREU 🇮🇱
+L'interface est désormais entièrement disponible en hébreu, en lecture de droite à gauche (RTL).
+• Choisis l'hébreu dans Réglages › Langue (ou laisse l'app suivre ton appareil).
+• Tous les écrans, menus et notifications passent en hébreu.
+• Les « Cas de la vie » sont traduits en hébreu.
+• Le texte des Tehilim reste calé à droite, dans la disposition traditionnelle.
+
+NOUVEL ÉCRAN DE DÉMARRAGE
+• Animation « à la plume » : les titres תהילים et Tehilim s'écrivent lettre par lettre.
+
+Et divers correctifs et améliorations de stabilité.
+
+Disponible en français, anglais et hébreu, optimisé iPhone et iPad.
+```
+
+### 🇬🇧 — App Store / Play (general public)
+```
+NEW — THE APP IN HEBREW 🇮🇱
+The interface is now fully available in Hebrew, with right-to-left (RTL) layout.
+• Choose Hebrew in Settings › Language (or let the app follow your device).
+• Every screen, menu and notification switches to Hebrew.
+• The "Life Situations" are translated into Hebrew.
+• Tehilim text stays right-aligned, in the traditional layout.
+
+NEW SPLASH SCREEN
+• "Handwriting" animation: the titles תהילים and Tehilim are written letter by letter.
+
+Plus various fixes and stability improvements.
+
+Available in French, English and Hebrew, optimized for iPhone and iPad.
+```
+
+### 🇮🇱 — App Store / Play (עברית)
+```
+חדש — האפליקציה בעברית 🇮🇱
+הממשק זמין כעת באופן מלא בעברית, בפריסה מימין לשמאל (RTL).
+• בחרו עברית בהגדרות › שפה (או הניחו לאפליקציה לעקוב אחר המכשיר).
+• כל המסכים, התפריטים וההתראות עוברים לעברית.
+• «מצבי החיים» מתורגמים לעברית.
+• טקסט התהילים נשאר מיושר לימין, בפריסה המסורתית.
+
+מסך פתיחה חדש
+• אנימציית «כתיבה»: הכותרות תהילים ו-Tehilim נכתבות אות אחר אות.
+
+וכן תיקונים ושיפורי יציבות שונים.
+
+זמין בעברית, בצרפתית ובאנגלית, מותאם ל-iPhone ול-iPad.
+```
+
+---
+
+## 📋 Archive — What's New V1.15.0 (build 67) · Android versionCode 50
 
 > Saut depuis la **V1.12.1** en production (mode Chabbat). Cette version regroupe
 > tout ce qui a suivi : la **Chaîne de Tehilim** (nouveauté majeure), une lecture

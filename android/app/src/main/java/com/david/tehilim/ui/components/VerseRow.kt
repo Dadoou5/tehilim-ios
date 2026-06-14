@@ -200,7 +200,7 @@ fun VerseRow(
 
         // V2.4 — commentaires (mode étude), repliables sous le verset.
         if (showCommentaries && commentaries.isNotEmpty()) {
-            CommentarySection(commentaries, commentaryCode)
+            CommentarySection(commentaries, commentaryCode, textSizeHebrew)
         }
     }
     }
@@ -210,7 +210,8 @@ fun VerseRow(
 @Composable
 private fun CommentarySection(
     commentaries: List<com.david.tehilim.core.model.VerseCommentary>,
-    code: String
+    code: String,
+    textSizeHebrew: TextSize
 ) {
     var expanded by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
@@ -241,14 +242,14 @@ private fun CommentarySection(
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                commentaries.forEach { CommentaryCard(it, code) }
+                commentaries.forEach { CommentaryCard(it, code, textSizeHebrew) }
             }
         }
     }
 }
 
 @Composable
-private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code: String) {
+private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code: String, textSizeHebrew: TextSize) {
     val body = c.text(code)
     val isHebrew = body == c.he
     val dir = if (isHebrew) LayoutDirection.Rtl else LayoutDirection.Ltr
@@ -280,7 +281,8 @@ private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code
                             append(c.he)
                         }
                     },
-                    style = hebrewBodyStyle(0.78f),
+                    // Suit le réglage « Taille hébreu » (≈ 0,80× le verset).
+                    style = hebrewBodyStyle(textSizeHebrew.scale * 0.80f),
                     textAlign = TextAlign.End,
                     modifier = Modifier.fillMaxWidth().padding(top = 3.dp)
                 )
@@ -300,9 +302,9 @@ private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code
                             append(body)
                         }
                     },
-                    // Même taille que le commentaire hébreu : hebrewBodyStyle(0.78f)
-                    // = 22×0.78 ≈ 17.2sp ; côté français base 16 → scale 1.073.
-                    style = frenchBodyStyle(1.073f).copy(
+                    // Traduction (non grasse) légèrement plus petite que le
+                    // commentaire hébreu, et suit le réglage « Taille hébreu ».
+                    style = frenchBodyStyle(textSizeHebrew.scale * 1.01f).copy(
                         textDirection = androidx.compose.ui.text.style.TextDirection.Ltr
                     ),
                     textAlign = TextAlign.Start,

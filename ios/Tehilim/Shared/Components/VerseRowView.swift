@@ -218,15 +218,19 @@ struct VerseRowView: View {
                 .foregroundStyle(Color.accentMain)
             if isHebrew {
                 hebrewCommentaryText(c)
-                    .font(.hebrewBody(.s))
+                    // Taille du commentaire = réglage « Taille hébreu » abaissé de
+                    // 2 crans (commentaire secondaire) → suit le contrôle Aa / A−/A+.
+                    .font(.hebrewBody(textSizeHebrew.stepped(by: -2)))
                     .multilineTextAlignment(.trailing)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .lineSpacing(4)
                     .environment(\.layoutDirection, .rightToLeft)
             } else {
                 latinCommentaryText(c, body)
-                    // Même taille que le commentaire hébreu (hebrewBody(.s) = 22×0.93).
-                    .font(.system(size: 22 * 0.93, weight: .regular, design: .serif))
+                    // Traduction (non grasse) : légèrement plus petite que le
+                    // commentaire hébreu (≈ 92 %), suit aussi le réglage Aa.
+                    .font(.system(size: 22 * textSizeHebrew.stepped(by: -2).scale * 0.92,
+                                  weight: .regular, design: .serif))
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineSpacing(3)

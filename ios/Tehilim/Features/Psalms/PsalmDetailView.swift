@@ -44,7 +44,13 @@ struct PsalmDetailView: View {
     }
 
     private var maxContentWidth: CGFloat {
-        (sideBySide || twoColumnText)
+        // V2.4 — mode étude sur iPad : on exploite la largeur (verset + bloc
+        // commentaire) au lieu de la colonne de lecture étroite (700), en
+        // portrait comme en paysage.
+        if prefs.showCommentaries && hSize == .regular {
+            return AdaptiveLayout.sideBySideMaxWidth
+        }
+        return (sideBySide || twoColumnText)
             ? AdaptiveLayout.sideBySideMaxWidth
             : AdaptiveLayout.readingMaxWidth
     }

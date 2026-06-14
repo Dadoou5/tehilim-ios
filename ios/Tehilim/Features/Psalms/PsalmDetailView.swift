@@ -23,6 +23,8 @@ struct PsalmDetailView: View {
         AdaptiveLayout.shouldUseSideBySide(containerWidth: containerWidth, sizeClass: hSize)
             && showFR
             && prefs.textMode == .hebrew
+            // V2.4 — en mode étude : colonne unique (commentaires pleine largeur).
+            && !prefs.showCommentaries
     }
 
     /// Lecture en **deux colonnes** (façon Tehilim imprimé) : activée sur iPad
@@ -36,6 +38,9 @@ struct PsalmDetailView: View {
             && containerWidth >= AdaptiveLayout.sideBySideMinWidth
             && !sideBySide
             && !showFR
+            // V2.4 — en mode étude, les commentaires se déplient en pleine
+            // largeur sous chaque verset : on garde une seule colonne.
+            && !prefs.showCommentaries
     }
 
     private var maxContentWidth: CGFloat {

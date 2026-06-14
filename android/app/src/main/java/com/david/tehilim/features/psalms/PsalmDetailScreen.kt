@@ -271,7 +271,9 @@ fun PsalmDetailScreen(
                     textSizeFR = textSizeFR,
                     numberStyle = numberStyle,
                     translationLang = appLanguage.translation,
-                    sideBySideTranslation = isTablet && isLandscape && showFR,
+                    // V2.4 — en mode étude : colonne unique pour que les
+                    // commentaires se déplient en pleine largeur sous le verset.
+                    sideBySideTranslation = isTablet && isLandscape && showFR && !showCommentaries,
                     commentaries = if (showCommentaries)
                         container.commentaryRepository.comments(psalm.id, verse.number) else emptyList(),
                     showCommentaries = showCommentaries,

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1e6091">
-  <meta name="description" content="Politique de confidentialité de l'application Tehilim — Privacy Policy of the Tehilim app">
-  <title>Tehilim — Politique de confidentialité / Privacy Policy</title>
+  <meta name="description" content="Politique de confidentialité de l'application Tehilim — Privacy Policy of the Tehilim app — מדיניות הפרטיות של אפליקציית תהילים">
+  <title>Tehilim — Politique de confidentialité / Privacy Policy / מדיניות פרטיות</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e6091'/%3E%3Ctext x='32' y='44' font-size='38' text-anchor='middle' fill='white' font-family='Georgia,serif'%3E%D7%AA%3C/text%3E%3C/svg%3E">
 
   <style>
@@ -177,6 +177,10 @@
 
     [data-lang] { display: none; }
     [data-lang].active { display: block; }
+
+    /* RTL (hébreu) */
+    article[dir="rtl"] { text-align: right; }
+    article[dir="rtl"] ul { padding-left: 0; padding-right: 22px; }
   </style>
 </head>
 <body>
@@ -187,10 +191,12 @@
       <h1>Tehilim</h1>
       <p class="subtitle" data-lang="fr">Politique de confidentialité</p>
       <p class="subtitle" data-lang="en">Privacy Policy</p>
+      <p class="subtitle" data-lang="he">מדיניות פרטיות</p>
 
       <div class="lang-switch" role="tablist">
         <button type="button" data-set-lang="fr" class="active">Français</button>
         <button type="button" data-set-lang="en">English</button>
+        <button type="button" data-set-lang="he">עברית</button>
       </div>
     </header>
 
@@ -198,53 +204,66 @@
 
       <!-- ============ FRANÇAIS ============ -->
       <article data-lang="fr" class="active">
-        <span class="effective">Dernière mise à jour : 18 mai 2026</span>
+        <span class="effective">Dernière mise à jour : 14 juin 2026</span>
 
         <h2>Notre engagement</h2>
-        <p>L'application <strong>Tehilim</strong> (« l'application ») est conçue avec un principe simple : <strong>aucune donnée personnelle n'est collectée par l'éditeur, ni partagée avec qui que ce soit</strong>.</p>
-        <p>Cette politique explique en clair ce que fait — et ne fait pas — l'application avec tes données.</p>
+        <p>L'application <strong>Tehilim</strong> (« l'application »), disponible sur iOS et Android, est conçue avec un principe simple : <strong>l'éditeur ne collecte aucune donnée personnelle à des fins de suivi, de publicité ou de statistiques</strong>.</p>
+        <p>La quasi-totalité de l'application fonctionne <strong>entièrement hors-ligne</strong>. Une seule fonctionnalité — la <strong>Chaîne de Tehilim</strong>, collaborative et optionnelle — utilise un serveur, et uniquement avec les informations minimales décrites plus bas.</p>
 
         <h2>Données collectées par l'éditeur</h2>
-        <p><strong>Aucune.</strong> L'application ne transmet à l'éditeur ni nom, ni email, ni adresse IP, ni identifiant d'appareil, ni donnée d'usage, ni statistique d'aucune sorte.</p>
-        <p>Il n'y a aucun système de compte, aucune connexion requise, aucun formulaire à remplir.</p>
+        <p>En usage normal (lecture des Tehilim) : <strong>aucune.</strong> L'application ne transmet à l'éditeur ni nom, ni email, ni adresse IP à des fins de suivi, ni identifiant publicitaire, ni statistique d'usage.</p>
+        <p>Il n'y a aucun compte, aucune connexion requise, aucun formulaire à remplir pour lire les Tehilim.</p>
 
         <h2>Stockage local</h2>
-        <p>L'application stocke certaines préférences <strong>uniquement sur ton appareil</strong>, dans le sandbox iOS standard :</p>
+        <p>L'application stocke certaines préférences <strong>uniquement sur ton appareil</strong> (sandbox iOS standard, ou stockage local / DataStore sur Android) :</p>
         <ul>
           <li>Choix de langue (français, anglais, hébreu, système)</li>
           <li>Taille du texte, thème (clair/sombre), mode hébreu/phonétique</li>
           <li>Dernier Tehilim lu (pour la reprise de lecture)</li>
-          <li>Mode de lecture quotidienne (mensuel / hebdomadaire), partagé avec le widget via App Group, toujours local</li>
+          <li>Mode de lecture quotidienne (mensuel / hebdomadaire), partagé avec le widget, toujours local</li>
           <li>Réglages des rappels quotidiens</li>
         </ul>
         <p>Ces données ne quittent jamais ton appareil par l'intermédiaire de l'éditeur.</p>
 
-        <h2>Synchronisation iCloud (depuis V1.10.5)</h2>
-        <p>Certaines données peuvent être synchronisées <strong>entre les appareils Apple connectés au même identifiant Apple</strong> via <strong>iCloud Key-Value Store</strong> (NSUbiquitousKeyValueStore). Cette synchronisation est gérée directement par Apple — <strong>l'éditeur n'a aucun accès à ce contenu</strong> :</p>
+        <h2>Synchronisation iCloud (iOS)</h2>
+        <p>Sur iOS, certaines données peuvent être synchronisées <strong>entre les appareils Apple connectés au même identifiant Apple</strong> via <strong>iCloud Key-Value Store</strong>. Cette synchronisation est gérée directement par Apple — <strong>l'éditeur n'y a aucun accès</strong> :</p>
         <ul>
           <li><strong>Favoris</strong> (liste des Tehilim marqués ♡)</li>
-          <li><strong>Lelouy Nichmat sauvegardés</strong> (prénom, lien de parenté, prénom de la mère — saisis librement par l'utilisateur pour la lecture personnalisée)</li>
+          <li><strong>Lelouy Nichmat sauvegardés</strong> (prénom, lien de parenté, prénom de la mère — saisis librement pour la lecture personnalisée)</li>
         </ul>
-        <p>Cette synchronisation :</p>
+        <p>Elle utilise exclusivement l'infrastructure iCloud du compte Apple de l'utilisateur (chiffrée et opérée par Apple), ne quitte jamais l'écosystème Apple, et peut être désactivée en se déconnectant d'iCloud. Sur Android, ces données restent <strong>uniquement locales</strong> à l'appareil.</p>
+
+        <h2>Chaîne de Tehilim (fonctionnalité collaborative en ligne)</h2>
+        <p>La <strong>Chaîne de Tehilim</strong> permet de lire les 150 Tehilim à plusieurs, en temps réel, pour une intention partagée. C'est <strong>la seule fonctionnalité qui utilise un serveur</strong>. Elle est <strong>optionnelle</strong> : si tu ne crées ni ne rejoins jamais de chaîne, aucune donnée n'est envoyée à nos serveurs.</p>
+        <p>Quand tu crées ou rejoins une chaîne, les informations suivantes sont enregistrées sur notre infrastructure (base de données <strong>Supabase</strong>, hébergée dans l'Union européenne, et notre serveur <strong>tehilimapp.com</strong>) :</p>
         <ul>
-          <li>utilise exclusivement l'infrastructure iCloud du compte Apple de l'utilisateur, chiffrée et opérée par Apple ;</li>
-          <li>ne quitte jamais l'écosystème Apple — aucun serveur de l'éditeur n'est impliqué ;</li>
-          <li>peut être désactivée en se déconnectant d'iCloud dans les Réglages iOS — l'application continue de fonctionner en local sans erreur ;</li>
-          <li>maintient un cache local en miroir pour le mode hors-ligne.</li>
+          <li>un <strong>prénom ou pseudonyme d'affichage</strong> que tu choisis (visible des autres participants — c'est le but d'une lecture collective) ;</li>
+          <li>l'<strong>intention</strong> de la chaîne (type + texte libre, ex. le nom d'un proche pour qui prier) ;</li>
+          <li>les <strong>Tehilim que tu sélectionnes</strong> ;</li>
+          <li>un <strong>identifiant anonyme d'appareil</strong> (généré aléatoirement, non relié à ton identité réelle), pour reconnaître le créateur et tes sélections.</li>
         </ul>
-        <p>Aucune information personnelle identifiante (identifiant Apple, email, nom complet, IDFA, etc.) n'est lue, exportée ou transmise par l'application.</p>
+        <p><strong>Aucun compte, email ou numéro de téléphone n'est demandé.</strong> Ne saisis pas d'information sensible dans le prénom d'affichage ou l'intention, puisqu'ils sont visibles des autres participants à la chaîne.</p>
+        <p>Les chaînes sont <strong>automatiquement supprimées de nos serveurs environ 7 jours après la fin de la lecture</strong>. Le créateur peut conserver un compte rendu uniquement en local sur son appareil.</p>
 
         <h2>Notifications</h2>
-        <p>Si tu actives les rappels quotidiens, les notifications sont planifiées <strong>localement par iOS</strong> (UNUserNotificationCenter). Aucun serveur n'est impliqué. Aucune notification push n'est envoyée par nos soins.</p>
+        <p><strong>Rappels quotidiens :</strong> planifiés <strong>localement par le système</strong> (iOS / Android), sans aucun serveur.</p>
+        <p><strong>Notifications de chaîne (push) :</strong> si tu participes à une chaîne, l'application enregistre un <strong>jeton de notification push</strong> (APNs sur iOS, Firebase Cloud Messaging sur Android) associé à la chaîne, afin de t'avertir de l'avancement (chaîne remplie, prolongée, distribuée, complétée). Ce jeton est utilisé <strong>uniquement</strong> pour les notifications de chaîne et supprimé avec la chaîne.</p>
+
+        <h2>Localisation (mode Chabbat)</h2>
+        <p>Si tu actives le mode Chabbat, ta position (GPS si tu l'autorises, sinon la ville que tu choisis) sert <strong>uniquement à calculer les horaires d'entrée et de sortie de Chabbat sur ton appareil</strong>. Elle n'est <strong>jamais transmise ni stockée</strong> sur un serveur.</p>
 
         <h2>Widget</h2>
-        <p>Le widget « Tehilim du jour » lit les Tehilim assignés au jour courant depuis le corpus embarqué dans l'application. Aucune requête réseau n'est effectuée.</p>
+        <p>Le widget « Tehilim du jour » lit les Tehilim du jour depuis le corpus embarqué dans l'application. Aucune requête réseau n'est effectuée.</p>
 
         <h2>Fonctionnement hors-ligne</h2>
-        <p>Le corpus complet (texte hébreu, traductions française et anglaise) est embarqué dans l'application au téléchargement. L'application ne fait <strong>aucune requête réseau</strong> après installation, jamais.</p>
+        <p>Le corpus complet (texte hébreu, traductions française et anglaise) est embarqué dans l'application au téléchargement. En dehors de la Chaîne de Tehilim, l'application ne fait <strong>aucune requête réseau</strong>.</p>
 
         <h2>Services tiers</h2>
-        <p><strong>Aucun.</strong> L'application n'utilise pas de SDK d'analyse, de tracking, de publicité ou de crash reporting. Aucun cookie, aucun pixel, aucun service tiers de quelque nature que ce soit.</p>
+        <p>L'application <strong>n'utilise aucun SDK d'analyse, de tracking, de publicité ni de crash reporting</strong>. Aucun cookie, aucun pixel publicitaire. Les seuls prestataires techniques, utilisés exclusivement pour la Chaîne de Tehilim, sont :</p>
+        <ul>
+          <li><strong>Supabase</strong> (base de données et temps réel, hébergement UE) ;</li>
+          <li><strong>Apple Push Notification service</strong> (APNs) et <strong>Firebase Cloud Messaging</strong> (FCM, Google) pour l'acheminement des notifications de chaîne.</li>
+        </ul>
 
         <h2>Sources du contenu</h2>
         <p>Le contenu religieux affiché provient de sources tierces dûment créditées :</p>
@@ -256,17 +275,18 @@
         <p>Ces sources ne reçoivent aucune donnée te concernant — leur contenu est copié dans l'application au moment du build.</p>
 
         <h2>Droits des utilisateurs (RGPD)</h2>
-        <p>L'éditeur ne collectant aucune donnée, les droits d'accès, de rectification ou de suppression exercés auprès de lui sont sans objet. Les données stockées localement et dans iCloud restent entièrement sous ton contrôle :</p>
+        <p>L'application ne collecte aucune donnée à des fins de suivi. Tes données restent sous ton contrôle :</p>
         <ul>
           <li>Désinstaller l'application supprime les données locales.</li>
-          <li>Supprimer Tehilim depuis <strong>Réglages iOS → [ton nom] → iCloud → Gérer le stockage du compte → Tehilim</strong> supprime également les données synchronisées dans iCloud.</li>
+          <li>Sur iOS, supprimer Tehilim depuis <strong>Réglages → [ton nom] → iCloud → Gérer le stockage du compte → Tehilim</strong> supprime aussi les données synchronisées dans iCloud.</li>
+          <li>Pour les données d'une Chaîne de Tehilim : elles sont supprimées automatiquement après la lecture ; pour une suppression anticipée, le créateur peut supprimer la chaîne, ou écris-nous à l'adresse ci-dessous.</li>
         </ul>
 
         <h2>Enfants</h2>
-        <p>L'application convient à tous les publics (4+ sur l'App Store). Elle ne collecte aucune donnée d'aucun utilisateur, enfant ou adulte.</p>
+        <p>L'application convient à tous les publics (4+). Elle ne collecte aucune donnée à des fins de suivi, d'aucun utilisateur, enfant ou adulte.</p>
 
         <h2>Modifications</h2>
-        <p>Toute modification de cette politique sera publiée sur cette même page avec une nouvelle date de mise à jour. Aucun changement rétroactif ne peut affecter des données qui n'existent pas.</p>
+        <p>Toute modification de cette politique sera publiée sur cette même page avec une nouvelle date de mise à jour.</p>
 
         <div class="contact-card">
           <strong>Contact</strong>
@@ -276,53 +296,66 @@
 
       <!-- ============ ENGLISH ============ -->
       <article data-lang="en">
-        <span class="effective">Last updated: May 18, 2026</span>
+        <span class="effective">Last updated: June 14, 2026</span>
 
         <h2>Our commitment</h2>
-        <p>The <strong>Tehilim</strong> app ("the app") is built on a simple principle: <strong>no personal data is collected by the publisher, or shared with anyone</strong>.</p>
-        <p>This policy explains in plain language what the app does — and does not do — with your data.</p>
+        <p>The <strong>Tehilim</strong> app ("the app"), available on iOS and Android, is built on a simple principle: <strong>the publisher collects no personal data for tracking, advertising, or analytics</strong>.</p>
+        <p>Almost the entire app works <strong>fully offline</strong>. Only one feature — the <strong>Tehilim Chain</strong>, a collaborative and optional feature — uses a server, and only with the minimal information described below.</p>
 
         <h2>Data collected by the publisher</h2>
-        <p><strong>None.</strong> The app transmits no name, email, IP address, device identifier, usage data, or analytics of any kind to the publisher.</p>
-        <p>There is no account system, no sign-in required, no form to fill.</p>
+        <p>In normal use (reading Tehilim): <strong>none.</strong> The app transmits to the publisher no name, email, tracking IP address, advertising identifier, or usage analytics.</p>
+        <p>There is no account, no sign-in required, no form to fill to read Tehilim.</p>
 
         <h2>Local storage</h2>
-        <p>The app stores some preferences <strong>only on your device</strong>, in the standard iOS sandbox:</p>
+        <p>The app stores some preferences <strong>only on your device</strong> (standard iOS sandbox, or local storage / DataStore on Android):</p>
         <ul>
           <li>Language choice (French, English, Hebrew, system)</li>
           <li>Text size, theme (light/dark), Hebrew/phonetic mode</li>
           <li>Last Tehilim read (for resume reading)</li>
-          <li>Daily reading mode (monthly / weekly), shared with the widget via App Group, always local</li>
+          <li>Daily reading mode (monthly / weekly), shared with the widget, always local</li>
           <li>Daily reminder settings</li>
         </ul>
         <p>This data never leaves your device through the publisher.</p>
 
-        <h2>iCloud sync (since V1.10.5)</h2>
-        <p>Some data may be synchronized <strong>across Apple devices signed in with the same Apple ID</strong> via <strong>iCloud Key-Value Store</strong> (NSUbiquitousKeyValueStore). This sync is handled directly by Apple — <strong>the publisher has no access to this content</strong>:</p>
+        <h2>iCloud sync (iOS)</h2>
+        <p>On iOS, some data may sync <strong>across Apple devices signed in with the same Apple ID</strong> via <strong>iCloud Key-Value Store</strong>. This sync is handled directly by Apple — <strong>the publisher has no access</strong>:</p>
         <ul>
           <li><strong>Favorites</strong> (list of Tehilim marked ♡)</li>
-          <li><strong>Saved Lelouy Nichmat</strong> (first name, relationship, mother's first name — freely entered by the user for personalized reading)</li>
+          <li><strong>Saved Lelouy Nichmat</strong> (first name, relationship, mother's first name — freely entered for personalized reading)</li>
         </ul>
-        <p>This sync:</p>
+        <p>It uses only the iCloud infrastructure of the user's Apple account (encrypted and operated by Apple), never leaves the Apple ecosystem, and can be disabled by signing out of iCloud. On Android, this data stays <strong>local to the device only</strong>.</p>
+
+        <h2>Tehilim Chain (online collaborative feature)</h2>
+        <p>The <strong>Tehilim Chain</strong> lets several people read the 150 Tehilim together, in real time, for a shared intention. It is <strong>the only feature that uses a server</strong>. It is <strong>optional</strong>: if you never create or join a chain, no data is ever sent to our servers.</p>
+        <p>When you create or join a chain, the following is stored on our infrastructure (<strong>Supabase</strong> database, hosted in the European Union, and our <strong>tehilimapp.com</strong> server):</p>
         <ul>
-          <li>uses only the iCloud infrastructure of the user's Apple account, encrypted and operated by Apple;</li>
-          <li>never leaves the Apple ecosystem — no publisher server is involved;</li>
-          <li>can be disabled by signing out of iCloud in iOS Settings — the app continues to work locally without errors;</li>
-          <li>keeps a local mirror cache for offline use.</li>
+          <li>a <strong>display name or nickname</strong> you choose (visible to other participants — that is the point of collective reading);</li>
+          <li>the chain's <strong>intention</strong> (type + free text, e.g. the name of a loved one to pray for);</li>
+          <li>the <strong>Tehilim you select</strong>;</li>
+          <li>an <strong>anonymous device identifier</strong> (randomly generated, not linked to your real identity), to recognize the creator and your selections.</li>
         </ul>
-        <p>No identifying personal information (Apple ID, email, full name, IDFA, etc.) is read, exported, or transmitted by the app.</p>
+        <p><strong>No account, email, or phone number is requested.</strong> Do not enter sensitive information in the display name or intention, since they are visible to the other chain participants.</p>
+        <p>Chains are <strong>automatically deleted from our servers about 7 days after the reading ends</strong>. The creator may keep a summary only locally on their device.</p>
 
         <h2>Notifications</h2>
-        <p>If you enable daily reminders, notifications are scheduled <strong>locally by iOS</strong> (UNUserNotificationCenter). No server is involved. No push notifications are sent by us.</p>
+        <p><strong>Daily reminders:</strong> scheduled <strong>locally by the operating system</strong> (iOS / Android), with no server involved.</p>
+        <p><strong>Chain notifications (push):</strong> if you take part in a chain, the app stores a <strong>push notification token</strong> (APNs on iOS, Firebase Cloud Messaging on Android) associated with the chain, to notify you of progress (chain filled, extended, distributed, completed). This token is used <strong>only</strong> for chain notifications and deleted with the chain.</p>
+
+        <h2>Location (Shabbat mode)</h2>
+        <p>If you enable Shabbat mode, your location (GPS if you allow it, otherwise the city you choose) is used <strong>only to compute Shabbat start and end times on your device</strong>. It is <strong>never transmitted or stored</strong> on a server.</p>
 
         <h2>Widget</h2>
-        <p>The "Today's Tehilim" widget reads the psalms assigned to the current day from the corpus embedded in the app. No network request is made.</p>
+        <p>The "Today's Tehilim" widget reads the day's psalms from the corpus embedded in the app. No network request is made.</p>
 
         <h2>Offline operation</h2>
-        <p>The full corpus (Hebrew text, French and English translations) is bundled with the app at download. The app makes <strong>no network requests</strong> after install, ever.</p>
+        <p>The full corpus (Hebrew text, French and English translations) is bundled with the app at download. Apart from the Tehilim Chain, the app makes <strong>no network requests</strong>.</p>
 
         <h2>Third-party services</h2>
-        <p><strong>None.</strong> The app does not use any analytics SDK, tracking, advertising, or crash reporting. No cookies, no pixels, no third-party services whatsoever.</p>
+        <p>The app uses <strong>no analytics SDK, tracking, advertising, or crash reporting</strong>. No cookies, no advertising pixels. The only technical providers, used exclusively for the Tehilim Chain, are:</p>
+        <ul>
+          <li><strong>Supabase</strong> (database and real-time, EU hosting);</li>
+          <li><strong>Apple Push Notification service</strong> (APNs) and <strong>Firebase Cloud Messaging</strong> (FCM, Google) to deliver chain notifications.</li>
+        </ul>
 
         <h2>Content sources</h2>
         <p>The religious content displayed comes from properly credited third-party sources:</p>
@@ -334,21 +367,114 @@
         <p>These sources receive no data about you — their content is copied into the app at build time.</p>
 
         <h2>User rights (GDPR / CCPA)</h2>
-        <p>Since the publisher collects no data, access, rectification, and deletion rights exercised against the publisher are moot. Data stored locally and in iCloud remains entirely under your control:</p>
+        <p>The app collects no data for tracking. Your data stays under your control:</p>
         <ul>
           <li>Uninstalling the app deletes local data.</li>
-          <li>Removing Tehilim from <strong>iOS Settings → [your name] → iCloud → Manage Account Storage → Tehilim</strong> also deletes the synced iCloud data.</li>
+          <li>On iOS, removing Tehilim from <strong>Settings → [your name] → iCloud → Manage Account Storage → Tehilim</strong> also deletes the synced iCloud data.</li>
+          <li>For data in a Tehilim Chain: it is deleted automatically after the reading; for earlier deletion, the creator can delete the chain, or write to us at the address below.</li>
         </ul>
 
         <h2>Children</h2>
-        <p>The app is suitable for all audiences (4+ on the App Store). It collects no data from any user, child or adult.</p>
+        <p>The app is suitable for all audiences (4+). It collects no tracking data from any user, child or adult.</p>
 
         <h2>Changes</h2>
-        <p>Any changes to this policy will be published on this same page with a new last-updated date. No retroactive change can affect data that does not exist.</p>
+        <p>Any changes to this policy will be published on this same page with a new last-updated date.</p>
 
         <div class="contact-card">
           <strong>Contact</strong>
           For any question, write to <a href="mailto:david.bouganim@gmail.com">david.bouganim@gmail.com</a>.
+        </div>
+      </article>
+
+      <!-- ============ עברית ============ -->
+      <article data-lang="he" dir="rtl">
+        <span class="effective">עודכן לאחרונה: 14 ביוני 2026</span>
+
+        <h2>המחויבות שלנו</h2>
+        <p>אפליקציית <strong>תהילים</strong> («האפליקציה»), הזמינה ל-iOS ול-Android, בנויה על עיקרון פשוט: <strong>המפיץ אינו אוסף נתונים אישיים למטרות מעקב, פרסום או סטטיסטיקה</strong>.</p>
+        <p>כמעט כל האפליקציה פועלת <strong>לחלוטין ללא אינטרנט</strong>. רק תכונה אחת — <strong>שרשרת תהילים</strong>, שיתופית ואופציונלית — משתמשת בשרת, ורק עם המידע המינימלי המתואר להלן.</p>
+
+        <h2>נתונים שנאספים על ידי המפיץ</h2>
+        <p>בשימוש רגיל (קריאת תהילים): <strong>אין.</strong> האפליקציה אינה מעבירה למפיץ שם, דוא״ל, כתובת IP למעקב, מזהה פרסומי או נתוני שימוש.</p>
+        <p>אין חשבון, אין צורך בהתחברות, ואין טופס למילוי כדי לקרוא תהילים.</p>
+
+        <h2>אחסון מקומי</h2>
+        <p>האפליקציה שומרת חלק מההעדפות <strong>במכשיר שלך בלבד</strong> (ה-sandbox הסטנדרטי של iOS, או אחסון מקומי / DataStore ב-Android):</p>
+        <ul>
+          <li>בחירת שפה (עברית, צרפתית, אנגלית, מערכת)</li>
+          <li>גודל טקסט, מצב תצוגה (בהיר/כהה), מצב עברית/פונטיקה</li>
+          <li>הפרק האחרון שנקרא (להמשך קריאה)</li>
+          <li>מצב הקריאה היומית (חודשי / שבועי), משותף עם הווידג׳ט, תמיד מקומי</li>
+          <li>הגדרות התזכורות היומיות</li>
+        </ul>
+        <p>נתונים אלו לעולם אינם עוזבים את המכשיר שלך דרך המפיץ.</p>
+
+        <h2>סנכרון iCloud‏ (iOS)</h2>
+        <p>ב-iOS, חלק מהנתונים עשויים להסתנכרן <strong>בין מכשירי Apple המחוברים לאותו Apple ID</strong> דרך <strong>iCloud Key-Value Store</strong>. הסנכרון מנוהל ישירות על ידי Apple — <strong>למפיץ אין אליו גישה</strong>:</p>
+        <ul>
+          <li><strong>מועדפים</strong> (רשימת הפרקים המסומנים ♡)</li>
+          <li><strong>לעילוי נשמת שמורים</strong> (שם פרטי, קשר משפחתי, שם האם — מוזנים באופן חופשי לקריאה האישית)</li>
+        </ul>
+        <p>הסנכרון משתמש אך ורק בתשתית iCloud של חשבון Apple של המשתמש (מוצפנת ומופעלת על ידי Apple), לעולם אינו עוזב את הסביבה של Apple, וניתן לכבותו על ידי התנתקות מ-iCloud. ב-Android נתונים אלו נשארים <strong>מקומיים למכשיר בלבד</strong>.</p>
+
+        <h2>שרשרת תהילים (תכונה שיתופית מקוונת)</h2>
+        <p><strong>שרשרת תהילים</strong> מאפשרת לכמה אנשים לקרוא יחד את 150 הפרקים, בזמן אמת, לכוונה משותפת. זוהי <strong>התכונה היחידה שמשתמשת בשרת</strong>. היא <strong>אופציונלית</strong>: אם לעולם לא תפתחו או תצטרפו לשרשרת, לא יישלחו נתונים לשרתים שלנו.</p>
+        <p>כשאתם פותחים שרשרת או מצטרפים אליה, המידע הבא נשמר בתשתית שלנו (מסד נתונים <strong>Supabase</strong>, מאוחסן באיחוד האירופי, והשרת שלנו <strong>tehilimapp.com</strong>):</p>
+        <ul>
+          <li><strong>שם תצוגה או כינוי</strong> שאתם בוחרים (גלוי למשתתפים האחרים — זו מטרת הקריאה המשותפת);</li>
+          <li><strong>הכוונה</strong> של השרשרת (סוג + טקסט חופשי, למשל שם של יקר שמתפללים עבורו);</li>
+          <li><strong>הפרקים שאתם בוחרים</strong>;</li>
+          <li><strong>מזהה מכשיר אנונימי</strong> (נוצר אקראית, ללא קשר לזהותכם האמיתית), לזיהוי היוצר והבחירות שלכם.</li>
+        </ul>
+        <p><strong>לא נדרשים חשבון, דוא״ל או מספר טלפון.</strong> אין להזין מידע רגיש בשם התצוגה או בכוונה, שכן הם גלויים לשאר משתתפי השרשרת.</p>
+        <p>השרשראות <strong>נמחקות אוטומטית מהשרתים שלנו כשבעה ימים לאחר סיום הקריאה</strong>. היוצר יכול לשמור סיכום במכשירו בלבד.</p>
+
+        <h2>התראות</h2>
+        <p><strong>תזכורות יומיות:</strong> מתוזמנות <strong>מקומית על ידי מערכת ההפעלה</strong> (iOS / Android), ללא כל שרת.</p>
+        <p><strong>התראות שרשרת (Push):</strong> אם אתם משתתפים בשרשרת, האפליקציה שומרת <strong>אסימון התראה (Push token)</strong> (APNs ב-iOS, Firebase Cloud Messaging ב-Android) המשויך לשרשרת, כדי לעדכן אתכם בהתקדמות (השרשרת התמלאה, הוארכה, חולקה, הושלמה). האסימון משמש <strong>אך ורק</strong> להתראות השרשרת ונמחק יחד עם השרשרת.</p>
+
+        <h2>מיקום (מצב שבת)</h2>
+        <p>אם תפעילו את מצב שבת, המיקום שלכם (GPS אם תאשרו, אחרת העיר שתבחרו) משמש <strong>אך ורק לחישוב זמני כניסת ויציאת השבת במכשיר שלכם</strong>. הוא <strong>לעולם אינו נשלח או נשמר</strong> בשרת.</p>
+
+        <h2>ווידג׳ט</h2>
+        <p>הווידג׳ט «תהילים יומי» קורא את פרקי היום מהמאגר המוטמע באפליקציה. לא מתבצעת כל פנייה לרשת.</p>
+
+        <h2>פעולה ללא אינטרנט</h2>
+        <p>המאגר המלא (טקסט עברי, תרגומים לצרפתית ולאנגלית) מוטמע באפליקציה בעת ההורדה. מלבד שרשרת התהילים, האפליקציה אינה מבצעת <strong>כל פנייה לרשת</strong>.</p>
+
+        <h2>שירותי צד שלישי</h2>
+        <p>האפליקציה <strong>אינה משתמשת בכל SDK של ניתוח נתונים, מעקב, פרסום או דיווח קריסות</strong>. אין עוגיות, אין פיקסלים פרסומיים. ספקי הטכנולוגיה היחידים, המשמשים אך ורק לשרשרת התהילים, הם:</p>
+        <ul>
+          <li><strong>Supabase</strong> (מסד נתונים וזמן אמת, אחסון באיחוד האירופי);</li>
+          <li><strong>Apple Push Notification service</strong> (APNs) ו-<strong>Firebase Cloud Messaging</strong> (FCM, Google) להעברת התראות השרשרת.</li>
+        </ul>
+
+        <h2>מקורות התוכן</h2>
+        <p>התוכן הדתי המוצג מגיע ממקורות צד שלישי עם קרדיט מלא:</p>
+        <ul>
+          <li>טקסט עברי ותרגום לאנגלית (JPS 1917): <a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> (רישיון CC-BY)</li>
+          <li>תרגום לצרפתית: בית חב״ד — <a href="https://le-tehilim.online" target="_blank" rel="noopener">le-tehilim.online</a> (ברשותם)</li>
+          <li>גופן עברי Ezra SIL SR: <a href="https://software.sil.org/ezra/" target="_blank" rel="noopener">SIL International</a> (רישיון SIL OFL)</li>
+        </ul>
+        <p>מקורות אלו אינם מקבלים כל נתון אודותיכם — תוכנם מועתק לאפליקציה בעת הבנייה.</p>
+
+        <h2>זכויות המשתמשים (GDPR)</h2>
+        <p>האפליקציה אינה אוספת נתונים למטרות מעקב. הנתונים שלכם נשארים בשליטתכם:</p>
+        <ul>
+          <li>הסרת האפליקציה מוחקת את הנתונים המקומיים.</li>
+          <li>ב-iOS, הסרת תהילים דרך <strong>הגדרות → [השם שלך] → iCloud → ניהול אחסון החשבון → תהילים</strong> מוחקת גם את הנתונים המסונכרנים ב-iCloud.</li>
+          <li>לנתוני שרשרת תהילים: הם נמחקים אוטומטית לאחר הקריאה; למחיקה מוקדמת, היוצר יכול למחוק את השרשרת, או שתכתבו אלינו לכתובת שלהלן.</li>
+        </ul>
+
+        <h2>ילדים</h2>
+        <p>האפליקציה מתאימה לכל הגילאים (4+). היא אינה אוספת נתוני מעקב מאף משתמש, ילד או מבוגר.</p>
+
+        <h2>שינויים</h2>
+        <p>כל שינוי במדיניות זו יפורסם בדף זה עם תאריך עדכון חדש.</p>
+
+        <div class="contact-card">
+          <strong>יצירת קשר</strong>
+          לכל שאלה, כתבו אל <a href="mailto:david.bouganim@gmail.com">david.bouganim@gmail.com</a>.
         </div>
       </article>
 
@@ -358,6 +484,7 @@
       <p>
         <span data-lang="fr" class="active">Source ouvert sur</span>
         <span data-lang="en">Open source on</span>
+        <span data-lang="he">קוד פתוח ב-</span>
         <a href="https://github.com/Dadoou5/tehilim-ios" target="_blank" rel="noopener">GitHub</a>
       </p>
     </footer>
@@ -371,6 +498,7 @@
 
       function setLang(lang) {
         document.documentElement.lang = lang;
+        document.documentElement.dir = (lang === 'he') ? 'rtl' : 'ltr';
         buttons.forEach(b => b.classList.toggle('active', b.dataset.setLang === lang));
         items.forEach(el => el.classList.toggle('active', el.dataset.lang === lang));
         try { localStorage.setItem('tehilim-privacy-lang', lang); } catch (e) {}
@@ -380,7 +508,11 @@
 
       // Auto-detect on first visit
       const saved = (() => { try { return localStorage.getItem('tehilim-privacy-lang'); } catch (e) { return null; } })();
-      const initial = saved || (navigator.language && navigator.language.startsWith('fr') ? 'fr' : 'en');
+      let initial = saved;
+      if (!initial) {
+        const nav = (navigator.language || 'en').toLowerCase();
+        initial = nav.startsWith('fr') ? 'fr' : (nav.startsWith('he') || nav.startsWith('iw')) ? 'he' : 'en';
+      }
       setLang(initial);
     })();
   </script>

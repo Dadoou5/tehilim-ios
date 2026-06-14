@@ -142,7 +142,8 @@ android {
         // Build 51 : interface en hébreu (RTL) + notifs en hébreu + grille 119 + splash.
         // Build 52 : splash en hébreu identique à l'anglais (ligne latine = texte EN).
         // Build 53 : splash « écriture » + cas de la vie en hébreu + versets calés à droite (RTL).
-        versionCode = 53
+        // Build 54 : mode étude (commentaires Rashi/Metsoudat David) activé par défaut.
+        versionCode = 54
         versionName = "1.0.0"
 
         // Feature « Chaîne de Tehilim » — config Supabase injectée dans BuildConfig.

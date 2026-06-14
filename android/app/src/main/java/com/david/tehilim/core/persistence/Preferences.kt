@@ -80,7 +80,7 @@ class Preferences(private val context: Context) {
     }
 
     val translationFR: Flow<Boolean> = context.dataStore.data.map { it[Keys.TRANSLATION_FR] ?: false }
-    val showCommentaries: Flow<Boolean> = context.dataStore.data.map { it[Keys.SHOW_COMMENTARIES] ?: false }
+    val showCommentaries: Flow<Boolean> = context.dataStore.data.map { it[Keys.SHOW_COMMENTARIES] ?: true }
 
     val verseNumberStyle: Flow<VerseNumberStyle> = context.dataStore.data.map { prefs ->
         runCatching { VerseNumberStyle.valueOf(prefs[Keys.VERSE_NUMBER_STYLE] ?: "HEBREW") }

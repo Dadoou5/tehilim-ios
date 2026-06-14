@@ -448,4 +448,5 @@
     <string name="commentaries_label">Commentaires</string>
     <string name="section_study">Étude</string>
     <string name="label_show_commentaries">Commentaires (Rachi, Metsoudat David)</string>
+    <string name="msg_commentaries_footer">Rachi et Metsoudat David sous chaque verset, à déplier. Source : Sefaria (Rachi : Judaica Press, CC-BY ; Metsoudat David : domaine public). Traductions françaises générées automatiquement.</string>
 </resources>

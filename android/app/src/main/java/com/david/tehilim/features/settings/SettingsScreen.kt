@@ -128,6 +128,14 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
                     scope.launch { prefs.setShowCommentaries(it) }
                 }
             }
+            item {
+                Text(
+                    stringResource(R.string.msg_commentaries_footer),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+                )
+            }
 
             item { HorizontalDivider() }
             item { SectionHeader(stringResource(R.string.section_display)) }

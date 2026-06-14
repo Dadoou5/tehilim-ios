@@ -60,7 +60,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Étude")
                 } footer: {
-                    Text("Rachi et Metsoudat David sous chaque verset, à déplier. Source : Sefaria (Rachi : Judaica Press, CC-BY ; Metsoudat David : domaine public). Traduction française de Rachi générée automatiquement.")
+                    Text("Rachi et Metsoudat David sous chaque verset, à déplier. Source : Sefaria (Rachi : Judaica Press, CC-BY ; Metsoudat David : domaine public). Traductions françaises générées automatiquement.")
                         .font(.caption)
                 }
 

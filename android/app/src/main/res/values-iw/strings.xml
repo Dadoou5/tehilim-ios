@@ -452,4 +452,5 @@
     <string name="commentaries_label">פירושים</string>
     <string name="section_study">לימוד</string>
     <string name="label_show_commentaries">פירושים (רש״י, מצודת דוד)</string>
+    <string name="msg_commentaries_footer">רש״י ומצודת דוד מתחת לכל פסוק, להרחבה בהקשה. מקור: ספריא (רש״י: Judaica Press, CC-BY; מצודת דוד: נחלת הכלל). התרגומים הצרפתיים הופקו אוטומטית.</string>
 </resources>

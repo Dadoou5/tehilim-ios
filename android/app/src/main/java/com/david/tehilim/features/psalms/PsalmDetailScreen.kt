@@ -92,6 +92,7 @@ fun PsalmDetailScreen(
     val textSizeHebrew by container.preferences.textSizeHebrew.collectAsState(initial = com.david.tehilim.core.model.TextSize.MEDIUM)
     val textSizeFR by container.preferences.textSizeFR.collectAsState(initial = com.david.tehilim.core.model.TextSize.MEDIUM)
     val translationFR by container.preferences.translationFR.collectAsState(initial = false)
+    val showCommentaries by container.preferences.showCommentaries.collectAsState(initial = false)
     val numberStyle by container.preferences.verseNumberStyle.collectAsState(initial = com.david.tehilim.core.model.VerseNumberStyle.HEBREW)
     val appLanguage by container.preferences.appLanguage.collectAsState(initial = com.david.tehilim.core.model.AppLanguage.SYSTEM)
 
@@ -271,6 +272,14 @@ fun PsalmDetailScreen(
                     numberStyle = numberStyle,
                     translationLang = appLanguage.translation,
                     sideBySideTranslation = isTablet && isLandscape && showFR,
+                    commentaries = if (showCommentaries)
+                        container.commentaryRepository.comments(psalm.id, verse.number) else emptyList(),
+                    showCommentaries = showCommentaries,
+                    commentaryCode = when (appLanguage.content) {
+                        com.david.tehilim.core.model.ContentLanguage.FR -> "fr"
+                        com.david.tehilim.core.model.ContentLanguage.EN -> "en"
+                        com.david.tehilim.core.model.ContentLanguage.HE -> "he"
+                    },
                     onLongClick = {
                         scope.launch(Dispatchers.IO) {
                             VerseShareRenderer.renderAndShare(

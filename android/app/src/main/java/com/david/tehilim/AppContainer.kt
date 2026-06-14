@@ -36,6 +36,7 @@ class AppContainer(context: Context) {
     val psalmRepository: PsalmRepository
     val lifeCaseRepository: LifeCaseRepository
     val psalm119Repository: Psalm119Repository
+    val commentaryRepository: com.david.tehilim.core.model.CommentaryRepository
     val dailyEngine: DailyEngine
     val searchInterpreter: SearchInterpreter
 
@@ -57,6 +58,10 @@ class AppContainer(context: Context) {
         psalmRepository = PsalmRepository(psalms)
         lifeCaseRepository = LifeCaseRepository(cases)
         psalm119Repository = Psalm119Repository(sections)
+        commentaryRepository = runCatching { contentLoader.loadCommentaries() }.getOrElse {
+            android.util.Log.e("AppContainer", "Failed to load commentaries", it)
+            com.david.tehilim.core.model.CommentaryRepository(emptyMap())
+        }
         dailyEngine = DailyEngine(rules)
         searchInterpreter = SearchInterpreter(psalmRepository)
     }

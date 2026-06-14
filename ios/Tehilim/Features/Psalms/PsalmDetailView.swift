@@ -154,7 +154,11 @@ struct PsalmDetailView: View {
             numberStyle: prefs.verseNumberStyle,
             translationLang: prefs.appLanguage.translation,
             parentPsalm: psalm,
-            sideBySideTranslation: sideBySide
+            sideBySideTranslation: sideBySide,
+            commentaries: prefs.showCommentaries
+                ? container.commentaryRepository.comments(psalmId: psalm.id, verse: verse.number)
+                : [],
+            showCommentaries: prefs.showCommentaries
         )
     }
 

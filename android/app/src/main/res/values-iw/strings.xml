@@ -449,4 +449,7 @@
     <string name="azcara_today">היום</string>
     <string name="azcara_tomorrow">מחר</string>
     <string name="azcara_in_days">בעוד %1$d ימים</string>
+    <string name="commentaries_label">פירושים</string>
+    <string name="section_study">לימוד</string>
+    <string name="label_show_commentaries">פירושים (רש״י, מצודת דוד)</string>
 </resources>

@@ -456,3 +456,9 @@
 "Azcara à venir" = "אזכרה קרובה";
 "Demain" = "מחר";
 "Dans %lld jours" = "בעוד %lld ימים";
+
+/* Study — commentaries (V2.4) */
+"Commentaires" = "פירושים";
+"Commentaires (Rachi, Metsoudat David)" = "פירושים (רש״י, מצודת דוד)";
+"Étude" = "לימוד";
+"Rachi et Metsoudat David sous chaque verset, à déplier. Source : Sefaria (Rachi : Judaica Press, CC-BY ; Metsoudat David : domaine public). Traduction française de Rachi générée automatiquement." = "רש״י ומצודת דוד מתחת לכל פסוק, להרחבה בהקשה. מקור: ספריא (רש״י: Judaica Press, CC-BY; מצודת דוד: נחלת הכלל). התרגום הצרפתי של רש״י הופק אוטומטית.";

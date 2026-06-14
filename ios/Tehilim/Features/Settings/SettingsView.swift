@@ -55,6 +55,15 @@ struct SettingsView: View {
                         .font(.caption)
                 }
 
+                Section {
+                    Toggle("Commentaires (Rachi, Metsoudat David)", isOn: $prefs.showCommentaries)
+                } header: {
+                    Text("Étude")
+                } footer: {
+                    Text("Rachi et Metsoudat David sous chaque verset, à déplier. Source : Sefaria (Rachi : Judaica Press, CC-BY ; Metsoudat David : domaine public). Traduction française de Rachi générée automatiquement.")
+                        .font(.caption)
+                }
+
                 Section("Affichage") {
                     Picker("Thème", selection: $prefs.theme) {
                         ForEach(AppTheme.allCases) { Text($0.label).tag($0) }

@@ -9,6 +9,7 @@ final class AppContainer: ObservableObject {
     let psalmRepository: PsalmRepository
     let lifeCaseRepository: LifeCaseRepository
     let psalm119Repository: Psalm119Repository
+    let commentaryRepository: CommentaryRepository
     let dailyEngine: DailyEngine
     let searchInterpreter: SearchInterpreter
     let favorites: FavoritesStore
@@ -81,6 +82,9 @@ final class AppContainer: ObservableObject {
             self.psalm119Repository = Psalm119Repository(sections: [])
             self.dailyEngine = DailyEngine(rules: DailyRules.empty)
         }
+
+        // Commentaires (mode étude) — optionnel : repo vide si le fichier manque.
+        self.commentaryRepository = (try? contentLoader.loadCommentaries()) ?? CommentaryRepository()
 
         self.searchInterpreter = SearchInterpreter(repository: self.psalmRepository)
     }

@@ -138,6 +138,8 @@ final class Preferences: ObservableObject {
     }
 
     @AppStorage("pref.translation.fr")     var translationFR: Bool = false
+    /// V2.4 — mode étude : commentaires (Rashi, Metzudat David) sous chaque verset.
+    @AppStorage("pref.showCommentaries")   var showCommentaries: Bool = false
     /// Langue de l'app : pilote l'UI (au prochain démarrage) et la traduction des Tehilim (instantané).
     @AppStorage("pref.app.language")       var appLanguage: AppLanguage = .system
     @AppStorage("pref.theme")              var theme: AppTheme = .system

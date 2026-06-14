@@ -2,6 +2,22 @@ package com.david.tehilim.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.MenuBook
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,7 +73,10 @@ fun VerseRow(
     translationLang: TranslationLanguage,
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null,
-    sideBySideTranslation: Boolean = false
+    sideBySideTranslation: Boolean = false,
+    commentaries: List<com.david.tehilim.core.model.VerseCommentary> = emptyList(),
+    showCommentaries: Boolean = false,
+    commentaryCode: String = "he"
 ) {
     val useSideBySide = sideBySideTranslation && showTranslation && textMode == TextMode.HEBREW
     val baseModifier = modifier
@@ -178,8 +197,111 @@ fun VerseRow(
                 )
             }
         }
+
+        // V2.4 — commentaires (mode étude), repliables sous le verset.
+        if (showCommentaries && commentaries.isNotEmpty()) {
+            CommentarySection(commentaries, commentaryCode)
+        }
     }
     }
+    }
+}
+
+@Composable
+private fun CommentarySection(
+    commentaries: List<com.david.tehilim.core.model.VerseCommentary>,
+    code: String
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded }
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(Icons.Outlined.MenuBook, null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp))
+            Text(
+                stringResource(R.string.commentaries_label) + " · ${commentaries.size}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+            Icon(
+                if (expanded) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)
+            )
+        }
+        if (expanded) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                commentaries.forEach { CommentaryCard(it, code) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code: String) {
+    val body = c.text(code)
+    val isHebrew = body == c.he
+    val dir = if (isHebrew) LayoutDirection.Rtl else LayoutDirection.Ltr
+    androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides dir) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.06f),
+                    androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
+                )
+                .padding(12.dp),
+            horizontalAlignment = if (isHebrew) Alignment.End else Alignment.Start
+        ) {
+            Text(
+                c.kind.hebrewName,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            if (isHebrew) {
+                Text(
+                    text = buildAnnotatedString {
+                        c.lemma?.takeIf { it.isNotBlank() }?.let {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface)) { append("$it ") }
+                        }
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+                            append(c.he)
+                        }
+                    },
+                    style = hebrewBodyStyle(0.78f),
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth().padding(top = 3.dp)
+                )
+            } else {
+                Text(
+                    text = buildAnnotatedString {
+                        // Dibour hamatchil hébreu en gras (non traduit), puis la traduction.
+                        c.lemma?.takeIf { it.isNotBlank() }?.let {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface)) { append("$it ") }
+                        }
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+                            append(body)
+                        }
+                    },
+                    style = frenchBodyStyle(0.82f),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth().padding(top = 3.dp)
+                )
+            }
+        }
     }
 }
 

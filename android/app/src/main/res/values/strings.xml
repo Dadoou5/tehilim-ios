@@ -445,4 +445,7 @@
     <string name="azcara_today">Aujourd\u0027hui</string>
     <string name="azcara_tomorrow">Demain</string>
     <string name="azcara_in_days">Dans %1$d jours</string>
+    <string name="commentaries_label">Commentaires</string>
+    <string name="section_study">Étude</string>
+    <string name="label_show_commentaries">Commentaires (Rachi, Metsoudat David)</string>
 </resources>

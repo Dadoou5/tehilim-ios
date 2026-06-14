@@ -475,3 +475,9 @@
 "Azcara à venir" = "Upcoming azcara";
 "Demain" = "Tomorrow";
 "Dans %lld jours" = "In %lld days";
+
+/* Study — commentaries (V2.4) */
+"Commentaires" = "Commentaries";
+"Commentaires (Rachi, Metsoudat David)" = "Commentaries (Rashi, Metzudat David)";
+"Étude" = "Study";
+"Rachi et Metsoudat David sous chaque verset, à déplier. Source : Sefaria (Rachi : Judaica Press, CC-BY ; Metsoudat David : domaine public). Traduction française de Rachi générée automatiquement." = "Rashi and Metzudat David under each verse, tap to expand. Source: Sefaria (Rashi: Judaica Press, CC-BY; Metzudat David: public domain). French translation of Rashi generated automatically.";

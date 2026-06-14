@@ -1,8 +1,12 @@
 package com.david.tehilim.core.service
 
 import android.content.Context
+import com.david.tehilim.core.model.CommentaryItem
+import com.david.tehilim.core.model.CommentaryKind
+import com.david.tehilim.core.model.CommentaryRepository
 import com.david.tehilim.core.model.DailyRules
 import com.david.tehilim.core.model.LifeCase
+import com.david.tehilim.core.model.VerseCommentary
 import com.david.tehilim.core.model.Psalm
 import com.david.tehilim.core.model.Psalm119Section
 import kotlinx.serialization.json.Json
@@ -57,6 +61,25 @@ class ContentLoader(private val context: Context) {
         return json.decodeFromString<DailyRules>(payload)
     }
 
+    /** V2.4 — commentaires (Rashi, Metzudat David). Repo vide si absent/cassé. */
+    fun loadCommentaries(): CommentaryRepository = runCatching {
+        val payload = readAsset("data/commentaries.json")
+        val wrapper = json.decodeFromString<CommentariesWrapper>(payload)
+        val byKey = HashMap<String, List<VerseCommentary>>()
+        for ((p, verses) in wrapper.byPsalm) {
+            for ((v, sources) in verses) {
+                val list = ArrayList<VerseCommentary>()
+                for (kind in CommentaryKind.values()) {
+                    sources[kind.key]?.forEach { item ->
+                        list.add(VerseCommentary(kind, item.lemma, item.he, item.en, item.fr))
+                    }
+                }
+                if (list.isNotEmpty()) byKey["$p:$v"] = list
+            }
+        }
+        CommentaryRepository(byKey)
+    }.getOrElse { CommentaryRepository(emptyMap()) }
+
     // MARK: - Internals
 
     private fun readAsset(path: String): String {
@@ -79,6 +102,11 @@ class ContentLoader(private val context: Context) {
     private data class Psalm119Wrapper(
         val psalmId: Int = 119,
         val sections: List<Psalm119Section>
+    )
+
+    @kotlinx.serialization.Serializable
+    private data class CommentariesWrapper(
+        val byPsalm: Map<String, Map<String, Map<String, List<CommentaryItem>>>> = emptyMap()
     )
 
     private fun generateDefault119Sections(): List<Psalm119Section> {

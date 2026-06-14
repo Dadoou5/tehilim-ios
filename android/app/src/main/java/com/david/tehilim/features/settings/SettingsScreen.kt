@@ -61,6 +61,7 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
     val textSizeHebrew by prefs.textSizeHebrew.collectAsState(initial = TextSize.MEDIUM)
     val textSizeFR by prefs.textSizeFR.collectAsState(initial = TextSize.MEDIUM)
     val translationFR by prefs.translationFR.collectAsState(initial = false)
+    val showCommentaries by prefs.showCommentaries.collectAsState(initial = false)
     val verseNumStyle by prefs.verseNumberStyle.collectAsState(initial = VerseNumberStyle.HEBREW)
     val dailyMode by prefs.dailyMode.collectAsState(initial = DailyMode.MONTHLY)
 
@@ -117,6 +118,14 @@ fun SettingsScreen(container: AppContainer, navController: androidx.navigation.N
             item {
                 SwitchRow(stringResource(R.string.label_show_translation_default), translationFR) {
                     scope.launch { prefs.setTranslationFR(it) }
+                }
+            }
+
+            item { HorizontalDivider() }
+            item { SectionHeader(stringResource(R.string.section_study)) }
+            item {
+                SwitchRow(stringResource(R.string.label_show_commentaries), showCommentaries) {
+                    scope.launch { prefs.setShowCommentaries(it) }
                 }
             }
 

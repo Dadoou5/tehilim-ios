@@ -33,6 +33,8 @@ class Preferences(private val context: Context) {
         val TEXT_SIZE_HEBREW = stringPreferencesKey("pref.textSizeHebrew")
         val TEXT_SIZE_FR = stringPreferencesKey("pref.textSizeFR")
         val TRANSLATION_FR = booleanPreferencesKey("pref.translationFR")
+        // V2.4 — mode étude : commentaires sous chaque verset.
+        val SHOW_COMMENTARIES = booleanPreferencesKey("pref.showCommentaries")
         val VERSE_NUMBER_STYLE = stringPreferencesKey("pref.verseNumberStyle")
         val DAILY_MODE = stringPreferencesKey("pref.dailyMode")
         val LAST_READ_PSALM_ID = intPreferencesKey("pref.lastReadPsalmId")
@@ -78,6 +80,7 @@ class Preferences(private val context: Context) {
     }
 
     val translationFR: Flow<Boolean> = context.dataStore.data.map { it[Keys.TRANSLATION_FR] ?: false }
+    val showCommentaries: Flow<Boolean> = context.dataStore.data.map { it[Keys.SHOW_COMMENTARIES] ?: false }
 
     val verseNumberStyle: Flow<VerseNumberStyle> = context.dataStore.data.map { prefs ->
         runCatching { VerseNumberStyle.valueOf(prefs[Keys.VERSE_NUMBER_STYLE] ?: "HEBREW") }
@@ -133,6 +136,9 @@ class Preferences(private val context: Context) {
 
     suspend fun setTranslationFR(value: Boolean) =
         context.dataStore.edit { it[Keys.TRANSLATION_FR] = value }
+
+    suspend fun setShowCommentaries(value: Boolean) =
+        context.dataStore.edit { it[Keys.SHOW_COMMENTARIES] = value }
 
     suspend fun setVerseNumberStyle(value: VerseNumberStyle) =
         context.dataStore.edit { it[Keys.VERSE_NUMBER_STYLE] = value.name }

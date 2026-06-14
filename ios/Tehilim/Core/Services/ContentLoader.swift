@@ -5,6 +5,7 @@ protocol ContentLoading {
     func loadLifeCases() throws -> [LifeCase]
     func loadPsalm119Sections() throws -> [Psalm119Section]
     func loadDailyRules() throws -> DailyRules
+    func loadCommentaries() throws -> CommentaryRepository
 }
 
 enum ContentLoaderError: Error {
@@ -40,6 +41,25 @@ struct BundledContentLoader: ContentLoading {
         try decode("daily_reading_rules")
     }
 
+    func loadCommentaries() throws -> CommentaryRepository {
+        let env: CommentariesEnvelope = try decode("commentaries")
+        var byKey: [String: [VerseCommentary]] = [:]
+        for (pStr, verses) in env.byPsalm {
+            for (vStr, sources) in verses {
+                var list: [VerseCommentary] = []
+                // Ordre fixe : Rashi puis Metzudat David.
+                for kind in VerseCommentary.Kind.allCases {
+                    guard let items = sources[kind.rawValue] else { continue }
+                    for it in items {
+                        list.append(VerseCommentary(kind: kind, lemma: it.lemma, he: it.he, en: it.en, fr: it.fr))
+                    }
+                }
+                if !list.isEmpty { byKey["\(pStr):\(vStr)"] = list }
+            }
+        }
+        return CommentaryRepository(byKey: byKey)
+    }
+
     // MARK: - Helpers
 
     private func decode<T: Decodable>(_ resourceName: String) throws -> T {
@@ -53,6 +73,11 @@ struct BundledContentLoader: ContentLoading {
             throw ContentLoaderError.decodeFailed(resourceName, underlying: error)
         }
     }
+}
+
+private struct CommentaryItemDTO: Decodable { let lemma: String?; let he: String; let en: String?; let fr: String? }
+private struct CommentariesEnvelope: Decodable {
+    let byPsalm: [String: [String: [String: [CommentaryItemDTO]]]]
 }
 
 private struct PsalmsEnvelope: Decodable { let psalms: [Psalm] }

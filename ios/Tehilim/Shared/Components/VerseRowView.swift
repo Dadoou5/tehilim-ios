@@ -225,7 +225,8 @@ struct VerseRowView: View {
                     .environment(\.layoutDirection, .rightToLeft)
             } else {
                 latinCommentaryText(c, body)
-                    .font(.frBody(.s))
+                    // Même taille que le commentaire hébreu (hebrewBody(.s) = 22×0.93).
+                    .font(.system(size: 22 * 0.93, weight: .regular, design: .serif))
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .lineSpacing(3)

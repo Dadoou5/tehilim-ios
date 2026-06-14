@@ -300,7 +300,9 @@ private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code
                             append(body)
                         }
                     },
-                    style = frenchBodyStyle(0.82f).copy(
+                    // Même taille que le commentaire hébreu : hebrewBodyStyle(0.78f)
+                    // = 22×0.78 ≈ 17.2sp ; côté français base 16 → scale 1.073.
+                    style = frenchBodyStyle(1.073f).copy(
                         textDirection = androidx.compose.ui.text.style.TextDirection.Ltr
                     ),
                     textAlign = TextAlign.Start,

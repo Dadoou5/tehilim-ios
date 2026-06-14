@@ -395,7 +395,60 @@ Lifestyle
 
 ---
 
-## 📋 What's New / Nouveautés — V1.15.1 (build 71) · iOS
+## 📋 What's New / Nouveautés — V1.15.2 (build 72) · iOS · Android versionCode 54
+
+> Mise à jour majeure : **le mode étude**. Sous chaque verset, deux commentaires
+> classiques — **Rachi** et **Metsoudat David** — désormais affichés par défaut,
+> dans la langue de l'app (français, anglais, hébreu). Limite Apple : 4 000 caractères par locale.
+
+### 🇫🇷 — App Store / Play (grand public)
+```
+NOUVEAU — MODE ÉTUDE 📖
+Tehilim passe de la lecture à l'étude : sous chaque verset, déplie deux commentaires classiques.
+• Rachi et Metsoudat David, directement sous le verset.
+• Affichés par défaut — désactivables dans Réglages › Étude.
+• Dans la langue de l'app : français, anglais ou hébreu (le mot hébreu commenté reste en gras).
+• Taille des commentaires liée au réglage « Taille hébreu » et au bouton Aa.
+• Mise en page pleine largeur optimisée sur iPad, en portrait comme en paysage.
+
+Et divers correctifs et améliorations de stabilité.
+
+Disponible en français, anglais et hébreu, optimisé iPhone et iPad.
+```
+
+### 🇬🇧 — App Store / Play (general public)
+```
+NEW — STUDY MODE 📖
+Tehilim goes from reading to study: under each verse, expand two classic commentaries.
+• Rashi and Metzudat David, right below the verse.
+• Shown by default — can be turned off in Settings › Study.
+• In the app's language: French, English or Hebrew (the commented Hebrew word stays bold).
+• Commentary size follows the "Hebrew size" setting and the Aa control.
+• Full-width layout optimized for iPad, in both portrait and landscape.
+
+Plus various fixes and stability improvements.
+
+Available in French, English and Hebrew, optimized for iPhone and iPad.
+```
+
+### 🇮🇱 — App Store / Play (עברית)
+```
+חדש — מצב לימוד 📖
+מתהילים של קריאה לתהילים של לימוד: מתחת לכל פסוק אפשר לפתוח שני פירושים קלאסיים.
+• רש"י ומצודת דוד, ישירות מתחת לפסוק.
+• מוצגים כברירת מחדל — ניתן לכבות בהגדרות › לימוד.
+• בשפת האפליקציה: צרפתית, אנגלית או עברית (המילה העברית המבוארת נשארת מודגשת).
+• גודל הפירושים מתעדכן לפי הגדרת «גודל עברית» וכפתור Aa.
+• פריסה ברוחב מלא, מותאמת ל-iPad, לאורך ולרוחב.
+
+וכן תיקונים ושיפורי יציבות שונים.
+
+זמין בעברית, בצרפתית ובאנגלית, מותאם ל-iPhone ול-iPad.
+```
+
+---
+
+## 📋 Archive — What's New V1.15.1 (build 71) · iOS
 
 > Mise à jour ciblée : **l'app parle désormais hébreu** de bout en bout (interface
 > RTL), nouveau splash « écriture », et les cas de la vie traduits en hébreu.

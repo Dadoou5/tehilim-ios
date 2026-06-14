@@ -448,5 +448,5 @@
     <string name="commentaries_label">Commentaries</string>
     <string name="section_study">Study</string>
     <string name="label_show_commentaries">Commentaries (Rashi, Metzudat David)</string>
-    <string name="msg_commentaries_footer">Rashi and Metzudat David under each verse, tap to expand. Source: Sefaria (Rashi: Judaica Press, CC-BY; Metzudat David: public domain). French translations generated automatically.</string>
+    <string name="msg_commentaries_footer">Rashi and Metzudat David under each verse, tap to expand. Source: Sefaria (Rashi: Judaica Press, CC-BY; Metzudat David: public domain). Some translations generated automatically.</string>
 </resources>

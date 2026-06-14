@@ -51,7 +51,6 @@ struct RootTabView: View {
         .environmentObject(container.favorites)
         .environmentObject(container.savedPrayers)
         .environmentObject(container.chainArchive)
-        .environmentObject(container.readingStreak)
         .onAppear { applyPendingRoute() }
         .onChange(of: notifications.pendingRoute) { _, _ in applyPendingRoute() }
         .onChange(of: router.pendingPathReset) { _, target in applyPathReset(target) }

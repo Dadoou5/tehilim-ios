@@ -445,7 +445,8 @@
     <string name="chain_participant_unlimited">ללא הגבלה</string>
     <string name="chain_participant_cap_note">עד 50 משתתפים בשרשרת.</string>
     <string name="chain_too_many_open">כבר יש לכם שתי שרשראות בשלב הבחירה. סיימו אותן לפני יצירת שרשרת נוספת.</string>
-    <string name="streak_day_one">יום אחד ברציפות</string>
-    <string name="streak_days">%1$d ימים ברציפות</string>
-    <string name="streak_record">שיא: %1$d ימים</string>
+    <string name="section_upcoming_azcara">אזכרה קרובה</string>
+    <string name="azcara_today">היום</string>
+    <string name="azcara_tomorrow">מחר</string>
+    <string name="azcara_in_days">בעוד %1$d ימים</string>
 </resources>

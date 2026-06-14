@@ -441,7 +441,8 @@
     <string name="chain_participant_unlimited">Unlimited</string>
     <string name="chain_participant_cap_note">Up to 50 participants per chain.</string>
     <string name="chain_too_many_open">You already have 2 chains in the selection phase. Finish them before creating another.</string>
-    <string name="streak_day_one">1 day in a row</string>
-    <string name="streak_days">%1$d days in a row</string>
-    <string name="streak_record">Best: %1$d days</string>
+    <string name="section_upcoming_azcara">Upcoming azcara</string>
+    <string name="azcara_today">Today</string>
+    <string name="azcara_tomorrow">Tomorrow</string>
+    <string name="azcara_in_days">In %1$d days</string>
 </resources>

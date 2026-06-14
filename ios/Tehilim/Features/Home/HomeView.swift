@@ -5,7 +5,7 @@ struct HomeView: View {
     @EnvironmentObject private var container: AppContainer
     @EnvironmentObject private var router: TabRouter
     @EnvironmentObject private var favorites: FavoritesStore
-    @EnvironmentObject private var streak: ReadingStreakStore
+    @EnvironmentObject private var savedPrayers: SavedPrayerStore
     @Environment(\.horizontalSizeClass) private var hSize
 
     /// V2.1.b — observation directe via @AppStorage pour que la carte
@@ -39,13 +39,57 @@ struct HomeView: View {
         AdaptiveLayout.adaptiveColumns(for: hSize, compactMin: 2000, regularMin: 380, spacing: 16)
     }
 
-    // MARK: - Série de lecture (V2.3)
+    // MARK: - Azcara à venir (V2.3)
+
+    /// Une azcara dont la date tombe dans les 7 prochains jours (fenêtre inclusive
+    /// J−7 → J). Plusieurs prières peuvent matcher sur la période.
+    private struct UpcomingAzcara: Identifiable {
+        let intent: SavedPrayerIntent
+        let date: Date
+        let days: Int
+        var id: UUID { intent.id }
+    }
+
+    private var upcomingAzcarot: [UpcomingAzcara] {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        return savedPrayers.intents.compactMap { intent -> UpcomingAzcara? in
+            guard let death = intent.civilDateOfDeath,
+                  let next = MemorialCalculator.nextYahrzeit(deathCivil: death) else { return nil }
+            let azDay = cal.startOfDay(for: next)
+            let days = cal.dateComponents([.day], from: today, to: azDay).day ?? -1
+            guard (0...7).contains(days) else { return nil }
+            return UpcomingAzcara(intent: intent, date: next, days: days)
+        }
+        .sorted { $0.date < $1.date }
+    }
 
     @ViewBuilder
-    private var streakBanner: some View {
-        let title = streak.current == 1
-            ? L("1 jour d'affilée")
-            : String(format: L("%lld jours d'affilée"), streak.current)
+    private var azcaraSection: some View {
+        let list = upcomingAzcarot
+        if !list.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                SectionHeader(title: "Azcara à venir")
+                ForEach(list) { item in
+                    NavigationLink(destination: PersonalizedReadingListView(intent: item.intent, isSaved: true)) {
+                        azcaraRow(item)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private func azcaraCountdown(_ days: Int) -> String {
+        switch days {
+        case 0:  return L("Aujourd'hui")
+        case 1:  return L("Demain")
+        default: return String(format: L("Dans %lld jours"), days)
+        }
+    }
+
+    @ViewBuilder
+    private func azcaraRow(_ item: UpcomingAzcara) -> some View {
         HStack(spacing: 14) {
             ZStack {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -56,11 +100,16 @@ struct HomeView: View {
                     .foregroundStyle(Color.accentMain)
             }
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.headline).foregroundStyle(.primary)
-                Text(String(format: L("Record : %lld jours"), streak.best))
+                Text(item.intent.hebrewSubject)
+                    .font(.headline).foregroundStyle(.primary)
+                    .lineLimit(1)
+                Text("\(azcaraCountdown(item.days)) · \(item.date.formatted(.dateTime.day().month().locale(AppLocale.locale)))")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -80,7 +129,7 @@ struct HomeView: View {
 
                     HebrewDateBanner()
 
-                    if streak.current >= 1 { streakBanner }
+                    azcaraSection
 
                     if let lastId = lastReadId, let psalm = container.psalmRepository.psalm(id: lastId) {
                         SectionHeader(title: "Reprendre la lecture")

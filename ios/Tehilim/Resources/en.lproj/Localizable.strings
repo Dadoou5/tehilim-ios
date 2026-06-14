@@ -471,7 +471,7 @@
 
 "verset" = "verse";
 
-/* Reading streak (V2.3) */
-"1 jour d'affilée" = "1 day in a row";
-"%lld jours d'affilée" = "%lld days in a row";
-"Record : %lld jours" = "Best: %lld days";
+/* Azcara à venir (V2.3) */
+"Azcara à venir" = "Upcoming azcara";
+"Demain" = "Tomorrow";
+"Dans %lld jours" = "In %lld days";

@@ -452,7 +452,7 @@
 
 "verset" = "פסוק";
 
-/* Reading streak (V2.3) */
-"1 jour d'affilée" = "יום אחד ברציפות";
-"%lld jours d'affilée" = "%lld ימים ברציפות";
-"Record : %lld jours" = "שיא: %lld ימים";
+/* Azcara à venir (V2.3) */
+"Azcara à venir" = "אזכרה קרובה";
+"Demain" = "מחר";
+"Dans %lld jours" = "בעוד %lld ימים";

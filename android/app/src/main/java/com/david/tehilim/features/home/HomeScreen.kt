@@ -56,7 +56,20 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
     val favorites by container.favorites.ids.collectAsState()
     val lastReadId by container.preferences.lastReadPsalmId.collectAsState(initial = null)
     val dailyMode by container.preferences.dailyMode.collectAsState(initial = com.david.tehilim.core.model.DailyMode.MONTHLY)
-    val streak by container.preferences.readingStreak.collectAsState(initial = com.david.tehilim.core.model.StreakInfo.EMPTY)
+    val prayers by container.savedPrayers.intents.collectAsState()
+
+    // V2.3 — azcarot dont la date tombe dans les 7 prochains jours (J−7 → J).
+    val upcomingAzcarot: List<Triple<com.david.tehilim.core.model.SavedPrayerIntent, java.util.Date, Int>> = remember(prayers) {
+        val today = java.time.LocalDate.now()
+        prayers.mapNotNull { intent ->
+            val millis = intent.civilDateOfDeathEpochMillis ?: return@mapNotNull null
+            val next = com.david.tehilim.core.service.MemorialCalculator
+                .nextYahrzeit(java.util.Date(millis)) ?: return@mapNotNull null
+            val azDay = next.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+            val days = java.time.temporal.ChronoUnit.DAYS.between(today, azDay).toInt()
+            if (days in 0..7) Triple(intent, next, days) else null
+        }.sortedBy { it.second }
+    }
 
     val todayPsalms = container.dailyEngine.psalmsForToday(dailyMode)
     var presentedPrayer by remember { mutableStateOf<Prayer.Kind?>(null) }
@@ -87,9 +100,15 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
             // Date hébraïque
             item { HebrewDateBanner() }
 
-            // V2.3 — série de lecture
-            if (streak.current >= 1) {
-                item { StreakBanner(streak) }
+            // V2.3 — azcara(ot) à venir dans les 7 jours
+            if (upcomingAzcarot.isNotEmpty()) {
+                item { SectionHeader(stringResource(R.string.section_upcoming_azcara)) }
+                items(upcomingAzcarot.size) { i ->
+                    val az = upcomingAzcarot[i]
+                    AzcaraRow(az.first.hebrewSubject, az.third, az.second) {
+                        navController.navigate(Routes.personalizedList(az.first.id))
+                    }
+                }
             }
 
             // Reprendre la lecture
@@ -215,10 +234,14 @@ private fun SectionHeader(title: String, subtitle: String? = null) {
 }
 
 @Composable
-private fun StreakBanner(streak: com.david.tehilim.core.model.StreakInfo) {
-    val title = if (streak.current == 1) stringResource(R.string.streak_day_one)
-                else stringResource(R.string.streak_days, streak.current)
-    AppCard(modifier = Modifier.fillMaxWidth()) {
+private fun AzcaraRow(subject: String, days: Int, date: java.util.Date, onClick: () -> Unit) {
+    val countdown = when (days) {
+        0 -> stringResource(R.string.azcara_today)
+        1 -> stringResource(R.string.azcara_tomorrow)
+        else -> stringResource(R.string.azcara_in_days, days)
+    }
+    val dateStr = java.text.SimpleDateFormat("d MMM", java.util.Locale.getDefault()).format(date)
+    AppCard(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(14.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -234,13 +257,15 @@ private fun StreakBanner(streak: com.david.tehilim.core.model.StreakInfo) {
                 Icon(Icons.Outlined.LocalFireDepartment, null,
                     tint = MaterialTheme.colorScheme.primary)
             }
-            Column {
-                Text(title, style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface)
-                Text(stringResource(R.string.streak_record, streak.best),
+            Column(modifier = Modifier.weight(1f)) {
+                Text(subject, style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface, maxLines = 1)
+                Text("$countdown · $dateStr",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

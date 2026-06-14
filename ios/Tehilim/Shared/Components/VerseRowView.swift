@@ -247,11 +247,13 @@ struct VerseRowView: View {
         return Text(c.he).foregroundColor(.secondary)
     }
 
-    /// FR/EN : dibour hamatchil **hébreu** en gras (non traduit) + traduction.
-    /// Le mot hébreu s'aligne naturellement (bidi) au début du texte latin.
+    /// FR/EN : dibour hamatchil **hébreu** en gras (non traduit) PUIS la traduction.
+    /// On force la direction de paragraphe en LTR avec une marque gauche-à-droite
+    /// (U+200E) en tête : sinon le 1ᵉʳ caractère hébreu fort ferait basculer tout
+    /// le paragraphe en RTL et le français s'afficherait à droite, à l'envers.
     private func latinCommentaryText(_ c: VerseCommentary, _ body: String) -> Text {
         if let lemma = c.lemma, !lemma.isEmpty {
-            return Text(lemma).bold().foregroundColor(.primary)
+            return Text("\u{200E}") + Text(lemma).bold().foregroundColor(.primary)
                 + Text(" ") + Text(body).foregroundColor(.secondary)
         }
         return Text(body).foregroundColor(.secondary)

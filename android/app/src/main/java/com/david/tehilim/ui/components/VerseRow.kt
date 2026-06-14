@@ -287,6 +287,10 @@ private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code
             } else {
                 Text(
                     text = buildAnnotatedString {
+                        // Marque gauche-à-droite (U+200E) en tête : force le paragraphe
+                        // en LTR pour que le lemme hébreu reste à GAUCHE et que la
+                        // traduction se lise normalement (sinon tout bascule en RTL).
+                        append("‎")
                         // Dibour hamatchil hébreu en gras (non traduit), puis la traduction.
                         c.lemma?.takeIf { it.isNotBlank() }?.let {
                             withStyle(SpanStyle(fontWeight = FontWeight.Bold,
@@ -296,7 +300,9 @@ private fun CommentaryCard(c: com.david.tehilim.core.model.VerseCommentary, code
                             append(body)
                         }
                     },
-                    style = frenchBodyStyle(0.82f),
+                    style = frenchBodyStyle(0.82f).copy(
+                        textDirection = androidx.compose.ui.text.style.TextDirection.Ltr
+                    ),
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth().padding(top = 3.dp)
                 )

@@ -4,7 +4,7 @@ title: Politique de confidentialité — Tehilim
 
 # Politique de confidentialité — Tehilim
 
-**Dernière mise à jour : 2026-06-08**
+**Dernière mise à jour : 2026-06-14**
 
 La **lecture** des Tehilim (cœur de l'application) ne collecte **aucune donnée
 personnelle** et fonctionne entièrement hors ligne. L'éditeur n'exploite aucun
@@ -22,8 +22,8 @@ Les préférences et l'état de lecture restent sur l'appareil :
 
 - **Préférences** (taille de texte hébreu, taille de texte français, mode
   quotidien, thème, traduction, mode du texte, heure du rappel) : stockées
-  via `UserDefaults` iOS.
-- **Dernière position de lecture** : `UserDefaults` iOS.
+  via `UserDefaults` (iOS) / `DataStore` (Android).
+- **Dernière position de lecture** : `UserDefaults` (iOS) / `DataStore` (Android).
 - **Mode de lecture quotidienne** (mensuel / hebdomadaire) : partagé via
   App Group entre l'app et le widget, sur l'appareil uniquement. Si l'App
   Group n'est pas accessible (configuration de déploiement), l'application
@@ -54,6 +54,10 @@ Cette synchronisation :
 Aucune information personnelle identifiante automatiquement attribuée par
 l'OS (identifiant Apple, email, nom complet, IDFA, etc.) n'est lue,
 exportée ou transmise par l'application.
+
+Sur **Android**, ces données (favoris, Lelouy Nichmat sauvegardés) restent
+**uniquement locales** à l'appareil — il n'y a pas de synchronisation
+inter-appareils.
 
 ## Chaîne de Tehilim — fonctionnalité collaborative optionnelle
 
@@ -107,6 +111,13 @@ lorsqu'elle a lieu, est opérée exclusivement par iOS au niveau système.
   **notifications push** envoyées via APNs (iOS) et FCM (Android), **uniquement**
   aux participants d'une chaîne. Le jeton push n'est enregistré que si
   l'utilisateur participe à une chaîne, et purgé ensuite.
+
+## Localisation (mode Chabbat)
+
+Si l'utilisateur active le **mode Chabbat**, sa position (GPS s'il l'autorise,
+sinon la ville qu'il choisit) sert **uniquement à calculer les horaires d'entrée
+et de sortie de Chabbat sur l'appareil**. Elle n'est **jamais transmise ni
+stockée** sur un serveur.
 
 ## Tiers
 

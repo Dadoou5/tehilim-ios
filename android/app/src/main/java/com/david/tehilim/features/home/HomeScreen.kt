@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.outlined.AutoStories
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.TextFields
@@ -54,6 +56,7 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
     val favorites by container.favorites.ids.collectAsState()
     val lastReadId by container.preferences.lastReadPsalmId.collectAsState(initial = null)
     val dailyMode by container.preferences.dailyMode.collectAsState(initial = com.david.tehilim.core.model.DailyMode.MONTHLY)
+    val streak by container.preferences.readingStreak.collectAsState(initial = com.david.tehilim.core.model.StreakInfo.EMPTY)
 
     val todayPsalms = container.dailyEngine.psalmsForToday(dailyMode)
     var presentedPrayer by remember { mutableStateOf<Prayer.Kind?>(null) }
@@ -83,6 +86,11 @@ fun HomeScreen(container: AppContainer, navController: NavController) {
         ) {
             // Date hébraïque
             item { HebrewDateBanner() }
+
+            // V2.3 — série de lecture
+            if (streak.current >= 1) {
+                item { StreakBanner(streak) }
+            }
 
             // Reprendre la lecture
             if (lastReadId != null) {
@@ -202,6 +210,37 @@ private fun SectionHeader(title: String, subtitle: String? = null) {
         if (subtitle != null) {
             Text(subtitle, style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun StreakBanner(streak: com.david.tehilim.core.model.StreakInfo) {
+    val title = if (streak.current == 1) stringResource(R.string.streak_day_one)
+                else stringResource(R.string.streak_days, streak.current)
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
+                        androidx.compose.foundation.shape.RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Outlined.LocalFireDepartment, null,
+                    tint = MaterialTheme.colorScheme.primary)
+            }
+            Column {
+                Text(title, style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.streak_record, streak.best),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }

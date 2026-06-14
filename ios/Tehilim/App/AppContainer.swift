@@ -19,6 +19,9 @@ final class AppContainer: ObservableObject {
     let chains = ChainService()
     let chainArchive = ChainArchiveStore()
 
+    /// Série de lecture (V2.3) — « X jours d'affilée ».
+    let readingStreak = ReadingStreakStore()
+
     /// Prière reçue via lien partagé (`tehilim://prayer` ou Universal Link),
     /// en attente d'aperçu d'import. Capté au niveau de l'App (toujours monté,
     /// même pendant le splash) pour ne pas perdre le lien au cold-start, puis

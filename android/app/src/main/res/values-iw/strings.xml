@@ -44,6 +44,8 @@
     <string name="section_reading_sequence">רצף הקריאה</string>
     <string name="section_result">תוצאה</string>
     <string name="section_suggestions">הצעות</string>
+    <string name="section_in_text">בטקסט · %1$d</string>
+    <string name="label_verse_ref">תהילים %1$d · פסוק %2$d</string>
     <string name="section_recents">אחרונים</string>
     <string name="section_language">שפה</string>
     <string name="section_display">תצוגה</string>
@@ -443,4 +445,7 @@
     <string name="chain_participant_unlimited">ללא הגבלה</string>
     <string name="chain_participant_cap_note">עד 50 משתתפים בשרשרת.</string>
     <string name="chain_too_many_open">כבר יש לכם שתי שרשראות בשלב הבחירה. סיימו אותן לפני יצירת שרשרת נוספת.</string>
+    <string name="streak_day_one">יום אחד ברציפות</string>
+    <string name="streak_days">%1$d ימים ברציפות</string>
+    <string name="streak_record">שיא: %1$d ימים</string>
 </resources>

@@ -42,6 +42,8 @@
     <string name="section_reading_sequence">Reading sequence</string>
     <string name="section_result">Result</string>
     <string name="section_suggestions">Suggestions</string>
+    <string name="section_in_text">In the text · %1$d</string>
+    <string name="label_verse_ref">Tehilim %1$d · verse %2$d</string>
     <string name="section_recents">Recent</string>
     <string name="section_language">Language</string>
     <string name="section_display">Display</string>
@@ -439,4 +441,7 @@
     <string name="chain_participant_unlimited">Unlimited</string>
     <string name="chain_participant_cap_note">Up to 50 participants per chain.</string>
     <string name="chain_too_many_open">You already have 2 chains in the selection phase. Finish them before creating another.</string>
+    <string name="streak_day_one">1 day in a row</string>
+    <string name="streak_days">%1$d days in a row</string>
+    <string name="streak_record">Best: %1$d days</string>
 </resources>

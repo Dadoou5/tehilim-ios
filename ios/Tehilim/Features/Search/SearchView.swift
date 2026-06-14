@@ -18,14 +18,25 @@ struct SearchView: View {
                                 resultRow(exact, primary: true)
                             }
                         }
-                    } else if !query.isEmpty {
+                    } else if !query.isEmpty && result.textMatches.isEmpty {
                         Section {
                             EmptyStateView(
                                 symbol: "magnifyingglass",
-                                title: "Aucun Tehilim trouvé",
-                                message: "Essaie un numéro entre 1 et 150, ou les lettres hébraïques (ex. כג)."
+                                title: "Aucun résultat",
+                                message: "Essaie un numéro (1–150), des lettres hébraïques (ex. כג), ou un mot du texte."
                             )
                             .listRowBackground(Color.clear)
+                        }
+                    }
+
+                    // V2.3 — occurrences dans le texte des Tehilim.
+                    if !result.textMatches.isEmpty {
+                        Section("Dans le texte · \(result.textMatches.count)") {
+                            ForEach(result.textMatches) { m in
+                                NavigationLink(destination: PsalmDetailView(psalmId: m.psalm.id).onAppear { remember(m.psalm.id) }) {
+                                    textMatchRow(m)
+                                }
+                            }
                         }
                     }
 
@@ -70,6 +81,18 @@ struct SearchView: View {
 
     private func compute() {
         result = container.searchInterpreter.interpret(query)
+    }
+
+    private func textMatchRow(_ m: VerseTextMatch) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("Tehilim \(m.psalm.id) · \(L("verset")) \(m.verse.number)")
+                .font(.subheadline.weight(.medium))
+            Text(m.snippet)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+        }
+        .padding(.vertical, 4)
     }
 
     private func resultRow(_ psalm: Psalm, primary: Bool) -> some View {

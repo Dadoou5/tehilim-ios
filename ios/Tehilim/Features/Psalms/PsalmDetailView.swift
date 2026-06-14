@@ -139,6 +139,8 @@ struct PsalmDetailView: View {
         .onAppear {
             prefs.lastReadPsalmId = psalm.id
             if let firstVerse = psalm.verses.first { prefs.lastReadVerseId = firstVerse.id }
+            // V2.3 — enregistre l'activité de lecture du jour (série).
+            AppContainer.shared.readingStreak.markReadToday()
         }
     }
 

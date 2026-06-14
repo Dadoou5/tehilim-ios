@@ -61,9 +61,12 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
     var query by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val recents by container.preferences.searchRecents.collectAsState(initial = emptyList())
+    val appLanguage by container.preferences.appLanguage.collectAsState(
+        initial = com.david.tehilim.core.model.AppLanguage.SYSTEM
+    )
 
-    val result by remember {
-        derivedStateOf { container.searchInterpreter.interpret(query) }
+    val result by remember(query, appLanguage) {
+        derivedStateOf { container.searchInterpreter.interpret(query, appLanguage.translation) }
     }
 
     fun openPsalm(id: Int) {
@@ -112,8 +115,8 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
                     item { HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp)) }
                 }
 
-                // 2) Empty state quand query non vide sans match
-                if (result.exactMatch == null && query.isNotBlank()) {
+                // 2) Empty state quand query non vide sans aucun match
+                if (result.exactMatch == null && result.textMatches.isEmpty() && query.isNotBlank()) {
                     item {
                         Text(
                             stringResource(R.string.msg_no_psalm_found),
@@ -121,6 +124,15 @@ fun SearchScreen(container: AppContainer, navController: NavController) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(vertical = 12.dp)
                         )
+                    }
+                }
+
+                // 2b) Occurrences dans le texte (V2.3)
+                if (result.textMatches.isNotEmpty()) {
+                    item { SectionHeader(stringResource(R.string.section_in_text, result.textMatches.size)) }
+                    items(result.textMatches) { m ->
+                        TextMatchRow(m) { openPsalm(m.psalm.id) }
+                        HorizontalDivider()
                     }
                 }
 
@@ -164,6 +176,30 @@ private fun SectionHeader(title: String, icon: androidx.compose.ui.graphics.vect
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+@Composable
+private fun TextMatchRow(m: com.david.tehilim.core.service.VerseTextMatch, onClick: () -> Unit) {
+    androidx.compose.material3.TextButton(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(vertical = 10.dp, horizontal = 8.dp)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                stringResource(R.string.label_verse_ref, m.psalm.id, m.verse.number),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                m.snippet,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2
+            )
+        }
     }
 }
 

@@ -10,6 +10,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.david.tehilim.core.model.AppLanguage
 import com.david.tehilim.core.model.AppTheme
 import com.david.tehilim.core.model.DailyMode
+import com.david.tehilim.core.model.StreakInfo
 import com.david.tehilim.core.model.TextMode
 import com.david.tehilim.core.model.TextSize
 import com.david.tehilim.core.model.VerseNumberStyle
@@ -38,6 +39,8 @@ class Preferences(private val context: Context) {
         val LAST_READ_PSALM_ID = intPreferencesKey("pref.lastReadPsalmId")
         val ONBOARDING_DONE = booleanPreferencesKey("pref.onboarding.done")
         val SEARCH_RECENTS = stringPreferencesKey("pref.search.recents")
+        // V2.3 — série de lecture : jours « yyyy-MM-dd » séparés par virgule.
+        val READING_DAYS = stringPreferencesKey("pref.reading.days")
         // V1.4 build 17 — Rappel quotidien : persistance Datastore pour que
         // l'UI reflète l'état réel après relance app / recomposition.
         val NOTIF_ENABLED = booleanPreferencesKey("pref.notif.enabled")
@@ -99,6 +102,20 @@ class Preferences(private val context: Context) {
         prefs[Keys.SEARCH_RECENTS].orEmpty()
             .split(",")
             .mapNotNull { it.trim().toIntOrNull() }
+    }
+
+    /** V2.3 — série de lecture (jours consécutifs), dérivée des jours enregistrés. */
+    val readingStreak: Flow<StreakInfo> = context.dataStore.data.map { prefs ->
+        StreakInfo.from(prefs[Keys.READING_DAYS].orEmpty())
+    }
+
+    /** Marque aujourd'hui comme jour de lecture (idempotent, borné à 730 jours). */
+    suspend fun markReadToday() = context.dataStore.edit { prefs ->
+        val today = java.time.LocalDate.now().toString()  // ISO yyyy-MM-dd
+        val days = prefs[Keys.READING_DAYS].orEmpty().split(",").filter { it.isNotBlank() }
+        if (today !in days) {
+            prefs[Keys.READING_DAYS] = (days + today).takeLast(730).joinToString(",")
+        }
     }
 
     // V1.4 build 17 — Rappel quotidien : Flows + setters DataStore.

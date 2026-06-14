@@ -29,6 +29,12 @@ enum AppLocale {
         }
     }
 
+    /// Langue de traduction affichable (le corpus n'a que FR/EN ; l'hébreu
+    /// retombe sur l'anglais). Utilisé par la recherche plein-texte.
+    static var translationLanguage: TranslationLanguage {
+        code == "fr" ? .fr : .en
+    }
+
     /// `Locale` correspondant (pour DateFormatter / FormatStyle).
     static var locale: Locale {
         switch code {

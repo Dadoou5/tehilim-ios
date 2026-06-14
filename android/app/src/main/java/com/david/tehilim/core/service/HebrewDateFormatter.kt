@@ -32,14 +32,18 @@ object HebrewDateFormatter {
      * `Locale.FRENCH` au lieu de lire la locale active.
      */
     private fun currentLocale(): Locale {
+        // Sur API 33+ l'app pilote la langue via LocaleManager, donc
+        // getApplicationLocales() peut être vide → on retombe sur Locale.getDefault()
+        // (qui reflète bien la langue de l'app). On normalise ensuite.
         val locales = AppCompatDelegate.getApplicationLocales()
-        if (!locales.isEmpty) {
-            return locales[0] ?: Locale.getDefault()
+        val base = if (!locales.isEmpty) (locales[0] ?: Locale.getDefault()) else Locale.getDefault()
+        // `Locale.getLanguage()` rapporte l'hébreu sous l'ancien code « iw ».
+        return when (base.language) {
+            "en" -> Locale.ENGLISH
+            "fr" -> Locale.FRENCH
+            "he", "iw" -> Locale("he")
+            else -> Locale.FRENCH
         }
-        // Mode SYSTEM ou pas d'override : on suit la locale système.
-        val sys = Locale.getDefault()
-        // Si système exotique (autre que fr/en), tombe sur français par défaut.
-        return if (sys.language == "en" || sys.language == "fr") sys else Locale.FRENCH
     }
 
     fun formatted(date: Date = Date()): DisplayDate {

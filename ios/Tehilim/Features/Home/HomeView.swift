@@ -5,6 +5,7 @@ struct HomeView: View {
     @EnvironmentObject private var container: AppContainer
     @EnvironmentObject private var router: TabRouter
     @EnvironmentObject private var favorites: FavoritesStore
+    @EnvironmentObject private var streak: ReadingStreakStore
     @Environment(\.horizontalSizeClass) private var hSize
 
     /// V2.1.b — observation directe via @AppStorage pour que la carte
@@ -38,12 +39,48 @@ struct HomeView: View {
         AdaptiveLayout.adaptiveColumns(for: hSize, compactMin: 2000, regularMin: 380, spacing: 16)
     }
 
+    // MARK: - Série de lecture (V2.3)
+
+    @ViewBuilder
+    private var streakBanner: some View {
+        let title = streak.current == 1
+            ? L("1 jour d'affilée")
+            : String(format: L("%lld jours d'affilée"), streak.current)
+        HStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.accentMain.opacity(0.14))
+                    .frame(width: 44, height: 44)
+                Image(systemName: "flame.fill")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(Color.accentMain)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.headline).foregroundStyle(.primary)
+                Text(String(format: L("Record : %lld jours"), streak.best))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.bgSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(Color.dividerToken.opacity(0.4), lineWidth: 0.5)
+        )
+        .accessibilityElement(children: .combine)
+    }
+
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
 
                     HebrewDateBanner()
+
+                    if streak.current >= 1 { streakBanner }
 
                     if let lastId = lastReadId, let psalm = container.psalmRepository.psalm(id: lastId) {
                         SectionHeader(title: "Reprendre la lecture")

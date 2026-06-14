@@ -103,6 +103,8 @@ fun PsalmDetailScreen(
 
     LaunchedEffect(psalmId) {
         container.preferences.setLastReadPsalmId(psalmId)
+        // V2.3 — enregistre l'activité de lecture du jour (série).
+        container.preferences.markReadToday()
     }
 
     Scaffold(

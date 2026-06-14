@@ -468,3 +468,10 @@
 "Limiter le nombre de participants garde la chaîne réactive. « Illimité » convient pour les petites chaînes entre proches." = "Limiting the number of participants keeps the chain responsive. “Unlimited” is fine for small chains among close ones.";
 "Jusqu'à 50 participants par chaîne. Ton nom et l'intention sont enregistrés dans le cloud le temps de la chaîne, puis supprimés automatiquement après la lecture." = "Up to 50 participants per chain. Your name and the intention are stored in the cloud for the duration of the chain, then deleted automatically after reading.";
 "Tu as déjà 2 chaînes en cours de sélection. Termine-les avant d'en créer une autre." = "You already have 2 chains in the selection phase. Finish them before creating another.";
+
+"verset" = "verse";
+
+/* Reading streak (V2.3) */
+"1 jour d'affilée" = "1 day in a row";
+"%lld jours d'affilée" = "%lld days in a row";
+"Record : %lld jours" = "Best: %lld days";

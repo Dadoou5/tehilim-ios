@@ -42,6 +42,8 @@
     <string name="section_reading_sequence">Séquence de lecture</string>
     <string name="section_result">Résultat</string>
     <string name="section_suggestions">Suggestions</string>
+    <string name="section_in_text">Dans le texte · %1$d</string>
+    <string name="label_verse_ref">Tehilim %1$d · verset %2$d</string>
     <string name="section_recents">Récents</string>
     <string name="section_language">Langue</string>
     <string name="section_display">Affichage</string>
@@ -439,4 +441,7 @@
     <string name="chain_participant_unlimited">Illimité</string>
     <string name="chain_participant_cap_note">Jusqu\u0027à 50 participants par chaîne.</string>
     <string name="chain_too_many_open">Tu as déjà 2 chaînes en cours de sélection. Termine-les avant d\u0027en créer une autre.</string>
+    <string name="streak_day_one">1 jour d\u0027affilée</string>
+    <string name="streak_days">%1$d jours d\u0027affilée</string>
+    <string name="streak_record">Record : %1$d jours</string>
 </resources>

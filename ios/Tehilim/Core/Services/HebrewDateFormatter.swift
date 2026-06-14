@@ -18,13 +18,15 @@ enum HebrewDateFormatter {
         switch raw {
         case "fr": return Locale(identifier: "fr_FR")
         case "en": return Locale(identifier: "en_US")
+        case "he": return Locale(identifier: "he_IL")
         default:
             // .system : on lit `Locale.preferredLanguages` (live) et NON
             // `Locale.current` (instantané figé qui reste sur l'ancienne langue
             // après une bascule à chaud → jour de la semaine en anglais alors
-            // que le système est en français). Français si l'appareil est fr,
-            // anglais sinon.
+            // que le système est en français). Hébreu / français si l'appareil
+            // est dans ces langues, anglais sinon.
             let pref = Locale.preferredLanguages.first ?? "fr"
+            if pref.hasPrefix("he") || pref.hasPrefix("iw") { return Locale(identifier: "he_IL") }
             return pref.hasPrefix("fr") ? Locale(identifier: "fr_FR") : Locale(identifier: "en_US")
         }
     }
